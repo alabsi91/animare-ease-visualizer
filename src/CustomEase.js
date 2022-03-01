@@ -394,6 +394,7 @@ export default function CustomEase() {
     const mask = document.querySelector(`#animation-path-mask rect`);
     const path = document.querySelector(`.path`);
     const maskedPath = document.querySelector(`.animation-path`);
+    const fpsEl = document.getElementById(`fps`);
 
     animation = animare(
       {
@@ -403,7 +404,7 @@ export default function CustomEase() {
         ease: ['linear', parseResult()],
         autoPlay: false,
       },
-      async ([x, y, w], { isFirstFrame, isLastFrame }) => {
+      async ([x, y, w], { isFirstFrame, isLastFrame, fps }) => {
         if (isFirstFrame) {
           lineH.style.display = 'block';
           lineV.style.display = 'block';
@@ -413,6 +414,7 @@ export default function CustomEase() {
         }
 
         ball.setAttribute('cy', y);
+        fpsEl.textContent = fps + ' FPS';
         fillLine.setAttribute('y2', y);
         mask.setAttribute('width', Math.abs(w));
         lineH.setAttribute('y2', y);
@@ -458,7 +460,7 @@ export default function CustomEase() {
       activePoint = null;
       activeHandle = null;
       isZooming = false;
-      document.querySelector('.build-in-eases select').value = selectedEase
+      document.querySelector('.build-in-eases select').value = selectedEase;
       window.localStorage.setItem('saved', parseResult(eventPoint.current));
     });
     window.addEventListener('keydown', deletePoint);
@@ -669,6 +671,9 @@ export default function CustomEase() {
                 y2={size + zoom}
               />
               <circle className='animation-point point' cx={size + zoom + 10} cy={size + zoom} r={4} />
+              <text className='grid-text' id='fps' dominantBaseline='middle' x={size + zoom + 18} y={size + zoom}>
+                0 FPS
+              </text>
             </g>
           </svg>
         </div>
