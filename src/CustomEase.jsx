@@ -1,25 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import './CustomEase.css';
-import { animare } from 'animare';
+import { animare, ease } from 'animare';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { eases } from './Pathes';
 
 const size = 200; // SVG drawing area size.
-let zoom = 50; // SVG around the drawing area.
-let pointRadius = 2; // Radius of the points.
-let activePoint = null; // currently moving point.
-let activeHandle = null; // currently moving handle point.
-let selectedPoint = null; // last selected point for deletion.
-let magnet = true; // snap to the nearest point or to the grid.
-let autoHideHandles = true; // hide handles when not in focus.
-let animation = null; // animation object.
-let tmout = null; // check for overlapping path threshold.
-let isOverLapping = false; // to set path correct color after animation end.
-let isZooming = false; // check for zooming on slider change to pause overlap check.
-let selectedEase = window.localStorage.getItem('saved') ? 'none' : 'easeInSine';
-const undoStack = [];
-const toggledAnchors = new Set(); // enabled smooth anchors.
-let gridPoints = new Array(11).fill(0).map((_, i) => zoom + (i * size) / 10);
+let zoom = 50, // SVG around the drawing area.
+  pointRadius = 2, // Radius of the points.
+  activePoint = null, // currently moving point.
+  activeHandle = null, // currently moving handle point.
+  selectedPoint = null, // last selected point for deletion.
+  magnet = true, // snap to the nearest point or to the grid.
+  autoHideHandles = true, // hide handles when not in focus.
+  animation = null, // animation object.
+  tmout = null, // check for overlapping path threshold.
+  isOverLapping = false, // to set path correct color after animation end.
+  isZooming = false, // check for zooming on slider change to pause overlap check.
+  selectedEase = window.localStorage.getItem('saved') ? 'none' : 'easeInSine',
+  gridPoints = new Array(11).fill(0).map((_, i) => zoom + (i * size) / 10);
+
+const undoStack = [],
+  toggledAnchors = new Set(); // enabled smooth anchors.
 
 export default function CustomEase() {
   const convertPathToPoints = path => {
@@ -328,35 +329,35 @@ export default function CustomEase() {
     }
   };
 
-  const deletePoint = e => {
+  const deletePoint = useCallback(e => {
     if (e.key === 'Delete' && selectedPoint !== null && selectedPoint !== 0 && eventPoint.current.length > 2) {
-      const newPoints = [...eventPoint.current];
+      const Points = [...eventPoint.current];
       // if C point is selected, delete the one after it and move C point to its position.
       if (selectedPoint === 1) {
         // copy C point from the next point.
-        newPoints[1][2] = newPoints[2][0];
-        newPoints[1][3] = newPoints[2][1];
-        newPoints[1][4] = newPoints[2][2];
-        newPoints[1][5] = newPoints[2][3];
+        Points[1][2] = Points[2][0];
+        Points[1][3] = Points[2][1];
+        Points[1][4] = Points[2][2];
+        Points[1][5] = Points[2][3];
         // delete the next point.
-        newPoints.splice(2, 1);
+        Points.splice(2, 1);
         // if the point is selected to be deleted.
-      } else if (selectedPoint === newPoints.length - 1) {
-        if (newPoints.length - 2 === 1) {
-          newPoints[1][4] = newPoints[newPoints.length - 1][2];
-          newPoints[1][5] = newPoints[newPoints.length - 2][3];
+      } else if (selectedPoint === Points.length - 1) {
+        if (Points.length - 2 === 1) {
+          Points[1][4] = Points[Points.length - 1][2];
+          Points[1][5] = Points[Points.length - 2][3];
         } else {
-          newPoints[newPoints.length - 2][2] = newPoints[newPoints.length - 1][2];
-          newPoints[newPoints.length - 2][3] = newPoints[newPoints.length - 2][3];
+          Points[Points.length - 2][2] = Points[Points.length - 1][2];
+          Points[Points.length - 2][3] = Points[Points.length - 2][3];
         }
-        newPoints.splice(selectedPoint, 1);
+        Points.splice(selectedPoint, 1);
       } else {
-        newPoints.splice(selectedPoint, 1);
+        Points.splice(selectedPoint, 1);
       }
 
-      setPoints(newPoints);
+      setPoints(Points);
     }
-  };
+  }, []);
 
   const GraphLines = useCallback(() => {
     let lines = [];
@@ -386,7 +387,7 @@ export default function CustomEase() {
     return numbers;
   }, []);
 
-  const setupAnimation = () => {
+  const setupAnimation = useCallback(() => {
     const ball = document.querySelector(`.animation-point`);
     const fillLine = document.querySelector(`.animation-fill-line`);
     const lineH = document.querySelector(`.animation-horizontal-line`);
@@ -401,7 +402,7 @@ export default function CustomEase() {
         from: [zoom, size + zoom, 0],
         to: [size + zoom, zoom, size],
         duration: 5000,
-        ease: ['linear', parseResult()],
+        ease: [ease.linear, ease.custom(parseResult())],
         autoPlay: false,
       },
       async ([x, y, w], { isFirstFrame, isLastFrame, fps }) => {
@@ -432,7 +433,7 @@ export default function CustomEase() {
         }
       }
     );
-  };
+  }, []);
 
   const autoHideHandler = e => {
     autoHideHandles = e.target.checked;
@@ -469,7 +470,7 @@ export default function CustomEase() {
 
   useEffect(() => {
     eventPoint.current = points;
-    animation?.setOptions({ ease: ['linear', parseResult()] });
+    animation?.setOptions({ ease: [ease.linear, ease.custom(parseResult())] });
     document.querySelector('.results textarea').value = parseResult().replace(/ S/g, '\nS').replace(/ C/g, '\nC');
 
     if (!tmout && !isZooming) {
@@ -478,29 +479,29 @@ export default function CustomEase() {
         isOverLapping = checkOverlap(points);
         document.querySelector('.path').style.stroke = isOverLapping ? 'red' : 'white';
         tmout = false;
-      }, 100);
+      }, 200);
     }
   }, [points]);
 
-  const onLineFocus = () => {
+  const onLineFocus = useCallback(() => {
     if (!autoHideHandles) return;
     document.querySelectorAll(`.path-point`).forEach(e => (e.parentElement.style.display = 'block'));
-  };
+  }, []);
 
-  const onLineBlur = () => {
+  const onLineBlur = useCallback(() => {
     // all this workaround is because of the bug in firefox.
     setTimeout(() => {
       if (!autoHideHandles || document.activeElement.nodeName === 'a') return;
       document.querySelectorAll(`.path-point`).forEach(e => (e.parentElement.style.display = 'none'));
     }, 0);
-  };
+  }, []);
 
-  const onEaseSelect = e => {
+  const onEaseSelect = useCallback(e => {
     if (e.target.value === 'none') return;
     selectedEase = e.target.value;
     const Points = convertPathToPoints(eases[e.target.value]);
     setPoints(Points);
-  };
+  }, []);
 
   const onZoom = e => {
     isZooming = true;
@@ -570,7 +571,7 @@ export default function CustomEase() {
           <div className='build-in-eases'>
             <p>Build in: </p>
 
-            <select onChange={onEaseSelect}>
+            <select onChange={onEaseSelect} defaultValue={selectedEase}>
               <option className='easesItems' value='none'>
                 ....
               </option>
