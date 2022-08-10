@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "animare": "^1.0.37",
+    "animare": "^0.0.0-beta.9",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "regenerator-runtime": "^0.13.9"

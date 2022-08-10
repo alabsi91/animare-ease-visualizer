@@ -11,7 +11,7 @@ let zoom = 50, // SVG around the drawing area.
   activeHandle = null, // currently moving handle point.
   selectedPoint = null, // last selected point for deletion.
   magnet = true, // snap to the nearest point or to the grid.
-  autoHideHandles = true, // hide handles when not in focus.
+  autoHideHandles = false, // hide handles when not in focus.
   animation = null, // animation object.
   tmout = null, // check for overlapping path threshold.
   isOverLapping = false, // to set path correct color after animation end.
@@ -388,14 +388,14 @@ export default function CustomEase() {
   }, []);
 
   const setupAnimation = useCallback(() => {
-    const ball = document.querySelector(`.animation-point`);
-    const fillLine = document.querySelector(`.animation-fill-line`);
-    const lineH = document.querySelector(`.animation-horizontal-line`);
-    const lineV = document.querySelector(`.animation-vertical-line`);
-    const mask = document.querySelector(`#animation-path-mask rect`);
-    const path = document.querySelector(`.path`);
-    const maskedPath = document.querySelector(`.animation-path`);
-    const fpsEl = document.getElementById(`fps`);
+    const ball = document.querySelector(`.animation-point`),
+      fillLine = document.querySelector(`.animation-fill-line`),
+      lineH = document.querySelector(`.animation-horizontal-line`),
+      lineV = document.querySelector(`.animation-vertical-line`),
+      mask = document.querySelector(`#animation-path-mask rect`),
+      path = document.querySelector(`.path`),
+      maskedPath = document.querySelector(`.animation-path`),
+      fpsEl = document.getElementById(`fps`);
 
     animation = animare(
       {
