@@ -405,7 +405,7 @@ export default function CustomEase() {
         ease: [ease.linear, ease.custom(parseResult())],
         autoPlay: false,
       },
-      async ([x, y, w], { isFirstFrame, isLastFrame, fps }) => {
+      async ([x, y, w], { isFirstFrame, isFinished, fps }) => {
         if (isFirstFrame) {
           lineH.style.display = 'block';
           lineV.style.display = 'block';
@@ -423,7 +423,7 @@ export default function CustomEase() {
         lineV.setAttribute('x2', x);
         lineV.setAttribute('x1', x);
 
-        if (isLastFrame) {
+        if (isFinished) {
           lineH.style.display = 'none';
           lineV.style.display = 'none';
           maskedPath.style.display = 'none';
@@ -545,7 +545,7 @@ export default function CustomEase() {
             </div>
 
             <div>
-              <input type='checkbox' defaultChecked={true} onChange={autoHideHandler} />
+              <input type='checkbox' defaultChecked={autoHideHandles} onChange={autoHideHandler} />
               <label>Auto hide anchor points.</label>
             </div>
 
