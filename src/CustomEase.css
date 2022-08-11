@@ -108,6 +108,7 @@ a:focus > .point {
   height: 100vh;
   min-width: 250px;
   background-color: #202020;
+  box-shadow: 4px 0px 1em #00000030;
   overflow-y: auto;
 }
 
