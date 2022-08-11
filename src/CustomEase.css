@@ -1,15 +1,14 @@
 body {
   margin: 0;
   background-color: #222222;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: hidden;
 }
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 .title {
   position: absolute;
@@ -51,9 +50,6 @@ code {
   fill: var(--main-color);
   transition: fill 0.2s;
 }
-
-/* .path-point {
-} */
 
 .handle-point {
   fill: #0175ff;
@@ -108,8 +104,28 @@ a:focus > .point {
 }
 
 .sidePanel {
-  padding-top: 10px;
-  padding-left: 10px;
+  padding: 10px;
+  height: 100vh;
+  min-width: 250px;
+  background-color: #202020;
+  overflow-y: auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sidePanel::-webkit-scrollbar {
+    width: 5px;
+    margin-right: 10px;
+  }
+  .sidePanel::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: #7a7a7a00;
+  }
+  .sidePanel:hover::-webkit-scrollbar-thumb {
+    background-color: #7a7a7a50;
+  }
+  .sidePanel::-webkit-scrollbar-button {
+    display: none;
+  }
 }
 
 hr {
@@ -123,7 +139,6 @@ hr {
 
 .hints > * {
   color: #aaa;
-  margin: 5px 0px;
 }
 
 .options * {
@@ -154,6 +169,7 @@ hr {
 .options-duration > p {
   margin: 0;
   margin-right: 10px;
+  min-width: 65px;
 }
 
 .options-zoom {
@@ -169,6 +185,7 @@ hr {
 .options-zoom > p {
   margin: 0;
   margin-right: 10px;
+  min-width: 65px;
 }
 .build-in-eases {
   display: flex;
@@ -180,6 +197,7 @@ hr {
   color: #aaa;
   margin: 0;
   margin-right: 10px;
+  min-width: 65px;
 }
 .build-in-eases > select {
   color: #aaa;
@@ -201,12 +219,15 @@ hr {
   justify-content: space-between;
 }
 .buttons {
+  all: unset;
+  display: block;
+  width: calc(100% - 26px);
+  font-size: 18px;
   flex-grow: 1;
   margin: 0px 5px;
   background-color: var(--main-color);
   padding: 8px;
   color: white;
-  font-size: 18px;
   text-align: center;
   border-radius: 5px;
   cursor: pointer;
@@ -219,6 +240,7 @@ hr {
   padding: 10px;
   text-align: center;
   border-radius: 5px;
+  margin-bottom: 10px;
 }
 .results textarea {
   background-color: transparent;
@@ -231,9 +253,16 @@ hr {
   padding: 5px;
 }
 .copyButton {
+  border: none;
+  font-weight: normal;
+  font-family: inherit;
+  color: inherit;
   background-color: #222222;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
   user-select: none;
+}
+.copyButton:hover {
+  background-color: #2b2b2b;
 }

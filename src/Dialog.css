@@ -1,0 +1,141 @@
+#container {
+  --main-color: #a14eff;
+  position: fixed;
+  width: clamp(20vw, 100%, 400px);
+  padding: 40px;
+  background-color: #303030;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  text-align: center;
+  box-shadow: 5px 5px 7px -6px rgba(0, 0, 0, 0.55);
+}
+
+#container::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+#message {
+  margin: auto;
+  margin-bottom: 35px;
+  font-size: 20px;
+  text-align: left;
+  user-select: none;
+}
+
+.inputsContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.inputsContainer p {
+  min-width: 80px;
+  text-align: start;
+}
+
+.inputs {
+  color: #aaa;
+  background-color: #2b2b2b;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  font-family: inherit;
+  margin-left: 20px;
+  height: 20px;
+  width: 60%;
+}
+
+#progress {
+  position: relative;
+  width: 95%;
+  height: 10px;
+  background-color: #2b2b2b;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  margin: auto;
+  margin-top: 30px;
+  overflow: hidden;
+}
+
+#progress div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: var(--main-color);
+}
+
+.okButtons {
+  width: 60%;
+  border: none;
+  font-family: inherit;
+  font-weight: normal;
+  text-align: center;
+  color: white;
+  margin: 0px 5px;
+  font-size: 18px;
+  margin-top: 20px;
+  padding: 8px;
+  background-color: var(--main-color);
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s ease-in-out;
+}
+
+.okButtons[disabled] {
+  background-color: #2b2b2b;
+  color: #aaa;
+}
+
+.okButtons:hover {
+  transform: scale(1.02);
+}
+
+#container[open] {
+  animation: show 0.2s ease forwards;
+}
+@keyframes show {
+  from {
+    transform: translateY(70%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+#container[open]::backdrop {
+  animation: BGshow 0.2s ease forwards;
+}
+@keyframes BGshow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+#container.hide {
+  animation: hide 0.2s ease-in forwards;
+}
+@keyframes hide {
+  to {
+    transform: translateY(70%);
+    opacity: 0;
+  }
+}
+
+#container.hide::backdrop {
+  animation: BGhide 0.2s ease-in forwards;
+}
+@keyframes BGhide {
+  to {
+    opacity: 0;
+  }
+}

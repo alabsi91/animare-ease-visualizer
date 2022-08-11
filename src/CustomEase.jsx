@@ -3,6 +3,7 @@ import './CustomEase.css';
 import { animare, ease } from 'animare';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { eases } from './Pathes';
+import Dialog from './Dialog';
 
 const size = 200; // SVG drawing area size.
 let zoom = 50, // SVG around the drawing area.
@@ -23,6 +24,8 @@ const undoStack = [],
   toggledAnchors = new Set(); // enabled smooth anchors.
 
 export default function CustomEase() {
+  const dialog = useRef();
+
   const convertPathToPoints = path => {
     const pathData = path.match(/-?[0-9.]+/g).map((v, i) => (i % 2 ? 1 - +v : +v) * size + zoom);
     const points = [];
@@ -524,6 +527,7 @@ export default function CustomEase() {
 
   return (
     <>
+      <Dialog ref={dialog} parseResult={parseResult} />
       <div className='container'>
         <div className='sidePanel'>
           <div className='hints'>
@@ -540,17 +544,17 @@ export default function CustomEase() {
             <h2>Options</h2>
 
             <div>
-              <input type='checkbox' defaultChecked={true} onChange={e => (magnet = e.target.checked)} />
-              <label>Enable snapping to the grid.</label>
+              <input id='snappeToGrid' type='checkbox' defaultChecked={magnet} onChange={e => (magnet = e.target.checked)} />
+              <label htmlFor='snappeToGrid'>Enable snapping to the grid.</label>
             </div>
 
             <div>
-              <input type='checkbox' defaultChecked={autoHideHandles} onChange={autoHideHandler} />
-              <label>Auto hide anchor points.</label>
+              <input id='hideAnchor' type='checkbox' defaultChecked={autoHideHandles} onChange={autoHideHandler} />
+              <label htmlFor='hideAnchor'>Auto hide anchor points.</label>
             </div>
 
             <div className='options-duration'>
-              <p>Duration: </p>
+              <p>Duration : </p>
               <input
                 type='number'
                 min='0'
@@ -561,7 +565,7 @@ export default function CustomEase() {
             </div>
 
             <div className='options-zoom'>
-              <p>Zoom: </p>
+              <p>Zoom : </p>
               <input type='range' min='0' max='300' defaultValue={300 - zoom} onChange={onZoom} />
             </div>
           </div>
@@ -569,7 +573,7 @@ export default function CustomEase() {
           <hr />
 
           <div className='build-in-eases'>
-            <p>Build in: </p>
+            <p>Built-in : </p>
 
             <select onChange={onEaseSelect} defaultValue={selectedEase}>
               <option className='easesItems' value='none'>
@@ -584,20 +588,24 @@ export default function CustomEase() {
           </div>
 
           <div className='buttons-container'>
-            <div className='buttons' onClick={() => animation?.resume()}>
+            <button className='buttons' onClick={() => animation?.resume()}>
               Play
-            </div>
-            <div className='buttons' onClick={() => animation?.pause()}>
+            </button>
+            <button className='buttons' onClick={() => animation?.pause()}>
               Pause
-            </div>
+            </button>
           </div>
+
+          <button className='buttons' style={{ marginTop: 10 }} onClick={() => dialog.current.show()}>
+            Download as file
+          </button>
 
           <hr />
 
           <div className='results'>
-            <div className='copyButton' onClick={copyToClipboard}>
+            <button className='copyButton' onClick={copyToClipboard}>
               Copy to clipboard
-            </div>
+            </button>
             <textarea
               defaultValue={parseResult()}
               rows={points.length}
