@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import './CustomEase.css';
-import { animare, ease } from 'animare';
+import animare, { ease } from 'animare';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { eases } from './Pathes';
 import Dialog from './Dialog';
