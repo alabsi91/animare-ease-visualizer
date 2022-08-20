@@ -41,6 +41,15 @@ function Dialog({ parseResult } = {}, ref) {
   }, []);
 
   const generateClick = e => {
+    // check for valid variable name input.
+    if (fileName.trim() !== fileName) return alert('File name must not contain spaces');
+    try {
+      // eslint-disable-next-line no-new-func
+      new Function(fileName, 'var ' + fileName);
+    } catch (_) {
+      return alert('File name must be a valid javascript variable name');
+    }
+
     const progressInner = document.querySelector('#progress div');
     const progressText = document.querySelector('#progressText');
 
@@ -156,7 +165,8 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
   }
 
   // download as js file
-  const string = `export default Float32Array.from(${JSON.stringify([...values])})`,
+  const string = `const ${fileName} = Float32Array.from(${JSON.stringify([...values])});\nexport default ${fileName};`,
+    // const string = `export default Float32Array.from(${JSON.stringify([...values])})`,
     blob = new Blob([string], { type: 'text/plain' }),
     url = URL.createObjectURL(blob),
     link = document.createElement('a');
