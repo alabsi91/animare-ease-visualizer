@@ -119,6 +119,8 @@ function Dialog({ parseResult } = {}, ref) {
 export default forwardRef(Dialog);
 
 async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) {
+  console.time('✅ Done in:');
+
   const values = new Float32Array(samples);
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   path.setAttribute('d', d);
@@ -127,6 +129,8 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
   let percent = 0;
   for (let i = 0; i < samples; i++) {
     if (stop) return;
+
+    if (i % 100 === 0) await new Promise(resolve => setTimeout(resolve, 0)); // for faste calculations.
 
     percent = (i + 1) / samples;
     onUpdate(percent);
@@ -140,7 +144,6 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
 
     while (target >= start && target <= pathLength) {
       if (stop) return;
-      await new Promise(resolve => setTimeout(resolve, 1));
 
       const pos = path.getPointAtLength(target);
       times++;
@@ -164,6 +167,8 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
     values[i] = result;
   }
 
+  console.timeEnd('✅ Done in:');
+
   // download as js file
   const string = `const ${fileName} = Float32Array.from(${JSON.stringify([...values])});\nexport default ${fileName};`,
     // const string = `export default Float32Array.from(${JSON.stringify([...values])})`,
@@ -174,5 +179,4 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
   link.download = fileName + '.js';
   link.click();
   URL.revokeObjectURL(url);
-  console.log(string);
 }
