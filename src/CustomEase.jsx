@@ -446,7 +446,10 @@ export default function CustomEase() {
   const copyToClipboard = () => {
     navigator.permissions.query({ name: 'clipboard-write' }).then(result => {
       if (result.state === 'granted' || result.state === 'prompt') {
-        navigator.clipboard.writeText(parseResult());
+        const st = parseResult()
+          .replace(/(?<=[a-z])\s/gi, '')
+          .replaceAll(' ', ',');
+        navigator.clipboard.writeText(st);
       }
     });
   };
@@ -473,7 +476,6 @@ export default function CustomEase() {
 
   useEffect(() => {
     eventPoint.current = points;
-    animation?.setOptions({ ease: [ease.linear, ease.custom(parseResult())] });
     document.querySelector('.results textarea').value = parseResult().replace(/ S/g, '\nS').replace(/ C/g, '\nC');
 
     if (!tmout && !isZooming) {
@@ -588,7 +590,13 @@ export default function CustomEase() {
           </div>
 
           <div className='buttons-container'>
-            <button className='buttons' onClick={() => animation?.resume()}>
+            <button
+              className='buttons'
+              onClick={() => {
+                animation?.setOptions({ ease: [ease.linear, ease.custom(parseResult())] });
+                animation?.resume();
+              }}
+            >
               Play
             </button>
             <button className='buttons' onClick={() => animation?.pause()}>
