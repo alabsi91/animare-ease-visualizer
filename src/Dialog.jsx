@@ -122,7 +122,7 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
   console.time('✅ Done in:');
 
   const points = parsePath(d);
-  const values = new Float32Array(samples + 1);
+  const values = new Float32Array(samples);
   let count = 0;
   let percent = 0;
 
@@ -138,7 +138,7 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
     for (let i = 0; i < samples; i++) {
       if (stop) return;
 
-      const point = (i + 1) / samples;
+      const point = i / samples;
       const dist = (p1.x - 0) * samples;
 
       let start = 0,
@@ -154,7 +154,7 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
 
         times++;
 
-        if (times > 10) {
+        if (times > 50) {
           result = null;
           break;
         }
@@ -176,6 +176,9 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
       }
     }
   }
+
+  values[0] = points[0].p0.y;
+  values[samples - 1] = points[points.length - 1].p1.y;
 
   console.timeEnd('✅ Done in:');
 

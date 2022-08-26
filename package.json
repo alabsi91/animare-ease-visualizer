@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --force",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "animare": "^1.1.0-beta.12",
+    "animare": "^1.1.0-beta.14",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "regenerator-runtime": "^0.13.9"
