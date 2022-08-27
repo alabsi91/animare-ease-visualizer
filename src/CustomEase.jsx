@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import './CustomEase.css';
 import animare, { ease } from 'animare';
+import { useAnimare } from 'animare/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { eases } from './Pathes';
 import Dialog from './Dialog';
@@ -73,13 +74,17 @@ export default function CustomEase() {
 
     // stick to the grid.
     if (magnet) {
-      const threshold = 2;
-      const pointsX = [];
-      const pointsY = [];
-      Points.forEach((p, i) => {
+      const threshold = 2,
+        pointsX = [],
+        pointsY = [];
+
+      for (let i = 0; i < Points.length; i++) {
+        const p = Points[i];
         i === 0 ? pointsX.push(p[0]) : i === 1 ? pointsX.push(p[0], p[2], p[4]) : pointsX.push(p[0], p[2]);
         i === 0 ? pointsY.push(p[1]) : i === 1 ? pointsY.push(p[1], p[3], p[5]) : pointsY.push(p[1], p[3]);
-      });
+      }
+
+      // if the active point is selected remove it from the array to prevent it to stick to it self.
       if (activeHandle !== null) {
         pointsX.splice(pointsX.indexOf(Points[activeHandle[0]][activeHandle[1]]), 1);
         pointsY.splice(pointsY.indexOf(Points[activeHandle[0]][activeHandle[1] + 1]), 1);
@@ -88,6 +93,7 @@ export default function CustomEase() {
         pointsX.splice(pointsX.indexOf(Points[activePoint][p.length - 2]), 1);
         pointsY.splice(pointsY.indexOf(Points[activePoint][p.length - 1]), 1);
       }
+
       x = [...gridPoints, ...pointsX].find(p => x + threshold > p && x - threshold < p) || x;
       y = [...gridPoints, ...pointsY].find(p => y + threshold > p && y - threshold < p) || y;
     }
@@ -227,9 +233,9 @@ export default function CustomEase() {
       if (i === 1) {
         handlesPoints.push([e[0], e[1]]);
         handlesPoints.push([e[2], e[3]]);
-      } else {
-        handlesPoints.push([e[0], e[1]]);
+        return;
       }
+      handlesPoints.push([e[0], e[1]]);
     });
 
     return handlesPoints.map((e, i) => {
@@ -390,7 +396,7 @@ export default function CustomEase() {
     return numbers;
   }, []);
 
-  const setupAnimation = useCallback(() => {
+  animation = useAnimare(() => {
     const ball = document.querySelector(`.animation-point`),
       fillLine = document.querySelector(`.animation-fill-line`),
       lineH = document.querySelector(`.animation-horizontal-line`),
@@ -400,7 +406,7 @@ export default function CustomEase() {
       maskedPath = document.querySelector(`.animation-path`),
       fpsEl = document.getElementById(`fps`);
 
-    animation = animare(
+    return animare(
       {
         from: [zoom, size + zoom, 0],
         to: [size + zoom, zoom, size],
@@ -414,7 +420,8 @@ export default function CustomEase() {
           lineV.style.display = 'block';
           maskedPath.style.display = 'block';
           path.style.transition = 'none';
-          path.style.stroke = 'gray';
+          path.style.stroke = 'var(--blured-path)';
+          if (!autoHideHandles) document.querySelectorAll('.auto-hide').forEach(e => (e.style.display = 'none'));
         }
 
         ball.setAttribute('cy', y);
@@ -430,13 +437,14 @@ export default function CustomEase() {
           lineH.style.display = 'none';
           lineV.style.display = 'none';
           maskedPath.style.display = 'none';
-          path.style.stroke = isOverLapping ? 'red' : 'white';
+          path.style.stroke = isOverLapping ? 'red' : 'var(--active-path)';
+          document.querySelectorAll('.auto-hide').forEach(e => (e.style.display = autoHideHandles ? 'none' : 'block'));
           await new Promise(resolve => setTimeout(resolve, 300));
           path.style.removeProperty('transition');
         }
       }
     );
-  }, []);
+  });
 
   const autoHideHandler = e => {
     autoHideHandles = e.target.checked;
@@ -446,10 +454,7 @@ export default function CustomEase() {
   const copyToClipboard = () => {
     navigator.permissions.query({ name: 'clipboard-write' }).then(result => {
       if (result.state === 'granted' || result.state === 'prompt') {
-        const st = parseResult()
-          .replace(/(?<=[a-z])\s/gi, '')
-          .replaceAll(' ', ',');
-        navigator.clipboard.writeText(st);
+        navigator.clipboard.writeText(parseResult());
       }
     });
   };
@@ -461,7 +466,6 @@ export default function CustomEase() {
   };
 
   useEffect(() => {
-    setupAnimation();
     window.addEventListener('mouseup', () => {
       window.removeEventListener('mousemove', mouseMove);
       activePoint = null;
@@ -482,31 +486,32 @@ export default function CustomEase() {
       tmout = true;
       setTimeout(() => {
         isOverLapping = checkOverlap(points);
-        document.querySelector('.path').style.stroke = isOverLapping ? 'red' : 'white';
+        document.querySelector('.path').style.stroke = isOverLapping ? 'red' : 'var(--active-path)';
         tmout = false;
       }, 200);
     }
   }, [points]);
 
-  const onLineFocus = useCallback(() => {
+  const onLineFocus = () => {
     if (!autoHideHandles) return;
     document.querySelectorAll(`.path-point`).forEach(e => (e.parentElement.style.display = 'block'));
-  }, []);
+  };
 
-  const onLineBlur = useCallback(() => {
-    // all this workaround is because of the bug in firefox.
+  const onLineBlur = () => {
+    // all this workaround is because of a bug in firefox.
     setTimeout(() => {
       if (!autoHideHandles || document.activeElement.nodeName === 'a') return;
       document.querySelectorAll(`.path-point`).forEach(e => (e.parentElement.style.display = 'none'));
     }, 0);
-  }, []);
+  };
 
-  const onEaseSelect = useCallback(e => {
+  const onEaseSelect = e => {
     if (e.target.value === 'none') return;
     selectedEase = e.target.value;
+    toggledAnchors.clear();
     const Points = convertPathToPoints(eases[e.target.value]);
     setPoints(Points);
-  }, []);
+  };
 
   const onZoom = e => {
     isZooming = true;

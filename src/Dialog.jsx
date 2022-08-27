@@ -85,7 +85,7 @@ function Dialog({ parseResult } = {}, ref) {
 
   return (
     <dialog ref={el} id={'container'}>
-      <p id='message'>Export your easing function to file</p>
+      <p id='message'>Export your easing function to a js file.</p>
 
       <div className='inputsContainer'>
         <p>Samples : </p>
