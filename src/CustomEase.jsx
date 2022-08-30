@@ -18,7 +18,7 @@ let zoom = 50, // SVG around the drawing area.
   tmout = null, // check for overlapping path threshold.
   isOverLapping = false, // to set path correct color after animation end.
   isZooming = false, // check for zooming on slider change to pause overlap check.
-  selectedEase = window.localStorage.getItem('saved') ? 'none' : 'easeInSine',
+  selectedEase = window.localStorage.getItem('saved') ? 'none' : 'ease.in.sine',
   gridPoints = new Array(11).fill(0).map((_, i) => zoom + (i * size) / 10);
 
 const undoStack = [],
@@ -39,7 +39,7 @@ export default function CustomEase() {
     return points;
   };
 
-  const [points, setPoints] = useState(convertPathToPoints(window.localStorage.getItem('saved') || eases.easeInSine));
+  const [points, setPoints] = useState(convertPathToPoints(window.localStorage.getItem('saved') || eases['ease.in.sine']));
 
   const eventPoint = useRef(points);
 
