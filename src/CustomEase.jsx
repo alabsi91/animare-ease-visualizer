@@ -4,7 +4,7 @@ import animare, { ease } from 'animare';
 import { useAnimare } from 'animare/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { eases } from './Pathes';
-import Dialog from './Dialog';
+import Dialog, { Bezier, parsePath } from './Dialog';
 
 const size = 200; // SVG drawing area size.
 let zoom = 50, // SVG around the drawing area.
@@ -43,20 +43,38 @@ export default function CustomEase() {
 
   const eventPoint = useRef(points);
 
-  const checkOverlap = useCallback(p => {
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', parseResult(p));
-
+  const checkOverlap = () => {
+    const samples = 100;
+    const points = parsePath(parseResult());
     let largest = 0;
-    for (let i = 0; i <= 100; i++) {
-      const y = i / 100;
-      const pathLength = y * path.getTotalLength();
-      const x = Math.round(path.getPointAtLength(pathLength).x * 1000) / 1000;
-      if (x > largest) largest = x;
-      if (x < largest) return true;
+
+    for (let e = 0; e < points.length; e++) {
+      const { p0, c0, c1, p1 } = points[e];
+
+      for (let i = 0; i < samples; i++) {
+        const point = i / samples;
+        const { x } = Bezier(p0, c0, c1, p1, point);
+        if (x > largest) largest = x;
+        if (x < largest) return true;
+      }
     }
+
     return false;
-  }, []);
+  };
+  // const checkOverlap = useCallback(p => {
+  //   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  //   path.setAttribute('d', parseResult(p));
+
+  //   let largest = 0;
+  //   for (let i = 0; i <= 100; i++) {
+  //     const y = i / 100;
+  //     const pathLength = y * path.getTotalLength();
+  //     const x = Math.round(path.getPointAtLength(pathLength).x * 1000) / 1000;
+  //     if (x > largest) largest = x;
+  //     if (x < largest) return true;
+  //   }
+  //   return false;
+  // }, []);
 
   const mouseMove = useCallback(e => {
     const svg = document.querySelector('.svg');

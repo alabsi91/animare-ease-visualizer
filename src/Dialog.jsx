@@ -193,7 +193,7 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
   URL.revokeObjectURL(url);
 }
 
-function Bezier(p0, c0, c1, p1, t) {
+export function Bezier(p0, c0, c1, p1, t) {
   const point = { x: 0, y: 0 },
     mt = 1 - t,
     mt2 = mt * mt,
@@ -205,7 +205,7 @@ function Bezier(p0, c0, c1, p1, t) {
   return point;
 }
 
-function parsePath(path) {
+export function parsePath(path) {
   const sReg =
     'S[\\s|,]?(?<c1x>-?\\d\\.?\\d*)[\\s|,](?<c1y>-?\\d\\.?\\d*)[\\s|,](?<p1x>-?\\d\\.?\\d*)[\\s|,](?<p1y>-?\\d\\.?\\d*)';
   const cReg =
