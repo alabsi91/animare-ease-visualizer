@@ -1,4 +1,4 @@
-export const eases = {
+export const eases: { [key: string]: string } = {
   'ease.in.sine': 'M 0 0 C 0.12 0 0.39 0 1 1',
   'ease.out.sine': 'M 0 0 C 0.61 1 0.88 1 1 1',
   'ease.inOut.sine': 'M 0 0 C 0.37 0 0.63 1 1 1',

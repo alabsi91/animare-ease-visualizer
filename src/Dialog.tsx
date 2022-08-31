@@ -3,27 +3,35 @@ import { useCallback } from 'react';
 import { useRef, forwardRef, useImperativeHandle, useEffect, useState } from 'react';
 import './Dialog.css';
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 let stop = false;
-function Dialog({ parseResult } = {}, ref) {
+
+type propsT = {
+  parseResult: (p?: number[][]) => string;
+};
+
+function Dialog({ parseResult }: propsT, ref: React.Ref<{ show: () => Promise<void> }>) {
   const [samples, setSamples] = useState(1000);
   const [fileName, setFileName] = useState('customEasing');
 
-  const el = useRef();
+  const el = useRef<HTMLDialogElement>(null);
 
-  const clickOutside = useCallback(e => {
+  const clickOutside = useCallback((e: MouseEvent) => {
+    if (!el.current) return;
     const { x, y, width, height } = el.current.getBoundingClientRect();
     const isClickInside = e.clientX >= x && e.clientX <= x + width && e.clientY <= y + height && e.clientY >= y;
     if (!isClickInside) closeMethod();
   }, []);
 
   const showMethod = async () => {
+    if (!el.current) return;
     el.current.showModal();
     await sleep(230);
     document.addEventListener('click', clickOutside);
   };
 
   async function closeMethod() {
+    if (!el.current) return;
     el.current.classList.add('hide');
 
     document.removeEventListener('click', clickOutside);
@@ -40,7 +48,8 @@ function Dialog({ parseResult } = {}, ref) {
     return () => document.removeEventListener('click', clickOutside);
   }, []);
 
-  const generateClick = e => {
+  const generateClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.target as HTMLButtonElement;
     // check for valid variable name input.
     if (fileName.trim() !== fileName) return alert('File name must not contain spaces');
     try {
@@ -50,14 +59,14 @@ function Dialog({ parseResult } = {}, ref) {
       return alert('File name must be a valid javascript variable name');
     }
 
-    const progressInner = document.querySelector('#progress div');
-    const progressText = document.querySelector('#progressText');
+    const progressInner = document.querySelector('#progress div') as HTMLDivElement;
+    const progressText = document.querySelector('#progressText') as HTMLParagraphElement;
 
     // Cancel button
-    if (e.target.innerHTML === 'Cancel') {
+    if (target.innerHTML === 'Cancel') {
       stop = true;
-      e.target.innerHTML = 'Generate';
-      e.target.style.removeProperty('background-color');
+      target.innerHTML = 'Generate';
+      target.style.removeProperty('background-color');
       progressInner.style.width = '0%';
       progressText.innerHTML = '0%';
       closeMethod();
@@ -66,16 +75,16 @@ function Dialog({ parseResult } = {}, ref) {
 
     stop = false;
 
-    e.target.innerHTML = 'Cancel';
-    e.target.style.backgroundColor = '#ff0000';
+    target.innerHTML = 'Cancel';
+    target.style.backgroundColor = '#ff0000';
 
-    const onUpdate = percent => {
+    const onUpdate = (percent: number) => {
       progressInner.style.width = `${percent * 100}%`;
       progressText.innerHTML = `${Math.floor(percent * 100)}%`;
       // on finish
       if (percent === 1) {
-        e.target.style.removeProperty('background-color');
-        e.target.innerHTML = 'Generate';
+        target.style.removeProperty('background-color');
+        target.innerHTML = 'Generate';
         closeMethod();
       }
     };
@@ -116,9 +125,9 @@ function Dialog({ parseResult } = {}, ref) {
   );
 }
 
-export default forwardRef(Dialog);
+export default forwardRef<{ show: () => Promise<void> }, propsT>(Dialog);
 
-async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) {
+async function generate(d: string, samples = 1000, fileName = 'CustomEasing', onUpdate: (i: number) => void) {
   console.time('✅ Done in:');
 
   const points = parsePath(d);
@@ -145,7 +154,7 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
         end = 1,
         target = (start + end) / 2,
         times = 0,
-        result = 0;
+        result: number | null = 0;
 
       while (target >= start && target <= 1) {
         if (stop) return;
@@ -193,7 +202,8 @@ async function generate(d, samples = 1000, fileName = 'CustomEasing', onUpdate) 
   URL.revokeObjectURL(url);
 }
 
-export function Bezier(p0, c0, c1, p1, t) {
+type Tpoint = { x: number; y: number };
+export function Bezier(p0: Tpoint, c0: Tpoint, c1: Tpoint, p1: Tpoint, t: number) {
   const point = { x: 0, y: 0 },
     mt = 1 - t,
     mt2 = mt * mt,
@@ -205,7 +215,7 @@ export function Bezier(p0, c0, c1, p1, t) {
   return point;
 }
 
-export function parsePath(path) {
+export function parsePath(path: string) {
   const sReg =
     'S[\\s|,]?(?<c1x>-?\\d\\.?\\d*)[\\s|,](?<c1y>-?\\d\\.?\\d*)[\\s|,](?<p1x>-?\\d\\.?\\d*)[\\s|,](?<p1y>-?\\d\\.?\\d*)';
   const cReg =
@@ -225,7 +235,7 @@ export function parsePath(path) {
   // parse strings to point object.
   const s_curves_2points =
     s_curves_str?.map(e => {
-      const { groups } = new RegExp(sReg).exec(e);
+      const groups = new RegExp(sReg).exec(e)?.groups!;
       return {
         c1: { x: +groups.c1x, y: +groups.c1y },
         p1: { x: +groups.p1x, y: +groups.p1y },
@@ -233,7 +243,7 @@ export function parsePath(path) {
     }) ?? [];
 
   // get first point c curve.
-  const c_curve_match = cReg.exec(path).groups;
+  const c_curve_match = cReg.exec(path)?.groups!;
   const c_curve = {
     p0: { x: +c_curve_match.p0x, y: +c_curve_match.p0y },
     c0: { x: +c_curve_match.c0x, y: +c_curve_match.c0y },
@@ -256,7 +266,7 @@ export function parsePath(path) {
       : e;
   });
 
-  return s_curves_4points;
+  return s_curves_4points as typeof c_curve[];
 }
 
 // function Loop(start = 0, end = 100, by = 1, cb) {

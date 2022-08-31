@@ -1,14 +1,14 @@
 :root {
   --main-color: #a370f0;
   --secondary-color: #0175ff;
-  --active-point: #f46036;
+  --active-point: #4CAF50;
   --nav-color: #202020;
   --text-color: #aaa;
   --background-color: #222;
   --svg-background-color: #303030;
   --grid-lines: #222222;
   --active-path: white;
-  --blured-path:gray;
+  --blured-path: gray;
 }
 
 /* @media (prefers-color-scheme: light) {
@@ -85,7 +85,6 @@ a:focus > .point {
 .handle-line {
   stroke: var(--secondary-color);
   stroke-width: 0.8;
-  display: none;
 }
 
 .grid-line {
@@ -133,6 +132,56 @@ a:focus > .point {
   background-color: var(--nav-color);
   box-shadow: 2px 0px 7px #00000024;
   overflow-y: auto;
+  z-index: 1;
+}
+
+.close-panel {
+  all: unset;
+  float: right;
+  padding: 10px;
+  cursor: pointer;
+}
+.close-panel > svg {
+  width: 30px;
+  height: 30px;
+  fill: var(--text-color);
+}
+
+.small-side-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  padding: 20px;
+  z-index: 0;
+}
+
+.small-side-panel svg {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 50px;
+  fill: var(--text-color);
+}
+
+.small-side-panel button {
+  all: unset;
+  cursor: pointer;
+  transition: transform 100ms;
+}
+.small-side-panel button:active {
+  transform: translate(2px, 2px);
+}
+
+.small-side-panel input[type='range'] {
+  -webkit-appearance: slider-vertical; /* Chromium */
+  width: 30px;
+}
+
+.open-panel svg {
+  margin-bottom: 100px;
 }
 
 input[type='range'] {
