@@ -527,7 +527,7 @@ export default function App() {
       sidePanel.style.transform = `translateX(-${translateX}%)`;
       container.style.gridTemplateColumns = `${gridTemplateColumns}px 1fr`;
 
-      if ((translateX as number) === 0) {
+      if (translateX === 0) {
         container.style.removeProperty('grid-template-columns');
       }
     };
