@@ -150,11 +150,13 @@ a:focus > .point {
 .small-side-panel {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   position: absolute;
   left: 0%;
   top: 0%;
+  height: 100%;
+  background-color: var(--nav-color);
   padding: 20px;
   z-index: 0;
 }
@@ -164,6 +166,11 @@ a:focus > .point {
   height: 30px;
   margin-bottom: 50px;
   fill: var(--text-color);
+  transition: all 100ms;
+}
+.small-side-panel svg:hover {
+  fill: var(--secondary-color);
+  transform: scale(1.1);
 }
 
 .small-side-panel button {
