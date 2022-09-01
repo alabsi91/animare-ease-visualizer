@@ -224,7 +224,7 @@ export default function App() {
           mouseMove(e);
         }
 
-        window.addEventListener('mousemove', mouseMove);
+        document.addEventListener('pointermove', mouseMove);
         undoStack.push(parseResult());
       };
 
@@ -271,7 +271,7 @@ export default function App() {
         >
           <circle
             className='path-point point'
-            onMouseDown={onMouseDown}
+            onPointerDown={onMouseDown}
             cx={e[e.length - 2]}
             cy={e[e.length - 1]}
             r={pointRadius}
@@ -297,7 +297,7 @@ export default function App() {
     return handlesPoints.map((e, i) => {
       const onMouseDown = () => {
         activeControlPoint = i === 0 ? [1, 0] : i === 1 ? [1, 2] : [i, 0];
-        window.addEventListener('mousemove', mouseMove);
+        document.addEventListener('pointermove', mouseMove);
         undoStack.push(parseResult());
       };
 
@@ -349,7 +349,7 @@ export default function App() {
           onDragStart={e => e.preventDefault()}
           onClick={e => e.preventDefault()}
         >
-          <circle className='handle-point point' onMouseDown={onMouseDown} cx={e[0]} cy={e[1]} r={pointRadius} />
+          <circle className='handle-point point' onPointerDown={onMouseDown} cx={e[0]} cy={e[1]} r={pointRadius} />
         </a>,
       ];
     });
@@ -554,7 +554,7 @@ export default function App() {
 
   useEffect(() => {
     const onMouseUp = () => {
-      window.removeEventListener('mousemove', mouseMove);
+      document.removeEventListener('pointermove', mouseMove);
       activePathPoint = null;
       activeControlPoint = null;
       isZooming = false;
@@ -562,14 +562,14 @@ export default function App() {
       window.localStorage.setItem('saved', parseResult(eventPoint.current));
     };
 
-    window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('keydown', deletePoint);
-    window.addEventListener('keydown', undo);
+    document.addEventListener('pointerup', onMouseUp);
+    document.addEventListener('keydown', deletePoint);
+    document.addEventListener('keydown', undo);
 
     return () => {
-      window.removeEventListener('mouseup', onMouseUp);
-      window.removeEventListener('keydown', deletePoint);
-      window.removeEventListener('keydown', undo);
+      document.removeEventListener('pointerup', onMouseUp);
+      document.removeEventListener('keydown', deletePoint);
+      document.removeEventListener('keydown', undo);
     };
   }, []);
 

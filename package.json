@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host --force",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "animare": "^1.1.0-beta.19",
+    "animare": "^1.1.0-beta.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -191,7 +191,6 @@ async function generate(d: string, samples = 1000, fileName = 'CustomEasing', on
 
   console.timeEnd('✅ Done in:');
 
-  
   // download as js file
   const string = `const values = Float32Array.from(${JSON.stringify([
       ...values,
@@ -201,12 +200,15 @@ async function generate(d: string, samples = 1000, fileName = 'CustomEasing', on
     link = document.createElement('a');
   link.href = url;
   link.download = fileName + '.js';
-  link.click();
+  // link.click();
   URL.revokeObjectURL(url);
 }
 
-type Tpoint = { x: number; y: number };
-export function Bezier(p0: Tpoint, c0: Tpoint, c1: Tpoint, p1: Tpoint, t: number) {
+type Point = { x: number; y: number };
+type S_Point = { c1: Point; p1: Point };
+type C_Point = { p0: Point; c0: Point; c1: Point; p1: Point };
+
+export function Bezier(p0: Point, c0: Point, c1: Point, p1: Point, t: number) {
   const point = { x: 0, y: 0 },
     mt = 1 - t,
     mt2 = mt * mt,
@@ -219,70 +221,41 @@ export function Bezier(p0: Tpoint, c0: Tpoint, c1: Tpoint, p1: Tpoint, t: number
 }
 
 export function parsePath(path: string) {
-  const sReg =
-    'S[\\s|,]?(?<c1x>-?\\d\\.?\\d*)[\\s|,](?<c1y>-?\\d\\.?\\d*)[\\s|,](?<p1x>-?\\d\\.?\\d*)[\\s|,](?<p1y>-?\\d\\.?\\d*)';
-  const cReg =
+  const reg_s = /S[\s|,]?(?<c1x>-?\d\.?\d*)[\s|,](?<c1y>-?\d\.?\d*)[\s|,](?<p1x>-?\d\.?\d*)[\s|,](?<p1y>-?\d\.?\d*)/g;
+  const reg_c =
     /M[\s|,]?((?<p0x>-?\d\.?\d*)[\s|,](?<p0y>-?\d\.?\d*))[\s|,]C[\s|,|-]?(?<c0x>-?\d\.?\d*)[\s|,](?<c0y>-?\d\.?\d*)[\s|,](?<c1x>-?\d\.?\d*)[\s|,](?<c1y>-?\d\.?\d*)[\s|,](?<p1x>-?\d\.?\d*)[\s|,](?<p1y>-?\d\.?\d*)/;
 
-  const testC = cReg.test(path);
-  const testS = new RegExp(sReg, 'g').test(path);
-
   // check if the path string is valid
-  if (!testC || (path.includes('S') && !testS)) {
-    throw new Error('path is not valid');
-  }
+  if (!reg_c.test(path) || (path.includes('S') && !reg_s.test(path))) throw new Error('path is not valid');
 
-  // get all S curves as an array of strings
-  const s_curves_str = path.match(new RegExp(sReg, 'g'));
+  reg_s.lastIndex = 0;
+  reg_c.lastIndex = 0;
 
-  // parse strings to point object.
-  const s_curves_2points =
-    s_curves_str?.map(e => {
-      const groups = new RegExp(sReg).exec(e)?.groups!;
-      return {
-        c1: { x: +groups.c1x, y: +groups.c1y },
-        p1: { x: +groups.p1x, y: +groups.p1y },
-      };
-    }) ?? [];
+  const s_curves = [...path.matchAll(reg_s)].map(e =>
+    e.groups ? { c1: { x: +e.groups.c1x, y: +e.groups.c1y }, p1: { x: +e.groups.p1x, y: +e.groups.p1y } } : e
+  ) as S_Point[];
 
   // get first point c curve.
-  const c_curve_match = cReg.exec(path)?.groups!;
-  const c_curve = {
+  const c_curve_match = reg_c.exec(path)?.groups;
+  if (!c_curve_match) throw new Error('path is not valid');
+  const c_curve: C_Point = {
     p0: { x: +c_curve_match.p0x, y: +c_curve_match.p0y },
     c0: { x: +c_curve_match.c0x, y: +c_curve_match.c0y },
     c1: { x: +c_curve_match.c1x, y: +c_curve_match.c1y },
     p1: { x: +c_curve_match.p1x, y: +c_curve_match.p1y },
   };
-  s_curves_2points.unshift(c_curve);
 
-  // get p0 and c0 from last point.
-  const s_curves_4points = s_curves_2points?.map((e, i, arr) => {
-    const prev = i ? arr[i - 1] : null;
-    return prev
-      ? {
-          p0: prev.p1,
-          // reverse controller point.
-          c0: { x: (prev.p1.x - prev.c1.x) * 2 + prev.c1.x, y: (prev.p1.y - prev.c1.y) * 2 + prev.c1.y },
-          c1: e.c1,
-          p1: e.p1,
-        }
-      : e;
-  });
+  const results: [C_Point, ...S_Point[]] = [c_curve, ...s_curves];
 
-  return s_curves_4points as typeof c_curve[];
+  for (let i = 1; i < results.length; i++) {
+    const prev = results[i - 1];
+    results[i] = {
+      p0: prev.p1,
+      c0: { x: (prev.p1.x - prev.c1.x) * 2 + prev.c1.x, y: (prev.p1.y - prev.c1.y) * 2 + prev.c1.y },
+      c1: results[i].c1,
+      p1: results[i].p1,
+    };
+  }
+
+  return results as C_Point[];
 }
-
-// function Loop(start = 0, end = 100, by = 1, cb) {
-//   return new Promise(resolve => {
-//     let count = start;
-//     const update = () => {
-//       const isBreak = cb(count) === 'break';
-//       count = count + by;
-//       if (count < end && !isBreak) {
-//         requestAnimationFrame(update);
-//       } else resolve();
-//     };
-
-//     requestAnimationFrame(update);
-//   });
-// }
