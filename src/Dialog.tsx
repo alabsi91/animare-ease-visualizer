@@ -108,7 +108,7 @@ function Dialog({ parseResult }: propsT, ref: React.Ref<{ show: () => Promise<vo
       </div>
 
       <div className='inputsContainer'>
-        <p>File Name : </p>
+        <p>Name : </p>
         <input className='inputs' placeholder='CustomEasing' value={fileName} onChange={e => setFileName(e.target.value)} />
       </div>
 
@@ -191,8 +191,11 @@ async function generate(d: string, samples = 1000, fileName = 'CustomEasing', on
 
   console.timeEnd('✅ Done in:');
 
+  
   // download as js file
-  const string = `const ${fileName} = Float32Array.from(${JSON.stringify([...values])});\nexport default ${fileName};`,
+  const string = `const values = Float32Array.from(${JSON.stringify([
+      ...values,
+    ])});\nconst length = values.length;\nconst ${fileName} = (t) => values[Math.floor(t * length)] ?? values[length - 1];\nexport default ${fileName};`,
     blob = new Blob([string], { type: 'text/plain' }),
     url = URL.createObjectURL(blob),
     link = document.createElement('a');

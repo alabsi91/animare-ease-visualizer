@@ -521,13 +521,13 @@ export default function App() {
       gridTemplateColumns: { from: width, to: 0 },
     });
 
-    const callback: animareOnUpdate = values => {
+    const callback: animareOnUpdate = (values, { isFinished, isReversePlay }) => {
       const { gridTemplateColumns, translateX } = get(values);
 
       sidePanel.style.transform = `translateX(-${translateX}%)`;
       container.style.gridTemplateColumns = `${gridTemplateColumns}px 1fr`;
 
-      if (translateX === 0) {
+      if (isFinished && isReversePlay) {
         container.style.removeProperty('grid-template-columns');
       }
     };
@@ -553,16 +553,24 @@ export default function App() {
   };
 
   useEffect(() => {
-    window.addEventListener('mouseup', () => {
+    const onMouseUp = () => {
       window.removeEventListener('mousemove', mouseMove);
       activePathPoint = null;
       activeControlPoint = null;
       isZooming = false;
       (document.querySelector('.build-in-eases select') as HTMLSelectElement).value = selectedEase;
       window.localStorage.setItem('saved', parseResult(eventPoint.current));
-    });
+    };
+
+    window.addEventListener('mouseup', onMouseUp);
     window.addEventListener('keydown', deletePoint);
     window.addEventListener('keydown', undo);
+
+    return () => {
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('keydown', deletePoint);
+      window.removeEventListener('keydown', undo);
+    };
   }, []);
 
   useEffect(() => {
@@ -602,10 +610,10 @@ export default function App() {
     }, 0);
   };
 
-  // ! not working for Firefox.
-  const onEaseSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value === 'none') return;
-    selectedEase = e.target.value;
+  const onEaseSelect = (e: React.ChangeEvent<HTMLSelectElement> | React.MouseEvent<HTMLOptionElement>) => {
+    const target = e.target as HTMLSelectElement;
+    if (target.value === 'none') return;
+    selectedEase = target.value;
     toggledAnchors.clear();
     const Points = convertPathToPoints(eases[selectedEase]);
     setPoints(Points);
@@ -646,8 +654,7 @@ export default function App() {
           <button
             onClick={() => {
               const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
-              sidePanelAnimation?.setOptions({ from: [0, sidePanel.offsetWidth], delay: [0, 150] });
-              sidePanelAnimation?.play();
+              sidePanelAnimation?.play({ from: [0, sidePanel.offsetWidth], delay: [0, 120] });
             }}
             className='close-panel'
           >
@@ -706,7 +713,7 @@ export default function App() {
                 ....
               </option>
               {Object.keys(eases).map(ease => (
-                <option key={ease} className='easesItems' value={ease}>
+                <option onClick={onEaseSelect} key={ease} className='easesItems' value={ease}>
                   {ease}
                 </option>
               ))}
@@ -818,8 +825,7 @@ export default function App() {
           title='show the side panel'
           className='open-panel'
           onClick={() => {
-            sidePanelAnimation?.setOptions({ delay: [150, 0] });
-            sidePanelAnimation?.reverse();
+            sidePanelAnimation?.reverse({ delay: [120, 0] });
           }}
         >
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
