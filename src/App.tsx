@@ -62,6 +62,23 @@ export default function App() {
     return points;
   };
 
+  /** - Find points that has smooth conrner enabled on load and when choosing a new easing. */
+  const findSmoothCorners = (points: number[][]) => {
+    for (let i = 0; i < points.length; i++) {
+      const e = points[i];
+
+      if (i === 0) continue;
+
+      if (i === 1) {
+        if (e[0] === points[0][0] && e[1] === points[0][1]) toggledAnchors.add(0);
+        if (e[2] === e[4] && e[3] === e[5]) toggledAnchors.add(1);
+        continue;
+      }
+
+      if (e[0] === e[2] && e[1] === e[3]) toggledAnchors.add(i);
+    }
+  };
+
   /** - The current path as two dimensional array `[[M], [C], ...[S]]` */
   const [points, setPoints] = useState(convertPathToPoints(window.localStorage.getItem('saved') || eases['ease.in.sine']));
 
@@ -553,6 +570,8 @@ export default function App() {
   };
 
   useEffect(() => {
+    findSmoothCorners(points);
+
     const onMouseUp = () => {
       document.removeEventListener('pointermove', mouseMove);
       activePathPoint = null;
@@ -585,7 +604,7 @@ export default function App() {
         isOverLapping = checkOverlap();
         (document.querySelector('.path') as SVGPathElement).style.stroke = isOverLapping ? 'red' : 'var(--active-path)';
         tmout = false;
-      }, 200);
+      }, 50);
     }
   }, [points]);
 
@@ -616,6 +635,7 @@ export default function App() {
     selectedEase = target.value;
     toggledAnchors.clear();
     const Points = convertPathToPoints(eases[selectedEase]);
+    findSmoothCorners(Points);
     setPoints(Points);
   };
 
