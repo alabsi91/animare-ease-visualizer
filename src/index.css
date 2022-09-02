@@ -36,9 +36,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-y: hidden;
 }
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  background-color: #00000040;
+  padding: 2px 5px;
+  border-radius: 5px;
 }
+
 .title {
   position: absolute;
   top: 0;
@@ -130,9 +135,10 @@ a:focus > .point {
 }
 
 .sidePanel {
-  padding: 10px;
+  padding: 10px 20px;
+  padding-top: 0;
   height: 100vh;
-  min-width: 250px;
+  min-width: 260px;
   background-color: var(--nav-color);
   box-shadow: 2px 0px 7px #00000024;
   overflow-y: auto;
@@ -141,20 +147,47 @@ a:focus > .point {
 
 .close-panel {
   all: unset;
+  position: sticky;
+  top: 0;
   float: right;
-  padding: 10px;
+  padding-top: 20px;
+  background-color: inherit;
   cursor: pointer;
+  animation: bounce-right 4s both infinite;
 }
+
+@keyframes bounce-right {
+  0% {
+    transform: translateX(10px);
+    animation-timing-function: ease-in;
+    opacity: 1;
+  }
+  10% {
+    transform: translateX(0px);
+    animation-timing-function: ease-in;
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0px);
+    animation-timing-function: ease-out;
+    opacity: 1;
+  }
+}
+
 .close-panel > svg {
   width: 30px;
   height: 30px;
   fill: var(--text-color);
+  transition: all 100ms;
+}
+.close-panel svg:hover {
+  fill: var(--secondary-color);
+  transform: scale(1.1);
 }
 
 .small-side-panel {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   align-items: center;
   position: absolute;
   left: 0%;
@@ -221,15 +254,27 @@ input[type='checkbox'] {
 
 hr {
   border-color: var(--text-color);
+  opacity: 0.2;
   border-width: 0.5px;
-  margin: 25px 0;
+  margin: 40px -10px;
 }
+
 .hints {
   margin-top: 10px;
 }
 
 .hints > * {
   color: var(--text-color);
+}
+
+.hints ul {
+  padding: 0;
+  padding-left: 10px;
+}
+
+.hints ul li {
+  margin: 5px 0;
+  line-height: 1.5;
 }
 
 .options * {
@@ -323,6 +368,13 @@ hr {
   border-radius: 5px;
   cursor: pointer;
   user-select: none;
+  transition: all 100ms;
+}
+.buttons:hover {
+  transform: scale(1.01);
+}
+.buttons:active {
+  transform: translate(1px);
 }
 
 .results {
@@ -331,7 +383,7 @@ hr {
   padding: 10px;
   text-align: center;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .results textarea {
   background-color: transparent;

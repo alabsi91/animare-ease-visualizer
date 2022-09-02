@@ -208,7 +208,7 @@ type Point = { x: number; y: number };
 type S_Point = { c1: Point; p1: Point };
 type C_Point = { p0: Point; c0: Point; c1: Point; p1: Point };
 
-export function Bezier(p0: Point, c0: Point, c1: Point, p1: Point, t: number) {
+export function Bezier(p0: Point, c0: Point, c1: Point, p1: Point, t: number): Point {
   const point = { x: 0, y: 0 },
     mt = 1 - t,
     mt2 = mt * mt,
@@ -220,7 +220,7 @@ export function Bezier(p0: Point, c0: Point, c1: Point, p1: Point, t: number) {
   return point;
 }
 
-export function parsePath(path: string) {
+export function parsePath(path: string): C_Point[] {
   const reg_s = /S[\s|,]?(?<c1x>-?\d\.?\d*)[\s|,](?<c1y>-?\d\.?\d*)[\s|,](?<p1x>-?\d\.?\d*)[\s|,](?<p1y>-?\d\.?\d*)/g;
   const reg_c =
     /M[\s|,]?((?<p0x>-?\d\.?\d*)[\s|,](?<p0y>-?\d\.?\d*))[\s|,]C[\s|,|-]?(?<c0x>-?\d\.?\d*)[\s|,](?<c0y>-?\d\.?\d*)[\s|,](?<c1x>-?\d\.?\d*)[\s|,](?<c1y>-?\d\.?\d*)[\s|,](?<p1x>-?\d\.?\d*)[\s|,](?<p1y>-?\d\.?\d*)/;
