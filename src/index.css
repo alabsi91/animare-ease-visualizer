@@ -11,7 +11,7 @@
   --blured-path: gray;
 }
 
-html {
+body {
   touch-action: none;
 }
 

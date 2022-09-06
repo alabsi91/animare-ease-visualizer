@@ -200,7 +200,7 @@ async function generate(d: string, samples = 1000, fileName = 'CustomEasing', on
     link = document.createElement('a');
   link.href = url;
   link.download = fileName + '.js';
-  // link.click();
+  link.click();
   URL.revokeObjectURL(url);
 }
 
