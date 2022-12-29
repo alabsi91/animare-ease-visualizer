@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { eases } from './Pathes';
 import Dialog, { Bezier, parsePath } from './Dialog';
 import { animareOnUpdate } from 'animare/lib/methods/types';
+import Select, { SelectRef } from './Select/Select';
 
 /** - SVG's drawing area size. */
 const size = 200;
@@ -40,6 +41,9 @@ const undoStack: string[] = [],
   toggledAnchors = new Set();
 
 export default function App() {
+  /** - To set a value to eases select menu */
+  const selectEaseRef = useRef<SelectRef<typeof eases[keyof typeof eases][]>>(null!);
+
   /** - To show and hide the download to js file dialog. */
   const dialog = useRef<{ show: () => Promise<void> }>(null);
 
@@ -577,8 +581,8 @@ export default function App() {
       activePathPoint = null;
       activeControlPoint = null;
       isZooming = false;
-      (document.querySelector('.build-in-eases select') as HTMLSelectElement).value = selectedEase;
       window.localStorage.setItem('saved', parseResult(eventPoint.current));
+      selectEaseRef.current.setValue('none');
     };
 
     document.addEventListener('pointerup', onMouseUp);
@@ -629,12 +633,11 @@ export default function App() {
     }, 0);
   };
 
-  const onEaseSelect = (e: React.ChangeEvent<HTMLSelectElement> | React.MouseEvent<HTMLOptionElement>) => {
-    const target = e.target as HTMLSelectElement;
-    if (target.value === 'none') return;
-    selectedEase = target.value;
+  const onEaseSelect = (value: string) => {
+    selectedEase = value;
+    if (value === 'none') return;
     toggledAnchors.clear();
-    const Points = convertPathToPoints(eases[selectedEase]);
+    const Points = convertPathToPoints(value);
     findSmoothCorners(Points);
     setPoints(Points);
   };
@@ -664,6 +667,19 @@ export default function App() {
   const playCurrentEasing = () => {
     animation?.setOptions({ ease: [ease.linear, ease.custom(parseResult())] });
     animation?.resume();
+  };
+
+  const SelectButton = ({ title, onClick }: { title: string; onClick: () => void }) => {
+    return (
+      <div className='select-example-button'>
+        <button onClick={onClick}>
+          {title}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+            <path d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z' />
+          </svg>
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -717,6 +733,34 @@ export default function App() {
           <hr />
 
           <div className='options'>
+            <div className='build-in-eases'>
+              <p>Built-in</p>
+
+              <Select
+                ref={selectEaseRef}
+                names={Object.keys(eases)}
+                values={Object.values(eases)}
+                defaultValue={selectedEase}
+                onChange={onEaseSelect}
+                SelectButton={SelectButton}
+              />
+            </div>
+
+            <div className='buttons-container'>
+              <button className='buttons' onClick={playCurrentEasing}>
+                Play
+              </button>
+              <button className='buttons' onClick={() => animation?.pause()}>
+                Pause
+              </button>
+            </div>
+
+            <button className='buttons' style={{ marginTop: 10 }} onClick={() => dialog.current!.show()}>
+              Download as file
+            </button>
+
+            <hr />
+
             <h2>Options</h2>
 
             <div>
@@ -730,7 +774,7 @@ export default function App() {
             </div>
 
             <div className='options-duration'>
-              <p>Duration : </p>
+              <p>Duration</p>
               <input
                 type='number'
                 min='0'
@@ -741,40 +785,10 @@ export default function App() {
             </div>
 
             <div className='options-zoom'>
-              <p>Zoom : </p>
+              <p>Zoom</p>
               <input type='range' min='0' max='300' defaultValue={300 - zoom} onChange={onZoom} />
             </div>
           </div>
-
-          <hr />
-
-          <div className='build-in-eases'>
-            <p>Built-in : </p>
-
-            <select onChange={onEaseSelect} defaultValue={selectedEase}>
-              <option className='easesItems' value='none'>
-                ....
-              </option>
-              {Object.keys(eases).map(ease => (
-                <option onClick={onEaseSelect} key={ease} className='easesItems' value={ease}>
-                  {ease}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className='buttons-container'>
-            <button className='buttons' onClick={playCurrentEasing}>
-              Play
-            </button>
-            <button className='buttons' onClick={() => animation?.pause()}>
-              Pause
-            </button>
-          </div>
-
-          <button className='buttons' style={{ marginTop: 10 }} onClick={() => dialog.current!.show()}>
-            Download as file
-          </button>
 
           <hr />
 
@@ -944,6 +958,10 @@ export default function App() {
 
         {/* @ts-ignore */}
         <input type='range' min='0' max='300' defaultValue={300 - zoom} onChange={onZoom} orient='vertical' />
+
+        <svg id='zoom-slider-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+          <path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' />
+        </svg>
       </div>
     </>
   );

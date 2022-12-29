@@ -1,0 +1,78 @@
+.container {
+  flex: 1;
+  --bg-color: #202020e5;
+  --hover-color: var(--main-color);
+  --text: #fff;
+  --text-hover: #fff;
+  --scrollbar-color: #7a7a7a50;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  .itemsContainer {
+    scrollbar-width: auto;
+    scrollbar-color: var(--scrollbar-color) transparent;
+  }
+  /* Chrome, Edge, and Safari */
+  .itemsContainer::-webkit-scrollbar {
+    width: 6px;
+  }
+  .itemsContainer::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 10px;
+  }
+  .itemsContainer::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-color);
+    border-radius: 10px;
+    border: none;
+  }
+}
+
+.itemsContainer {
+  position: fixed;
+  margin: 0px;
+  padding: 0px;
+  background-color: var(--bg-color);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 5px;
+  box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02);
+  border: solid rgb(44, 44, 44) 1px;
+  overflow: auto;
+  transition: height 200ms ease;
+}
+.itemsContainer::backdrop {
+  background-color: transparent;
+}
+.itemsContainer ul {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+.item {
+  all: unset;
+  display: block;
+  width: calc(100% - 20px);
+  padding: 0px 10px;
+  height: 40px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 100ms;
+}
+.item:hover {
+  background-color: var(--hover-color);
+  color: var(--text-hover);
+}
+
+.fade-in {
+  animation: fade-in 500ms ease-out forwards;
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100;
+  }
+}

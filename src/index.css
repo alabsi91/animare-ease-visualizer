@@ -195,7 +195,7 @@ a:focus > .point {
   fill: var(--text-color);
   transition: all 100ms;
 }
-.small-side-panel svg:hover {
+.small-side-panel svg:not(#zoom-slider-icon):hover {
   fill: var(--secondary-color);
   transform: scale(1.1);
 }
@@ -211,7 +211,9 @@ a:focus > .point {
 
 .small-side-panel input[type='range'] {
   -webkit-appearance: slider-vertical; /* Chromium */
+  appearance: slider-vertical;
   width: 30px;
+  margin-bottom: 20px;
 }
 
 .open-panel svg {
@@ -325,32 +327,19 @@ hr {
   margin-right: 10px;
   min-width: 65px;
 }
-.build-in-eases > select {
-  color: var(--text-color);
-  background-color: var(--background-color);
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: 1px solid var(--text-color);
-  flex-grow: 1;
-  font-family: inherit;
-}
-
-.build-in-eases > select > option {
-  background-color: var(--background-color);
-  font-size: 18px;
-}
 
 .buttons-container {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 }
 .buttons {
   all: unset;
   display: block;
-  width: calc(100% - 26px);
+  width: calc(100% - 16px);
   font-size: 18px;
   flex-grow: 1;
-  margin: 0px 5px;
+  margin: 0px;
   background-color: var(--main-color);
   padding: 8px;
   color: white;
@@ -398,4 +387,35 @@ hr {
 }
 .copyButton:hover {
   background-color: #2b2b2b;
+}
+
+.select-example-button {
+  margin: auto;
+  text-align: center;
+}
+.select-example-button svg {
+  position: absolute;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  fill: var(--text-color);
+}
+.select-example-button button {
+  all: unset;
+  position: relative;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  padding: 6px 0px;
+  border-radius: 5px;
+  border: solid var(--text-color) 1px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.select-example-button button:hover {
+  background-color: var(--main-color);
+  color: #fff;
+}
+.select-example-button button:hover svg {
+  fill: #fff;
 }
