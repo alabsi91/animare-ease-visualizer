@@ -191,7 +191,6 @@ a:focus > .point {
 .small-side-panel svg {
   width: 30px;
   height: 30px;
-  margin-bottom: 50px;
   fill: var(--text-color);
   transition: all 100ms;
 }
@@ -203,6 +202,7 @@ a:focus > .point {
 .small-side-panel button {
   all: unset;
   cursor: pointer;
+  margin-bottom: 50px;
   transition: transform 100ms;
 }
 .small-side-panel button:active {
@@ -216,8 +216,8 @@ a:focus > .point {
   margin-bottom: 20px;
 }
 
-.open-panel svg {
-  margin-bottom: 100px;
+.open-panel {
+  margin-bottom: 100px !important;
 }
 
 input[type='range'] {
