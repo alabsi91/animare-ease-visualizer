@@ -1,0 +1,17 @@
+{
+  "short_name": "Animare",
+  "name": "Animare Ease Visualizer",
+  "description": "A tool to create custome easing functions",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "theme_color": "#a14eff",
+  "background_color": "#222",
+  "icons": [
+    { "src": "/icons/favicon.ico", "type": "image/x-icon", "sizes": "32x32" },
+    { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512" },
+    { "src": "/icons/icon-192-maskable.png", "type": "image/png", "sizes": "192x192", "purpose": "maskable" },
+    { "src": "/icons/icon-512-maskable.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
+}

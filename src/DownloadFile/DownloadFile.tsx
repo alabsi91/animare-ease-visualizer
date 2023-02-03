@@ -1,52 +1,18 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback } from 'react';
-import { useRef, forwardRef, useImperativeHandle, useEffect, useState } from 'react';
-import './Dialog.css';
+import './DownloadFile.css';
+import React, { useState } from 'react';
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import { Bezier, parsePath } from '../Helpers/Helpers';
+
 let stop = false;
 
 type propsT = {
   parseResult: (p?: number[][]) => string;
+  closeDialog: () => void;
 };
 
-function Dialog({ parseResult }: propsT, ref: React.Ref<{ show: () => Promise<void> }>) {
+export default function DownloadFile({ parseResult, closeDialog }: propsT, ref: React.Ref<{ show: () => Promise<void> }>) {
   const [samples, setSamples] = useState(1000);
   const [fileName, setFileName] = useState('customEasing');
-
-  const el = useRef<HTMLDialogElement>(null);
-
-  const clickOutside = useCallback((e: MouseEvent) => {
-    if (!el.current) return;
-    const { x, y, width, height } = el.current.getBoundingClientRect();
-    const isClickInside = e.clientX >= x && e.clientX <= x + width && e.clientY <= y + height && e.clientY >= y;
-    if (!isClickInside) closeMethod();
-  }, []);
-
-  const showMethod = async () => {
-    if (!el.current) return;
-    el.current.showModal();
-    await sleep(230);
-    document.addEventListener('click', clickOutside);
-  };
-
-  async function closeMethod() {
-    if (!el.current) return;
-    el.current.classList.add('hide');
-
-    document.removeEventListener('click', clickOutside);
-
-    await sleep(230);
-
-    el.current.classList.remove('hide');
-    el.current.close();
-  }
-
-  useImperativeHandle(ref, () => ({ show: showMethod }));
-
-  useEffect(() => {
-    return () => document.removeEventListener('click', clickOutside);
-  }, []);
 
   const generateClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
@@ -69,7 +35,7 @@ function Dialog({ parseResult }: propsT, ref: React.Ref<{ show: () => Promise<vo
       target.style.removeProperty('background-color');
       progressInner.style.width = '0%';
       progressText.innerHTML = '0%';
-      closeMethod();
+      closeDialog();
       return;
     }
 
@@ -85,7 +51,7 @@ function Dialog({ parseResult }: propsT, ref: React.Ref<{ show: () => Promise<vo
       if (percent === 1) {
         target.style.removeProperty('background-color');
         target.innerHTML = 'Generate';
-        closeMethod();
+        closeDialog();
       }
     };
 
@@ -93,7 +59,7 @@ function Dialog({ parseResult }: propsT, ref: React.Ref<{ show: () => Promise<vo
   };
 
   return (
-    <dialog ref={el} id={'container'}>
+    <div>
       <p id='message'>Export your easing function to a js file.</p>
 
       <div className='inputsContainer'>
@@ -121,11 +87,9 @@ function Dialog({ parseResult }: propsT, ref: React.Ref<{ show: () => Promise<vo
       <button className='okButtons' onClick={generateClick}>
         Generate
       </button>
-    </dialog>
+    </div>
   );
 }
-
-export default forwardRef<{ show: () => Promise<void> }, propsT>(Dialog);
 
 async function generate(d: string, samples = 1000, fileName = 'CustomEasing', onUpdate: (i: number) => void) {
   console.time('✅ Done in:');
@@ -204,58 +168,4 @@ async function generate(d: string, samples = 1000, fileName = 'CustomEasing', on
   URL.revokeObjectURL(url);
 }
 
-type Point = { x: number; y: number };
-type S_Point = { c1: Point; p1: Point };
-type C_Point = { p0: Point; c0: Point; c1: Point; p1: Point };
 
-export function Bezier(p0: Point, c0: Point, c1: Point, p1: Point, t: number): Point {
-  const point = { x: 0, y: 0 },
-    mt = 1 - t,
-    mt2 = mt * mt,
-    mt3 = mt2 * mt;
-
-  point.x = p0.x * mt3 + c0.x * 3 * mt2 * t + c1.x * 3 * mt * t * t + p1.x * t ** 3;
-  point.y = p0.y * mt3 + c0.y * 3 * mt2 * t + c1.y * 3 * mt * t * t + p1.y * t ** 3;
-
-  return point;
-}
-
-export function parsePath(path: string): C_Point[] {
-  const reg_s = /S[\s|,]?(?<c1x>-?\d\.?\d*)[\s|,](?<c1y>-?\d\.?\d*)[\s|,](?<p1x>-?\d\.?\d*)[\s|,](?<p1y>-?\d\.?\d*)/g;
-  const reg_c =
-    /M[\s|,]?((?<p0x>-?\d\.?\d*)[\s|,](?<p0y>-?\d\.?\d*))[\s|,]C[\s|,|-]?(?<c0x>-?\d\.?\d*)[\s|,](?<c0y>-?\d\.?\d*)[\s|,](?<c1x>-?\d\.?\d*)[\s|,](?<c1y>-?\d\.?\d*)[\s|,](?<p1x>-?\d\.?\d*)[\s|,](?<p1y>-?\d\.?\d*)/;
-
-  // check if the path string is valid
-  if (!reg_c.test(path) || (path.includes('S') && !reg_s.test(path))) throw new Error('path is not valid');
-
-  reg_s.lastIndex = 0;
-  reg_c.lastIndex = 0;
-
-  const s_curves = [...path.matchAll(reg_s)].map(e =>
-    e.groups ? { c1: { x: +e.groups.c1x, y: +e.groups.c1y }, p1: { x: +e.groups.p1x, y: +e.groups.p1y } } : e
-  ) as S_Point[];
-
-  // get first point c curve.
-  const c_curve_match = reg_c.exec(path)?.groups;
-  if (!c_curve_match) throw new Error('path is not valid');
-  const c_curve: C_Point = {
-    p0: { x: +c_curve_match.p0x, y: +c_curve_match.p0y },
-    c0: { x: +c_curve_match.c0x, y: +c_curve_match.c0y },
-    c1: { x: +c_curve_match.c1x, y: +c_curve_match.c1y },
-    p1: { x: +c_curve_match.p1x, y: +c_curve_match.p1y },
-  };
-
-  const results: [C_Point, ...S_Point[]] = [c_curve, ...s_curves];
-
-  for (let i = 1; i < results.length; i++) {
-    const prev = results[i - 1];
-    results[i] = {
-      p0: prev.p1,
-      c0: { x: (prev.p1.x - prev.c1.x) * 2 + prev.c1.x, y: (prev.p1.y - prev.c1.y) * 2 + prev.c1.y },
-      c1: results[i].c1,
-      p1: results[i].p1,
-    };
-  }
-
-  return results as C_Point[];
-}
