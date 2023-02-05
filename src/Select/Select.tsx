@@ -1,15 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import style from './Select.module.css';
 import { useCallback, useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
 const clamp = (value: number, min: number, max: number) => (value < min ? min : value > max ? max : value);
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const MAX_HIEGHT = 600;
+const BOTTOM_MARGIN = 30;
+
 type BASIC = string | number | boolean | null | undefined;
 type Props<T extends Array<BASIC>> = {
-  names: string[];
-  values: [...T];
+  names: readonly string[];
+  values: readonly [...T];
   defaultValue?: [...T][number];
   SelectButton: React.FunctionComponent<{ title: string; onClick: () => void }>;
+  containerStyle?: React.CSSProperties;
+  minWidth?: number;
   onChange: (value: T[number]) => void;
 };
 export type SelectRef<F extends Array<any> = string[]> = {
@@ -17,7 +23,7 @@ export type SelectRef<F extends Array<any> = string[]> = {
 };
 
 function SelectComponent<T extends Array<BASIC>>(
-  { names, values, SelectButton, defaultValue, onChange }: Props<T>,
+  { names, values, SelectButton, defaultValue, containerStyle, minWidth= 100, onChange }: Props<T>,
   ref: React.ForwardedRef<SelectRef>
 ) {
   if (names.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
@@ -25,53 +31,60 @@ function SelectComponent<T extends Array<BASIC>>(
   const [selected, setSelected] = useState(names[values.indexOf(defaultValue ?? values[0])]);
   const [show, setShow] = useState(false);
 
-  const el = useRef<HTMLDialogElement>(null!);
+  const dialogRef = useRef<HTMLDialogElement>(null!);
 
   const getMenuHeight = () => {
     const menuHeight = names.length * 40;
-    const container = el.current.parentElement;
+    const container = dialogRef.current.parentElement;
     if (!container) return menuHeight;
+
     const { bottom } = container.getBoundingClientRect();
-    const maxHeight = window.innerHeight - (bottom + 20);
+
+    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HIEGHT);
 
     return clamp(menuHeight, 0, maxHeight);
   };
 
   const setMenuPos = useCallback(() => {
-    const container = el.current.parentElement;
-    if (!container || !el.current) return;
+    const container = dialogRef.current.parentElement;
+    if (!container || !dialogRef.current) return;
+
     const { left, bottom, width } = container.getBoundingClientRect();
-    el.current.style.left = left + 'px';
-    el.current.style.top = bottom + 10 + 'px';
-    el.current.style.width = width + 'px';
-    el.current.style.maxHeight = window.innerHeight - (bottom + 20) + 'px';
+
+    dialogRef.current.style.left = left + 'px';
+    dialogRef.current.style.top = bottom + 10 + 'px';
+    dialogRef.current.style.width = Math.max(width, minWidth) + 'px';
+
+    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HIEGHT);
+    dialogRef.current.style.maxHeight = maxHeight + 'px';
   }, []);
 
   const clickOutSide = useCallback((e: MouseEvent) => {
-    if (!el.current) return;
-    const { left, top, right, bottom } = el.current.getBoundingClientRect();
+    if (!dialogRef.current) return;
+    const { left, top, right, bottom } = dialogRef.current.getBoundingClientRect();
     const scroll = window.scrollY;
     const isClickInside = e.pageX >= left && e.pageX <= right && e.pageY <= bottom + scroll && e.pageY >= top + scroll;
-    if (!isClickInside && el.current.open) setShow(false);
+    if (!isClickInside && dialogRef.current.open) setShow(false);
   }, []);
 
   const open = async () => {
-    el.current.showModal();
+    dialogRef.current.showModal();
 
     setMenuPos();
 
-    el.current.style.overflow = 'hidden';
-    el.current.style.height = '0px';
+    dialogRef.current.style.overflow = 'hidden';
+    dialogRef.current.style.height = '0px';
     await sleep(1);
-    el.current.style.height = getMenuHeight() + 'px';
+    dialogRef.current.style.height = getMenuHeight() + 'px';
 
-    const items = el.current.querySelectorAll<HTMLLIElement>(`.${style.itemsContainer} ul li`);
+    // items fade in
+    const items = dialogRef.current.querySelectorAll<HTMLLIElement>(`.${style.itemsContainer} ul li`);
     items.forEach(e => e.classList.add(style['fade-in']));
 
     await sleep(200);
 
-    el.current.style.removeProperty('height');
-    el.current.style.overflow = 'auto';
+    dialogRef.current.style.removeProperty('height');
+    dialogRef.current.style.overflow = 'auto';
 
     document.addEventListener('click', clickOutSide);
     window.addEventListener('scroll', setMenuPos);
@@ -79,14 +92,14 @@ function SelectComponent<T extends Array<BASIC>>(
   };
 
   const close = async () => {
-    el.current.style.overflow = 'hidden';
-    el.current.style.height = getMenuHeight() + 'px';
+    dialogRef.current.style.overflow = 'hidden';
+    dialogRef.current.style.height = getMenuHeight() + 'px';
     await sleep(1);
-    el.current.style.height = '0px';
+    dialogRef.current.style.height = '0px';
 
     await sleep(200);
 
-    el.current.close();
+    dialogRef.current.close();
     document.removeEventListener('click', clickOutSide);
     window.removeEventListener('scroll', setMenuPos);
     window.removeEventListener('resize', setMenuPos);
@@ -130,11 +143,15 @@ function SelectComponent<T extends Array<BASIC>>(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useImperativeHandle(ref, () => ({ setValue: value => setSelected(names[values.indexOf(value)]) }), []);
 
-  return (
-    <div className={style.container}>
-      <SelectButton title={selected} onClick={() => setShow(!show)} />
+  const toggle = () => {
+    setShow(!show);
+  };
 
-      <dialog ref={el} onCancel={onCancel} className={style.itemsContainer}>
+  return (
+    <div style={containerStyle} className={style.container}>
+      <SelectButton title={selected} onClick={toggle} />
+
+      <dialog ref={dialogRef} onCancel={onCancel} className={style.itemsContainer}>
         <ul>{Menu()}</ul>
       </dialog>
     </div>

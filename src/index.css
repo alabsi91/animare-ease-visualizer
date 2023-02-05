@@ -35,6 +35,13 @@ code {
   border-radius: 5px;
 }
 
+hr {
+  border-color: var(--text-color);
+  opacity: 0.2;
+  border-width: 0.5px;
+  margin: 40px -10px;
+}
+
 .title {
   position: absolute;
   top: 0;
@@ -49,4 +56,11 @@ code {
 .container {
   display: grid;
   grid-template-columns: 0.3fr 1fr;
+}
+
+input[type='range'] {
+  accent-color: var(--secondary-color);
+}
+input[type='checkbox'] {
+  accent-color: var(--secondary-color);
 }

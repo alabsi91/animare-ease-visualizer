@@ -1,13 +1,34 @@
-import React, { useContext } from 'react';
+import './SmallSidePanel.css';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
 
-import CTX from '../Helpers/CTX';
+import Select from '../Select/Select';
+import CTX, { exportTypes } from '../Helpers/CTX';
+import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
+import { eases } from '../Pathes';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
+import type { ExportTypes } from '../Helpers/CTX';
+import type { SelectRef } from '../Select/Select';
 
 export default function SmallSidePanel() {
   const ctx = useContext(CTX);
+
+  /** - To set a value to eases select menu */
+  const selectEaseRef = useRef<SelectRef<typeof eases[keyof typeof eases][]>>(null!);
+
+  useEffect(() => {
+    const onMouseUp = () => {
+      selectEaseRef.current.setValue('none');
+    };
+
+    document.addEventListener('pointerup', onMouseUp);
+
+    return () => {
+      document.removeEventListener('pointerup', onMouseUp);
+    };
+  }, []);
 
   const toggleMagnet: React.MouseEventHandler<HTMLButtonElement> = e => {
     const target = e.target as Element;
@@ -68,58 +89,107 @@ export default function SmallSidePanel() {
     navigator.clipboard.writeText(ctx.parseResult());
   };
 
+  const pathToPoints = (path: string) => convertPathToPoints(path, ctx.size.current, ctx.zoom.current);
+
+  const onEaseSelect = (value: string) => {
+    if (value === 'none') return;
+    const Points = pathToPoints(value);
+    findSmoothCorners(Points, ctx.toggledAnchors);
+    ctx.setPoints(Points);
+  };
+
+  const PresetsButton = useCallback(({ onClick }: { onClick: () => void }) => {
+    return (
+      <button className='small-side-panel-buttons' style={{ marginBottom: 0 }} title='presets' onClick={onClick}>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+          <path d='M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z' />
+        </svg>
+      </button>
+    );
+  }, []);
+
+  const ExportButton = useCallback(({ onClick }: { onClick: () => void }) => {
+    return (
+      <button className='small-side-panel-buttons' style={{ marginBottom: 0 }} title='export' onClick={onClick}>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+          <path d='M16.9498 5.96781L15.5356 7.38203L13 4.84646V17.0421H11V4.84653L8.46451 7.38203L7.05029 5.96781L12 1.01807L16.9498 5.96781Z' />
+          <path d='M5 20.9819V10.9819H9V8.98193H3V22.9819H21V8.98193H15V10.9819H19V20.9819H5Z' />
+        </svg>
+      </button>
+    );
+  }, []);
+
+  const onExportSelect = (value: ExportTypes) => {
+    ctx.toggleExportDialog(value);
+  };
+
   return (
-    <div className='small-side-panel'>
-      <button title='show the side panel' className='open-panel' onClick={open}>
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-          <polygon points='6.23,20.23 8,22 18,12 8,2 6.23,3.77 14.46,12' />
+    <div>
+      <div className='small-side-panel'>
+        <button title='show the side panel' className='open-panel' onClick={open}>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+            <polygon points='6.23,20.23 8,22 18,12 8,2 6.23,3.77 14.46,12' />
+          </svg>
+        </button>
+
+        <button title='play the current easing' onClick={ctx.playCurrentEasing}>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+            <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z' />
+          </svg>
+        </button>
+
+        <Select
+          ref={selectEaseRef}
+          containerStyle={{ flex: 0, marginBottom: 50 }}
+          minWidth={175}
+          names={Object.keys(eases)}
+          values={Object.values(eases)}
+          defaultValue='none'
+          onChange={onEaseSelect}
+          SelectButton={PresetsButton}
+        />
+
+        <Select
+          containerStyle={{ flex: 0, marginBottom: 50 }}
+          names={exportTypes}
+          values={exportTypes}
+          onChange={onExportSelect}
+          SelectButton={ExportButton}
+        />
+
+        <button title='Enable snapping to the grid' onClick={toggleMagnet}>
+          <svg
+            style={{ fill: !ctx.magnet.current ? 'var(--text-color)' : 'var(--active-point)' }}
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 24 24'
+          >
+            <path d='M17.374 20.235c2.444-2.981 6.626-8.157 6.626-8.157l-3.846-3.092s-2.857 3.523-6.571 8.097c-4.312 5.312-11.881-2.41-6.671-6.671 4.561-3.729 8.097-6.57 8.097-6.57l-3.092-3.842s-5.173 4.181-8.157 6.621c-2.662 2.175-3.76 4.749-3.76 7.24 0 5.254 4.867 10.139 10.121 10.139 2.487 0 5.064-1.095 7.253-3.765zm4.724-7.953l-1.699 2.111-1.74-1.397 1.701-2.114 1.738 1.4zm-10.386-10.385l1.4 1.738-2.113 1.701-1.397-1.74 2.11-1.699z' />
+          </svg>
+        </button>
+
+        <button title='Auto hide anchor points.' onClick={togglePathPoints}>
+          <svg
+            style={{ fill: !ctx.autoHideHandles.current ? 'var(--text-color)' : 'var(--active-point)' }}
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 24 24'
+          >
+            <path d='M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z' />
+          </svg>
+        </button>
+
+        <button title='copy the result to the clipboard' onClick={copyToClipboard}>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+            <path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z' />
+          </svg>
+        </button>
+
+        {/* @ts-ignore */}
+        <input type='range' min='0' max='300' defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} orient='vertical' />
+
+        <svg id='zoom-slider-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+          <path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' />
         </svg>
-      </button>
-
-      <button title='play the current easing' onClick={ctx.playCurrentEasing}>
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-          <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z' />
-        </svg>
-      </button>
-
-      <button title='Enable snapping to the grid' onClick={toggleMagnet}>
-        <svg
-          style={{ fill: !ctx.magnet.current ? 'var(--text-color)' : 'var(--active-point)' }}
-          xmlns='http://www.w3.org/2000/svg'
-          viewBox='0 0 24 24'
-        >
-          <path d='M17.374 20.235c2.444-2.981 6.626-8.157 6.626-8.157l-3.846-3.092s-2.857 3.523-6.571 8.097c-4.312 5.312-11.881-2.41-6.671-6.671 4.561-3.729 8.097-6.57 8.097-6.57l-3.092-3.842s-5.173 4.181-8.157 6.621c-2.662 2.175-3.76 4.749-3.76 7.24 0 5.254 4.867 10.139 10.121 10.139 2.487 0 5.064-1.095 7.253-3.765zm4.724-7.953l-1.699 2.111-1.74-1.397 1.701-2.114 1.738 1.4zm-10.386-10.385l1.4 1.738-2.113 1.701-1.397-1.74 2.11-1.699z' />
-        </svg>
-      </button>
-
-      <button title='Auto hide anchor points.' onClick={togglePathPoints}>
-        <svg
-          style={{ fill: !ctx.autoHideHandles.current ? 'var(--text-color)' : 'var(--active-point)' }}
-          xmlns='http://www.w3.org/2000/svg'
-          viewBox='0 0 24 24'
-        >
-          <path d='M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z' />
-        </svg>
-      </button>
-
-      <button title='copy the result to the clipboard' onClick={copyToClipboard}>
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-          <path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z' />
-        </svg>
-      </button>
-
-      <button title='download as a js file' onClick={() => ctx.downloadDialogRef.current.show()}>
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-          <path d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z' />
-        </svg>
-      </button>
-
-      {/* @ts-ignore */}
-      <input type='range' min='0' max='300' defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} orient='vertical' />
-
-      <svg id='zoom-slider-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-        <path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' />
-      </svg>
+      </div>
     </div>
   );
 }

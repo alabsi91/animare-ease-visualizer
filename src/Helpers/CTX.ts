@@ -1,5 +1,7 @@
 import { createContext } from 'react';
-import type { DialogRef } from '../Dialog/Dialog';
+
+export const exportTypes = ['CSS', 'JS File'] as const;
+export type ExportTypes = typeof exportTypes[number];
 
 type ctxType = {
   points: number[][];
@@ -10,11 +12,11 @@ type ctxType = {
   toggledAnchors: Set<number>;
   autoHideHandles: React.MutableRefObject<boolean>;
   gridPoints: React.MutableRefObject<number[]>;
-  downloadDialogRef: React.MutableRefObject<DialogRef>;
   activeControlPoint: React.MutableRefObject<number[] | null>;
   selectedPoint: React.MutableRefObject<number | null>;
   activePathPoint: React.MutableRefObject<number | null>;
   eventPoint: React.MutableRefObject<number[][]>;
+  toggleExportDialog: (dialog: ExportTypes) => void;
   onZoom: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setPoints: React.Dispatch<React.SetStateAction<number[][]>>;
   parseResult: (p?: number[][]) => string;

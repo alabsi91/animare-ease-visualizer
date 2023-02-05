@@ -1,17 +1,15 @@
 import './SidePanel.css';
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
 
 import { eases } from '../Pathes';
 import Select, { SelectRef } from '../Select/Select';
-import CTX from '../Helpers/CTX';
+import CTX, { exportTypes } from '../Helpers/CTX';
 import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
-
-/** - The current selected built-in easing. */
-let selectedEase = window.localStorage.getItem('saved') ? 'none' : 'ease.in.sine';
+import type { ExportTypes } from '../Helpers/CTX';
 
 export default function SidePanel() {
   const ctx = useContext(CTX);
@@ -21,7 +19,6 @@ export default function SidePanel() {
 
   useEffect(() => {
     const onMouseUp = () => {
-      selectedEase = 'none';
       selectEaseRef.current.setValue('none');
     };
 
@@ -60,7 +57,6 @@ export default function SidePanel() {
   };
 
   const onEaseSelect = (value: string) => {
-    selectedEase = value;
     if (value === 'none') return;
     ctx.toggledAnchors.clear();
     const Points = pathToPoints(value);
@@ -95,7 +91,7 @@ export default function SidePanel() {
     navigator.clipboard.writeText(ctx.parseResult());
   };
 
-  const SelectButton = ({ title, onClick }: { title: string; onClick: () => void }) => {
+  const SelectButton = useCallback(({ title, onClick }: { title: string; onClick: () => void }) => {
     return (
       <div className='select-example-button'>
         <button onClick={onClick}>
@@ -106,6 +102,18 @@ export default function SidePanel() {
         </button>
       </div>
     );
+  }, []);
+
+  const ExportButton = useCallback(({ onClick }: { onClick: () => void }) => {
+    return (
+      <button className='buttons' style={{ marginTop: 10 }} onClick={onClick}>
+        Export
+      </button>
+    );
+  }, []);
+
+  const onExportSelect = (value: ExportTypes) => {
+    ctx.toggleExportDialog(value);
   };
 
   return (
@@ -151,18 +159,17 @@ export default function SidePanel() {
 
       <div className='options'>
         <div className='build-in-eases'>
-          <p>Built-in</p>
+          <p>Presets</p>
 
           <Select
             ref={selectEaseRef}
             names={Object.keys(eases)}
             values={Object.values(eases)}
-            defaultValue={selectedEase}
+            defaultValue='none'
             onChange={onEaseSelect}
             SelectButton={SelectButton}
           />
         </div>
-
         <div className='buttons-container'>
           <button className='buttons' onClick={ctx.playCurrentEasing}>
             Play
@@ -171,15 +178,10 @@ export default function SidePanel() {
             Pause
           </button>
         </div>
-
-        <button className='buttons' style={{ marginTop: 10 }} onClick={() => ctx.downloadDialogRef.current.show()}>
-          Download as file
-        </button>
-
+        <Select names={exportTypes} values={exportTypes} onChange={onExportSelect} SelectButton={ExportButton} />
         <hr />
 
         <h2>Options</h2>
-
         <div>
           <input
             id='snappeToGrid'
@@ -189,17 +191,14 @@ export default function SidePanel() {
           />
           <label htmlFor='snappeToGrid'>Enable snapping to the grid.</label>
         </div>
-
         <div>
           <input id='hideAnchor' type='checkbox' defaultChecked={ctx.autoHideHandles.current} onChange={autoHideHandler} />
           <label htmlFor='hideAnchor'>Auto hide anchor points.</label>
         </div>
-
         <div className='options-duration'>
           <p>Duration</p>
           <input type='number' min='0' defaultValue='2000' step='100' onChange={e => ctx.setDuration(+e.target.value)} />
         </div>
-
         <div className='options-zoom'>
           <p>Zoom</p>
           <input type='range' min='0' max='300' defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} />

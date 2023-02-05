@@ -1,45 +1,50 @@
-#message {
+.download-dialog-title {
   --main-color: #a14eff;
-  margin: auto;
+  margin: 0;
+  margin-bottom: 10px;
+  user-select: none;
+}
+.download-dialog-description {
+  color: #aaa;
+  margin: 0;
   margin-bottom: 35px;
-  font-size: 20px;
-  text-align: left;
   user-select: none;
 }
 
 .inputsContainer {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
   align-items: center;
   flex-wrap: nowrap;
 }
 
 .inputsContainer p {
-  min-width: 80px;
-  text-align: start;
+  text-align: left;
+  margin: 0;
+  margin-right: 10px;
+  min-width: 65px;
 }
 
-.inputs {
-  color: #aaa;
-  background-color: #2b2b2b;
+.inputsContainer input {
+  color: var(--text-color);
+  background-color: var(--background-color);
   padding: 6px 10px;
   border-radius: 5px;
-  border: 1px solid #aaa;
-  font-family: inherit;
-  margin-left: 20px;
-  height: 20px;
-  width: 60%;
+  border: 1px solid var(--text-color);
+  font-family: monospace;
+  flex-grow: 1;
 }
 
 #progress {
   position: relative;
-  width: 95%;
+  width: 100%;
   height: 10px;
   background-color: #2b2b2b;
   border-radius: 5px;
   border: 1px solid #aaa;
   margin: auto;
-  margin-top: 30px;
+  margin-top: 50px;
   overflow: hidden;
 }
 
@@ -67,7 +72,7 @@
   border-radius: 5px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.1s ease-in-out;
+  transition: transform 100ms ease-in-out;
 }
 
 .okButtons[disabled] {
@@ -76,5 +81,5 @@
 }
 
 .okButtons:hover {
-  transform: scale(1.02);
+  transform: scale(1.01);
 }

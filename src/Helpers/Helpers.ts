@@ -92,6 +92,77 @@ export function Bezier(p0: Point, c0: Point, c1: Point, p1: Point, t: number): P
   return point;
 }
 
+/** Get Y axix points as an array */
+export async function getYpoints(d: string, samples = 1000, onUpdate?: (i: number) => void, signal?: AbortSignal) {
+  let stopped = false;
+
+  signal?.addEventListener('abort', () => {
+    stopped = true;
+  });
+
+  const points = parsePath(d);
+  const values = new Float32Array(samples);
+  let count = 0;
+  let percent = 0;
+
+  for (let e = 0; e < points.length; e++) {
+    if (stopped) throw new Error('stopped');
+
+    const { p0, c0, c1, p1 } = points[e];
+
+    percent = (e + 1) / points.length;
+    onUpdate?.(percent);
+
+    await new Promise(resolve => setTimeout(resolve, 10)); // for fast calculations.
+
+    for (let i = 0; i < samples; i++) {
+      if (stopped) throw new Error('stopped');
+
+      const point = i / samples;
+      const dist = (p1.x - 0) * samples;
+
+      let start = 0,
+        end = 1,
+        target = (start + end) / 2,
+        times = 0,
+        result: number | null = 0;
+
+      while (target >= start && target <= 1) {
+        if (stopped) throw new Error('stopped');
+
+        const pos = Bezier(p0, c0, c1, p1, target);
+
+        times++;
+
+        if (times > 50) {
+          result = null;
+          break;
+        }
+
+        if (Math.abs(pos.x - point) <= 0.001) {
+          result = pos.y;
+          break;
+        }
+
+        if (pos.x >= point) end = target;
+        else start = target;
+
+        target = (start + end) / 2;
+      }
+
+      if (result !== null && count <= dist) {
+        values[count] = result;
+        count++;
+      }
+    }
+  }
+
+  values[0] = points[0].p0.y;
+  values[samples - 1] = points[points.length - 1].p1.y;
+
+  return values;
+}
+
 /** - Check if the path is overlapping to turrned it `red`. */
 export function checkOverlap(path: string): boolean {
   const samples = 100;

@@ -13,14 +13,27 @@
 .close-panel {
   all: unset;
   position: sticky;
-  top: 0;
+  top: 20px;
   float: right;
-  padding-top: 20px;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 50%;
   background-color: inherit;
   cursor: pointer;
+  z-index: 100;
   animation: bounce-right 4s both infinite;
 }
-
+.close-panel > svg {
+  width: 30px;
+  height: 30px;
+  fill: var(--text-color);
+  transition: all 100ms;
+}
+.close-panel svg:hover {
+  fill: var(--secondary-color);
+  transform: scale(1.1);
+}
 @keyframes bounce-right {
   0% {
     transform: translateX(10px);
@@ -39,70 +52,6 @@
   }
 }
 
-.close-panel > svg {
-  width: 30px;
-  height: 30px;
-  fill: var(--text-color);
-  transition: all 100ms;
-}
-.close-panel svg:hover {
-  fill: var(--secondary-color);
-  transform: scale(1.1);
-}
-
-.small-side-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  left: 0%;
-  top: 0%;
-  height: 100%;
-  height: 100dvh;
-  background-color: var(--nav-color);
-  padding: 20px;
-  z-index: 0;
-}
-
-.small-side-panel svg {
-  width: 30px;
-  height: 30px;
-  fill: var(--text-color);
-  transition: all 100ms;
-}
-.small-side-panel svg:not(#zoom-slider-icon):hover {
-  fill: var(--secondary-color);
-  transform: scale(1.1);
-}
-
-.small-side-panel button {
-  all: unset;
-  cursor: pointer;
-  margin-bottom: 50px;
-  transition: transform 100ms;
-}
-.small-side-panel button:active {
-  transform: translate(2px, 2px);
-}
-
-.small-side-panel input[type='range'] {
-  -webkit-appearance: slider-vertical; /* Chromium */
-  appearance: slider-vertical;
-  width: 30px;
-  margin-bottom: 20px;
-}
-
-.open-panel {
-  margin-bottom: 100px !important;
-}
-
-input[type='range'] {
-  accent-color: var(--secondary-color);
-}
-input[type='checkbox'] {
-  accent-color: var(--secondary-color);
-}
-
 @media (hover: hover) and (pointer: fine) {
   .sidePanel::-webkit-scrollbar {
     width: 5px;
@@ -118,13 +67,6 @@ input[type='checkbox'] {
   .sidePanel::-webkit-scrollbar-button {
     display: none;
   }
-}
-
-hr {
-  border-color: var(--text-color);
-  opacity: 0.2;
-  border-width: 0.5px;
-  margin: 40px -10px;
 }
 
 .hints {

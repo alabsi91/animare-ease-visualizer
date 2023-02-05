@@ -1,0 +1,116 @@
+.css-dialog-title {
+  margin: 0px;
+  margin-bottom: 30px;
+}
+.css-input-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.css-input-container > input {
+  color: var(--text-color);
+  background-color: var(--background-color);
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--text-color);
+  font-family: monospace;
+  flex-grow: 1;
+}
+.css-input-container > p {
+  text-align: left;
+  margin: 0;
+  margin-right: 10px;
+  min-width: 65px;
+}
+.pre-container {
+  position: relative;
+  margin-block: 24px;
+}
+.css-pre {
+  padding: 20px;
+  margin: 0px auto;
+  border-radius: 10px;
+  background-color: var(--background-color);
+  text-align: left;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: 200px;
+  overflow: auto;
+}
+@media (hover: hover) and (pointer: fine) {
+  .css-pre::-webkit-scrollbar {
+    width: 5px;
+    margin-right: 10px;
+  }
+  .css-pre::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: #7a7a7a00;
+  }
+  .css-pre:hover::-webkit-scrollbar-thumb {
+    background-color: #7a7a7a50;
+  }
+  .css-pre::-webkit-scrollbar-button {
+    display: none;
+  }
+}
+.css-pre .token {
+  color: var(--main-color);
+}
+.css-pre .value {
+  color: #ec787f;
+}
+.css-pre .name {
+  color: var(--active-point);
+}
+.css-pre .curly-brackets {
+  color: #dacc69;
+}
+.css-pre .parentheses {
+  color: #dacc69;
+}
+.css-pre .colon {
+  color: #919191;
+}
+
+.copy-button {
+  all: unset;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-color);
+  background-color: #303030;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 100ms ease;
+}
+.copy-button:hover {
+  transform: scale(1.05);
+}
+
+.closeButton {
+  width: 60%;
+  border: none;
+  font-family: inherit;
+  font-weight: normal;
+  text-align: center;
+  color: white;
+  margin: 0px 5px;
+  font-size: 18px;
+  margin-top: 20px;
+  padding: 8px;
+  background-color: var(--main-color);
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 100ms ease-in-out;
+}
+
+.closeButton:hover {
+  transform: scale(1.01);
+}

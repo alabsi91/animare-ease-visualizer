@@ -12,6 +12,9 @@ import DownloadFile from './DownloadFile/DownloadFile';
 import Panel from './Panel/Panel';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';
+import ExportCss from './ExportCss/ExportCss';
+
+import type { ExportTypes } from './Helpers/CTX';
 
 /** - Threshold for checking path overlapping. */
 let tmout = false,
@@ -45,6 +48,7 @@ export default function App() {
 
   /** - To show and hide the download to js file dialog. */
   const downloadDialogRef = useRef<DialogRef>(null!);
+  const cssDialogRef = useRef<DialogRef>(null!);
 
   const pathToPoints = (path: string) => convertPathToPoints(path, size.current, zoom.current);
 
@@ -314,6 +318,11 @@ export default function App() {
 
   const setDuration = (duration: number) => animation?.setOptions({ duration });
 
+  const toggleExportDialog = (dialog: ExportTypes) => {
+    if (dialog === 'CSS') cssDialogRef.current.toggle();
+    if (dialog === 'JS File') downloadDialogRef.current.toggle();
+  };
+
   const contextValue = {
     points,
     size,
@@ -323,7 +332,6 @@ export default function App() {
     toggledAnchors,
     gridPoints,
     autoHideHandles,
-    downloadDialogRef,
     activeControlPoint,
     selectedPoint,
     activePathPoint,
@@ -335,12 +343,17 @@ export default function App() {
     pauseAnimation,
     setDuration,
     mouseMove,
+    toggleExportDialog,
   };
 
   return (
     <CTX.Provider value={contextValue}>
       <Dialog ref={downloadDialogRef}>
-        <DownloadFile parseResult={parseResult} closeDialog={() => downloadDialogRef.current.hide()} />
+        <DownloadFile />
+      </Dialog>
+
+      <Dialog ref={cssDialogRef}>
+        <ExportCss />
       </Dialog>
 
       <div className='container'>
