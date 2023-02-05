@@ -206,6 +206,8 @@ export default function SidePanel() {
       <hr />
 
       <div className='results'>
+        <h2>SVG Path</h2>
+
         <textarea
           className='custom-scrollbar'
           defaultValue={ctx.parseResult()}

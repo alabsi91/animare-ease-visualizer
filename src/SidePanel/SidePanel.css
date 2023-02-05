@@ -158,21 +158,19 @@
 }
 
 .results {
-  background-color: rgba(255, 255, 255, 0.025);
   color: var(--text-color);
-  padding: 10px;
-  text-align: center;
-  border-radius: 5px;
+  /* text-align: center; */
   margin-bottom: 20px;
 }
 .results textarea {
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.025);
   color: var(--text-color);
+  padding: 10px;
   border: none;
+  border-radius: 5px;
   resize: none;
   width: calc(100% - 10px);
   font-size: 16px;
-  padding: 5px;
 }
 
 .select-example-button {
