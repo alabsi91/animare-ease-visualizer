@@ -1,33 +1,12 @@
-.css-dialog-title {
+.svg-dialog-title {
   margin: 0px;
   margin-bottom: 30px;
 }
-.css-input-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-}
-.css-input-container > input {
-  color: var(--text-color);
-  background-color: var(--background-color);
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: 1px solid var(--text-color);
-  font-family: monospace;
-  flex-grow: 1;
-}
-.css-input-container > p {
-  text-align: left;
-  margin: 0;
-  margin-right: 10px;
-  min-width: 65px;
-}
-.pre-container {
+.svg-dialog-pre-container {
   position: relative;
   margin-block: 24px;
 }
-.css-dialog-pre {
+.svg-dialog-pre {
   padding: 20px;
   margin: 0px auto;
   border-radius: 10px;
@@ -39,26 +18,17 @@
   max-height: 200px;
   overflow: auto;
 }
-.css-dialog-pre .token {
+.svg-dialog-pre .letter {
   color: var(--main-color);
 }
-.css-dialog-pre .value {
-  color: #ec787f;
-}
-.css-dialog-pre .name {
+.svg-dialog-pre .number {
   color: var(--active-point);
 }
-.css-dialog-pre .curly-brackets {
-  color: #dacc69;
-}
-.css-dialog-pre .parentheses {
-  color: #dacc69;
-}
-.css-dialog-pre .colon {
-  color: #919191;
+.svg-dialog-pre .dot {
+  color: #b6b6b6;
 }
 
-.css-dialog-copy-button {
+.svg-dialog-copy-button {
   all: unset;
   position: absolute;
   top: 10px;
@@ -73,14 +43,14 @@
   user-select: none;
   transition: transform 100ms ease;
 }
-.css-dialog-copy-button:hover {
+.svg-dialog-copy-button:hover {
   transform: scale(1.05);
 }
-.css-dialog-copy-button:active {
+.svg-dialog-copy-button:active {
   transform: translate(2px, 2px);
 }
 
-.css-dialog-close-button {
+.svg-dialog-close-button {
   width: 60%;
   border: none;
   font-family: inherit;
@@ -97,9 +67,9 @@
   user-select: none;
   transition: transform 100ms ease-in-out;
 }
-.css-dialog-close-button:hover {
+.svg-dialog-close-button:hover {
   transform: scale(1.01);
 }
-.css-dialog-close-button:active {
+.svg-dialog-close-button:active {
   transform: translate(2px, 2px);
 }

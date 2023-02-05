@@ -44,6 +44,7 @@ export default function SmallSidePanel() {
     const target = e.target as Element;
     const svg = target.closest('svg') as SVGSVGElement;
     const checkbox = document.getElementById('hideAnchor') as HTMLInputElement;
+
     ctx.autoHideHandles.current = !ctx.autoHideHandles.current;
 
     if (ctx.autoHideHandles.current) svg.style.fill = 'var(--active-point)';
@@ -85,10 +86,6 @@ export default function SmallSidePanel() {
     sidePanelAnimation?.play({ to: [0, sidePanel.offsetWidth] });
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(ctx.parseResult());
-  };
-
   const pathToPoints = (path: string) => convertPathToPoints(path, ctx.size.current, ctx.zoom.current);
 
   const onEaseSelect = (value: string) => {
@@ -125,7 +122,7 @@ export default function SmallSidePanel() {
 
   return (
     <div>
-      <div className='small-side-panel'>
+      <div className='small-side-panel custom-scrollbar'>
         <button title='show the side panel' className='open-panel' onClick={open}>
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
             <polygon points='6.23,20.23 8,22 18,12 8,2 6.23,3.77 14.46,12' />
@@ -140,7 +137,7 @@ export default function SmallSidePanel() {
 
         <Select
           ref={selectEaseRef}
-          containerStyle={{ flex: 0, marginBottom: 50 }}
+          containerStyle={{ flex: 0 }}
           minWidth={175}
           names={Object.keys(eases)}
           values={Object.values(eases)}
@@ -150,7 +147,7 @@ export default function SmallSidePanel() {
         />
 
         <Select
-          containerStyle={{ flex: 0, marginBottom: 50 }}
+          containerStyle={{ flex: 0 }}
           names={exportTypes}
           values={exportTypes}
           onChange={onExportSelect}
@@ -177,18 +174,14 @@ export default function SmallSidePanel() {
           </svg>
         </button>
 
-        <button title='copy the result to the clipboard' onClick={copyToClipboard}>
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-            <path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z' />
+        <div className='zoom-container'>
+          {/* @ts-ignore */}
+          <input type='range' min='0' max='300' defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} orient='vertical' />
+
+          <svg id='zoom-slider-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+            <path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' />
           </svg>
-        </button>
-
-        {/* @ts-ignore */}
-        <input type='range' min='0' max='300' defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} orient='vertical' />
-
-        <svg id='zoom-slider-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-          <path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' />
-        </svg>
+        </div>
       </div>
     </div>
   );

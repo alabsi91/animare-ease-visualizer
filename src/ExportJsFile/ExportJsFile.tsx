@@ -1,4 +1,4 @@
-import './DownloadFile.css';
+import './ExportJsFile.css';
 import React, { useContext, useState } from 'react';
 
 import { getYpoints } from '../Helpers/Helpers';
@@ -6,7 +6,7 @@ import CTX from '../Helpers/CTX';
 
 let controller = new AbortController();
 
-export default function DownloadFile() {
+export default function ExportJsFile() {
   const ctx = useContext(CTX);
 
   const [samples, setSamples] = useState(1000);

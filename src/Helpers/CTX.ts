@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-export const exportTypes = ['CSS', 'JS File'] as const;
+export const exportTypes = ['CSS', 'SVG Path', 'JS File'] as const;
 export type ExportTypes = typeof exportTypes[number];
 
 type ctxType = {

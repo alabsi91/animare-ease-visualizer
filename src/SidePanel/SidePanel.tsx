@@ -64,14 +64,14 @@ export default function SidePanel() {
     ctx.setPoints(Points);
   };
 
-  const onResultChange = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+  const onTextAreaChange = (e: React.FocusEvent<HTMLTextAreaElement>) => {
     const value = pathToPoints(e.target.value.trim());
     let isValid = false;
     value.forEach(e => (isValid = e.every(e => e !== undefined)));
     if (isValid) {
       ctx.undoStack.current.push(ctx.parseResult());
       ctx.setPoints(pathToPoints(e.target.value.trim()));
-    } else e.target.value = ctx.parseResult().replace(/ S/g, '\nS').replace(/ C/g, '\nC');
+    } else e.target.value = ctx.parseResult().replace(/\s*M/gi, '›M').replace(/\s*S/g, '\n›S').replace(/\s*C/g, '\n›C');
   };
 
   const autoHideHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,9 +87,7 @@ export default function SidePanel() {
     (e.target as HTMLTextAreaElement).blur();
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(ctx.parseResult());
-  };
+
 
   const SelectButton = useCallback(({ title, onClick }: { title: string; onClick: () => void }) => {
     return (
@@ -117,7 +115,7 @@ export default function SidePanel() {
   };
 
   return (
-    <div className='sidePanel'>
+    <div className='sidePanel custom-scrollbar'>
       <button onClick={close} className='close-panel'>
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
           <path d='M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' />
@@ -208,14 +206,13 @@ export default function SidePanel() {
       <hr />
 
       <div className='results'>
-        <button className='copyButton' onClick={copyToClipboard}>
-          Copy to clipboard
-        </button>
         <textarea
+          className='custom-scrollbar'
           defaultValue={ctx.parseResult()}
           rows={ctx.points.length}
-          onBlur={onResultChange}
+          onBlur={onTextAreaChange}
           onKeyDown={textAreaOnKeyDown}
+          wrap='hard'
         />
       </div>
     </div>

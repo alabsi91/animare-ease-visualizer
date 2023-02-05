@@ -8,11 +8,12 @@ import { checkOverlap, constructPath, convertPathToPoints, findSmoothCorners } f
 import { eases } from './Pathes';
 import CTX from './Helpers/CTX';
 import Dialog, { DialogRef } from './Dialog/Dialog';
-import DownloadFile from './DownloadFile/DownloadFile';
 import Panel from './Panel/Panel';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';
+import ExportJsFile from './ExportJsFile/ExportJsFile';
 import ExportCss from './ExportCss/ExportCss';
+import ExportSvg from './ExportSvg/ExportSvg';
 
 import type { ExportTypes } from './Helpers/CTX';
 
@@ -47,7 +48,8 @@ export default function App() {
     selectedPoint = useRef<number | null>(null);
 
   /** - To show and hide the download to js file dialog. */
-  const downloadDialogRef = useRef<DialogRef>(null!);
+  const exportJsDialogRef = useRef<DialogRef>(null!);
+  const exportSvgDialogRef = useRef<DialogRef>(null!);
   const cssDialogRef = useRef<DialogRef>(null!);
 
   const pathToPoints = (path: string) => convertPathToPoints(path, size.current, zoom.current);
@@ -281,9 +283,12 @@ export default function App() {
 
   useEffect(() => {
     eventPoint.current = points;
+
+    // update textarea text
     (document.querySelector('.results textarea') as HTMLTextAreaElement).value = parseResult()
-      .replace(/ S/g, '\nS')
-      .replace(/ C/g, '\nC');
+      .replace(/\s*M/gi, '›M')
+      .replace(/\s*S/g, '\n›S')
+      .replace(/\s*C/g, '\n›C');
 
     if (!tmout && !isZooming) {
       tmout = true;
@@ -320,7 +325,8 @@ export default function App() {
 
   const toggleExportDialog = (dialog: ExportTypes) => {
     if (dialog === 'CSS') cssDialogRef.current.toggle();
-    if (dialog === 'JS File') downloadDialogRef.current.toggle();
+    if (dialog === 'SVG Path') exportSvgDialogRef.current.toggle();
+    if (dialog === 'JS File') exportJsDialogRef.current.toggle();
   };
 
   const contextValue = {
@@ -348,13 +354,18 @@ export default function App() {
 
   return (
     <CTX.Provider value={contextValue}>
-      <Dialog ref={downloadDialogRef}>
-        <DownloadFile />
+      <Dialog ref={exportJsDialogRef}>
+        <ExportJsFile />
+      </Dialog>
+
+      <Dialog ref={exportSvgDialogRef}>
+        <ExportSvg />
       </Dialog>
 
       <Dialog ref={cssDialogRef}>
         <ExportCss />
       </Dialog>
+
 
       <div className='container'>
         <SidePanel />

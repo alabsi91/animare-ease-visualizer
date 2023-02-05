@@ -125,9 +125,18 @@ export default function Panel() {
       const y2 = i === 0 ? points[0][1] : i === 1 ? points[1][5] : points[i][3];
 
       return [
-        <line key={'handlesPointsLine' + i} className='handle-line auto-hide' x1={e[0]} y1={e[1]} x2={x2} y2={y2} />,
+        <line
+          key={'handlesPointsLine' + i}
+          style={{ display: autoHideHandles.current ? 'none' : 'block' }}
+          className='handle-line auto-hide'
+          x1={e[0]}
+          y1={e[1]}
+          x2={x2}
+          y2={y2}
+        />,
         <a
           key={'handlesPoints' + i}
+          style={{ display: autoHideHandles.current ? 'none' : 'block' }}
           className='auto-hide'
           href='#point'
           onFocus={onFocus}
@@ -199,6 +208,7 @@ export default function Panel() {
       return (
         <a
           key={'Points' + i}
+          style={{ display: autoHideHandles.current ? 'none' : 'block' }}
           className='auto-hide'
           href='#Points'
           onFocus={onFocus}

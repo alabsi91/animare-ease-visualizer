@@ -47,7 +47,7 @@ export default function ExportCss() {
   };
 
   const preElemtent = async () => {
-    const pre = document.querySelector<HTMLPreElement>('.css-pre');
+    const pre = document.querySelector<HTMLPreElement>('.css-dialog-pre');
     if (!pre) return;
     const string = await generate();
 
@@ -89,7 +89,7 @@ export default function ExportCss() {
 
   return (
     <div id='css-dialog'>
-      <h2 className='css-dialog-title'>Export As CSS</h2>
+      <h2 className='css-dialog-title'>Export as CSS</h2>
 
       {!isSimple && (
         <>
@@ -139,13 +139,13 @@ export default function ExportCss() {
       )}
 
       <div className='pre-container'>
-        <pre className='css-pre' />
-        <button className='copy-button' onClick={copyHandle}>
+        <pre className='css-dialog-pre custom-scrollbar' />
+        <button className='css-dialog-copy-button' onClick={copyHandle}>
           Copy
         </button>
       </div>
 
-      <button className='closeButton' onClick={() => ctx.toggleExportDialog('CSS')}>
+      <button className='css-dialog-close-button' onClick={() => ctx.toggleExportDialog('CSS')}>
         Close
       </button>
     </div>
