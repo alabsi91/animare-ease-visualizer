@@ -9,6 +9,8 @@
   --grid-lines: #222222;
   --active-path: white;
   --blured-path: gray;
+
+  --position: 50%;
 }
 
 body {
@@ -72,6 +74,7 @@ hr {
   white-space: nowrap;
   user-select: none;
   pointer-events: none;
+  z-index: -1;
 }
 
 .container {

@@ -1,0 +1,112 @@
+.container {
+  /* --position: 50%; */
+  --thickness: 10px;
+  --verticalHeight: 150px;
+  --scale: 2.2;
+  --track: #efeff1;
+  --filler: var(--main-color);
+  --handel: var(--main-color);
+  --bubble: var(--main-color);
+  --text: #efeff1;
+  position: relative;
+  touch-action: none;
+  flex: 1;
+}
+.containerVertical {
+  width: fit-content;
+  margin: auto;
+}
+.track {
+  position: relative;
+  height: var(--thickness);
+  background-color: white;
+  background-size: 10px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--filler) var(--position), var(--track) var(--position));
+  transition: transform 200ms;
+}
+.trackVertical {
+  height: var(--verticalHeight);
+  width: var(--thickness);
+  background: linear-gradient(0deg, var(--filler) var(--position), var(--track) var(--position));
+}
+
+.handle {
+  all: unset;
+  position: absolute;
+  left: var(--position);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: calc(var(--thickness) + 5px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: solid 4px var(--track);
+  background-color: var(--handel);
+  transition: opacity 100ms, transform 200ms;
+  box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02), 6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+    12.5px 12.5px 10px rgba(0, 0, 0, 0.035), 22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042), 41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
+    100px 100px 80px rgba(0, 0, 0, 0.07);
+}
+.handleVertical {
+  top: unset;
+  bottom: var(--position);
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+.handle:disabled {
+  background-color: silver;
+}
+.bubble {
+  position: absolute;
+  left: var(--position);
+  top: -50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 30px;
+  border-radius: 2px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  background-color: var(--bubble);
+  opacity: 0;
+  transition: opacity 200ms;
+}
+.bubbleVertical {
+  top: unset;
+  left: -50px;
+  bottom: var(--position);
+  transform: translate(-50%, 50%);
+  width: 30px;
+  height: 40px;
+  border-radius: 2px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+.bubble h4 {
+  text-align: center;
+  margin: 0px;
+  color: var(--text);
+}
+.triangle {
+  position: absolute;
+  bottom: 0;
+  transform: translateY(100%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 20px 20px 0 20px;
+  border-color: var(--bubble) transparent transparent transparent;
+}
+.triangleVertical {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translateX(100%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 20px 0px 20px 20px;
+  border-color: transparent transparent transparent var(--bubble);
+}

@@ -300,12 +300,10 @@ export default function App() {
     }
   }, [points]);
 
-  const onZoom = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const sliders = document.querySelectorAll<HTMLInputElement>("input[type='range']");
-    sliders.forEach(el => (el.value = e.target.value));
+  const onZoom = (value: number) => {
     isZooming = true;
     const p = parseResult();
-    zoom.current = 300 - +e.target.value;
+    zoom.current = 300 - value;
     gridPoints.current = new Array(11).fill(0).map((_, i) => zoom.current + (i * size.current) / 10);
     setPoints(pathToPoints(p));
     animation?.setOptions({
@@ -365,7 +363,6 @@ export default function App() {
       <Dialog ref={cssDialogRef}>
         <ExportCss />
       </Dialog>
-
 
       <div className='container'>
         <SidePanel />

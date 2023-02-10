@@ -93,7 +93,7 @@
   border-radius: 5px;
   border: 1px solid var(--text-color);
   font-family: inherit;
-  flex-grow: 1;
+  width: calc(100% - 20px);
 }
 .options-duration > p {
   margin: 0;
@@ -106,10 +106,6 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
-}
-.options-zoom > input {
-  flex-grow: 1;
-  margin: 0;
 }
 .options-zoom > p {
   margin: 0;
@@ -159,7 +155,6 @@
 
 .results {
   color: var(--text-color);
-  /* text-align: center; */
   margin-bottom: 20px;
 }
 .results textarea {

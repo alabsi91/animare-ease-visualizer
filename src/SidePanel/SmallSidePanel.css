@@ -51,8 +51,8 @@
   transform: scale(1.1);
 }
 
-.zoom-container input[type='range'] {
-  -webkit-appearance: slider-vertical; /* Chromium */
+/* .zoom-container input[type='range'] {
+  -webkit-appearance: slider-vertical; 
   appearance: slider-vertical;
   width: 30px;
-}
+} */

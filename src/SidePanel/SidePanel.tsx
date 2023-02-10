@@ -10,6 +10,7 @@ import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../Helpers/CTX';
+import Slider from '../Slider/Slider';
 
 export default function SidePanel() {
   const ctx = useContext(CTX);
@@ -86,8 +87,6 @@ export default function SidePanel() {
     e.preventDefault();
     (e.target as HTMLTextAreaElement).blur();
   };
-
-
 
   const SelectButton = useCallback(({ title, onClick }: { title: string; onClick: () => void }) => {
     return (
@@ -199,7 +198,7 @@ export default function SidePanel() {
         </div>
         <div className='options-zoom'>
           <p>Zoom</p>
-          <input type='range' min='0' max='300' defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} />
+          <Slider max={300} defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} />
         </div>
       </div>
 

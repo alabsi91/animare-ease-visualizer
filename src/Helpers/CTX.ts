@@ -17,7 +17,7 @@ type ctxType = {
   activePathPoint: React.MutableRefObject<number | null>;
   eventPoint: React.MutableRefObject<number[][]>;
   toggleExportDialog: (dialog: ExportTypes) => void;
-  onZoom: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onZoom: (value: number) => void;
   setPoints: React.Dispatch<React.SetStateAction<number[][]>>;
   parseResult: (p?: number[][]) => string;
   playCurrentEasing: () => void;
