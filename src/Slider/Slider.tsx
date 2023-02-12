@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import style from './Slider.module.css';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(value, max));
 const precision = (a: number) => {
@@ -13,6 +13,28 @@ const precision = (a: number) => {
   }
   return p;
 };
+const cls = (isActive = false, className = '') => (isActive ? ` ${className}` : '');
+
+const easeOutCubic = (t: number) => --t * t * t + 1;
+
+function animate(from: number, to: number, duration: number, update: (value: number) => void) {
+  let start = performance.now();
+  let current = from;
+
+  function animateStep(timestamp: number) {
+    let progress = (timestamp - start) / duration;
+    progress = Math.min(progress, 1);
+    progress = easeOutCubic(progress);
+    current = from + (to - from) * progress;
+    update(current);
+
+    if (progress < 1) {
+      requestAnimationFrame(animateStep);
+    }
+  }
+
+  requestAnimationFrame(animateStep);
+}
 
 type Props = {
   min?: number;
@@ -23,21 +45,33 @@ type Props = {
   disabled?: boolean;
   showBubble?: boolean;
   vertical?: boolean;
+  reverse?: boolean;
+  reverseBubble?: boolean;
   onChange?: (value: number) => void;
   onComplete?: (value: number) => void;
 };
-export default function Slider({
-  min = 0,
-  max = 100,
-  step = 1,
-  showBubble = false,
-  disabled = false,
-  value,
-  defaultValue,
-  vertical = false,
-  onChange,
-  onComplete,
-}: Props) {
+
+export type SliderRef = {
+  setValue: (value: number) => void;
+};
+
+const SliderComponent: React.ForwardRefRenderFunction<SliderRef, Props> = function (
+  {
+    min = 0,
+    max = 100,
+    step = 1,
+    showBubble = true,
+    reverseBubble = false,
+    disabled = false,
+    value,
+    defaultValue,
+    vertical = false,
+    reverse = false,
+    onChange,
+    onComplete,
+  },
+  ref
+) {
   const valueRef = useRef(value ?? defaultValue ?? 0);
   const containerRef = useRef<HTMLDivElement>(null!); // slider container element
   const textRef = useRef<HTMLHeadingElement>(null!); // bubble text element
@@ -51,25 +85,31 @@ export default function Slider({
     [step, min, max]
   );
 
-  const onPointerMove = useCallback((e: PointerEvent) => {
-    const track = containerRef.current.querySelector('.' + style.track) as HTMLDivElement;
-    const text = textRef.current;
-    const { left, bottom, width, height } = track.getBoundingClientRect();
+  const onPointerMove = useCallback((e: { clientX: number; clientY: number }, withAnim = false) => {
+    const track = containerRef.current.querySelector(`.${style.track}`) as HTMLDivElement,
+      text = textRef.current,
+      { left, right, bottom, top, width, height } = track.getBoundingClientRect();
 
-    const percentage = vertical ? clamp((bottom - e.pageY) / height, 0, 1) : clamp((e.pageX - left) / width, 0, 1);
-    const val = +clamp((max - min) * percentage + min, min, max).toFixed(precision(step));
+    const length = vertical ? height : width,
+      axis = vertical ? e.clientY : e.clientX,
+      forNormal = vertical ? bottom - axis : axis - left,
+      forReverse = vertical ? axis - top : right - axis,
+      percentage = clamp((reverse ? forReverse : forNormal) / length, 0, 1),
+      val = +clamp((max - min) * percentage + min, min, max).toFixed(precision(step));
 
     if (!steps.has(val)) return;
 
     // update position if `value` prop is not given (the value is not linked to a state)
     if (typeof value !== 'number') document.body.style.setProperty('--position', percentage * 100 + '%');
-
-    if (text) text.innerText = val + ''; // bubble text value
-
-    if (valueRef.current !== val) {
-      setValue(val);
-      valueRef.current = val;
+    // animate to the new pos (for on track press event)
+    if (withAnim) {
+      const from = ((valueRef.current - min) / (max - min)) * 100;
+      animate(from, percentage * 100, 300, v => document.body.style.setProperty('--position', v + '%'));
     }
+
+    if (text) text.innerText = `${val}`; // bubble text value
+
+    setValue(val);
   }, []);
 
   const onPointerDown = () => {
@@ -77,10 +117,10 @@ export default function Slider({
 
     document.addEventListener('pointermove', onPointerMove);
 
-    const handle = containerRef.current.querySelector('.' + style.handle) as HTMLButtonElement;
-    const track = containerRef.current.querySelector('.' + style.track) as HTMLDivElement;
+    const handle = containerRef.current.querySelector(`.${style.handle}`) as HTMLButtonElement;
+    const track = containerRef.current.querySelector(`.${style.track}`) as HTMLDivElement;
     handle.style.opacity = '0';
-    handle.style.transform = `translate(-50%, ${vertical ? 50 : -50}%) scale(0)`;
+    handle.style.transform = `translate(${reverse && !vertical ? 50 : -50}%, ${vertical && !reverse ? 50 : -50}%) scale(0)`;
     track.style.transform = vertical ? 'scaleX(var(--scale))' : 'scaleY(var(--scale))';
 
     // if bubble is enabled
@@ -90,32 +130,32 @@ export default function Slider({
     bubble.style.opacity = '1';
   };
 
-  const onPointerUp = useCallback(() => {
+  const onPointerUp = () => {
     document.removeEventListener('pointermove', onPointerMove);
 
     if (!isActive.current) return;
     isActive.current = false;
 
-    const handle = containerRef.current.querySelector('.' + style.handle) as HTMLButtonElement;
-    const track = containerRef.current.querySelector('.' + style.track) as HTMLDivElement;
+    const handle = containerRef.current.querySelector(`.${style.handle}`) as HTMLButtonElement;
+    const track = containerRef.current.querySelector(`.${style.track}`) as HTMLDivElement;
     handle.style.opacity = '1';
-    handle.style.transform = `translate(-50%, ${vertical ? 50 : -50}%) scale(1)`;
+    handle.style.transform = `translate(${reverse && !vertical ? 50 : -50}%, ${vertical && !reverse ? 50 : -50}%) scale(1)`;
     track.style.transform = 'scaleY(1)';
 
-    if (valueRef.current !== value) onComplete?.(valueRef.current);
+    onComplete?.(valueState);
 
     // if bubble is enabled
     if (!showBubble) return;
-    const bubble = containerRef.current.querySelector('.' + style.bubble) as HTMLDivElement;
+    const bubble = containerRef.current.querySelector(`.${style.bubble}`) as HTMLDivElement;
     bubble.style.opacity = '0';
-  }, []);
+  };
 
   const onTrackPress: React.MouseEventHandler<HTMLDivElement> = e => {
-    onPointerMove(e as any);
+    onPointerMove(e, true);
 
     // if bubble is enabled
     if (!showBubble) return;
-    const bubble = containerRef.current.querySelector('.' + style.bubble) as HTMLDivElement;
+    const bubble = containerRef.current.querySelector(`.${style.bubble}`) as HTMLDivElement;
     bubble.style.opacity = '1';
     if (bubbleTimeOut.current) clearTimeout(bubbleTimeOut.current);
     bubbleTimeOut.current = setTimeout(() => {
@@ -134,19 +174,16 @@ export default function Slider({
     // update position if `value` prop is not given (the value is not linked to a state)
     if (typeof value !== 'number') document.body.style.setProperty('--position', percentage * 100 + '%');
 
-    if (textRef.current) textRef.current.innerText = val + ''; // bubble text value
+    if (textRef.current) textRef.current.innerText = `${val}`; // bubble text value
 
-    if (valueRef.current !== val) {
-      setValue(val);
-      valueRef.current = val;
-    }
+    setValue(val);
 
     // if bubble is enabled
     if (!showBubble) return;
     const text = textRef.current;
-    const bubble = containerRef.current.querySelector('.' + style.bubble) as HTMLDivElement;
+    const bubble = containerRef.current.querySelector(`.${style.bubble}`) as HTMLDivElement;
     bubble.style.opacity = '1';
-    text.innerText = val + '';
+    text.innerText = `${val}`;
 
     if (bubbleTimeOut.current) clearTimeout(bubbleTimeOut.current);
     bubbleTimeOut.current = setTimeout(() => {
@@ -157,11 +194,12 @@ export default function Slider({
 
   const onArrowKeyUp: React.KeyboardEventHandler<HTMLDivElement> = e => {
     if (e.code !== 'ArrowRight' && e.code !== 'ArrowLeft') return;
-    onComplete?.(valueRef.current);
+    onComplete?.(valueState);
   };
 
   useEffect(() => {
-    onChange?.(valueState);
+    if (valueState !== valueRef.current) onChange?.(valueState);
+    valueRef.current = valueState;
   }, [valueState]);
 
   useEffect(() => {
@@ -170,23 +208,48 @@ export default function Slider({
     return () => {
       document.removeEventListener('pointerup', onPointerUp);
     };
-  }, []);
+  }, [valueState]);
 
   useEffect(() => {
-    if (typeof value !== 'number') return;
-    const val = clamp(value ?? defaultValue ?? 0, min, max);
-    const percentage = (val - min) / (max - min);
-    valueRef.current = val;
+    valueRef.current = clamp(value ?? defaultValue ?? 0, min, max);
+    const percentage = (valueRef.current - min) / (max - min);
     document.body.style.setProperty('--position', clamp(percentage * 100) + '%');
-    if (textRef.current) textRef.current.innerText = val + ''; // bubble text value
+    if (textRef.current) textRef.current.innerText = `${valueRef.current}`; // bubble text value
   }, [value]);
 
+  const updateValue = (v: number) => {
+    valueRef.current = clamp(v ?? defaultValue ?? 0, min, max);
+    setValue(valueRef.current);
+    const percentage = (valueRef.current - min) / (max - min);
+    document.body.style.setProperty('--position', clamp(percentage * 100) + '%');
+    if (textRef.current) textRef.current.innerText = `${valueRef.current}`; // bubble text value
+  };
+
+  useImperativeHandle(ref, () => ({ setValue: updateValue }), []);
+
   return (
-    <div ref={containerRef} className={style.container + (vertical ? ' ' + style.containerVertical : '')}>
+    <div ref={containerRef} className={style.container + cls(vertical, style.containerVertical)}>
       {showBubble && (
-        <div className={style.bubble + (vertical ? ' ' + style.bubbleVertical : '')}>
+        <div
+          className={
+            style.bubble +
+            cls(reverseBubble && !vertical, style.bubbleDown) +
+            cls(vertical, style.bubbleVertical) +
+            cls(vertical && reverseBubble, style.bubbleVerticalRight) +
+            cls(reverse && !vertical, style.bubbleReverse) +
+            cls(reverse && vertical, style.bubbleVerticalReverse)
+          }
+        >
           <h4 ref={textRef}>{valueRef.current}</h4>
-          <div className={style.triangle + (vertical ? ' ' + style.triangleVertical : '')} />
+
+          <div
+            className={
+              style.triangle +
+              cls(reverseBubble && !vertical, style.triangleUp) +
+              cls(vertical, style.triangleVertical) +
+              cls(vertical && reverseBubble, style.triangleVerticalRight)
+            }
+          />
         </div>
       )}
       <div
@@ -194,14 +257,24 @@ export default function Slider({
         aria-valuenow={value}
         aria-valuemin={min}
         aria-valuemax={max}
-        className={style.track + (vertical ? ' ' + style.trackVertical : '')}
+        className={
+          style.track +
+          cls(vertical, style.trackVertical) +
+          cls(reverse && !vertical, style.trackReverse) +
+          cls(reverse && vertical, style.trackVerticalReverse)
+        }
         onClick={disabled ? undefined : onTrackPress}
         onKeyDown={disabled ? undefined : onArrowKeys}
         onKeyUp={disabled ? undefined : onArrowKeyUp}
         tabIndex={0}
       >
         <button
-          className={style.handle + (vertical ? ' ' + style.handleVertical : '')}
+          className={
+            style.handle +
+            cls(vertical, style.handleVertical) +
+            cls(reverse && !vertical, style.handleReverse) +
+            cls(reverse && vertical, style.handleVerticalReverse)
+          }
           onPointerDown={disabled ? undefined : onPointerDown}
           role='slider'
           aria-valuenow={value}
@@ -212,4 +285,7 @@ export default function Slider({
       </div>
     </div>
   );
-}
+};
+
+const Slider = forwardRef<SliderRef, Props>(SliderComponent);
+export default Slider;

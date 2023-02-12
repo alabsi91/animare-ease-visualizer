@@ -1,13 +1,19 @@
 .container {
   /* --position: 50%; */
   --thickness: 10px;
-  --verticalHeight: 150px;
-  --scale: 2.2;
+  --verticalHeight: 170px;
+  --scale: 2;
   --track: #efeff1;
   --filler: var(--main-color);
   --handel: var(--main-color);
-  --bubble: var(--main-color);
   --text: #efeff1;
+
+  --bubble: var(--main-color);
+  --bubble-width: 44px;
+  --bubble-height: 30px;
+  --bubble-offset: 5px;
+  --bubble-radius: 4px;
+
   position: relative;
   touch-action: none;
   flex: 1;
@@ -25,10 +31,16 @@
   background: linear-gradient(90deg, var(--filler) var(--position), var(--track) var(--position));
   transition: transform 200ms;
 }
+.trackReverse {
+  background: linear-gradient(-90deg, var(--filler) var(--position), var(--track) var(--position));
+}
 .trackVertical {
   height: var(--verticalHeight);
   width: var(--thickness);
   background: linear-gradient(0deg, var(--filler) var(--position), var(--track) var(--position));
+}
+.trackVerticalReverse {
+  background: linear-gradient(180deg, var(--filler) var(--position), var(--track) var(--position));
 }
 
 .handle {
@@ -47,11 +59,21 @@
     12.5px 12.5px 10px rgba(0, 0, 0, 0.035), 22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042), 41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
     100px 100px 80px rgba(0, 0, 0, 0.07);
 }
+.handleReverse {
+  left: unset;
+  right: var(--position);
+  transform: translate(50%, -50%);
+}
 .handleVertical {
   top: unset;
   bottom: var(--position);
   left: 50%;
   transform: translate(-50%, 50%);
+}
+.handleVerticalReverse {
+  bottom: unset;
+  top: var(--position);
+  transform: translate(-50%, -50%);
 }
 .handle:disabled {
   background-color: silver;
@@ -59,54 +81,113 @@
 .bubble {
   position: absolute;
   left: var(--position);
-  top: -50px;
+  bottom: calc((var(--thickness) / 2) + ((var(--thickness) * var(--scale)) / 2) + var(--bubble-offset));
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 30px;
-  border-radius: 2px;
-  border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
-  background-color: var(--bubble);
+  transform: translate(-50%, 0%);
+  width: var(--bubble-width);
+  height: calc(var(--bubble-height) + (var(--bubble-width) / 2));
   opacity: 0;
+  pointer-events: none;
   transition: opacity 200ms;
 }
-.bubbleVertical {
-  top: unset;
-  left: -50px;
-  bottom: var(--position);
-  transform: translate(-50%, 50%);
-  width: 30px;
-  height: 40px;
-  border-radius: 2px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-}
 .bubble h4 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(100% - (var(--bubble-width) / 2));
+  border-radius: 0px;
+  border-top-right-radius: var(--bubble-radius);
+  border-top-left-radius: var(--bubble-radius);
   text-align: center;
   margin: 0px;
   color: var(--text);
+  background-color: var(--bubble);
+  user-select: none;
+}
+.bubbleDown {
+  bottom: unset;
+  top: calc((var(--thickness) / 2) + ((var(--thickness) * var(--scale)) / 2) + var(--bubble-offset));
+  flex-direction: column-reverse;
+  transform: translate(-50%, 0%);
+}
+.bubbleDown h4 {
+  border-radius: 0px;
+  border-bottom-right-radius: var(--bubble-radius);
+  border-bottom-left-radius: var(--bubble-radius);
+}
+.bubbleReverse {
+  left: unset;
+  right: var(--position);
+  transform: translate(50%, 0%);
+}
+.bubbleVertical {
+  top: unset;
+  right: unset;
+  bottom: var(--position);
+  left: calc((var(--thickness) / 2) + ((var(--thickness) * var(--scale)) / 2) + var(--bubble-offset));
+  width: calc(var(--bubble-width) + (var(--bubble-height) / 2));
+  height: var(--bubble-height);
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  transform: translate(0%, 50%);
+}
+.bubbleVertical h4 {
+  border-radius: 0px;
+  border-top-right-radius: var(--bubble-radius);
+  border-bottom-right-radius: var(--bubble-radius);
+}
+.bubbleVerticalRight {
+  left: unset;
+  right: calc((var(--thickness) / 2) + ((var(--thickness) * var(--scale)) / 2) + var(--bubble-offset));
+  flex-direction: row;
+  border-radius: var(--bubble-radius);
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+.bubbleVerticalRight h4 {
+  border-radius: 0px;
+  border-top-left-radius: var(--bubble-radius);
+  border-bottom-left-radius: var(--bubble-radius);
+}
+.bubbleVerticalReverse {
+  bottom: unset;
+  top: var(--position);
+  transform: translate(0%, -50%);
+}
+
+.bubbleVertical h4 {
+  height: 100%;
+  width: calc(100% - (var(--bubble-width) / 2));
 }
 .triangle {
-  position: absolute;
-  bottom: 0;
-  transform: translateY(100%);
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 20px 20px 0 20px;
+  border-width: calc(var(--bubble-width) / 2) calc(var(--bubble-width) / 2) 0px calc(var(--bubble-width) / 2);
   border-color: var(--bubble) transparent transparent transparent;
 }
-.triangleVertical {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translateX(100%);
+.triangleUp {
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 20px 0px 20px 20px;
+  border-width: 0px calc(var(--bubble-width) / 2) calc(var(--bubble-width) / 2) calc(var(--bubble-width) / 2);
+  border-color: transparent transparent var(--bubble) transparent;
+}
+.triangleVertical {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: calc(var(--bubble-height) / 2) calc(var(--bubble-height) / 2) calc(var(--bubble-height) / 2) 0px;
+  border-color: transparent var(--bubble) transparent transparent;
+}
+.triangleVerticalRight {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: calc(var(--bubble-height) / 2) 0px calc(var(--bubble-height) / 2) calc(var(--bubble-height) / 2);
   border-color: transparent transparent transparent var(--bubble);
 }

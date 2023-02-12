@@ -198,7 +198,7 @@ export default function SidePanel() {
         </div>
         <div className='options-zoom'>
           <p>Zoom</p>
-          <Slider max={300} defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} />
+          <Slider max={300} defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} showBubble={false} />
         </div>
       </div>
 
