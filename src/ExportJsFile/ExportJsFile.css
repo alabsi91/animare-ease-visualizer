@@ -27,13 +27,21 @@
 }
 
 .inputsContainer input {
+  all: unset;
   color: var(--text-color);
   background-color: var(--background-color);
   padding: 6px 10px;
   border-radius: 5px;
-  border: 1px solid var(--text-color);
+  border: 1px solid transparent;
   font-family: monospace;
+  font-size: 16px;
+  text-align: left;
   flex-grow: 1;
+  transition: background-color 300ms ease;
+}
+.inputsContainer input:focus {
+  background-color: var(--input-focused);
+  border: solid 1px var(--main-color);
 }
 
 #progress {

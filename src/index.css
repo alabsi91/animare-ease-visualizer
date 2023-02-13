@@ -9,6 +9,7 @@
   --grid-lines: #222222;
   --active-path: white;
   --blured-path: gray;
+  --input-focused: #0e0e10;
 
   --position: 50%;
 }

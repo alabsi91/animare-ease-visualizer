@@ -88,7 +88,7 @@ export default function ExportJsFile() {
 
       <div className='inputsContainer'>
         <p>Name</p>
-        <input placeholder='CustomEasing' value={fileName} onChange={e => setFileName(e.target.value)} />
+        <input placeholder='CustomEasing' value={fileName} onChange={e => setFileName(e.target.value)} spellCheck={false} />
       </div>
 
       <div id='progress'>

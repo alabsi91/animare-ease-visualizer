@@ -3,11 +3,12 @@ import './ExportCss.css';
 import React, { useContext, useEffect, useState } from 'react';
 import CTX from '../Helpers/CTX';
 import { getYpoints, parsePath } from '../Helpers/Helpers';
+import HighlightInput from '../HighlightInput/HighlightInput';
 
 export default function ExportCss() {
   const ctx = useContext(CTX);
 
-  const [property, setProperty] = useState('transform: translateX({value}%)');
+  const [property, setProperty] = useState('transform: translateX({value}%);');
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(100);
   const [accuracy, setAccuracy] = useState(50);
@@ -38,7 +39,7 @@ export default function ExportCss() {
       if (lastPoint === value) continue;
       lastPoint = value;
 
-      resutls += `  ${i}% { ${property.replaceAll('{value}', value.toString())}; }\n`;
+      resutls += `  ${i}% { ${property.replaceAll('{value}', value.toString())} }\n`;
     }
 
     resutls = `@keyframes my-custom-easing {\n${resutls}}`;
@@ -95,11 +96,29 @@ export default function ExportCss() {
         <>
           <div className='css-input-container'>
             <p>Property</p>
-            <input
+            {/* <input
               value={property}
               title='Ensure the use of `{value}` as the animated value variable'
               type='text'
               onChange={e => setProperty(e.target.value)}
+            /> */}
+
+            <HighlightInput
+              value={property}
+              title='Ensure the use of `{value}` as the animated value variable'
+              type='text'
+              spellCheck={false}
+              onChange={e => setProperty(e.target.value)}
+              highlight={[
+                { match: /\b[\w-]+\b\(.*?\)/g, color: '#74befd' }, // word(any)
+                { match: /(?:\().*?(?:\))/g, color: 'unset' }, // (any)
+                { match: /{value}/g, color: '#eb7165' }, // {value}
+                { match: /:|;/g, color: 'gray' }, // : ;
+                { match: /{|}/g, color: '#a28cfb' }, // {}
+                { match: /\(|\)/g, color: '#e5cc66' }, // ()
+                { match: /\d/g, color: '#ee8f58' }, // numbers
+                { match: /px|pt|mm|cm|pc|in|%|em|rem|ch|vh|dvh|vw|dvw|vmin|vmax|deg/g, color: '#ee8f58' }, // units
+              ]}
             />
           </div>
 
