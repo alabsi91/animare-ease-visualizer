@@ -182,18 +182,18 @@
   border: solid 1px var(--main-color);
 }
 
-.select-example-button {
+.builtin-select-container {
   margin: auto;
   text-align: center;
 }
-.select-example-button svg {
+.builtin-select-container svg {
   position: absolute;
   left: 10px;
   width: 24px;
   height: 24px;
   fill: var(--text-color);
 }
-.select-example-button button {
+.builtin-select-button {
   all: unset;
   position: relative;
   background-color: var(--svg-background-color);
@@ -205,11 +205,13 @@
   cursor: pointer;
   transition: all 200ms;
 }
-.select-example-button button:hover {
+.builtin-select-active button,
+.builtin-select-container button:hover {
   color: white;
   background-color: var(--input-focused);
   border: solid 1px var(--main-color);
 }
-.select-example-button button:hover svg {
+.builtin-select-active svg,
+.builtin-select-container:hover svg {
   fill: #fff;
 }

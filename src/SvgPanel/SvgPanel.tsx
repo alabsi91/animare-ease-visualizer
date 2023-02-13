@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import './Panel.css';
+import './SvgPanel.css';
 import React, { useCallback, useContext } from 'react';
 
 import CTX from '../Helpers/CTX';

@@ -13,7 +13,7 @@ type Props<T extends Array<BASIC>> = {
   names: readonly string[];
   values: readonly [...T];
   defaultValue?: [...T][number];
-  SelectButton: React.FunctionComponent<{ title: string; onClick: () => void }>;
+  SelectButton: React.FunctionComponent<{ title: string; isOpen: boolean; onClick: () => void }>;
   containerStyle?: React.CSSProperties;
   minWidth?: number;
   onChange: (value: T[number]) => void;
@@ -149,7 +149,7 @@ function SelectComponent<T extends Array<BASIC>>(
 
   return (
     <div style={containerStyle} className={style.container}>
-      <SelectButton title={selected} onClick={toggle} />
+      <SelectButton title={selected} isOpen={show} onClick={toggle} />
 
       <dialog ref={dialogRef} onCancel={onCancel} className={style.itemsContainer}>
         <ul>{Menu()}</ul>

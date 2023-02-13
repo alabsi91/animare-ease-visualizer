@@ -88,10 +88,10 @@ export default function SidePanel() {
     (e.target as HTMLTextAreaElement).blur();
   };
 
-  const SelectButton = useCallback(({ title, onClick }: { title: string; onClick: () => void }) => {
+  const SelectButton = useCallback(({ title, onClick, isOpen }: { title: string; isOpen:boolean; onClick: () => void }) => {
     return (
-      <div className='select-example-button'>
-        <button onClick={onClick}>
+      <div className={'builtin-select-container ' + (isOpen ? 'builtin-select-active' : '')}>
+        <button className='builtin-select-button' onClick={onClick}>
           {title}
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
             <path d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z' />
@@ -123,29 +123,29 @@ export default function SidePanel() {
 
       <div className='hints'>
         <h2>
-          Hints{' '}
           <svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'>
             <path d='M9,21c0,0.55,0.45,1,1,1h4c0.55,0,1-0.45,1-1v-1H9V21z M12,2C8.14,2,5,5.14,5,9c0,2.38,1.19,4.47,3,5.74V17 c0,0.55,0.45,1,1,1h6c0.55,0,1-0.45,1-1v-2.26c1.81-1.27,3-3.36,3-5.74C19,5.14,15.86,2,12,2z M14,13.7V16h-4v-2.3 C8.48,12.63,7,11.53,7,9c0-2.76,2.24-5,5-5s5,2.24,5,5C17,11.49,15.49,12.65,14,13.7z' />
-          </svg>
+          </svg>{' '}
+          Hints
         </h2>
         <ul>
           <li>
-            <b>Add point :</b>
+            <b>Add point</b>
             <br />
-            <code>ALT-CLICK</code> on the line.
+            <code>ALT + CLICK</code> on the line.
           </li>
           <li>
-            <b>Toggle corner :</b>
+            <b>Toggle corner</b>
             <br />
             Hold <code>SHIFT</code> while <code>clicking</code> anchor point.
           </li>
           <li>
-            <b>Delete anchor :</b>
+            <b>Delete anchor point</b>
             <br />
-            Press <code>DELETE</code> key.
+            Select anchor point then press <code>DELETE</code> key.
           </li>
           <li>
-            <b>Undo :</b>
+            <b>Undo</b>
             <br />
             Press <code>CTRL-Z</code>.
           </li>

@@ -8,7 +8,7 @@ import { checkOverlap, constructPath, convertPathToPoints, findSmoothCorners } f
 import { eases } from './Pathes';
 import CTX from './Helpers/CTX';
 import Dialog, { DialogRef } from './Dialog/Dialog';
-import Panel from './Panel/Panel';
+import Panel from './SvgPanel/SvgPanel';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';
 import ExportJsFile from './ExportJsFile/ExportJsFile';
