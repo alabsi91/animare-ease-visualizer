@@ -8,7 +8,7 @@ export default function ExportSvg() {
 
   const [update, setUpdate] = useState(0);
 
-  const preElemtent = () => {
+  const highlight = () => {
     const pre = document.querySelector<HTMLPreElement>('.svg-dialog-pre');
     if (!pre) return;
     const string = ctx.parseResult();
@@ -21,7 +21,7 @@ export default function ExportSvg() {
   };
 
   useEffect(() => {
-    preElemtent();
+    highlight();
   }, [update]);
 
   useEffect(() => {

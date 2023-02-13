@@ -5,16 +5,15 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 type InputType = React.InputHTMLAttributes<HTMLInputElement>;
 
 type Props = {
-  keywords?: (string | RegExp)[];
-  colors?: string[];
   highlight?: { match: string | RegExp; color?: string }[];
+  plugin?: (input: string) => string;
 } & Omit<InputType, 'className' | 'id'>;
 
 export type HighlightInputRef = {
   setValue: (value: string) => void;
 };
 const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef, Props> = function (props, ref) {
-  let { keywords, colors, highlight, ...inputProps } = props;
+  let { highlight, plugin, ...inputProps } = props;
 
   const [currentValue, setCurrentValue] = useState(props.value ?? props.defaultValue ?? '');
 
@@ -28,8 +27,12 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
 
   const applyHighlight = (v: string | number | readonly string[]) => {
     const value = v.toString();
-    keywords ??= [];
-    colors ??= [];
+
+    if (plugin) {
+      paragraphRef.current.innerHTML = plugin(value);
+      return;
+    }
+
     highlight ??= [];
 
     // Convert the input text into an array of HTML <span> elements, each representing a single letter.

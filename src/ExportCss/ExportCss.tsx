@@ -1,9 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import './ExportCss.css';
 import React, { useContext, useEffect, useState } from 'react';
+import hljs from 'highlight.js/lib/core';
+import css from 'highlight.js/lib/languages/css';
+import 'highlight.js/styles/rainbow.css';
+
 import CTX from '../Helpers/CTX';
 import { getYpoints, parsePath } from '../Helpers/Helpers';
 import HighlightInput from '../HighlightInput/HighlightInput';
+
+hljs.registerLanguage('css', css);
 
 export default function ExportCss() {
   const ctx = useContext(CTX);
@@ -47,23 +53,15 @@ export default function ExportCss() {
     return resutls;
   };
 
-  const preElemtent = async () => {
+  const highlight = async () => {
     const pre = document.querySelector<HTMLPreElement>('.css-dialog-pre');
     if (!pre) return;
+
     const string = await generate();
 
     setIsSimple(string.startsWith('.element'));
 
-    pre.innerHTML = string
-      .replace('@keyframes', '<span class="token">$&</span>')
-      .replace('cubic-bezier', '<span class="token">$&</span>')
-      .replace(/^\.element/, '<span class="token">$&</span>')
-      .replace(/(\d+%)(\s{)/g, '<span class="token">$1</span> {')
-      .replace(/(\()(.+)(\))/g, '(<span class="value">$2</span>)')
-      .replace('my-custom-easing', '<span class="name">$&</span>')
-      .replace(/{|}/g, '<strong class="curly-brackets">$&</strong>')
-      .replace(/:|,|;/g, '<strong class="colon">$&</strong>')
-      .replace(/\(|\)/g, '<strong class="parentheses ">$&</strong>');
+    pre.innerHTML = hljs.highlight(string, { language: 'css' }).value;
   };
 
   const copyHandle = async () => {
@@ -72,7 +70,7 @@ export default function ExportCss() {
   };
 
   useEffect(() => {
-    preElemtent();
+    highlight();
   }, [update, from, to, property, accuracy]);
 
   useEffect(() => {
@@ -96,12 +94,6 @@ export default function ExportCss() {
         <>
           <div className='css-input-container'>
             <p>Property</p>
-            {/* <input
-              value={property}
-              title='Ensure the use of `{value}` as the animated value variable'
-              type='text'
-              onChange={e => setProperty(e.target.value)}
-            /> */}
 
             <HighlightInput
               value={property}
@@ -109,16 +101,14 @@ export default function ExportCss() {
               type='text'
               spellCheck={false}
               onChange={e => setProperty(e.target.value)}
-              highlight={[
-                { match: /\b[\w-]+\b\(.*?\)/g, color: '#74befd' }, // word(any)
-                { match: /(?:\().*?(?:\))/g, color: 'unset' }, // (any)
-                { match: /{value}/g, color: '#eb7165' }, // {value}
-                { match: /:|;/g, color: 'gray' }, // : ;
-                { match: /{|}/g, color: '#a28cfb' }, // {}
-                { match: /\(|\)/g, color: '#e5cc66' }, // ()
-                { match: /\d/g, color: '#ee8f58' }, // numbers
-                { match: /px|pt|mm|cm|pc|in|%|em|rem|ch|vh|dvh|vw|dvw|vmin|vmax|deg/g, color: '#ee8f58' }, // units
-              ]}
+              plugin={input =>
+                hljs
+                  .highlight(input, { language: 'css' })
+                  .value.replaceAll(
+                    '{value}',
+                    '<span class="hljs-built_in">{</span><span class="hljs-number">value</span><span class="hljs-built_in">}</span>'
+                  )
+              }
             />
           </div>
 
