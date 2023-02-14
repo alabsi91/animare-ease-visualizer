@@ -18,13 +18,7 @@
   max-height: 200px;
   overflow: auto;
 }
-.svg-dialog-pre .letter {
-  color: var(--main-color);
-}
-.svg-dialog-pre .number {
-  color: var(--active-point);
-}
-.svg-dialog-pre .dot {
+.hljs-dot {
   color: #b6b6b6;
 }
 

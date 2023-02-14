@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import './SvgPanel.css';
 import React, { useCallback, useContext } from 'react';
 

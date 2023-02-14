@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import './ExportCss.css';
 import React, { useContext, useEffect, useState } from 'react';
 import hljs from 'highlight.js/lib/core';

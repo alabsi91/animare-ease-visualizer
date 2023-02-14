@@ -7,28 +7,33 @@ import { eases } from '../Pathes';
 import Select, { SelectRef } from '../Select/Select';
 import CTX, { exportTypes } from '../Helpers/CTX';
 import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
+import HighlightTextarea from '../HighlightTextarea/HighlightTextarea';
+import Slider from '../Slider/Slider';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../Helpers/CTX';
-import Slider from '../Slider/Slider';
+import type { HighlightTextareaRef } from '../HighlightTextarea/HighlightTextarea';
+
+let isBuiltinUpdated = true;
 
 export default function SidePanel() {
   const ctx = useContext(CTX);
 
   /** - To set a value to eases select menu */
   const selectEaseRef = useRef<SelectRef<typeof eases[keyof typeof eases][]>>(null!);
+  const textareaRef = useRef<HighlightTextareaRef>(null!);
 
   useEffect(() => {
-    const onMouseUp = () => {
-      selectEaseRef.current.setValue('none');
-    };
+    // update textarea text
+    textareaRef.current.setValue(ctx.parseResult().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'));
 
-    document.addEventListener('pointerup', onMouseUp);
+    if (isBuiltinUpdated) {
+      isBuiltinUpdated = false;
+      return;
+    }
 
-    return () => {
-      document.removeEventListener('pointerup', onMouseUp);
-    };
-  }, []);
+    selectEaseRef.current.setValue('none');
+  }, [ctx.points]);
 
   const pathToPoints = (path: string) => convertPathToPoints(path, ctx.size.current, ctx.zoom.current);
 
@@ -59,6 +64,7 @@ export default function SidePanel() {
 
   const onEaseSelect = (value: string) => {
     if (value === 'none') return;
+    isBuiltinUpdated = true;
     ctx.toggledAnchors.clear();
     const Points = pathToPoints(value);
     findSmoothCorners(Points, ctx.toggledAnchors);
@@ -72,7 +78,9 @@ export default function SidePanel() {
     if (isValid) {
       ctx.undoStack.current.push(ctx.parseResult());
       ctx.setPoints(pathToPoints(e.target.value.trim()));
-    } else e.target.value = ctx.parseResult().replace(/\s*M/gi, '›M').replace(/\s*S/g, '\n›S').replace(/\s*C/g, '\n›C');
+    } else {
+      textareaRef.current.setValue(ctx.parseResult().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'));
+    }
   };
 
   const autoHideHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +96,7 @@ export default function SidePanel() {
     (e.target as HTMLTextAreaElement).blur();
   };
 
-  const SelectButton = useCallback(({ title, onClick, isOpen }: { title: string; isOpen:boolean; onClick: () => void }) => {
+  const SelectButton = useCallback(({ title, onClick, isOpen }: { title: string; isOpen: boolean; onClick: () => void }) => {
     return (
       <div className={'builtin-select-container ' + (isOpen ? 'builtin-select-active' : '')}>
         <button className='builtin-select-button' onClick={onClick}>
@@ -207,13 +215,18 @@ export default function SidePanel() {
       <div className='results'>
         <h2>SVG Path</h2>
 
-        <textarea
-          className='custom-scrollbar'
+        <HighlightTextarea
+          ref={textareaRef}
           defaultValue={ctx.parseResult()}
           rows={ctx.points.length}
           onBlur={onTextAreaChange}
           onKeyDown={textAreaOnKeyDown}
           wrap='hard'
+          highlight={[
+            { match: /[a-z]/gi, class: 'hljs-attribute' },
+            { match: /\d/g, class: 'hljs-number' },
+            { match: /\./g, class: 'hljs-dot' },
+          ]}
         />
       </div>
     </div>

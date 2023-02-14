@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import style from './Select.module.css';
 import { useCallback, useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
@@ -115,7 +114,6 @@ function SelectComponent<T extends Array<BASIC>>(
       window.removeEventListener('scroll', setMenuPos);
       window.removeEventListener('resize', setMenuPos);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 
   const Menu = () => {
@@ -140,7 +138,6 @@ function SelectComponent<T extends Array<BASIC>>(
     setShow(false);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useImperativeHandle(ref, () => ({ setValue: value => setSelected(names[values.indexOf(value)]) }), []);
 
   const toggle = () => {

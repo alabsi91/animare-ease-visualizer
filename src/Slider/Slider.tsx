@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import style from './Slider.module.css';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 

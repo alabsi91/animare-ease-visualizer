@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import './ExportSvg.css';
 import React, { useContext, useEffect, useState } from 'react';
 import CTX from '../Helpers/CTX';
@@ -15,9 +14,9 @@ export default function ExportSvg() {
 
     pre.innerHTML = string
       .replace(/(\s+)([a-z])/gi, '\n$2')
-      .replace(/[a-z]/gi, '<span class="letter">$&</span>')
-      .replace(/\./g, '<strong class="dot">$&</strong>')
-      .replace(/\d/g, '<strong class="number">$&</strong>');
+      .replace(/[a-z]/gi, '<span class="hljs-attribute">$&</span>')
+      .replace(/\./g, '<strong class="hljs-dot">$&</strong>')
+      .replace(/\d/g, '<strong class="hljs-number">$&</strong>');
   };
 
   useEffect(() => {

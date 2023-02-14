@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import './index.css';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import animare, { ease } from 'animare';
@@ -283,12 +282,6 @@ export default function App() {
 
   useEffect(() => {
     eventPoint.current = points;
-
-    // update textarea text
-    (document.querySelector('.results textarea') as HTMLTextAreaElement).value = parseResult()
-      .replace(/\s*M/gi, '›M')
-      .replace(/\s*S/g, '\n›S')
-      .replace(/\s*C/g, '\n›C');
 
     if (!tmout && !isZooming) {
       tmout = true;

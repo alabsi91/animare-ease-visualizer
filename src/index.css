@@ -47,7 +47,7 @@ hr {
 
 @media (hover: hover) and (pointer: fine) {
   .custom-scrollbar {
-    scrollbar-width: auto;
+    scrollbar-width: 5px;
     scrollbar-color: #7a7a7a50;
   }
   .custom-scrollbar::-webkit-scrollbar {
