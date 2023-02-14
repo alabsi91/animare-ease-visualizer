@@ -1,5 +1,5 @@
 import './SmallSidePanel.css';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useRef } from 'react';
 import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
 
@@ -18,18 +18,6 @@ export default function SmallSidePanel() {
 
   /** - To set a value to eases select menu */
   const selectEaseRef = useRef<SelectRef<typeof eases[keyof typeof eases][]>>(null!);
-
-  useEffect(() => {
-    const onMouseUp = () => {
-      selectEaseRef.current.setValue('none');
-    };
-
-    document.addEventListener('pointerup', onMouseUp);
-
-    return () => {
-      document.removeEventListener('pointerup', onMouseUp);
-    };
-  }, []);
 
   const toggleMagnet: React.MouseEventHandler<HTMLButtonElement> = e => {
     const target = e.target as Element;
@@ -91,6 +79,7 @@ export default function SmallSidePanel() {
 
   const onEaseSelect = (value: string) => {
     if (value === 'none') return;
+    ctx.isPresetSelected.current = true;
     const Points = pathToPoints(value);
     findSmoothCorners(Points, ctx.toggledAnchors);
     ctx.setPoints(Points);

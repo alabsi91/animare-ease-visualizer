@@ -43,6 +43,7 @@ export default function App() {
     activeControlPoint = useRef<number[] | null>(null),
     /** - The current moving point. */
     activePathPoint = useRef<number | null>(null),
+    isPresetSelected = useRef(true),
     /** - The selected (focused) point, used for deletion. */
     selectedPoint = useRef<number | null>(null);
 
@@ -333,6 +334,7 @@ export default function App() {
     selectedPoint,
     activePathPoint,
     eventPoint,
+    isPresetSelected,
     onZoom,
     setPoints,
     parseResult,

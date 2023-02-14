@@ -61,6 +61,12 @@
   background-color: var(--hover-color);
   color: var(--text-hover);
 }
+.selected {
+  outline: var(--hover-color);
+  outline-style: solid;
+  outline-offset: -2px;
+  outline-width: 2px;
+}
 
 .fade-in {
   animation: fade-in 500ms ease-out forwards;

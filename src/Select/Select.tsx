@@ -22,7 +22,7 @@ export type SelectRef<F extends Array<any> = string[]> = {
 };
 
 function SelectComponent<T extends Array<BASIC>>(
-  { names, values, SelectButton, defaultValue, containerStyle, minWidth= 100, onChange }: Props<T>,
+  { names, values, SelectButton, defaultValue, containerStyle, minWidth = 100, onChange }: Props<T>,
   ref: React.ForwardedRef<SelectRef>
 ) {
   if (names.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
@@ -68,6 +68,17 @@ function SelectComponent<T extends Array<BASIC>>(
 
   const open = async () => {
     dialogRef.current.showModal();
+
+    const buttons = [...dialogRef.current.querySelectorAll<HTMLButtonElement>('li button')];
+    const selectedButton = buttons.filter(el => el.innerHTML === selected)?.[0];
+    const selectedLi = selectedButton?.parentElement;
+    
+    if (selectedLi) {
+      const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
+      lists.forEach(el => el.classList.remove(style.selected));
+      dialogRef.current.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
+      selectedLi.classList.add(style.selected);
+    }
 
     setMenuPos();
 

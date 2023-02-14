@@ -14,8 +14,6 @@ import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../Helpers/CTX';
 import type { HighlightTextareaRef } from '../HighlightTextarea/HighlightTextarea';
 
-let isBuiltinUpdated = true;
-
 export default function SidePanel() {
   const ctx = useContext(CTX);
 
@@ -27,8 +25,8 @@ export default function SidePanel() {
     // update textarea text
     textareaRef.current.setValue(ctx.parseResult().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'));
 
-    if (isBuiltinUpdated) {
-      isBuiltinUpdated = false;
+    if (ctx.isPresetSelected.current) {
+      ctx.isPresetSelected.current = false;
       return;
     }
 
@@ -64,7 +62,7 @@ export default function SidePanel() {
 
   const onEaseSelect = (value: string) => {
     if (value === 'none') return;
-    isBuiltinUpdated = true;
+    ctx.isPresetSelected.current = true;
     ctx.toggledAnchors.clear();
     const Points = pathToPoints(value);
     findSmoothCorners(Points, ctx.toggledAnchors);
