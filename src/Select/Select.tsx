@@ -69,12 +69,10 @@ function SelectComponent<T extends Array<BASIC>>(
   const open = async () => {
     dialogRef.current.showModal();
 
-    const buttons = [...dialogRef.current.querySelectorAll<HTMLButtonElement>('li button')];
-    const selectedButton = buttons.filter(el => el.innerHTML === selected)?.[0];
-    const selectedLi = selectedButton?.parentElement;
-    
+    const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
+    const selectedLi = lists[names.indexOf(selected)];
+
     if (selectedLi) {
-      const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
       lists.forEach(el => el.classList.remove(style.selected));
       dialogRef.current.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
       selectedLi.classList.add(style.selected);

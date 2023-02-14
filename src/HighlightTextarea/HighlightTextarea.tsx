@@ -20,23 +20,7 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
   const textareaRef = useRef<HTMLTextAreaElement>(null!);
 
   const onInputChange: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
-    const textareaEl = e.target;
-    const text = textareaEl.value;
-
-    const hasSrollbarX = textareaEl.offsetWidth < textareaEl.scrollWidth;
-    const hasSrollbarY = textareaEl.offsetHeight < textareaEl.scrollHeight;
-
-    if (hasSrollbarY) {
-      const scrollbarWidth = parseFloat(getComputedStyle(textareaEl.parentElement!).getPropertyValue('--scrollbar-width'));
-      const padding = parseFloat(getComputedStyle(textareaEl).paddingBottom);
-      textareaEl.style.paddingBottom = (padding - scrollbarWidth) / 2 + 'px';
-    } else textareaEl.style.removeProperty('padding-bottom');
-
-    if (hasSrollbarX) {
-      const scrollbarWidth = parseFloat(getComputedStyle(textareaEl.parentElement!).getPropertyValue('--scrollbar-width'));
-      const padding = parseFloat(getComputedStyle(textareaEl).paddingRight);
-      textareaEl.style.paddingRight = (padding - scrollbarWidth) / 2 + 'px';
-    } else textareaEl.style.removeProperty('padding-right');
+    const text = e.target.value;
 
     if (typeof props.value === 'undefined') setCurrentValue(text);
     props.onChange?.(e);
@@ -46,11 +30,17 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
     const value = v.toString();
 
     if (plugin) {
-      paragraphRef.current.innerHTML = plugin(value);
+      paragraphRef.current.innerHTML = plugin(value).replace(/\s+$/, '<span>$& &#8205;</span>');
       return;
     }
 
-    highlight ??= [];
+    if (!Array.isArray(highlight)) {
+      paragraphRef.current.textContent = value;
+      const extraSpace = value.match(/\s+$/);
+      if (!extraSpace) return;
+      paragraphRef.current.innerHTML += `<span>${extraSpace[0]} &#8205;</span>`;
+      return;
+    }
 
     // Convert the input text into an array of HTML <span> elements, each representing a single letter.
     const letters = value.split('').map(e => {
@@ -87,7 +77,30 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
 
     paragraphRef.current.innerHTML = '';
     letters.forEach(el => paragraphRef.current.appendChild(el));
+    const extraSpace = value.match(/\s+$/);
+    if (!extraSpace) return;
+    paragraphRef.current.innerHTML += `<span>${extraSpace[0]} &#8205;</span>`;
   };
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      const textareaEl = textareaRef.current;
+
+      const scrollbarWidth = parseFloat(getComputedStyle(textareaEl.parentElement!).getPropertyValue('--scrollbar-width'));
+
+      paragraphRef.current.style.removeProperty('bottom');
+      paragraphRef.current.style.removeProperty('right');
+
+      if (textareaEl.offsetWidth < textareaEl.scrollWidth) paragraphRef.current.style.bottom = scrollbarWidth + 'px';
+      if (textareaEl.offsetHeight < textareaEl.scrollHeight) paragraphRef.current.style.right = scrollbarWidth + 'px';
+    });
+
+    resizeObserver.observe(textareaRef.current);
+
+    return () => {
+      resizeObserver.unobserve(textareaRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     applyHighlight(currentValue);
@@ -105,7 +118,7 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
 
   const updateValue = (v: string | number | readonly string[]) => {
     textareaRef.current.value = v.toString();
-    setCurrentValue(v)
+    setCurrentValue(v);
   };
 
   useImperativeHandle(ref, () => ({ setValue: updateValue }), []);
