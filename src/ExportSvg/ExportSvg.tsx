@@ -15,8 +15,8 @@ export default function ExportSvg() {
     pre.innerHTML = string
       .replace(/(\s+)([a-z])/gi, '\n$2')
       .replace(/[a-z]/gi, '<span class="hljs-attribute">$&</span>')
-      .replace(/\./g, '<strong class="hljs-dot">$&</strong>')
-      .replace(/\d/g, '<strong class="hljs-number">$&</strong>');
+      .replace(/\./g, '<span class="hljs-dot">$&</span>')
+      .replace(/\d/g, '<span class="hljs-number">$&</span>');
   };
 
   useEffect(() => {
