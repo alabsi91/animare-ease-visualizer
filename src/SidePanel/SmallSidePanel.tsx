@@ -3,15 +3,15 @@ import React, { useCallback, useContext, useRef } from 'react';
 import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
 
-import Select from '../Select/Select';
+import Select from '../components/Select/Select';
+import Slider from '../components/Slider/Slider';
 import CTX, { exportTypes } from '../Helpers/CTX';
 import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
 import { eases } from '../Pathes';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../Helpers/CTX';
-import type { SelectRef } from '../Select/Select';
-import Slider from '../Slider/Slider';
+import type { SelectRef } from '../components/Select/Select';
 
 export default function SmallSidePanel() {
   const ctx = useContext(CTX);
@@ -142,6 +142,7 @@ export default function SmallSidePanel() {
           values={exportTypes}
           onChange={onExportSelect}
           SelectButton={ExportButton}
+          highlightSelected={false}
         />
 
         <button title='Enable snapping to the grid' onClick={toggleMagnet}>

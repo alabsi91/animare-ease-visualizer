@@ -15,6 +15,7 @@ type Props<T extends Array<BASIC>> = {
   SelectButton: React.FunctionComponent<{ title: string; isOpen: boolean; onClick: () => void }>;
   containerStyle?: React.CSSProperties;
   minWidth?: number;
+  highlightSelected?: boolean;
   onChange: (value: T[number]) => void;
 };
 export type SelectRef<F extends Array<any> = string[]> = {
@@ -22,7 +23,7 @@ export type SelectRef<F extends Array<any> = string[]> = {
 };
 
 function SelectComponent<T extends Array<BASIC>>(
-  { names, values, SelectButton, defaultValue, containerStyle, minWidth = 100, onChange }: Props<T>,
+  { names, values, SelectButton, defaultValue, containerStyle, minWidth = 100, highlightSelected = true, onChange }: Props<T>,
   ref: React.ForwardedRef<SelectRef>
 ) {
   if (names.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
@@ -69,13 +70,15 @@ function SelectComponent<T extends Array<BASIC>>(
   const open = async () => {
     dialogRef.current.showModal();
 
-    const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
-    const selectedLi = lists[names.indexOf(selected)];
+    if (highlightSelected) {
+      const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
+      const selectedLi = lists[names.indexOf(selected)];
 
-    if (selectedLi) {
-      lists.forEach(el => el.classList.remove(style.selected));
-      dialogRef.current.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
-      selectedLi.classList.add(style.selected);
+      if (selectedLi) {
+        lists.forEach(el => el.classList.remove(style.selected));
+        dialogRef.current.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
+        selectedLi.classList.add(style.selected);
+      }
     }
 
     setMenuPos();

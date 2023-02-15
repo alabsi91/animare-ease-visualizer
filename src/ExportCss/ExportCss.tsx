@@ -6,7 +6,7 @@ import 'highlight.js/styles/rainbow.css';
 
 import CTX from '../Helpers/CTX';
 import { getYpoints, parsePath } from '../Helpers/Helpers';
-import HighlightInput from '../HighlightInput/HighlightInput';
+import HighlightInput from '../components/HighlightInput/HighlightInput';
 
 hljs.registerLanguage('css', css);
 

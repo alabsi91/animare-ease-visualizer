@@ -6,7 +6,7 @@ import { useAnimare } from 'animare/react';
 import { checkOverlap, constructPath, convertPathToPoints, findSmoothCorners } from './Helpers/Helpers';
 import { eases } from './Pathes';
 import CTX from './Helpers/CTX';
-import Dialog, { DialogRef } from './Dialog/Dialog';
+import Dialog, { DialogRef } from './components/Dialog/Dialog';
 import Panel from './SvgPanel/SvgPanel';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';

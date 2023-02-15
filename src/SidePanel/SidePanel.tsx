@@ -4,15 +4,15 @@ import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
 
 import { eases } from '../Pathes';
-import Select, { SelectRef } from '../Select/Select';
+import Select, { SelectRef } from '../components/Select/Select';
 import CTX, { exportTypes } from '../Helpers/CTX';
 import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
-import HighlightTextarea from '../HighlightTextarea/HighlightTextarea';
-import Slider from '../Slider/Slider';
+import HighlightTextarea from '../components/HighlightTextarea/HighlightTextarea';
+import Slider from '../components/Slider/Slider';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../Helpers/CTX';
-import type { HighlightTextareaRef } from '../HighlightTextarea/HighlightTextarea';
+import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
 
 export default function SidePanel() {
   const ctx = useContext(CTX);
@@ -181,9 +181,15 @@ export default function SidePanel() {
             Pause
           </button>
         </div>
-        <Select names={exportTypes} values={exportTypes} onChange={onExportSelect} SelectButton={ExportButton} />
-        <hr />
 
+        <Select
+          names={exportTypes}
+          values={exportTypes}
+          onChange={onExportSelect}
+          SelectButton={ExportButton}
+          highlightSelected={false}
+        />
+        <hr />
         <h2>Options</h2>
         <div>
           <input
