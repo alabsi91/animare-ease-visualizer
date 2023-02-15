@@ -334,7 +334,7 @@ export default function App() {
 
     // reset preset menu to 'none' if the point changed.
     if (isPresetSelected.current) isPresetSelected.current = false;
-    else if (preset !== 'none') setPreset('none');
+    else if (preset !== 'none' && !isZooming) setPreset('none');
 
     if (!tmout && !isZooming) {
       tmout = true;
@@ -410,15 +410,15 @@ export default function App() {
 
   return (
     <CTX.Provider value={contextValue}>
-      <Dialog ref={exportJsDialogRef}>
+      <Dialog ref={exportJsDialogRef} unmoutOnHide>
         <ExportJsFile />
       </Dialog>
 
-      <Dialog ref={exportSvgDialogRef}>
+      <Dialog ref={exportSvgDialogRef} unmoutOnHide>
         <ExportSvg />
       </Dialog>
 
-      <Dialog ref={cssDialogRef}>
+      <Dialog ref={cssDialogRef} unmoutOnHide>
         <ExportCss />
       </Dialog>
 

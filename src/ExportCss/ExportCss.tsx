@@ -18,7 +18,6 @@ export default function ExportCss() {
   const [to, setTo] = useState(100);
   const [accuracy, setAccuracy] = useState(50);
 
-  const [update, setUpdate] = useState(0);
   const [isSimple, setIsSimple] = useState(false);
 
   const generate = async () => {
@@ -70,20 +69,7 @@ export default function ExportCss() {
 
   useEffect(() => {
     highlight();
-  }, [update, from, to, property, accuracy]);
-
-  useEffect(() => {
-    const dialog = document.getElementById('css-dialog')?.parentNode as HTMLDialogElement;
-    const onShow = () => {
-      setUpdate(Math.random());
-    };
-
-    dialog.addEventListener('animationstart', onShow);
-
-    return () => {
-      dialog.removeEventListener('animationstart', onShow);
-    };
-  }, []);
+  }, [from, to, property, accuracy]);
 
   return (
     <div id='css-dialog'>
