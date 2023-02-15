@@ -39,7 +39,7 @@ export default function App() {
     gridPoints = useRef(new Array(11).fill(0).map((_, i) => zoom.current + (i * size.current) / 10)),
     /** - To save path strings pathes for undo. */
     undoStack = useRef<string[]>([]),
-    /** - The current moving control point. */
+    /** - The current moving control point `[index of curve, index of point]`. */
     activeControlPoint = useRef<number[] | null>(null),
     /** - The current moving point. */
     activePathPoint = useRef<number | null>(null),
@@ -61,6 +61,76 @@ export default function App() {
   /** - The current path as two dimensional array `[[M], [C], ...[S]]` to be used for events. */
   const eventPoint = useRef(points);
 
+  const getStickingPoints = () => {
+    const Points = eventPoint.current; // a copy of the current path points.
+
+    const pointsX: number[] = [], // stick to these points on the x axis
+      pointsY: number[] = []; // stick to these points on the y axis
+
+    // grab x and y positions for points and control points on the path  -> M, C, ...S
+    for (let i = 0; i < Points.length; i++) {
+      const curve = Points[i];
+
+      const isPointActive = activePathPoint.current !== null && activePathPoint.current === i;
+      const isControlActive = activeControlPoint.current !== null && activeControlPoint.current[0] === i;
+      const [, pointIndex] = activeControlPoint.current ?? [];
+
+      // M has 1 point and no control points
+      if (i === 0) {
+        if (isPointActive) continue; // prevents active point from sticking to itself.
+        const p = { x: curve[0], y: curve[1] };
+        pointsX.push(p.x);
+        pointsY.push(p.y);
+        continue;
+      }
+
+      // C has 1 point and 2 control point
+      if (i === 1) {
+        const c1 = { x: curve[0], y: curve[1] };
+        const c2 = { x: curve[2], y: curve[3] };
+        const p = { x: curve[4], y: curve[5] };
+
+        // prevent the active control point from sticking to itself or its connected active point (M)
+        if (!(isControlActive && pointIndex === 0) && activePathPoint.current !== 0) {
+          pointsX.push(c1.x);
+          pointsY.push(c1.y);
+        }
+
+        // prevent the active control point from sticking to itself or its connected active point (C)
+        if (!(isControlActive && pointIndex === 2) && !isPointActive) {
+          pointsX.push(c2.x);
+          pointsY.push(c2.y);
+        }
+
+        // prevent active point from sticking to itself.
+        if (!isPointActive) {
+          pointsX.push(p.x);
+          pointsY.push(p.y);
+        }
+
+        continue;
+      }
+
+      // S has 1 point and 1 control point
+      const c = { x: curve[0], y: curve[1] };
+      const p = { x: curve[2], y: curve[3] };
+
+      // prevent the active control point from sticking to itself or its connected active point (S)
+      if (!isControlActive && !isPointActive) {
+        pointsX.push(c.x);
+        pointsY.push(c.y);
+      }
+
+      // prevent active point from sticking to itself.
+      if (!isPointActive) {
+        pointsX.push(p.x);
+        pointsY.push(p.y);
+      }
+    }
+
+    return [pointsX, pointsY];
+  };
+
   const mouseMove = useCallback((e: React.MouseEvent<Element> | MouseEvent) => {
     const svg = document.querySelector('.svg') as SVGSVGElement;
     const { left, top, width, height } = svg.getBoundingClientRect();
@@ -73,36 +143,10 @@ export default function App() {
 
     const Points = [...eventPoint.current]; // a copy of the current path points.
 
-    // stick to the grid.
+    // * stick to the grid and points
     if (magnet.current) {
-      const threshold = 2,
-        pointsX = [], // stick to these points on the x axis
-        pointsY = []; // stick to these points on the y axis
-
-      // grab x and y position for points on the path and for control points -> M, C, ...S
-      for (let i = 0; i < Points.length; i++) {
-        const p = Points[i];
-        i === 0 ? pointsX.push(p[0]) : i === 1 ? pointsX.push(p[0], p[2], p[4]) : pointsX.push(p[0], p[2]);
-        i === 0 ? pointsY.push(p[1]) : i === 1 ? pointsY.push(p[1], p[3], p[5]) : pointsY.push(p[1], p[3]);
-      }
-
-      // if the active control point is selected remove it from the array to prevent it to stick to it self.
-      if (activeControlPoint.current !== null) {
-        pointsX.splice(pointsX.indexOf(Points[activeControlPoint.current[0]][activeControlPoint.current[1]]), 1);
-        pointsY.splice(pointsY.indexOf(Points[activeControlPoint.current[0]][activeControlPoint.current[1] + 1]), 1);
-        // if the active point on the path is selected remove it from the array to prevent it to stick to it self.
-      } else if (activePathPoint.current !== null) {
-        const p = Points[activePathPoint.current];
-        pointsX.splice(pointsX.indexOf(Points[activePathPoint.current][p.length - 2]), 1);
-        pointsY.splice(pointsY.indexOf(Points[activePathPoint.current][p.length - 1]), 1);
-        // if smooth corner is enabled prevent the point on the path to stick to it's control point.
-        if (toggledAnchors.has(activePathPoint.current)) {
-          const index = activePathPoint.current === 1 ? 2 : 0;
-          pointsX.splice(pointsX.indexOf(Points[activePathPoint.current === 0 ? 1 : activePathPoint.current][index]), 1);
-          pointsY.splice(pointsY.indexOf(Points[activePathPoint.current === 0 ? 1 : activePathPoint.current][index + 1]), 1);
-        }
-      }
-
+      const threshold = 2;
+      const [pointsX, pointsY] = getStickingPoints();
       // add grid, and calculate which point in the nearest to stick to.
       x = [...gridPoints.current, ...pointsX].find(p => x + threshold > p && x - threshold < p) || x;
       y = [...gridPoints.current, ...pointsY].find(p => y + threshold > p && y - threshold < p) || y;
@@ -110,9 +154,12 @@ export default function App() {
 
     // move control point when moving the point on the path.
     if (activePathPoint.current !== null) {
-      const p = Points[activePathPoint.current];
+      const curve = Points[activePathPoint.current]; // M, C, or S
       const handleIndex = activePathPoint.current === 0 ? 1 : activePathPoint.current;
-      const handlePos = [activePathPoint.current === 0 ? 0 : p.length - 4, activePathPoint.current === 0 ? 1 : p.length - 3];
+      const handlePos = [
+        activePathPoint.current === 0 ? 0 : curve.length - 4,
+        activePathPoint.current === 0 ? 1 : curve.length - 3,
+      ];
 
       // keep the first and the last point fixed on the x axis.
       x =
@@ -124,13 +171,13 @@ export default function App() {
 
       // the distance between the point and the handle point.
       const distance = [
-        Points[handleIndex][handlePos[0]] - Points[activePathPoint.current][p.length - 2],
-        Points[handleIndex][handlePos[1]] - Points[activePathPoint.current][p.length - 1],
+        Points[handleIndex][handlePos[0]] - Points[activePathPoint.current][curve.length - 2],
+        Points[handleIndex][handlePos[1]] - Points[activePathPoint.current][curve.length - 1],
       ];
 
       // move the point on the path.
-      Points[activePathPoint.current][p.length - 2] = x;
-      Points[activePathPoint.current][p.length - 1] = y;
+      Points[activePathPoint.current][curve.length - 2] = x;
+      Points[activePathPoint.current][curve.length - 1] = y;
 
       // move the control point with the same distance from the active point.
       Points[handleIndex][handlePos[0]] = distance[0] + x;
@@ -285,8 +332,9 @@ export default function App() {
   useEffect(() => {
     eventPoint.current = points;
 
+    // reset preset menu to 'none' if the point changed.
     if (isPresetSelected.current) isPresetSelected.current = false;
-    else setPreset('none');
+    else if (preset !== 'none') setPreset('none');
 
     if (!tmout && !isZooming) {
       tmout = true;
@@ -311,7 +359,7 @@ export default function App() {
   };
 
   const onPresetSelect = (value: string) => {
-    // if (value === 'none') return;
+    if (value === 'none') return;
     isPresetSelected.current = true;
     toggledAnchors.clear();
     const Points = pathToPoints(value);
