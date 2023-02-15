@@ -80,17 +80,11 @@ export default function ExportJsFile() {
     URL.revokeObjectURL(url);
   };
 
-  const copyHandle = async () => {
-    // const string = await generate();
-    navigator.clipboard.writeText('string');
-  };
-
   useEffect(() => {
     const pre = document.querySelector<HTMLPreElement>('.download-dialog-pre');
     if (!pre) return;
 
-    const string = `
-import ${fileName} from './${fileName}';
+    const string = `import ${fileName} from './${fileName}';
 
 // animare
 animare({
@@ -137,9 +131,6 @@ new Vivus(
 
       <div className='pre-container'>
         <pre className='download-dialog-pre custom-scrollbar' />
-        <button className='download-dialog-copy-button' onClick={copyHandle}>
-          Copy
-        </button>
       </div>
 
       <div className='inputsContainer'>
