@@ -4,9 +4,9 @@ import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
 
 import { eases } from '../Pathes';
-import Select, { SelectRef } from '../components/Select/Select';
+import Select from '../components/Select/Select';
 import CTX, { exportTypes } from '../Helpers/CTX';
-import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
+import { convertPathToPoints } from '../Helpers/Helpers';
 import HighlightTextarea from '../components/HighlightTextarea/HighlightTextarea';
 import Slider from '../components/Slider/Slider';
 
@@ -17,20 +17,11 @@ import type { HighlightTextareaRef } from '../components/HighlightTextarea/Highl
 export default function SidePanel() {
   const ctx = useContext(CTX);
 
-  /** - To set a value to eases select menu */
-  const selectEaseRef = useRef<SelectRef<typeof eases[keyof typeof eases][]>>(null!);
   const textareaRef = useRef<HighlightTextareaRef>(null!);
 
   useEffect(() => {
     // update textarea text
     textareaRef.current.setValue(ctx.parseResult().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'));
-
-    if (ctx.isPresetSelected.current) {
-      ctx.isPresetSelected.current = false;
-      return;
-    }
-
-    selectEaseRef.current.setValue('none');
   }, [ctx.points]);
 
   const pathToPoints = (path: string) => convertPathToPoints(path, ctx.size.current, ctx.zoom.current);
@@ -58,15 +49,6 @@ export default function SidePanel() {
   const close = () => {
     const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
     sidePanelAnimation?.play({ from: [0, sidePanel.offsetWidth] });
-  };
-
-  const onEaseSelect = (value: string) => {
-    if (value === 'none') return;
-    ctx.isPresetSelected.current = true;
-    ctx.toggledAnchors.clear();
-    const Points = pathToPoints(value);
-    findSmoothCorners(Points, ctx.toggledAnchors);
-    ctx.setPoints(Points);
   };
 
   const onTextAreaChange = (e: React.FocusEvent<HTMLTextAreaElement>) => {
@@ -165,11 +147,10 @@ export default function SidePanel() {
           <p>Presets</p>
 
           <Select
-            ref={selectEaseRef}
             names={Object.keys(eases)}
             values={Object.values(eases)}
-            defaultValue='none'
-            onChange={onEaseSelect}
+            value={ctx.preset}
+            onChange={ctx.onPresetSelect}
             SelectButton={SelectButton}
           />
         </div>

@@ -16,9 +16,10 @@ type ctxType = {
   selectedPoint: React.MutableRefObject<number | null>;
   activePathPoint: React.MutableRefObject<number | null>;
   eventPoint: React.MutableRefObject<number[][]>;
-  isPresetSelected: React.MutableRefObject<boolean>;
-  toggleExportDialog: (dialog: ExportTypes) => void;
+  preset: string;
+  onPresetSelect: (value: string) => void;
   onZoom: (value: number) => void;
+  toggleExportDialog: (dialog: ExportTypes) => void;
   setPoints: React.Dispatch<React.SetStateAction<number[][]>>;
   parseResult: (p?: number[][]) => string;
   playCurrentEasing: () => void;

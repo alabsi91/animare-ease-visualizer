@@ -12,6 +12,7 @@ type Props<T extends Array<BASIC>> = {
   names: readonly string[];
   values: readonly [...T];
   defaultValue?: [...T][number];
+  value?: [...T][number];
   SelectButton: React.FunctionComponent<{ title: string; isOpen: boolean; onClick: () => void }>;
   containerStyle?: React.CSSProperties;
   minWidth?: number;
@@ -23,12 +24,22 @@ export type SelectRef<F extends Array<any> = string[]> = {
 };
 
 function SelectComponent<T extends Array<BASIC>>(
-  { names, values, SelectButton, defaultValue, containerStyle, minWidth = 100, highlightSelected = true, onChange }: Props<T>,
+  {
+    names,
+    values,
+    SelectButton,
+    value,
+    defaultValue,
+    containerStyle,
+    minWidth = 100,
+    highlightSelected = true,
+    onChange,
+  }: Props<T>,
   ref: React.ForwardedRef<SelectRef>
 ) {
   if (names.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
 
-  const [selected, setSelected] = useState(names[values.indexOf(defaultValue ?? values[0])]);
+  const [selected, setSelected] = useState(names[values.indexOf(value ?? defaultValue ?? values[0])]);
   const [show, setShow] = useState(false);
 
   const dialogRef = useRef<HTMLDialogElement>(null!);
@@ -128,14 +139,19 @@ function SelectComponent<T extends Array<BASIC>>(
     };
   }, [show]);
 
+  useEffect(() => {
+    if (typeof value === 'undefined') return;
+    setSelected(names[values.indexOf(value)]);
+  }, [value]);
+
   const Menu = () => {
     return names.map((name, idx) => (
-      <li key={values[idx] + 'key'}>
+      <li key={`${values[idx]}item-key`}>
         <button
           className={style.item}
           onClick={() => {
             setShow(false);
-            setSelected(name);
+            if (typeof value === 'undefined') setSelected(name);
             onChange(values[idx]);
           }}
         >
@@ -150,7 +166,7 @@ function SelectComponent<T extends Array<BASIC>>(
     setShow(false);
   };
 
-  useImperativeHandle(ref, () => ({ setValue: value => setSelected(names[values.indexOf(value)]) }), []);
+  useImperativeHandle(ref, () => ({ setValue: v => setSelected(names[values.indexOf(v)]) }), []);
 
   const toggle = () => {
     setShow(!show);

@@ -11,6 +11,41 @@
   user-select: none;
 }
 
+.download-dialog-pre {
+  padding: 20px;
+  margin: 0px auto;
+  border-radius: 10px;
+  background-color: var(--background-color);
+  text-align: left;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.download-dialog-copy-button {
+  all: unset;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-color);
+  background-color: #303030;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 100ms ease;
+}
+.download-dialog-copy-button:hover {
+  transform: scale(1.05);
+}
+.download-dialog-copy-button:active {
+  transform: translate(2px, 2px);
+}
+
 .inputsContainer {
   display: flex;
   justify-content: space-between;

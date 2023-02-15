@@ -56,6 +56,7 @@ export default function App() {
 
   /** - The current path as two dimensional array `[[M], [C], ...[S]]` */
   const [points, setPoints] = useState(pathToPoints(window.localStorage.getItem('saved') || eases['ease.in.sine']));
+  const [preset, setPreset] = useState('none');
 
   /** - The current path as two dimensional array `[[M], [C], ...[S]]` to be used for events. */
   const eventPoint = useRef(points);
@@ -284,6 +285,9 @@ export default function App() {
   useEffect(() => {
     eventPoint.current = points;
 
+    if (isPresetSelected.current) isPresetSelected.current = false;
+    else setPreset('none');
+
     if (!tmout && !isZooming) {
       tmout = true;
       setTimeout(() => {
@@ -304,6 +308,16 @@ export default function App() {
       from: [zoom.current, size.current + zoom.current, 0],
       to: [size.current + zoom.current, zoom.current, size.current],
     });
+  };
+
+  const onPresetSelect = (value: string) => {
+    // if (value === 'none') return;
+    isPresetSelected.current = true;
+    toggledAnchors.clear();
+    const Points = pathToPoints(value);
+    findSmoothCorners(Points, toggledAnchors);
+    setPoints(Points);
+    setPreset(value);
   };
 
   const playCurrentEasing = () => {
@@ -334,8 +348,9 @@ export default function App() {
     selectedPoint,
     activePathPoint,
     eventPoint,
-    isPresetSelected,
+    preset,
     onZoom,
+    onPresetSelect,
     setPoints,
     parseResult,
     playCurrentEasing,

@@ -1,8 +1,12 @@
 import './ExportJsFile.css';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
 
 import { getYpoints } from '../Helpers/Helpers';
 import CTX from '../Helpers/CTX';
+
+hljs.registerLanguage('javascript', javascript);
 
 let controller = new AbortController();
 
@@ -76,10 +80,67 @@ export default function ExportJsFile() {
     URL.revokeObjectURL(url);
   };
 
+  const copyHandle = async () => {
+    // const string = await generate();
+    navigator.clipboard.writeText('string');
+  };
+
+  useEffect(() => {
+    const pre = document.querySelector<HTMLPreElement>('.download-dialog-pre');
+    if (!pre) return;
+
+    const string = `
+import ${fileName} from './${fileName}';
+
+// animare
+animare({
+  // ...
+  ease: ${fileName} // 👈
+});
+
+// Anime.js
+anime({
+  // ...
+  easing: ${fileName} // 👈
+});
+
+// GreenSock JS
+gsap.to(element, {
+  // ...
+  ease: ${fileName} // 👈
+});
+
+// Mo.js
+new mojs.Tween({
+   // ...
+  easing: ${fileName} // 👈
+});
+
+// Vivus.js
+new Vivus(
+  element,
+  {
+   // ...
+    animTimingFunction: ${fileName} // 👈
+  },
+  myCallback
+);
+`;
+
+    pre.innerHTML = hljs.highlight(string, { language: 'javascript' }).value;
+  }, [fileName]);
+
   return (
     <div>
       <h3 className='download-dialog-title'>Exporting to a JavaScript File</h3>
       <p className='download-dialog-description'>Will be stored as an Array of numbers as points</p>
+
+      <div className='pre-container'>
+        <pre className='download-dialog-pre custom-scrollbar' />
+        <button className='download-dialog-copy-button' onClick={copyHandle}>
+          Copy
+        </button>
+      </div>
 
       <div className='inputsContainer'>
         <p>Samples</p>

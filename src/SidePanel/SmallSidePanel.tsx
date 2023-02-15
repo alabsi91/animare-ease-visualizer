@@ -1,23 +1,19 @@
 import './SmallSidePanel.css';
-import React, { useCallback, useContext, useRef } from 'react';
+import React, { useCallback, useContext } from 'react';
 import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
 
 import Select from '../components/Select/Select';
 import Slider from '../components/Slider/Slider';
 import CTX, { exportTypes } from '../Helpers/CTX';
-import { convertPathToPoints, findSmoothCorners } from '../Helpers/Helpers';
 import { eases } from '../Pathes';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../Helpers/CTX';
-import type { SelectRef } from '../components/Select/Select';
 
 export default function SmallSidePanel() {
   const ctx = useContext(CTX);
 
-  /** - To set a value to eases select menu */
-  const selectEaseRef = useRef<SelectRef<typeof eases[keyof typeof eases][]>>(null!);
 
   const toggleMagnet: React.MouseEventHandler<HTMLButtonElement> = e => {
     const target = e.target as Element;
@@ -75,16 +71,6 @@ export default function SmallSidePanel() {
     sidePanelAnimation?.play({ to: [0, sidePanel.offsetWidth] });
   };
 
-  const pathToPoints = (path: string) => convertPathToPoints(path, ctx.size.current, ctx.zoom.current);
-
-  const onEaseSelect = (value: string) => {
-    if (value === 'none') return;
-    ctx.isPresetSelected.current = true;
-    const Points = pathToPoints(value);
-    findSmoothCorners(Points, ctx.toggledAnchors);
-    ctx.setPoints(Points);
-  };
-
   const PresetsButton = useCallback(({ onClick }: { onClick: () => void }) => {
     return (
       <button className='small-side-panel-buttons' style={{ marginBottom: 0 }} title='presets' onClick={onClick}>
@@ -126,13 +112,12 @@ export default function SmallSidePanel() {
         </button>
 
         <Select
-          ref={selectEaseRef}
           containerStyle={{ flex: 0 }}
           minWidth={175}
           names={Object.keys(eases)}
           values={Object.values(eases)}
-          defaultValue='none'
-          onChange={onEaseSelect}
+          value={ctx.preset}
+          onChange={ctx.onPresetSelect}
           SelectButton={PresetsButton}
         />
 
