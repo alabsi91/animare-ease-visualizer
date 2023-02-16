@@ -57,7 +57,13 @@
   cursor: pointer;
   transition: background-color 100ms;
 }
-.item:hover,
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    background-color: var(--hover-color);
+    color: var(--text-hover);
+  }
+}
+
 .selected {
   background-color: var(--hover-color);
   color: var(--text-hover);

@@ -5,7 +5,10 @@ const clamp = (value: number, min: number, max: number) => (value < min ? min : 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const MAX_HIEGHT = 600;
+const ITEM_HEIGHT = 40;
+const TOP_MARGIN = 10;
 const BOTTOM_MARGIN = 30;
+const DURATION = 200;
 
 type BASIC = string | number | boolean | null | undefined;
 type Props<T extends Array<BASIC>> = {
@@ -45,7 +48,7 @@ function SelectComponent<T extends Array<BASIC>>(
   const dialogRef = useRef<HTMLDialogElement>(null!);
 
   const getMenuHeight = () => {
-    const menuHeight = names.length * 40;
+    const menuHeight = names.length * ITEM_HEIGHT;
     const container = dialogRef.current.parentElement;
     if (!container) return menuHeight;
 
@@ -63,7 +66,7 @@ function SelectComponent<T extends Array<BASIC>>(
     const { left, bottom, width } = container.getBoundingClientRect();
 
     dialogRef.current.style.left = left + 'px';
-    dialogRef.current.style.top = bottom + 10 + 'px';
+    dialogRef.current.style.top = bottom + TOP_MARGIN + 'px';
     dialogRef.current.style.width = Math.max(width, minWidth) + 'px';
 
     const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HIEGHT);
@@ -81,6 +84,7 @@ function SelectComponent<T extends Array<BASIC>>(
   const open = async () => {
     dialogRef.current.showModal();
 
+    // highlight and scroll to the selected item
     if (highlightSelected) {
       const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
       const selectedLi = lists[names.indexOf(selected)];
@@ -95,15 +99,15 @@ function SelectComponent<T extends Array<BASIC>>(
     setMenuPos();
 
     dialogRef.current.style.overflow = 'hidden';
-    dialogRef.current.style.height = '0px';
+    dialogRef.current.style.height = '0px'; // animate from height 0
     await sleep(1);
-    dialogRef.current.style.height = getMenuHeight() + 'px';
+    dialogRef.current.style.height = getMenuHeight() + 'px'; // animate to height
 
     // items fade in
     const items = dialogRef.current.querySelectorAll<HTMLLIElement>(`.${style.itemsContainer} ul li`);
     items.forEach(e => e.classList.add(style['fade-in']));
 
-    await sleep(200);
+    await sleep(DURATION);
 
     dialogRef.current.style.removeProperty('height');
     dialogRef.current.style.overflow = 'auto';
@@ -115,11 +119,11 @@ function SelectComponent<T extends Array<BASIC>>(
 
   const close = async () => {
     dialogRef.current.style.overflow = 'hidden';
-    dialogRef.current.style.height = getMenuHeight() + 'px';
+    dialogRef.current.style.height = getMenuHeight() + 'px'; // animate from height
     await sleep(1);
-    dialogRef.current.style.height = '0px';
+    dialogRef.current.style.height = '0px'; // animate to height 0
 
-    await sleep(200);
+    await sleep(DURATION);
 
     dialogRef.current.close();
     document.removeEventListener('click', clickOutSide);
