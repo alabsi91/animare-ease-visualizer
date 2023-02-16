@@ -1,11 +1,14 @@
 import './ExportSvg.css';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
 import CTX from '../Helpers/CTX';
 
+hljs.registerLanguage('javascript', javascript);
+
+const fileName = 'test';
 export default function ExportSvg() {
   const ctx = useContext(CTX);
-
-  const [update, setUpdate] = useState(0);
 
   const highlight = () => {
     const pre = document.querySelector<HTMLPreElement>('.svg-dialog-pre');
@@ -21,20 +24,37 @@ export default function ExportSvg() {
 
   useEffect(() => {
     highlight();
-  }, [update]);
+  }, []);
 
   useEffect(() => {
-    const dialog = document.getElementById('svg-dialog')?.parentNode as HTMLDialogElement;
-    const onShow = () => {
-      setUpdate(Math.random());
-    };
+    const pre = document.querySelector<HTMLPreElement>('.svg-dialog-example-pre');
+    if (!pre) return;
+    const path = ctx.parseResult()
 
-    dialog.addEventListener('animationstart', onShow);
+    const string = `// How to use ❔
 
-    return () => {
-      dialog.removeEventListener('animationstart', onShow);
-    };
-  }, []);
+// animare
+animare({
+  // ...
+  ease: ease.custom("${path}") // 👈
+}, callback);
+
+// GreenSock JS
+gsap.registerPlugin(CustomEase);
+gsap.to(element, {
+  // ...
+  ease: CustomEase.create("custom", "${path}") // 👈
+});
+
+// Mo.js
+new mojs.Tween({
+   // ...
+  easing: mojs.easing.path("${path}") // 👈
+});
+`;
+
+    pre.innerHTML = hljs.highlight(string, { language: 'javascript' }).value;
+  }, [fileName]);
 
   const copyHandle = () => {
     navigator.clipboard.writeText(ctx.parseResult());
@@ -43,6 +63,10 @@ export default function ExportSvg() {
   return (
     <div id='svg-dialog'>
       <h2 className='svg-dialog-title'>Export as SVG Path</h2>
+
+      <div className='pre-container'>
+        <pre className='svg-dialog-example-pre custom-scrollbar' />
+      </div>
 
       <div className='svg-dialog-pre-container'>
         <pre className='svg-dialog-pre custom-scrollbar' />

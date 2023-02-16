@@ -84,13 +84,14 @@ export default function ExportJsFile() {
     const pre = document.querySelector<HTMLPreElement>('.download-dialog-pre');
     if (!pre) return;
 
-    const string = `import ${fileName} from './${fileName}';
+    const string = `// How to use ❔
+import ${fileName} from './${fileName}';
 
 // animare
 animare({
   // ...
   ease: ${fileName} // 👈
-});
+}, callback);
 
 // Anime.js
 anime({
@@ -117,7 +118,7 @@ new Vivus(
    // ...
     animTimingFunction: ${fileName} // 👈
   },
-  myCallback
+  callback
 );
 `;
 

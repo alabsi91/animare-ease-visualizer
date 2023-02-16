@@ -47,12 +47,12 @@ hr {
 
 @media (hover: hover) and (pointer: fine) {
   .custom-scrollbar {
-    scrollbar-width: 5px;
+    scrollbar-width: 6px;
     scrollbar-color: #7a7a7a50;
   }
   .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    margin-right: 10px;
+    width: 6px;
+    height: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
     border-radius: 3px;
@@ -63,6 +63,9 @@ hr {
   }
   .custom-scrollbar::-webkit-scrollbar-button {
     display: none;
+  }
+  .custom-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 

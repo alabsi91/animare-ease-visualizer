@@ -18,6 +18,18 @@
   max-height: 200px;
   overflow: auto;
 }
+.svg-dialog-example-pre {
+  padding: 20px;
+  margin: 0px auto;
+  border-radius: 10px;
+  background-color: var(--background-color);
+  text-align: left;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: 150px;
+  overflow: auto;
+}
 .hljs-dot {
   color: #b6b6b6;
 }
