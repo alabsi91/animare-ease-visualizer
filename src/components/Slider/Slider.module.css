@@ -49,6 +49,7 @@
   left: var(--position);
   top: 50%;
   transform: translate(-50%, -50%);
+  width: calc(var(--thickness) + 5px);
   height: calc(var(--thickness) + 5px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
