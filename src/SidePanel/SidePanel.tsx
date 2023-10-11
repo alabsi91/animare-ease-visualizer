@@ -1,30 +1,40 @@
-import './SidePanel.css';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import './SidePanel.css';
 
-import { eases } from '../Pathes';
-import Select from '../components/Select/Select';
-import CTX, { exportTypes } from '../Helpers/CTX';
-import { convertPathToPoints } from '../Helpers/Helpers';
+import { exportTypes, useApp } from '../Helpers/AppContext';
+import { eases } from '../Paths';
 import HighlightTextarea from '../components/HighlightTextarea/HighlightTextarea';
-import Slider from '../components/Slider/Slider';
+import Select from '../components/Select/Select';
+import { parse } from '../Helpers/parsePath';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
-import type { ExportTypes } from '../Helpers/CTX';
+import type { ExportTypes } from '../Helpers/AppContext';
+import { getPointsFromPathString } from '../Helpers/utils';
 import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
 
 export default function SidePanel() {
-  const ctx = useContext(CTX);
+  const ctx = useApp();
 
   const textareaRef = useRef<HighlightTextareaRef>(null!);
 
   useEffect(() => {
     // update textarea text
-    textareaRef.current.setValue(ctx.parseResult().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'));
+    textareaRef.current.setValue(
+      ctx.getPathStringFromPoints().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC')
+    );
   }, [ctx.points]);
 
-  const pathToPoints = (path: string) => convertPathToPoints(path, ctx.size.current, ctx.zoom.current);
+  const pathToPoints = (path: string) => {
+    const viewBox = {
+      x: ctx.zoom.current,
+      y: ctx.zoom.current,
+      width: ctx.viewBoxSize.current,
+      height: ctx.viewBoxSize.current,
+    };
+    return getPointsFromPathString(path, viewBox);
+  };
 
   const sidePanelAnimation = useAnimare(() => {
     const container = document.querySelector('.container') as HTMLDivElement;
@@ -52,22 +62,26 @@ export default function SidePanel() {
   };
 
   const onTextAreaChange = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-    const value = pathToPoints(e.target.value.trim());
-    let isValid = false;
-    value.forEach(e => (isValid = e.every(e => e !== undefined)));
+    const convertPath = parse(e.target.value.trim()); // convert to path with the format M, ..C
+
+    if (convertPath === e.target.value.trim()) return; // ignore if path didn't' change
+
+    const points = pathToPoints(convertPath);
+    const isValid = points.length && points.every(row => row.every(value => typeof value === 'number'));
+    const currentPath = ctx.getPathStringFromPoints();
+
     if (isValid) {
-      ctx.undoStack.current.push(ctx.parseResult());
-      ctx.setPoints(pathToPoints(e.target.value.trim()));
-    } else {
-      textareaRef.current.setValue(ctx.parseResult().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'));
+      ctx.undoStack.current.push(currentPath);
+      ctx.setPoints(points);
+      return;
     }
+
+    // use the current path instead
+    textareaRef.current.setValue(currentPath.replace(/\s*M/gi, 'M').replace(/\s*C/g, '\nC'));
   };
 
   const autoHideHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    ctx.autoHideHandles.current = e.target.checked;
-    document
-      .querySelectorAll<HTMLAnchorElement>('.auto-hide')
-      .forEach(e => (e!.style.display = ctx.autoHideHandles.current ? 'none' : 'block'));
+    ctx.setAutoHideHandles(e.target.checked);
   };
 
   const textAreaOnKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = e => {
@@ -101,41 +115,77 @@ export default function SidePanel() {
     ctx.toggleExportDialog(value);
   };
 
+  const toggleShortcuts = () => {
+    const container = document.querySelector('.hints') as HTMLDivElement;
+    const arrowButton = document.querySelector('.hints-title-container svg') as SVGSVGElement;
+    const currentMaxHeight = parseInt(getComputedStyle(container).getPropertyValue('max-height'));
+    // close
+    if (currentMaxHeight === 1000) {
+      container.style.maxHeight = '60px';
+      arrowButton.style.transform = 'rotate(180deg)';
+      return;
+    }
+
+    // open
+    container.style.maxHeight = '1000px';
+    arrowButton.style.transform = 'rotate(0deg)';
+  };
+
   return (
     <div className='sidePanel custom-scrollbar'>
-      <button onClick={close} className='close-panel'>
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+      <div className='close-panel'>
+        <svg onClick={close} role='button' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
           <path d='M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' />
         </svg>
-      </button>
+      </div>
 
       <div className='hints'>
-        <h2>
-          <svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='currentColor'>
-            <path d='M9,21c0,0.55,0.45,1,1,1h4c0.55,0,1-0.45,1-1v-1H9V21z M12,2C8.14,2,5,5.14,5,9c0,2.38,1.19,4.47,3,5.74V17 c0,0.55,0.45,1,1,1h6c0.55,0,1-0.45,1-1v-2.26c1.81-1.27,3-3.36,3-5.74C19,5.14,15.86,2,12,2z M14,13.7V16h-4v-2.3 C8.48,12.63,7,11.53,7,9c0-2.76,2.24-5,5-5s5,2.24,5,5C17,11.49,15.49,12.65,14,13.7z' />
-          </svg>{' '}
-          Hints
-        </h2>
+        <div className='hints-title-container'>
+          <h2>Shortcuts</h2>
+          <svg onClick={toggleShortcuts} role='button' xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'>
+            <path d='M480.1-358.5q-6.1 0-10.85-2t-9.25-7L263.331-564.169Q254.5-572.5 254.5-584t9-20.5Q272-613 284-613t20.901 8.401L480-429l175.599-175.599Q664-613 675.5-613t20.5 8.5q8.5 9 8.5 21t-8.331 20.331L500.5-367.5q-5 5-9.65 7t-10.75 2Z' />
+          </svg>
+        </div>
         <ul>
           <li>
-            <b>Add point</b>
+            <code>ALT + CLICK</code>
             <br />
-            <code>ALT + CLICK</code> on the line.
+            <p>Click on the line to add a new point.</p>
           </li>
           <li>
-            <b>Toggle corner</b>
+            <code>CTRL + DRAG</code>
             <br />
-            Hold <code>SHIFT</code> while <code>clicking</code> anchor point.
+            <p>Drag the control point to move it independently.</p>
           </li>
           <li>
-            <b>Delete anchor point</b>
+            <code>CTRL + CLICK</code>
             <br />
-            Select anchor point then press <code>DELETE</code> key.
+            <p>Click on the anchor point to reset its control points.</p>
           </li>
           <li>
-            <b>Undo</b>
+            <code>SHIFT + CLICK</code>
             <br />
-            Press <code>CTRL-Z</code>.
+            <p>Click on the anchor point to toggle smooth corners.</p>
+          </li>
+          <li>
+            <code>SPACE + DRAG</code>
+            <br />
+            <p>Drag to pan the canvas.</p>
+          </li>
+          <li>
+            <code>CTRL + MOUSE WHEEL</code>
+            <br />
+            <p>Use the mouse wheel to zoom in and out.</p>
+          </li>
+          <li>
+            <code>DELETE</code>
+            <br />
+            <p>Delete the selected anchor point.</p>
+          </li>
+          <li>
+            <code>CTRL-Z</code>
+            <br />
+            <p>Undo the last modification.</p>
           </li>
         </ul>
       </div>
@@ -182,16 +232,12 @@ export default function SidePanel() {
           <label htmlFor='snappeToGrid'>Enable snapping to the grid.</label>
         </div>
         <div>
-          <input id='hideAnchor' type='checkbox' defaultChecked={ctx.autoHideHandles.current} onChange={autoHideHandler} />
+          <input id='hideAnchor' type='checkbox' defaultChecked={ctx.autoHideHandles} onChange={autoHideHandler} />
           <label htmlFor='hideAnchor'>Auto hide anchor points.</label>
         </div>
         <div className='options-duration'>
           <p>Duration</p>
           <input type='number' min='0' defaultValue='2000' step='100' onChange={e => ctx.setDuration(+e.target.value)} />
-        </div>
-        <div className='options-zoom'>
-          <p>Zoom</p>
-          <Slider max={300} defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} showBubble={false} />
         </div>
       </div>
 
@@ -202,7 +248,7 @@ export default function SidePanel() {
 
         <HighlightTextarea
           ref={textareaRef}
-          defaultValue={ctx.parseResult()}
+          defaultValue={ctx.getPathStringFromPoints()}
           rows={ctx.points.length}
           onBlur={onTextAreaChange}
           onKeyDown={textAreaOnKeyDown}

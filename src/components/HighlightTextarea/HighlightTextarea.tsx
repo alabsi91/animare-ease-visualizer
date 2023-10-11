@@ -135,6 +135,7 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
   };
 
   const updateValue = (v: string | number | readonly string[]) => {
+    if(!v) return;
     textareaRef.current.value = v.toString();
     setCurrentValue(v);
   };

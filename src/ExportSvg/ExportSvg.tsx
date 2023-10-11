@@ -1,19 +1,19 @@
-import './ExportSvg.css';
-import React, { useContext, useEffect } from 'react';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
-import CTX from '../Helpers/CTX';
+import { useEffect } from 'react';
+import { useApp } from '../Helpers/AppContext';
+import './ExportSvg.css';
 
 hljs.registerLanguage('javascript', javascript);
 
 const fileName = 'test';
 export default function ExportSvg() {
-  const ctx = useContext(CTX);
+  const ctx = useApp();
 
   const highlight = () => {
     const pre = document.querySelector<HTMLPreElement>('.svg-dialog-pre');
     if (!pre) return;
-    const string = ctx.parseResult();
+    const string = ctx.getPathStringFromPoints();
 
     pre.innerHTML = string
       .replace(/(\s+)([a-z])/gi, '\n$2')
@@ -29,7 +29,7 @@ export default function ExportSvg() {
   useEffect(() => {
     const pre = document.querySelector<HTMLPreElement>('.svg-dialog-example-pre');
     if (!pre) return;
-    const path = ctx.parseResult()
+    const path = ctx.getPathStringFromPoints()
 
     const string = `// How to use ❔
 
@@ -57,7 +57,7 @@ new mojs.Tween({
   }, [fileName]);
 
   const copyHandle = () => {
-    navigator.clipboard.writeText(ctx.parseResult());
+    navigator.clipboard.writeText(ctx.getPathStringFromPoints());
   };
 
   return (

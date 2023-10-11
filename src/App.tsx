@@ -1,20 +1,24 @@
-import './index.css';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import animare, { ease } from 'animare';
 import { useAnimare } from 'animare/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import './index.css';
 
-import { checkOverlap, constructPath, convertPathToPoints, findSmoothCorners } from './Helpers/Helpers';
-import { eases } from './Pathes';
-import CTX from './Helpers/CTX';
-import Dialog, { DialogRef } from './components/Dialog/Dialog';
-import Panel from './SvgPanel/SvgPanel';
+import ExportCss from './ExportCss/ExportCss';
+import ExportJsFile from './ExportJsFile/ExportJsFile';
+import ExportSvg from './ExportSvg/ExportSvg';
+import { AppProvider } from './Helpers/AppContext';
+import { checkOverlap, findSmoothCorners } from './Helpers/Helpers';
+import { calculateMirrorPoint, generateEasingFunctionFromString } from './Helpers/geometry';
+import { clamp, constructPathFromPoints, convertPointsToRelativeValues, getPointsFromPathString } from './Helpers/utils';
+import { eases } from './Paths';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';
-import ExportJsFile from './ExportJsFile/ExportJsFile';
-import ExportCss from './ExportCss/ExportCss';
-import ExportSvg from './ExportSvg/ExportSvg';
+import Panel from './SvgPanel/SvgPanel';
+import Dialog, { DialogRef } from './components/Dialog/Dialog';
+import usePan from './hooks/usePan';
+import useZoom from './hooks/useZoom';
 
-import type { ExportTypes } from './Helpers/CTX';
+import type { ExportTypes } from './Helpers/AppContext';
 
 /** - Threshold for checking path overlapping. */
 let tmout = false,
@@ -26,37 +30,57 @@ let tmout = false,
 /** - The set of point that has the smooth corner enabled. */
 const toggledAnchors = new Set<number>();
 
+/** - The set of point that control points are not collinear. */
+const toggledCollinear = new Set<number>();
+
 export default function App() {
-  /** - SVG's drawing area size. */
-  const size = useRef(200),
-    /** - the aria around the SVG's drawing area. */
-    zoom = useRef(50),
-    /** - A switch to toggle the snappint to the nearest point or to the grid. */
-    magnet = useRef(true),
-    /** - A switch to toggle auto hidding points and control handles when not focused. */
-    autoHideHandles = useRef(false),
-    /** - An array of number to determine the grid points on the `x` and `y` axis. */
-    gridPoints = useRef(new Array(11).fill(0).map((_, i) => zoom.current + (i * size.current) / 10)),
-    /** - To save path strings pathes for undo. */
-    undoStack = useRef<string[]>([]),
-    /** - The current moving control point `[index of curve, index of point]`. */
-    activeControlPoint = useRef<number[] | null>(null),
-    /** - The current moving point. */
-    activePathPoint = useRef<number | null>(null),
-    isPresetSelected = useRef(true),
-    /** - The selected (focused) point, used for deletion. */
-    selectedPoint = useRef<number | null>(null);
+  const viewBoxSize = useRef(300);
+  const viewBoxCoordinate = useRef({ x: 0, y: 0 });
+
+  /** - the aria around the SVG's drawing area. */
+  const zoom = useRef(50);
+
+  /** - A switch to toggle the snapping to the nearest point or to the grid. */
+  const magnet = useRef(true);
+
+  /** - An array of number to determine the grid points on the `x` and `y` axis. */
+  const gridPoints = useRef(new Array(11).fill(0).map((_, i) => zoom.current + (i * viewBoxSize.current) / 10));
+
+  /** - To save path strings paths for undo. */
+  const undoStack = useRef<string[]>([]);
+
+  /** - The current moving control point `[curve index, index of control x point]`. */
+  const activeControlPoint = useRef<[number, 0 | 2] | null>(null);
+
+  /** - The current moving point. */
+  const activePathPoint = useRef<number | null>(null);
+
+  const isPresetSelected = useRef(true);
+
+  /** - The selected (focused) point, used for deletion. */
+  const selectedPoint = useRef<number | null>(null);
 
   /** - To show and hide the download to js file dialog. */
   const exportJsDialogRef = useRef<DialogRef>(null!);
   const exportSvgDialogRef = useRef<DialogRef>(null!);
   const cssDialogRef = useRef<DialogRef>(null!);
 
-  const pathToPoints = (path: string) => convertPathToPoints(path, size.current, zoom.current);
+  const pathToPoints = (path: string) => {
+    const viewBox = {
+      x: zoom.current,
+      y: zoom.current,
+      width: viewBoxSize.current,
+      height: viewBoxSize.current,
+    };
+    return getPointsFromPathString(path, viewBox);
+  };
 
   /** - The current path as two dimensional array `[[M], [C], ...[S]]` */
   const [points, setPoints] = useState(pathToPoints(window.localStorage.getItem('saved') || eases['ease.in.sine']));
   const [preset, setPreset] = useState('none');
+
+  /** - A switch to toggle auto hiding points and control handles when not focused. */
+  const [autoHideHandles, setAutoHideHandles] = useState(false);
 
   /** - The current path as two dimensional array `[[M], [C], ...[S]]` to be used for events. */
   const eventPoint = useRef(points);
@@ -67,64 +91,64 @@ export default function App() {
     const pointsX: number[] = [], // stick to these points on the x axis
       pointsY: number[] = []; // stick to these points on the y axis
 
-    // grab x and y positions for points and control points on the path  -> M, C, ...S
+    // grab x and y positions for points and control points on the path  -> M, ...C
     for (let i = 0; i < Points.length; i++) {
       const curve = Points[i];
 
-      const isPointActive = activePathPoint.current !== null && activePathPoint.current === i;
-      const isControlActive = activeControlPoint.current !== null && activeControlPoint.current[0] === i;
-      const [, pointIndex] = activeControlPoint.current ?? [];
+      const c1 = { x: curve[0], y: curve[1] };
+      const c2 = { x: curve[2], y: curve[3] };
+      const p = { x: curve[curve.length - 2], y: curve[curve.length - 1] }; // using last index, compatible with M
 
-      // M has 1 point and no control points
-      if (i === 0) {
-        if (isPointActive) continue; // prevents active point from sticking to itself.
-        const p = { x: curve[0], y: curve[1] };
-        pointsX.push(p.x);
-        pointsY.push(p.y);
-        continue;
-      }
-
-      // C has 1 point and 2 control point
-      if (i === 1) {
-        const c1 = { x: curve[0], y: curve[1] };
-        const c2 = { x: curve[2], y: curve[3] };
-        const p = { x: curve[4], y: curve[5] };
-
-        // prevent the active control point from sticking to itself or its connected active point (M)
-        if (!(isControlActive && pointIndex === 0) && activePathPoint.current !== 0) {
+      // user is dragging a point on the path
+      if (activePathPoint.current !== null) {
+        // don't add the connected control point
+        if (i && activePathPoint.current + 1 !== i) {
           pointsX.push(c1.x);
           pointsY.push(c1.y);
         }
 
-        // prevent the active control point from sticking to itself or its connected active point (C)
-        if (!(isControlActive && pointIndex === 2) && !isPointActive) {
-          pointsX.push(c2.x);
-          pointsY.push(c2.y);
-        }
-
-        // prevent active point from sticking to itself.
-        if (!isPointActive) {
+        if (activePathPoint.current !== i) {
           pointsX.push(p.x);
           pointsY.push(p.y);
+
+          // exclude M
+          if (!i) continue;
+
+          pointsX.push(c2.x);
+          pointsY.push(c2.y);
         }
 
         continue;
       }
 
-      // S has 1 point and 1 control point
-      const c = { x: curve[0], y: curve[1] };
-      const p = { x: curve[2], y: curve[3] };
+      // user is dragging a control point
+      if (activeControlPoint.current !== null) {
+        const [curveIndex, ctrlIndex] = activeControlPoint.current;
 
-      // prevent the active control point from sticking to itself or its connected active point (S)
-      if (!isControlActive && !isPointActive) {
-        pointsX.push(c.x);
-        pointsY.push(c.y);
-      }
-
-      // prevent active point from sticking to itself.
-      if (!isPointActive) {
         pointsX.push(p.x);
         pointsY.push(p.y);
+
+        // exclude M and
+        if (!i) continue;
+
+        // add only the opposite control point of the active control point
+        if (curveIndex === i) {
+          if (ctrlIndex === 2) {
+            pointsX.push(c1.x);
+            pointsY.push(c1.y);
+          }
+          if (ctrlIndex === 0) {
+            pointsX.push(c2.x);
+            pointsY.push(c2.y);
+          }
+
+          continue;
+        }
+
+        pointsX.push(c1.x);
+        pointsY.push(c1.y);
+        pointsX.push(c2.x);
+        pointsY.push(c2.y);
       }
     }
 
@@ -135,114 +159,140 @@ export default function App() {
     const svg = document.querySelector('.svg') as SVGSVGElement;
     const { left, top, width, height } = svg.getBoundingClientRect();
 
-    // calculate mouse coordinates.
-    let x = (e.clientX - left) * ((size.current + zoom.current * 2) / width);
-    let y = (e.clientY - top) * ((size.current + zoom.current * 2) / height);
-    x = Math.min(Math.max(x, 0), size.current + zoom.current * 2); // clamp
-    y = Math.min(Math.max(y, 0), size.current + zoom.current * 2); // clamp
+    // Calculate mouse coordinates relative to the SVG.
+    let x = (e.clientX - left) * ((viewBoxSize.current + zoom.current * 2) / width);
+    let y = (e.clientY - top) * ((viewBoxSize.current + zoom.current * 2) / height);
+    // Prevent x and y from going beyond the SVG edges.
+    x = clamp(x, 0, viewBoxSize.current + zoom.current * 2) + viewBoxCoordinate.current.x;
+    y = clamp(y, 0, viewBoxSize.current + zoom.current * 2) + viewBoxCoordinate.current.y;
 
     const Points = [...eventPoint.current]; // a copy of the current path points.
 
-    // * stick to the grid and points
+    // * stick to the grid or points
     if (magnet.current) {
       const threshold = 2;
       const [pointsX, pointsY] = getStickingPoints();
-      // add grid, and calculate which point in the nearest to stick to.
-      x = [...gridPoints.current, ...pointsX].find(p => x + threshold > p && x - threshold < p) || x;
-      y = [...gridPoints.current, ...pointsY].find(p => y + threshold > p && y - threshold < p) || y;
+      // Add the grid points and calculate which point is nearest to stick to.
+      x = pointsX.concat(gridPoints.current).find(p => x + threshold > p && x - threshold < p) || x;
+      y = pointsY.concat(gridPoints.current).find(p => y + threshold > p && y - threshold < p) || y;
     }
 
-    // move control point when moving the point on the path.
+    // * The user is dragging a point on the path.
     if (activePathPoint.current !== null) {
-      const curve = Points[activePathPoint.current]; // M, C, or S
-      const handleIndex = activePathPoint.current === 0 ? 1 : activePathPoint.current;
-      const handlePos = [
-        activePathPoint.current === 0 ? 0 : curve.length - 4,
-        activePathPoint.current === 0 ? 1 : curve.length - 3,
-      ];
+      const currentPointIndex = activePathPoint.current;
+      const currentCurve = Points[currentPointIndex]; // M or C
 
-      // keep the first and the last point fixed on the x axis.
+      // Keep the first and last points fixed on the x-axis.
       x =
-        activePathPoint.current === 0
-          ? zoom.current
-          : activePathPoint.current === Points.length - 1
-          ? size.current + zoom.current
-          : x;
+        currentPointIndex === 0 ? zoom.current : currentPointIndex === Points.length - 1 ? viewBoxSize.current + zoom.current : x;
 
-      // the distance between the point and the handle point.
-      const distance = [
-        Points[handleIndex][handlePos[0]] - Points[activePathPoint.current][curve.length - 2],
-        Points[handleIndex][handlePos[1]] - Points[activePathPoint.current][curve.length - 1],
-      ];
+      // * Move control points
+      // Control point X Y index.
+      const ctrlPointIndex = [currentPointIndex === 0 ? 0 : 2, currentPointIndex === 0 ? 1 : 3];
+      // Map the 'M' command to the first 'C' curve.
+      const ctrlCurveIndex = currentPointIndex === 0 ? 1 : currentPointIndex;
+      // The distance between the point on the path and the control point in the same curve.
+      const distanceX = Points[ctrlCurveIndex][ctrlPointIndex[0]] - currentCurve[currentCurve.length - 2];
+      const distanceY = Points[ctrlCurveIndex][ctrlPointIndex[1]] - currentCurve[currentCurve.length - 1];
+      // Move the control point the same distance from the active point.
+      Points[ctrlCurveIndex][ctrlPointIndex[0]] = distanceX + x;
+      Points[ctrlCurveIndex][ctrlPointIndex[1]] = distanceY + y;
 
-      // move the point on the path.
-      Points[activePathPoint.current][curve.length - 2] = x;
-      Points[activePathPoint.current][curve.length - 1] = y;
+      // Do the same for the opposite control point.
+      const nextCurve = Points[currentPointIndex + 1];
+      if (nextCurve && currentPointIndex !== 0) {
+        const nextCtrlPointIndex = [0, 1];
+        const nextDistanceX = nextCurve[nextCtrlPointIndex[0]] - currentCurve[4];
+        const nextDistanceY = nextCurve[nextCtrlPointIndex[1]] - currentCurve[5];
+        nextCurve[nextCtrlPointIndex[0]] = nextDistanceX + x;
+        nextCurve[nextCtrlPointIndex[1]] = nextDistanceY + y;
+      }
 
-      // move the control point with the same distance from the active point.
-      Points[handleIndex][handlePos[0]] = distance[0] + x;
-      Points[handleIndex][handlePos[1]] = distance[1] + y;
+      // * Move the point
+      currentCurve[currentCurve.length - 2] = x;
+      currentCurve[currentCurve.length - 1] = y;
 
-      // if the smooth corners is on for this point.
-      if (toggledAnchors.has(activePathPoint.current)) {
-        const index = activePathPoint.current === 1 ? 2 : 0;
-        x =
-          activePathPoint.current === 0
-            ? zoom.current
-            : activePathPoint.current === Points.length - 1
-            ? size.current + zoom.current
-            : x;
-        Points[activePathPoint.current === 0 ? 1 : activePathPoint.current][index] = x;
-        Points[activePathPoint.current === 0 ? 1 : activePathPoint.current][index + 1] = y;
+      // If the smooth corners are enabled for this point.
+      if (toggledAnchors.has(currentPointIndex)) {
+        const index = currentPointIndex === 0 ? 0 : 2;
+        Points[currentPointIndex === 0 ? 1 : currentPointIndex][index] = x;
+        Points[currentPointIndex === 0 ? 1 : currentPointIndex][index + 1] = y;
+        if (nextCurve) {
+          nextCurve[0] = x;
+          nextCurve[1] = y;
+        }
       }
 
       setPoints(Points);
       return;
     }
 
-    // move handle point.
+    // * The user is dragging a control point
     if (activeControlPoint.current !== null) {
-      Points[activeControlPoint.current[0]][activeControlPoint.current[1]] = x;
-      Points[activeControlPoint.current[0]][activeControlPoint.current[1] + 1] = y;
+      const [ctrlCurveIndex, ctrlIndex] = activeControlPoint.current;
+      const currentCurve = Points[ctrlCurveIndex];
 
+      // Move the current control point
+      currentCurve[ctrlIndex] = x;
+      currentCurve[ctrlIndex + 1] = y;
+
+      const nextCurve = Points[ctrlCurveIndex + 1];
+      const previousCurve = Points[ctrlCurveIndex - 1];
+
+      // Register the point to disable mirroring of the opposite control point.
+      if (e.ctrlKey) {
+        if (ctrlIndex === 2) toggledCollinear.add(ctrlCurveIndex);
+        if (previousCurve && previousCurve.length === 6 && ctrlIndex === 0) toggledCollinear.add(ctrlCurveIndex - 1);
+      }
+
+      // Move the opposite side control point (mirror)
+      if (!e.ctrlKey) {
+        if (nextCurve && ctrlIndex === 2 && !toggledCollinear.has(ctrlCurveIndex)) {
+          const centerX = currentCurve[4];
+          const centerY = currentCurve[5];
+          const newCtrlPos = calculateMirrorPoint(x, y, nextCurve[0], nextCurve[1], centerX, centerY);
+          nextCurve[0] = newCtrlPos.x;
+          nextCurve[1] = newCtrlPos.y;
+        }
+
+        if (previousCurve && previousCurve.length === 6 && ctrlIndex === 0 && !toggledCollinear.has(ctrlCurveIndex - 1)) {
+          const centerX = previousCurve[4];
+          const centerY = previousCurve[5];
+          const newCtrlPos = calculateMirrorPoint(x, y, previousCurve[2], previousCurve[3], centerX, centerY);
+          previousCurve[2] = newCtrlPos.x;
+          previousCurve[3] = newCtrlPos.y;
+        }
+      }
       setPoints(Points);
     }
   }, []);
 
-  /** - Converts a two dimensional array to a path string as `(0 to 1)` points. */
-  const parseResult = (p = points) => {
-    const points_0to1 = p.map(el =>
-      el.map((e, i) => ([1, 3, 5].includes(i) ? 1 - (e - zoom.current) / size.current : (e - zoom.current) / size.current))
-    );
-    return constructPath(points_0to1);
+  const getPercentagePoints = (curves = points) => {
+    const viewBox = {
+      x: zoom.current,
+      y: zoom.current,
+      width: viewBoxSize.current,
+      height: viewBoxSize.current,
+    };
+    return convertPointsToRelativeValues(curves, viewBox);
+  };
+
+  /** Converts curve points to percentage points and constructs a path string (M, ...C). */
+  const getPathStringFromPoints = (curves = points) => {
+    const percentagePoints = getPercentagePoints(curves);
+    return constructPathFromPoints(percentagePoints);
   };
 
   /** - Delete the last selected point on the path by pressing the `delete` key. */
   const deletePoint = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Delete' && selectedPoint.current !== null && selectedPoint.current !== 0 && eventPoint.current.length > 2) {
+    if (e.key === 'Delete' && selectedPoint.current && eventPoint.current.length > 2) {
+      const i = selectedPoint.current;
       const Points = [...eventPoint.current];
-      // if C point is selected, delete the one after it and move C point to its position.
-      if (selectedPoint.current === 1) {
-        // copy C point from the next point.
-        Points[1][2] = Points[2][0];
-        Points[1][3] = Points[2][1];
-        Points[1][4] = Points[2][2];
-        Points[1][5] = Points[2][3];
-        // delete the next point.
-        Points.splice(2, 1);
-        // if the point is selected to be deleted.
-      } else if (selectedPoint.current === Points.length - 1) {
-        if (Points.length - 2 === 1) {
-          Points[1][4] = Points[Points.length - 1][2];
-          Points[1][5] = Points[Points.length - 2][3];
-        } else {
-          Points[Points.length - 2][2] = Points[Points.length - 1][2];
-          Points[Points.length - 2][3] = Points[Points.length - 2][3];
-        }
-        Points.splice(selectedPoint.current, 1);
-      } else {
-        Points.splice(selectedPoint.current, 1);
-      }
+      const currentCurve = Points[i];
+      const nextCurve = Points[i + 1];
+      nextCurve[0] = currentCurve[0];
+      nextCurve[1] = currentCurve[1];
+      Points.splice(selectedPoint.current, 1);
 
       setPoints(Points);
     }
@@ -260,10 +310,10 @@ export default function App() {
 
     return animare(
       {
-        from: [zoom.current, size.current + zoom.current, 0],
-        to: [size.current + zoom.current, zoom.current, size.current],
+        from: [zoom.current, viewBoxSize.current + zoom.current, 0],
+        to: [viewBoxSize.current + zoom.current, zoom.current, viewBoxSize.current],
         duration: 2000,
-        ease: [ease.linear, ease.custom(parseResult())],
+        ease: [ease.linear, ease.custom(getPathStringFromPoints())],
         autoPlay: false,
       },
       async ([x, y, w], { isFirstFrame, isFinished, fps }) => {
@@ -273,7 +323,7 @@ export default function App() {
           maskedPath.style.display = 'block';
           path.style.transition = 'none';
           path.style.stroke = 'var(--blured-path)';
-          if (!autoHideHandles.current)
+          if (!autoHideHandles)
             document.querySelectorAll<HTMLAnchorElement>('.auto-hide').forEach(e => (e!.style.display = 'none'));
         }
 
@@ -293,7 +343,7 @@ export default function App() {
           path.style.stroke = isOverLapping ? 'red' : 'var(--active-path)';
           document
             .querySelectorAll<HTMLAnchorElement>('.auto-hide')
-            .forEach(e => (e!.style.display = autoHideHandles.current ? 'none' : 'block'));
+            .forEach(e => (e.style.display = autoHideHandles ? 'none' : 'block'));
           await new Promise(resolve => setTimeout(resolve, 300));
           path.style.removeProperty('transition');
         }
@@ -301,9 +351,23 @@ export default function App() {
     );
   });
 
+  /** Registers a move or action to be used for undo functionality later. */
+  const registerMoveForUndo = (curves = points) => {
+    const pathString = getPathStringFromPoints(curves);
+    undoStack.current.push(pathString);
+  };
+
   const undo = (e: KeyboardEvent) => {
     if (undoStack.current.length === 0 || !(e.ctrlKey && e.key.toLowerCase() === 'z')) return;
-    setPoints(convertPathToPoints(undoStack.current[undoStack.current.length - 1], size.current, zoom.current));
+    const viewBox = {
+      x: zoom.current,
+      y: zoom.current,
+      width: viewBoxSize.current,
+      height: viewBoxSize.current,
+    };
+    const pathString = undoStack.current[undoStack.current.length - 1];
+    const parsedPoints = getPointsFromPathString(pathString, viewBox);
+    setPoints(parsedPoints);
     undoStack.current.pop();
   };
 
@@ -315,7 +379,7 @@ export default function App() {
       activePathPoint.current = null;
       activeControlPoint.current = null;
       isZooming = false;
-      window.localStorage.setItem('saved', parseResult(eventPoint.current));
+      window.localStorage.setItem('saved', getPathStringFromPoints(eventPoint.current));
     };
 
     document.addEventListener('pointerup', onMouseUp);
@@ -332,14 +396,15 @@ export default function App() {
   useEffect(() => {
     eventPoint.current = points;
 
-    // reset preset menu to 'none' if the point changed.
+    // reset presets menu to 'none' if the point changed.
     if (isPresetSelected.current) isPresetSelected.current = false;
     else if (preset !== 'none' && !isZooming) setPreset('none');
 
     if (!tmout && !isZooming) {
       tmout = true;
       setTimeout(() => {
-        isOverLapping = checkOverlap(parseResult());
+        const percentagePoints = getPercentagePoints();
+        isOverLapping = checkOverlap(percentagePoints);
         (document.querySelector('.path') as SVGPathElement).style.stroke = isOverLapping ? 'red' : 'var(--active-path)';
         tmout = false;
       }, 50);
@@ -348,13 +413,13 @@ export default function App() {
 
   const onZoom = (value: number) => {
     isZooming = true;
-    const p = parseResult();
-    zoom.current = 300 - value;
-    gridPoints.current = new Array(11).fill(0).map((_, i) => zoom.current + (i * size.current) / 10);
+    const p = getPathStringFromPoints();
+    zoom.current = 455 - value;
+    gridPoints.current = new Array(11).fill(0).map((_, i) => zoom.current + (i * viewBoxSize.current) / 10);
     setPoints(pathToPoints(p));
     animation?.setOptions({
-      from: [zoom.current, size.current + zoom.current, 0],
-      to: [size.current + zoom.current, zoom.current, size.current],
+      from: [zoom.current, viewBoxSize.current + zoom.current, 0],
+      to: [viewBoxSize.current + zoom.current, zoom.current, viewBoxSize.current],
     });
   };
 
@@ -369,7 +434,10 @@ export default function App() {
   };
 
   const playCurrentEasing = () => {
-    animation?.setOptions({ ease: [ease.linear, ease.custom(parseResult())] });
+    const pathString = getPathStringFromPoints();
+    const easingFunction = generateEasingFunctionFromString(pathString);
+
+    animation?.setOptions({ ease: [ease.linear, easingFunction] });
     animation?.resume();
   };
 
@@ -383,33 +451,40 @@ export default function App() {
     if (dialog === 'JS File') exportJsDialogRef.current.toggle();
   };
 
+  usePan(viewBoxSize, zoom, viewBoxCoordinate); //
+  useZoom(zoom, onZoom); //
+
   const contextValue = {
-    points,
-    size,
-    zoom,
-    magnet,
-    undoStack,
-    toggledAnchors,
-    gridPoints,
-    autoHideHandles,
     activeControlPoint,
-    selectedPoint,
     activePathPoint,
+    autoHideHandles,
     eventPoint,
-    preset,
-    onZoom,
-    onPresetSelect,
-    setPoints,
-    parseResult,
-    playCurrentEasing,
-    pauseAnimation,
-    setDuration,
+    gridPoints,
+    magnet,
     mouseMove,
+    onPresetSelect,
+    onZoom,
+    getPathStringFromPoints,
+    pauseAnimation,
+    playCurrentEasing,
+    points,
+    preset,
+    selectedPoint,
+    registerMoveForUndo,
+    setAutoHideHandles,
+    setDuration,
+    setPoints,
+    toggledAnchors,
+    toggledCollinear,
     toggleExportDialog,
+    undoStack,
+    viewBoxCoordinate,
+    viewBoxSize,
+    zoom,
   };
 
   return (
-    <CTX.Provider value={contextValue}>
+    <AppProvider value={contextValue}>
       <Dialog ref={exportJsDialogRef} unmoutOnHide>
         <ExportJsFile />
       </Dialog>
@@ -433,6 +508,6 @@ export default function App() {
       </div>
 
       <SmallSidePanel />
-    </CTX.Provider>
+    </AppProvider>
   );
 }

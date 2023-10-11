@@ -1,19 +1,17 @@
-import './SmallSidePanel.css';
-import React, { useCallback, useContext } from 'react';
 import animare, { ease, organize } from 'animare';
 import { useAnimare } from 'animare/react';
+import React, { useCallback } from 'react';
+import './SmallSidePanel.css';
 
 import Select from '../components/Select/Select';
-import Slider from '../components/Slider/Slider';
-import CTX, { exportTypes } from '../Helpers/CTX';
-import { eases } from '../Pathes';
+import { exportTypes, useApp } from '../Helpers/AppContext';
+import { eases } from '../Paths';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
-import type { ExportTypes } from '../Helpers/CTX';
+import type { ExportTypes } from '../Helpers/AppContext';
 
 export default function SmallSidePanel() {
-  const ctx = useContext(CTX);
-
+  const ctx = useApp();
 
   const toggleMagnet: React.MouseEventHandler<HTMLButtonElement> = e => {
     const target = e.target as Element;
@@ -30,16 +28,16 @@ export default function SmallSidePanel() {
     const svg = target.closest('svg') as SVGSVGElement;
     const checkbox = document.getElementById('hideAnchor') as HTMLInputElement;
 
-    ctx.autoHideHandles.current = !ctx.autoHideHandles.current;
+    ctx.setAutoHideHandles(!ctx.autoHideHandles);
 
-    if (ctx.autoHideHandles.current) svg.style.fill = 'var(--active-point)';
-    if (!ctx.autoHideHandles.current) svg.style.removeProperty('fill');
+    if (ctx.autoHideHandles) svg.style.fill = 'var(--active-point)';
+    if (!ctx.autoHideHandles) svg.style.removeProperty('fill');
 
-    checkbox.checked = ctx.autoHideHandles.current;
+    checkbox.checked = ctx.autoHideHandles;
 
     document
       .querySelectorAll<HTMLAnchorElement>('.auto-hide')
-      .forEach(e => (e!.style.display = ctx.autoHideHandles.current ? 'none' : 'block'));
+      .forEach(e => (e!.style.display = ctx.autoHideHandles ? 'none' : 'block'));
   };
 
   const sidePanelAnimation = useAnimare(() => {
@@ -142,21 +140,13 @@ export default function SmallSidePanel() {
 
         <button title='Auto hide anchor points.' onClick={togglePathPoints}>
           <svg
-            style={{ fill: !ctx.autoHideHandles.current ? 'var(--text-color)' : 'var(--active-point)' }}
+            style={{ fill: !ctx.autoHideHandles ? 'var(--text-color)' : 'var(--active-point)' }}
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 24 24'
           >
             <path d='M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z' />
           </svg>
         </button>
-
-        <div className='zoom-container'>
-          <Slider max={300} defaultValue={300 - ctx.zoom.current} onChange={ctx.onZoom} vertical showBubble={false} />
-
-          <svg id='zoom-slider-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-            <path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' />
-          </svg>
-        </div>
       </div>
     </div>
   );

@@ -1,202 +1,151 @@
+import React, { Fragment, useCallback } from 'react';
 import './SvgPanel.css';
-import React, { useCallback, useContext } from 'react';
 
-import CTX from '../Helpers/CTX';
-import { constructPath } from '../Helpers/Helpers';
+import { useApp } from '../Helpers/AppContext';
+import { clamp } from '../Helpers/utils';
+import { calculateMirrorPoint, solveTFromPositionX, splitCurveAtT } from '../Helpers/geometry';
+import { constructPathFromPoints } from '../Helpers/utils';
 
-/** - The radius of the points on the path. */
+/** The radius of the points along the path */
 const pointRadius = 2;
 
 export default function Panel() {
-  const {
-    zoom,
-    size,
-    gridPoints,
-    autoHideHandles,
-    points,
-    undoStack,
-    activeControlPoint,
-    activePathPoint,
-    selectedPoint,
-    eventPoint,
-    toggledAnchors,
-    parseResult,
-    setPoints,
-    mouseMove,
-  } = useContext(CTX);
+  const ctx = useApp();
 
-  /** - Renders the grid numbers inside the svg panel. */
+  /** Render grid numbers inside the SVG panel. */
   const drawGraphNumbers = useCallback(() => {
-    let numbers = [];
+    const textElements = [];
     for (let i = 0; i < 11; i++) {
-      const e = gridPoints.current[i];
-      numbers.push(
-        <text key={'numberV' + i} className='grid-text' dominantBaseline='middle' textAnchor='end' x={zoom.current - 5} y={e}>
-          {(10 - i * 1) / 10}
+      const e = ctx.gridPoints.current[i];
+
+      // vertical
+      const verticalNumber = (10 - i * 1) / 10;
+      const verticalPos = { x: ctx.zoom.current - 5, y: e };
+      textElements.push(
+        <text
+          key={'numberV' + i}
+          className='grid-text'
+          dominantBaseline='middle'
+          textAnchor='end'
+          x={verticalPos.x}
+          y={verticalPos.y}
+        >
+          {verticalNumber}
         </text>
       );
-      numbers.push(
+
+      // horizontal
+      const horizontalNumber = (i * 1) / 10;
+      const horizontalPos = { x: e, y: ctx.viewBoxSize.current + ctx.zoom.current + 5 };
+      textElements.push(
         <text
           key={'numberH' + i}
           className='grid-text'
           dominantBaseline='hanging'
           textAnchor='middle'
-          x={e}
-          y={size.current + zoom.current + 5}
+          x={horizontalPos.x}
+          y={horizontalPos.y}
         >
-          {(i * 1) / 10}
+          {horizontalNumber}
         </text>
       );
     }
-    return numbers;
+
+    return textElements;
   }, []);
 
-  /** - Renders the grid lines inside the svg panel. */
+  /** Render grid lines inside the SVG panel. */
   const drawGraphLines = useCallback(() => {
-    let lines = [];
+    const lineElements = [];
     for (let i = 1; i < 10; i++) {
-      const e = gridPoints.current[i];
-      lines.push(
-        <line key={'lineV' + i} className='grid-line' x1={zoom.current} y1={e} x2={size.current + zoom.current} y2={e} />
+      const e = ctx.gridPoints.current[i];
+
+      // vertical
+      const verticalLineStartPos = { x: ctx.zoom.current, y: e };
+      const verticalLineEndPos = { x: ctx.viewBoxSize.current + ctx.zoom.current, y: e };
+      lineElements.push(
+        <line
+          key={'lineV' + i}
+          className='grid-line'
+          x1={verticalLineStartPos.x}
+          y1={verticalLineStartPos.y}
+          x2={verticalLineEndPos.x}
+          y2={verticalLineEndPos.y}
+        />
       );
-      lines.push(
-        <line key={'lineH' + i} className='grid-line' x1={e} y1={zoom.current} x2={e} y2={size.current + zoom.current} />
+
+      // horizontal
+      const horizontalLineStartPos = { x: e, y: ctx.zoom.current };
+      const horizontalLineEndPos = { x: e, y: ctx.viewBoxSize.current + ctx.zoom.current };
+      lineElements.push(
+        <line
+          key={'lineH' + i}
+          className='grid-line'
+          x1={horizontalLineStartPos.x}
+          y1={horizontalLineStartPos.y}
+          x2={horizontalLineEndPos.x}
+          y2={horizontalLineEndPos.y}
+        />
       );
     }
-    return lines;
+
+    return lineElements;
   }, []);
 
-  /** - Renders control points and their handles and attaches events. */
-  const drawHandles = () => {
-    let handlesPoints: number[][] = [];
-    points.forEach((e, i) => {
-      if (i === 0) return;
-      if (i === 1) {
-        handlesPoints.push([e[0], e[1]]);
-        handlesPoints.push([e[2], e[3]]);
-        return;
-      }
-      handlesPoints.push([e[0], e[1]]);
-    });
+  /** Render control points along with their handles and attaches the necessary events. */
+  const drawControlPointsAndHandles = () => {
+    // get the two control points positions for each curve
+    const handlesPoints: { x1: number; y1: number; x2: number; y2: number; curveIndex: number; ctlIndex: 0 | 2 }[] = [];
+    for (let i = 0; i < ctx.points.length; i++) {
+      if (i === 0) continue; // M
 
-    return handlesPoints.map((e, i) => {
+      const currentCurve = ctx.points[i];
+      const previousCurve = ctx.points[i - 1];
+
+      handlesPoints.push({
+        x1: currentCurve[0], // c0x first control point
+        y1: currentCurve[1], // c0y first control point
+        x2: previousCurve[previousCurve.length - 2], // p0x curve starting point
+        y2: previousCurve[previousCurve.length - 1], // p0y curve starting point
+        ctlIndex: 0, // control point x index inside the curve array
+        curveIndex: i, // curve array index inside the path points array
+      });
+
+      handlesPoints.push({
+        x1: currentCurve[2], // c1x second control point
+        y1: currentCurve[3], // c1y second control point
+        x2: currentCurve[4], // p1x curve ending point
+        y2: currentCurve[5], // p1y curve ending point
+        ctlIndex: 2, // control point x index inside the curve array
+        curveIndex: i, // curve array index inside the path points array
+      });
+    }
+
+    const elements = [];
+    for (let i = 0; i < handlesPoints.length; i++) {
+      const e = handlesPoints[i];
+
       const onMouseDown = () => {
-        activeControlPoint.current = i === 0 ? [1, 0] : i === 1 ? [1, 2] : [i, 0];
-        document.addEventListener('pointermove', mouseMove);
-        undoStack.current.push(parseResult());
-      };
-
-      const onFocus = () => {
-        if (!autoHideHandles.current) return;
-
-        const line = document.querySelectorAll('.handle-line')[i] as SVGLineElement;
-        line.style.display = 'block';
-
-        const circle = document.querySelectorAll('.handle-point')[i] as SVGCircleElement;
-        const a = circle.parentElement as HTMLAnchorElement;
-        a.style.display = 'block';
-
-        const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-        circles.forEach(e => (e.parentElement!.style.display = 'block'));
+        ctx.activeControlPoint.current = i === 0 ? [1, 0] : [e.curveIndex, e.ctlIndex];
+        document.addEventListener('pointermove', ctx.mouseMove);
+        ctx.registerMoveForUndo();
       };
 
       const onBlur = () => {
-        // ? all this workaround is because of a bug in firefox.
-        const itPoint = document.querySelectorAll('.path-point')[i].parentElement;
+        // ? This workaround is necessary due to a bug in Firefox.
+        const pointIndex = e.ctlIndex === 0 ? e.curveIndex - 1 : e.curveIndex;
+        const point = document.querySelectorAll('.path-point')[pointIndex].parentElement;
+        const ctrlAnchors = [...document.querySelectorAll<HTMLAnchorElement>(`a[data-for-curve="${pointIndex}"]`)];
         setTimeout(() => {
-          if (!autoHideHandles.current || document.activeElement === itPoint) return;
+          const activeEl = document.activeElement as HTMLAnchorElement;
+          if (!ctx.autoHideHandles || [point, ...ctrlAnchors].includes(activeEl)) return;
 
-          const line = document.querySelectorAll('.handle-line')[i] as SVGLineElement;
-          line.style.display = 'none';
+          // Hide all control points.
+          document
+            .querySelectorAll<HTMLAnchorElement>(`[data-for-curve="${pointIndex}"]`)
+            .forEach(e => (e.style.display = 'none'));
 
-          const circle = document.querySelectorAll('.handle-point')[i] as SVGCircleElement;
-          const a = circle.parentElement as HTMLAnchorElement;
-          a.style.display = 'none';
-
-          if (document.activeElement?.nodeName !== 'a') {
-            const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-            circles.forEach(e => (e.parentElement!.style.display = 'none'));
-          }
-        }, 0);
-      };
-
-      const x2 = i === 0 ? points[0][0] : i === 1 ? points[1][4] : points[i][2];
-      const y2 = i === 0 ? points[0][1] : i === 1 ? points[1][5] : points[i][3];
-
-      return [
-        <line
-          key={'handlesPointsLine' + i}
-          style={{ display: autoHideHandles.current ? 'none' : 'block' }}
-          className='handle-line auto-hide'
-          x1={e[0]}
-          y1={e[1]}
-          x2={x2}
-          y2={y2}
-        />,
-        <a
-          key={'handlesPoints' + i}
-          style={{ display: autoHideHandles.current ? 'none' : 'block' }}
-          className='auto-hide'
-          href='#point'
-          onFocus={onFocus}
-          onBlur={onBlur}
-          onDragStart={e => e.preventDefault()}
-          onClick={e => e.preventDefault()}
-        >
-          <circle className='handle-point point' onPointerDown={onMouseDown} cx={e[0]} cy={e[1]} r={pointRadius} />
-        </a>,
-      ];
-    });
-  };
-
-  /** - Renders and attaches events to points on the path. */
-  const drawPoints = () => {
-    return points.map((e, i) => {
-      const onMouseDown = (e: React.MouseEvent<Element>) => {
-        activePathPoint.current = i;
-        selectedPoint.current = i;
-
-        if (e.shiftKey) {
-          if (toggledAnchors.has(i)) {
-            toggledAnchors.delete(i);
-            const Points = [...points];
-            const index = i === 0 ? 1 : i;
-            const pos = [i === 0 ? 0 : Points[i].length - 4, i === 0 ? 1 : Points[i].length - 3];
-            Points[index][pos[0]] -= 10;
-            Points[index][pos[1]] += 10;
-          } else toggledAnchors.add(i);
-
-          mouseMove(e);
-        }
-
-        document.addEventListener('pointermove', mouseMove);
-        undoStack.current.push(parseResult());
-      };
-
-      const onFocus = () => {
-        if (!autoHideHandles.current) return;
-
-        const line = document.querySelectorAll('.handle-line')[i] as SVGLineElement;
-        line.style.display = 'block';
-
-        const circle = document.querySelectorAll('.handle-point')[i] as SVGCircleElement;
-        const a = circle.parentElement as HTMLAnchorElement;
-        a.style.display = 'block';
-
-        const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-        circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'block'));
-      };
-
-      const onBlur = () => {
-        // ? all this workaround is because of a bug in firefox.
-        const itHandle = document.querySelectorAll('.handle-point')[i].parentElement as HTMLAnchorElement;
-        setTimeout(() => {
-          if (!autoHideHandles.current || document.activeElement === itHandle) return;
-
-          const line = document.querySelectorAll('.handle-line')[i] as SVGLineElement;
-          line.style.display = 'none';
-
-          itHandle.style.display = 'none';
+          // Hide all points when another point is not active.
           if (document.activeElement?.nodeName !== 'a') {
             const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
             circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'none'));
@@ -204,10 +153,128 @@ export default function Panel() {
         }, 0);
       };
 
-      return (
+      elements.push(
+        <Fragment key={'handlesPointsLine' + i}>
+          <line
+            style={{ display: ctx.autoHideHandles ? 'none' : 'block' }}
+            className='handle-line auto-hide'
+            data-for-curve={e.ctlIndex === 0 ? e.curveIndex - 1 : e.curveIndex}
+            x1={e.x1}
+            y1={e.y1}
+            x2={e.x2}
+            y2={e.y2}
+          />
+          <a
+            style={{ display: ctx.autoHideHandles ? 'none' : 'block' }}
+            className='auto-hide'
+            data-for-curve={e.ctlIndex === 0 ? e.curveIndex - 1 : e.curveIndex}
+            href='#point'
+            onBlur={onBlur}
+            onDragStart={e => e.preventDefault()}
+            onClick={e => e.preventDefault()}
+          >
+            <circle className='handle-point point' onPointerDown={onMouseDown} cx={e.x1} cy={e.y1} r={pointRadius} />
+          </a>
+        </Fragment>
+      );
+    }
+
+    return elements;
+  };
+
+  /** Render and attach events to points on the path. */
+  const drawAnchorPoints = () => {
+    const elements = [];
+    for (let i = 0; i < ctx.points.length; i++) {
+      const e = ctx.points[i];
+
+      const onMouseDown = (e: React.MouseEvent<Element>) => {
+        ctx.registerMoveForUndo();
+
+        ctx.activePathPoint.current = i;
+        ctx.selectedPoint.current = i;
+
+        // Disable control points collinear.
+        if (e.ctrlKey && ctx.toggledCollinear.delete(i) && i !== ctx.points.length - 1) {
+          ctx.toggledCollinear.delete(i);
+          const curves = [...ctx.points];
+          const curveIndex = i === 0 ? 1 : i;
+          const currentCurve = curves[curveIndex];
+          const nextCurve = curves[curveIndex + 1];
+          const ctrlIndex = curveIndex === 0 ? 0 : 2;
+
+          const centerX = currentCurve[4];
+          const centerY = currentCurve[5];
+          const c0x = currentCurve[ctrlIndex];
+          const c0y = currentCurve[ctrlIndex + 1];
+          const c1x = nextCurve[0];
+          const c1y = nextCurve[0];
+
+          const { x, y } = calculateMirrorPoint(c0x, c0y, c1x, c1y, centerX, centerY);
+
+          nextCurve[0] = x;
+          nextCurve[1] = y;
+
+          ctx.mouseMove(e); // force update
+        }
+
+        // Toggle smooth corner.
+        if (e.shiftKey) {
+          if (ctx.toggledAnchors.delete(i)) {
+            const curves = [...ctx.points];
+            const nextCurve = curves[i + 1];
+            const ctrlIndex = i === 0 ? 0 : 2;
+            curves[i][ctrlIndex] -= 10;
+            curves[i][ctrlIndex + 1] += 10;
+            if (nextCurve) {
+              nextCurve[0] += 10;
+              nextCurve[1] -= 10;
+            }
+          } else {
+            ctx.toggledAnchors.add(i);
+          }
+
+          ctx.mouseMove(e); // force update
+        }
+
+        document.addEventListener('pointermove', ctx.mouseMove);
+      };
+
+      const onFocus = () => {
+        if (!ctx.autoHideHandles) return;
+
+        // Show attached control points.
+        const ctrl = document.querySelectorAll<SVGLineElement>(`[data-for-curve="${i}"]`);
+        ctrl.forEach(e => (e.style.display = 'block'));
+
+        // Show all points
+        const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
+        circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'block'));
+      };
+
+      const onBlur = () => {
+        // ? This workaround is necessary due to a bug in Firefox.
+        const ctrlAnchors = [...document.querySelectorAll<HTMLAnchorElement>(`a[data-for-curve="${i}"]`)];
+        setTimeout(() => {
+          const activeEl = document.activeElement as HTMLAnchorElement;
+          if (!ctx.autoHideHandles || ctrlAnchors.includes(activeEl)) return;
+
+          // Hide all control points.
+          const ctrl = document.querySelectorAll<SVGLineElement>(`[data-for-curve="${i}"]`);
+          ctrl.forEach(e => (e.style.display = 'none'));
+
+          // Hide all points when another point is not active.
+          if (document.activeElement?.nodeName !== 'a') {
+            const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
+            circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'none'));
+          }
+        }, 0);
+      };
+
+      elements.push(
         <a
           key={'Points' + i}
-          style={{ display: autoHideHandles.current ? 'none' : 'block' }}
+          style={{ display: ctx.autoHideHandles ? 'none' : 'block' }}
           className='auto-hide'
           href='#Points'
           onFocus={onFocus}
@@ -224,101 +291,122 @@ export default function Panel() {
           />
         </a>
       );
-    });
+    }
+
+    return elements;
   };
 
-  /** - Add new point on the path by pressing `Alt + Click`. */
+  /** Add a new point to the path by pressing `Alt + Click`. */
   const addNewPoint = (e: React.MouseEvent<SVGPathElement>) => {
     if (!e.altKey) return;
+
+    ctx.registerMoveForUndo();
+
     const svg = document.querySelector(`.svg`) as SVGSVGElement;
-    const { left, top, width, height } = svg.getBoundingClientRect();
-    // calculate mouse coordinates.
-    let x = (e.clientX - left) * ((size.current + zoom.current * 2) / width);
-    let y = (e.clientY - top) * ((size.current + zoom.current * 2) / height);
-    x = Math.min(Math.max(x, 0), size.current + zoom.current * 2);
-    y = Math.min(Math.max(y, 0), size.current + zoom.current * 2);
+    const { left, width } = svg.getBoundingClientRect();
 
-    const Points = [...eventPoint.current];
+    // Calculate mouse X-coordinates.
+    let x = (e.clientX - left) * ((ctx.viewBoxSize.current + ctx.zoom.current * 2) / width);
+    // Prevent x from going beyond the SVG edges.
+    x = clamp(x, 0, ctx.viewBoxSize.current + ctx.zoom.current * 2) + ctx.viewBoxCoordinate.current.x;
 
-    // find where to insert the new point.
+    const Points = [...ctx.eventPoint.current];
+
+    // Determine the insertion index for the new point.
     let insertIndex = 0;
     for (let i = 0; i < Points.length; i++) {
-      const xP = i === 0 ? Points[i][0] : i === 1 ? Points[i][4] : Points[i][2];
+      const xP = i === 0 ? Points[i][0] : Points[i][4];
       if (xP > x) {
         insertIndex = i;
         break;
       }
     }
 
-    if (insertIndex === 1) {
-      // add new point after C.
-      Points.splice(2, 0, [Points[1][2], Points[1][3], Points[1][4], Points[1][5]]);
-      // move C point to the add position.
-      Points[1][2] = x - 10;
-      Points[1][3] = y + 10;
-      Points[1][4] = x;
-      Points[1][5] = y;
-      // switch toggledAnchors indexes.
-      if (toggledAnchors.has(1)) {
-        toggledAnchors.delete(1);
-        toggledAnchors.add(2);
-        mouseMove(e); // update points.
-      }
-    } else Points.splice(insertIndex, 0, [x - 10, y + 10, x, y]);
+    const previousCurve = Points[insertIndex - 1]; // M or C
+    const currentCurve = Points[insertIndex]; // C
 
-    setPoints(Points);
+    const p0x = previousCurve[previousCurve.length - 2],
+      p0y = previousCurve[previousCurve.length - 1],
+      c0x = currentCurve[0],
+      c0y = currentCurve[1],
+      c1x = currentCurve[2],
+      c1y = currentCurve[3],
+      p1x = currentCurve[4],
+      p1y = currentCurve[5];
+
+    const t = solveTFromPositionX(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, x);
+    const { left: leftCurve, right: rightCurve } = splitCurveAtT(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, t);
+
+    Points.splice(insertIndex, 0, [leftCurve[2], leftCurve[3], leftCurve[4], leftCurve[5], leftCurve[6], leftCurve[7]]);
+
+    currentCurve[0] = rightCurve[2]; // c0x
+    currentCurve[1] = rightCurve[3]; // c0y
+    currentCurve[2] = rightCurve[4]; // c1x
+    currentCurve[3] = rightCurve[5]; // c1y
+
+    ctx.setPoints(Points);
   };
 
-  /** - Show the points if the path gets focus only when `autoHideHandles` is enabled. */
+  /** Show the points when the path gains focus, but only when `autoHideHandles` is enabled. */
   const onPathFocus = () => {
-    if (!autoHideHandles.current) return;
-
+    if (!ctx.autoHideHandles) return;
     const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-
     circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'block'));
   };
 
-  /** - Hide the points if the path loses focus only when `autoHideHandles` is enabled. */
+  /** Hide the points when the path loses focus, but only when `autoHideHandles` is enabled. */
   const onPathBlur = () => {
-    // all this workaround is because of a bug in firefox.
+    // ? This workaround is necessary due to a bug in Firefox.
     setTimeout(() => {
-      if (!autoHideHandles.current || document.activeElement!.nodeName === 'a') return;
-
-      const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-
-      circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'none'));
+      if (!ctx.autoHideHandles || document.activeElement!.nodeName === 'a') return;
+      document.querySelectorAll<SVGCircleElement>('.auto-hide').forEach(e => (e.style.display = 'none'));
     }, 0);
   };
+
+  const pathString = constructPathFromPoints(ctx.points);
 
   return (
     <svg
       className='svg'
       xmlns='http://www.w3.org/2000/svg'
-      viewBox={`0 0 ${size.current + zoom.current * 2} ${size.current + zoom.current * 2}`}
+      viewBox={`${ctx.viewBoxCoordinate.current.x} ${ctx.viewBoxCoordinate.current.y} ${
+        ctx.viewBoxSize.current + ctx.zoom.current * 2
+      } ${ctx.viewBoxSize.current + ctx.zoom.current * 2}`}
     >
       {/* grid lines and numbers */}
       <g className='grid-group'>
-        <rect className='svg-background' x={zoom.current} y={zoom.current} width={size.current} height={size.current} />
+        <rect
+          className='svg-background'
+          x={ctx.zoom.current}
+          y={ctx.zoom.current}
+          width={ctx.viewBoxSize.current}
+          height={ctx.viewBoxSize.current}
+        />
         {drawGraphNumbers()}
         <line
           className='grid-line'
-          x1={zoom.current}
-          y1={size.current + zoom.current}
-          x2={size.current + zoom.current}
-          y2={zoom.current}
+          x1={ctx.zoom.current}
+          y1={ctx.viewBoxSize.current + ctx.zoom.current}
+          x2={ctx.viewBoxSize.current + ctx.zoom.current}
+          y2={ctx.zoom.current}
         />
         {drawGraphLines()}
-        <text className='grid-text' textAnchor='middle' x={(size.current + zoom.current * 2) / 2} y={zoom.current - 5}>
-          Progress
+        <text
+          className='grid-text'
+          textAnchor='middle'
+          x={(ctx.viewBoxSize.current + ctx.zoom.current * 2) / 2}
+          y={ctx.zoom.current - 5}
+        >
+          Time (Progress)
         </text>
         <text
           className='grid-text'
           textAnchor='middle'
-          x={size.current + zoom.current + 4}
-          y={(size.current + zoom.current * 2) / 2}
+          x={ctx.viewBoxSize.current + ctx.zoom.current + 4}
+          y={(ctx.viewBoxSize.current + ctx.zoom.current * 2) / 2}
           style={{ writingMode: 'vertical-rl' }}
         >
-          Value
+          Y-axis - Value
         </text>
       </g>
 
@@ -329,58 +417,63 @@ export default function Panel() {
         onDragStart={e => e.preventDefault()}
         onClick={e => e.preventDefault()}
       >
-        <path className='path' d={constructPath(points)} onClick={addNewPoint} />
+        <path className='path' d={pathString} onClick={addNewPoint} />
       </a>
 
       {/* handles and handles points */}
-      <g className='handles-group'>{drawHandles()}</g>
+      <g className='handles-group'>{drawControlPointsAndHandles()}</g>
 
       {/* on line points group */}
-      <g className='path-points-group'>{drawPoints()}</g>
+      <g className='path-points-group'>{drawAnchorPoints()}</g>
 
       {/* for animation group */}
       <g>
         <mask id='animation-path-mask'>
-          <rect fill='white' x={zoom.current} y={0} width={0} height={size.current + zoom.current * 2} />
+          <rect fill='white' x={ctx.zoom.current} y={0} width={0} height={ctx.viewBoxSize.current + ctx.zoom.current * 2} />
         </mask>
 
-        <path className='animation-path' d={constructPath(points)} mask='url(#animation-path-mask)' />
+        <path className='animation-path' d={pathString} mask='url(#animation-path-mask)' />
 
         <line
           className='animation-horizontal-line'
-          x1={zoom.current}
-          y1={size.current + zoom.current}
-          x2={size.current + zoom.current}
-          y2={size.current + zoom.current}
+          x1={ctx.zoom.current}
+          y1={ctx.viewBoxSize.current + ctx.zoom.current}
+          x2={ctx.viewBoxSize.current + ctx.zoom.current}
+          y2={ctx.viewBoxSize.current + ctx.zoom.current}
         />
         <line
           className='animation-vertical-line'
-          x1={zoom.current}
-          y1={0}
-          x2={zoom.current}
-          y2={size.current + zoom.current * 2}
+          x1={ctx.zoom.current}
+          y1={-200}
+          x2={ctx.zoom.current}
+          y2={ctx.viewBoxSize.current + ctx.zoom.current * 2 + 200}
         />
         <line
           className='animation-fill-line-bg'
-          x1={size.current + zoom.current + 10}
-          y1={size.current + zoom.current}
-          x2={size.current + zoom.current + 10}
-          y2={zoom.current}
+          x1={ctx.viewBoxSize.current + ctx.zoom.current + 10}
+          y1={ctx.viewBoxSize.current + ctx.zoom.current}
+          x2={ctx.viewBoxSize.current + ctx.zoom.current + 10}
+          y2={ctx.zoom.current}
         />
         <line
           className='animation-fill-line'
-          x1={size.current + zoom.current + 10}
-          y1={size.current + zoom.current}
-          x2={size.current + zoom.current + 10}
-          y2={size.current + zoom.current}
+          x1={ctx.viewBoxSize.current + ctx.zoom.current + 10}
+          y1={ctx.viewBoxSize.current + ctx.zoom.current}
+          x2={ctx.viewBoxSize.current + ctx.zoom.current + 10}
+          y2={ctx.viewBoxSize.current + ctx.zoom.current}
         />
-        <circle className='animation-point point' cx={size.current + zoom.current + 10} cy={size.current + zoom.current} r={4} />
+        <circle
+          className='animation-point point'
+          cx={ctx.viewBoxSize.current + ctx.zoom.current + 10}
+          cy={ctx.viewBoxSize.current + ctx.zoom.current}
+          r={4}
+        />
         <text
           className='grid-text'
           id='fps'
           dominantBaseline='middle'
-          x={size.current + zoom.current + 18}
-          y={size.current + zoom.current}
+          x={ctx.viewBoxSize.current + ctx.zoom.current + 18}
+          y={ctx.viewBoxSize.current + ctx.zoom.current}
         >
           0 FPS
         </text>

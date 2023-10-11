@@ -11,20 +11,22 @@
 }
 
 .close-panel {
-  all: unset;
   position: sticky;
   top: 20px;
   float: right;
-  width: 30px;
-  height: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  transform: translateX(25px);
+  z-index: 100;
+}
+.close-panel > svg {
+  all: unset;
   padding: 5px;
   border-radius: 50%;
   background-color: inherit;
   cursor: pointer;
-  z-index: 100;
-  animation: bounce-right 4s both infinite;
-}
-.close-panel > svg {
   width: 30px;
   height: 30px;
   fill: var(--text-color);
@@ -53,7 +55,29 @@
 }
 
 .hints {
-  margin-top: 10px;
+  margin-top: 5px;
+  overflow: hidden;
+  max-height: 1000px;
+  transition: max-height 500ms ease-out;
+}
+
+.hints-title-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.hints-title-container svg {
+  height: 40px;
+  width: 40px;
+  fill: var(--text-color);
+  transform: rotate(0deg);
+  cursor: pointer;
+  transition: transform 300ms ease-out;
+}
+.hints-title-container svg:hover {
+  fill: var(--secondary-color);
+  transform: scale(1.1);
 }
 
 .hints > * {
@@ -62,12 +86,16 @@
 
 .hints ul {
   padding: 0;
-  padding-left: 10px;
 }
 
 .hints ul li {
   margin: 5px 0;
   line-height: 1.5;
+}
+
+.hints ul li p {
+  margin: 0px;
+  margin-left: 5px;
 }
 
 .options * {
@@ -104,18 +132,6 @@
   border: solid 1px var(--main-color);
 }
 .options-duration > p {
-  margin: 0;
-  margin-right: 10px;
-  min-width: 65px;
-}
-
-.options-zoom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-.options-zoom > p {
   margin: 0;
   margin-right: 10px;
   min-width: 65px;

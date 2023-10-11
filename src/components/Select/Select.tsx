@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, forwardRef, useImperativeHand
 const clamp = (value: number, min: number, max: number) => (value < min ? min : value > max ? max : value);
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const MAX_HIEGHT = 600;
+const MAX_HEIGHT = 600;
 const ITEM_HEIGHT = 40;
 const TOP_MARGIN = 10;
 const BOTTOM_MARGIN = 30;
@@ -54,7 +54,7 @@ function SelectComponent<T extends Array<BASIC>>(
 
     const { bottom } = container.getBoundingClientRect();
 
-    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HIEGHT);
+    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HEIGHT);
 
     return clamp(menuHeight, 0, maxHeight);
   };
@@ -69,7 +69,7 @@ function SelectComponent<T extends Array<BASIC>>(
     dialogRef.current.style.top = bottom + TOP_MARGIN + 'px';
     dialogRef.current.style.width = Math.max(width, minWidth) + 'px';
 
-    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HIEGHT);
+    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HEIGHT);
     dialogRef.current.style.maxHeight = maxHeight + 'px';
   }, []);
 

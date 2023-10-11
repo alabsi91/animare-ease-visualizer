@@ -1,17 +1,18 @@
-import './ExportJsFile.css';
-import React, { useContext, useEffect, useState } from 'react';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
+import React, { useEffect, useState } from 'react';
+import './ExportJsFile.css';
 
-import { getYpoints } from '../Helpers/Helpers';
-import CTX from '../Helpers/CTX';
+import { useApp } from '../Helpers/AppContext';
+import { convertEasingFunctionToPoints } from '../Helpers/Helpers';
+import { preparePointsForAnimation } from '../Helpers/utils';
 
 hljs.registerLanguage('javascript', javascript);
 
 let controller = new AbortController();
 
 export default function ExportJsFile() {
-  const ctx = useContext(CTX);
+  const ctx = useApp();
 
   const [samples, setSamples] = useState(1000);
   const [fileName, setFileName] = useState('customEasing');
@@ -61,7 +62,15 @@ export default function ExportJsFile() {
 
     let values: Float32Array;
     try {
-      values = await getYpoints(ctx.parseResult(), samples, onUpdate, controller.signal);
+      const viewBox = {
+        x: ctx.zoom.current,
+        y: ctx.zoom.current,
+        width: ctx.viewBoxSize.current,
+        height: ctx.viewBoxSize.current,
+      };
+      const curves = preparePointsForAnimation(ctx.points, viewBox);
+
+      values = await convertEasingFunctionToPoints(curves, samples, onUpdate, controller.signal);
     } catch (error) {
       console.log('error :', error);
       return;
