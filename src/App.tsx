@@ -6,22 +6,28 @@ import './index.css';
 import ExportCss from './ExportCss/ExportCss';
 import ExportJsFile from './ExportJsFile/ExportJsFile';
 import ExportSvg from './ExportSvg/ExportSvg';
-import { AppProvider } from './Helpers/AppContext';
-import { checkOverlap, findSmoothCorners } from './Helpers/Helpers';
-import { calculateMirrorPoint, generateEasingFunctionFromString } from './Helpers/geometry';
-import { clamp, constructPathFromPoints, convertPointsToRelativeValues, getPointsFromPathString } from './Helpers/utils';
-import { eases } from './Paths';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';
 import Panel from './SvgPanel/SvgPanel';
 import Dialog, { DialogRef } from './components/Dialog/Dialog';
 import usePan from './hooks/usePan';
 import useZoom from './hooks/useZoom';
+import { eases } from './presets';
+import { AppProvider } from './utils/AppContext';
+import { calculateMirrorPoint, generateEasingFunctionFromString } from './utils/geometry';
+import {
+  checkOverlap,
+  clamp,
+  constructPathFromPoints,
+  convertPointsToRelativeValues,
+  getPointsFromPathString,
+} from './utils/utils';
 
-import type { ExportTypes } from './Helpers/AppContext';
+import type { Eases } from './presets';
+import type { ExportTypes } from './utils/AppContext';
 
 /** - Threshold for checking path overlapping. */
-let tmout = false,
+let timeout = false,
   /** - To set the path color after the animation end (red or normal). */
   isOverLapping = false,
   /** - To pause checking for path overlapping while zooming using the slide. */
@@ -29,7 +35,6 @@ let tmout = false,
 
 /** - The set of point that has the smooth corner enabled. */
 const toggledAnchors = new Set<number>();
-
 /** - The set of point that control points are not collinear. */
 const toggledCollinear = new Set<number>();
 
@@ -37,26 +42,19 @@ export default function App() {
   const viewBoxSize = useRef(300);
   const viewBoxCoordinate = useRef({ x: 0, y: 0 });
 
-  /** - the aria around the SVG's drawing area. */
+  /** - The aria around the SVG's drawing area. */
   const zoom = useRef(50);
-
   /** - A switch to toggle the snapping to the nearest point or to the grid. */
   const magnet = useRef(true);
-
   /** - An array of number to determine the grid points on the `x` and `y` axis. */
   const gridPoints = useRef(new Array(11).fill(0).map((_, i) => zoom.current + (i * viewBoxSize.current) / 10));
-
   /** - To save path strings paths for undo. */
   const undoStack = useRef<string[]>([]);
-
   /** - The current moving control point `[curve index, index of control x point]`. */
   const activeControlPoint = useRef<[number, 0 | 2] | null>(null);
-
-  /** - The current moving point. */
+  /** - The current moving anchor point. */
   const activePathPoint = useRef<number | null>(null);
-
   const isPresetSelected = useRef(true);
-
   /** - The selected (focused) point, used for deletion. */
   const selectedPoint = useRef<number | null>(null);
 
@@ -75,14 +73,14 @@ export default function App() {
     return getPointsFromPathString(path, viewBox);
   };
 
-  /** - The current path as two dimensional array `[[M], [C], ...[S]]` */
+  /** - The current path as two dimensional array `[[M], ...[C]]` */
   const [points, setPoints] = useState(pathToPoints(window.localStorage.getItem('saved') || eases['ease.in.sine']));
-  const [preset, setPreset] = useState('none');
+  const [preset, setPreset] = useState<Eases[keyof Eases]>('none');
 
   /** - A switch to toggle auto hiding points and control handles when not focused. */
   const [autoHideHandles, setAutoHideHandles] = useState(false);
 
-  /** - The current path as two dimensional array `[[M], [C], ...[S]]` to be used for events. */
+  /** - The current path as two dimensional array `[[M], ...[C]]` to be used for events. */
   const eventPoint = useRef(points);
 
   const getStickingPoints = () => {
@@ -372,8 +370,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    findSmoothCorners(points, toggledAnchors);
-
     const onMouseUp = () => {
       document.removeEventListener('pointermove', mouseMove);
       activePathPoint.current = null;
@@ -400,13 +396,13 @@ export default function App() {
     if (isPresetSelected.current) isPresetSelected.current = false;
     else if (preset !== 'none' && !isZooming) setPreset('none');
 
-    if (!tmout && !isZooming) {
-      tmout = true;
+    if (!timeout && !isZooming) {
+      timeout = true;
       setTimeout(() => {
         const percentagePoints = getPercentagePoints();
         isOverLapping = checkOverlap(percentagePoints);
         (document.querySelector('.path') as SVGPathElement).style.stroke = isOverLapping ? 'red' : 'var(--active-path)';
-        tmout = false;
+        timeout = false;
       }, 50);
     }
   }, [points]);
@@ -423,14 +419,19 @@ export default function App() {
     });
   };
 
-  const onPresetSelect = (value: string) => {
+  const onPresetSelect = (value: Eases[keyof Eases]) => {
     if (value === 'none') return;
+
+    const path = document.querySelector('.path') as SVGPathElement;
+    path.style.transition = 'all 500ms ease 0s';
+
     isPresetSelected.current = true;
     toggledAnchors.clear();
     const Points = pathToPoints(value);
-    findSmoothCorners(Points, toggledAnchors);
     setPoints(Points);
     setPreset(value);
+
+    setTimeout(() => (path.style.transition = 'none'), 500);
   };
 
   const playCurrentEasing = () => {
@@ -451,8 +452,10 @@ export default function App() {
     if (dialog === 'JS File') exportJsDialogRef.current.toggle();
   };
 
-  usePan(viewBoxSize, zoom, viewBoxCoordinate); //
-  useZoom(zoom, onZoom); //
+  // add event listener to drag SVG panel around SPACE + DRAGG
+  usePan(viewBoxSize, zoom, viewBoxCoordinate);
+  // add event listener to perform a zoom on SVG CTRL + Wheel
+  useZoom(zoom, onZoom);
 
   const contextValue = {
     activeControlPoint,

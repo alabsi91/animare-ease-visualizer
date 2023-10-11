@@ -4,10 +4,10 @@ import 'highlight.js/styles/rainbow.css';
 import { useEffect, useState } from 'react';
 import './ExportCss.css';
 
-import { useApp } from '../Helpers/AppContext';
-import { preparePointsForAnimation } from '../Helpers/utils';
+import { useApp } from '../utils/AppContext';
+import { preparePointsForAnimation } from '../utils/utils';
 import HighlightInput from '../components/HighlightInput/HighlightInput';
-import { generateEasingFunctionFromArray } from '../Helpers/geometry';
+import { generateEasingFunctionFromArray } from '../utils/geometry';
 
 hljs.registerLanguage('css', css);
 
@@ -32,7 +32,9 @@ export default function ExportCss() {
     let results = '';
 
     if (curves.length === 1) {
-      results = `.element {\n  transition: transform 0.6s cubic-bezier(${curves[0][2]}, ${curves[0][3]}, ${curves[0][4]}, ${curves[0][5]});\n}`;
+      results = `.element {\n  transition: transform 0.6s cubic-bezier(${+curves[0][2].toFixed(3)}, ${+curves[0][3].toFixed(
+        3
+      )}, ${+curves[0][4].toFixed(3)}, ${+curves[0][5].toFixed(3)});\n}`;
       return results;
     }
 

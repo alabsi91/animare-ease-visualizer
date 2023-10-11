@@ -3,9 +3,9 @@ import javascript from 'highlight.js/lib/languages/javascript';
 import React, { useEffect, useState } from 'react';
 import './ExportJsFile.css';
 
-import { useApp } from '../Helpers/AppContext';
-import { convertEasingFunctionToPoints } from '../Helpers/Helpers';
-import { preparePointsForAnimation } from '../Helpers/utils';
+import { useApp } from '../utils/AppContext';
+import { convertEasingFunctionToPoints } from '../utils/utils';
+import { preparePointsForAnimation } from '../utils/utils';
 
 hljs.registerLanguage('javascript', javascript);
 

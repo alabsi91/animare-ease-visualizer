@@ -3,15 +3,15 @@ import { useAnimare } from 'animare/react';
 import React, { useCallback, useEffect, useRef } from 'react';
 import './SidePanel.css';
 
-import { exportTypes, useApp } from '../Helpers/AppContext';
-import { eases } from '../Paths';
+import { exportTypes, useApp } from '../utils/AppContext';
+import { eases } from '../presets';
 import HighlightTextarea from '../components/HighlightTextarea/HighlightTextarea';
 import Select from '../components/Select/Select';
-import { parse } from '../Helpers/parsePath';
+import { parse } from '../utils/parsePath';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
-import type { ExportTypes } from '../Helpers/AppContext';
-import { getPointsFromPathString } from '../Helpers/utils';
+import type { ExportTypes } from '../utils/AppContext';
+import { getPointsFromPathString } from '../utils/utils';
 import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
 
 export default function SidePanel() {

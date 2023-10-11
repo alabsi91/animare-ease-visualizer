@@ -1,3 +1,5 @@
+import { findPointFromT, generateEasingFunctionFromArray } from './geometry';
+
 type ViewBox = {
   x: number;
   y: number;
@@ -101,4 +103,84 @@ export function getPointsFromPathString(path: string, viewBox: ViewBox) {
 
 export function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+/** Get Y Axis points as an array */
+export async function convertEasingFunctionToPoints(
+  curves: number[][],
+  samples = 1000,
+  onUpdate?: (i: number) => void,
+  signal?: AbortSignal
+) {
+  let stopped = false;
+
+  signal?.addEventListener('abort', () => {
+    stopped = true;
+  });
+
+  const values = new Float32Array(samples);
+  let count = 0;
+  let percent = 0;
+
+  const easingFunction = generateEasingFunctionFromArray(curves);
+
+  for (let i = 0; i < samples; i++) {
+    if (stopped) throw new Error('stopped');
+
+    percent = (i + 1) / curves.length;
+    onUpdate?.(percent);
+
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    const t = i / (samples - 1);
+    values[count++] = easingFunction(t);
+  }
+
+  return values;
+}
+
+/** - Check if the path is overlapping to turned it `red`. */
+export function checkOverlap(points: number[][]): boolean {
+  const samples = 1000;
+  let largest: number | undefined = undefined;
+
+  let x0 = 0;
+  let y0 = 0;
+  for (let e = 0; e < points.length; e++) {
+    if (!e) {
+      x0 = points[e][0];
+      y0 = points[e][1];
+      continue;
+    }
+
+    const [x1, y1, x2, y2, x3, y3] = points[e];
+
+    for (let i = 0; i < samples; i++) {
+      const t = i / samples;
+      const { x } = findPointFromT(x0, 1 - y0, x1, 1 - y1, x2, 1 - y2, x3, 1 - y3, t);
+
+      if (typeof largest === 'undefined') {
+        largest = x;
+        continue;
+      }
+
+      if (x > largest) largest = x;
+      if (x < largest) return true;
+    }
+
+    x0 = x3;
+    y0 = y3;
+  }
+
+  return false;
+}
+
+export function throttle(func: Function, delay: number) {
+  let lastCall = 0;
+  return function wrapper(...args: any[]) {
+    const now = new Date().getTime();
+    if (now - lastCall < delay) return;
+    lastCall = now;
+    return func(...args);
+  };
 }

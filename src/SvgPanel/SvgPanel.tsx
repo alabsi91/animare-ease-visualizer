@@ -1,10 +1,10 @@
 import React, { Fragment, useCallback } from 'react';
 import './SvgPanel.css';
 
-import { useApp } from '../Helpers/AppContext';
-import { clamp } from '../Helpers/utils';
-import { calculateMirrorPoint, solveTFromPositionX, splitCurveAtT } from '../Helpers/geometry';
-import { constructPathFromPoints } from '../Helpers/utils';
+import { useApp } from '../utils/AppContext';
+import { clamp } from '../utils/utils';
+import { calculateMirrorPoint, solveTFromPositionX, splitCurveAtT } from '../utils/geometry';
+import { constructPathFromPoints } from '../utils/utils';
 
 /** The radius of the points along the path */
 const pointRadius = 2;

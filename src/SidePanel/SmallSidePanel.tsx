@@ -4,11 +4,12 @@ import React, { useCallback } from 'react';
 import './SmallSidePanel.css';
 
 import Select from '../components/Select/Select';
-import { exportTypes, useApp } from '../Helpers/AppContext';
-import { eases } from '../Paths';
+import { exportTypes, useApp } from '../utils/AppContext';
+import { eases } from '../presets';
 
+import type { Eases } from '../presets';
 import type { animareOnUpdate } from 'animare/lib/methods/types';
-import type { ExportTypes } from '../Helpers/AppContext';
+import type { ExportTypes } from '../utils/AppContext';
 
 export default function SmallSidePanel() {
   const ctx = useApp();
@@ -112,8 +113,8 @@ export default function SmallSidePanel() {
         <Select
           containerStyle={{ flex: 0 }}
           minWidth={175}
-          names={Object.keys(eases)}
-          values={Object.values(eases)}
+          names={Object.keys(eases) as (keyof Eases)[]}
+          values={Object.values(eases) as Eases[keyof Eases][]}
           value={ctx.preset}
           onChange={ctx.onPresetSelect}
           SelectButton={PresetsButton}

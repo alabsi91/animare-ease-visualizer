@@ -1,7 +1,7 @@
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import { useEffect } from 'react';
-import { useApp } from '../Helpers/AppContext';
+import { useApp } from '../utils/AppContext';
 import './ExportSvg.css';
 
 hljs.registerLanguage('javascript', javascript);
