@@ -139,17 +139,19 @@ export default function SidePanel() {
   const toggleShortcuts = () => {
     const container = document.querySelector('.hints') as HTMLDivElement;
     const arrowButton = document.querySelector('.hints-title-container svg') as SVGSVGElement;
-    const currentMaxHeight = parseInt(getComputedStyle(container).getPropertyValue('max-height'));
-    // close
-    if (currentMaxHeight === 1000) {
-      container.style.maxHeight = '60px';
-      arrowButton.style.transform = 'rotate(180deg)';
+
+    // open
+    if (container.classList.contains('close')) {
+      arrowButton.style.transform = 'rotate(0deg)';
+      container.classList.add('open');
+      container.classList.remove('close');
       return;
     }
 
     // open
-    container.style.maxHeight = '1000px';
-    arrowButton.style.transform = 'rotate(0deg)';
+    container.classList.add('close');
+    container.classList.remove('open');
+    arrowButton.style.transform = 'rotate(180deg)';
   };
 
   return (
