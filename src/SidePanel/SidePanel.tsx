@@ -11,13 +11,14 @@ import { parse } from '../utils/parsePath';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../utils/AppContext';
-import { getPointsFromPathString } from '../utils/utils';
+import { checkForDisabledCollinearPoints, checkForEnabledSmoothCornerPoints, getPointsFromPathString } from '../utils/utils';
 import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
 
 export default function SidePanel() {
   const ctx = useApp();
 
   const textareaRef = useRef<HighlightTextareaRef>(null!);
+  const textareaCurrentValue = useRef('');
 
   useEffect(() => {
     // update textarea text
@@ -62,16 +63,36 @@ export default function SidePanel() {
   };
 
   const onTextAreaChange = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-    const convertPath = parse(e.target.value.trim()); // convert to path with the format M, ..C
+    const text = e.target.value.trim();
+    if (textareaCurrentValue.current === text) return; // ignore if path didn't' change
 
-    if (convertPath === e.target.value.trim()) return; // ignore if path didn't' change
+    const re = /M\s((-?(?!0\d)\d*\.?\d+)\s){2}(C\s((-?(?!0\d)\d*\.?\d+)\s?){6})+$/;
 
-    const points = pathToPoints(convertPath);
+    const needParsing = !re.test(text);
+
+    let path: string;
+    try {
+      path = needParsing ? parse(text) : text;
+    } catch (error) {
+      console.error(error);
+      path = text;
+    }
+
+    const points = pathToPoints(path);
     const isValid = points.length && points.every(row => row.every(value => typeof value === 'number'));
     const currentPath = ctx.getPathStringFromPoints();
 
     if (isValid) {
       ctx.undoStack.current.push(currentPath);
+
+      ctx.toggledAnchors.clear();
+      const enabledSmoothCorners = checkForEnabledSmoothCornerPoints(points);
+      enabledSmoothCorners.forEach(ctx.toggledAnchors.add, ctx.toggledAnchors);
+
+      ctx.toggledCollinear.clear();
+      const disabledCollinear = checkForDisabledCollinearPoints(points);
+      disabledCollinear.forEach(ctx.toggledCollinear.add, ctx.toggledCollinear);
+
       ctx.setPoints(points);
       return;
     }
@@ -250,6 +271,7 @@ export default function SidePanel() {
           ref={textareaRef}
           defaultValue={ctx.getPathStringFromPoints()}
           rows={ctx.points.length}
+          onFocus={e => (textareaCurrentValue.current = e.target.value)}
           onBlur={onTextAreaChange}
           onKeyDown={textAreaOnKeyDown}
           wrap='hard'

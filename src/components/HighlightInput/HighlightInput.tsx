@@ -46,7 +46,7 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
       return el;
     });
 
-    // Loop over pattrens (string or regular expression).
+    // Loop over patterns (string or regular expression).
     for (let i = 0; i < highlight.length; i++) {
       let index = 0;
       const pattern = highlight[i].match;
@@ -73,7 +73,7 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
     }
 
     // merge spans
-    const spans = [letters[0]];
+    const spans = letters[0] ? [letters[0]] : [];
     for (let i = 1; i < letters.length; i++) {
       const preSpan = letters[i - 1];
       const span = letters[i];
@@ -115,7 +115,7 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
         {...inputProps}
         className={styles.input + ' ' + styles.textStyle}
         onChange={onInputChange}
-        onScroll={onInputScroll}
+        onScroll={onInputScroll} // ! not working on Safari
       />
       <p ref={paragraphRef} className={styles.paragraph + ' ' + styles.textStyle} />
     </div>

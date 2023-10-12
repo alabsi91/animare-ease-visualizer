@@ -1,4 +1,4 @@
-import { findPointFromT, generateEasingFunctionFromArray } from './geometry';
+import { arePointsOnSameLine, findPointFromT, generateEasingFunctionFromArray } from './geometry';
 
 type ViewBox = {
   x: number;
@@ -184,3 +184,71 @@ export function throttle(func: Function, delay: number) {
     return func(...args);
   };
 }
+
+export function checkForEnabledSmoothCornerPoints(points: number[][]) {
+  const enabledPoints: number[] = [];
+
+  for (let i = 0; i < points.length; i++) {
+    const currentCurve = points[i]; // M or C
+    const nextCurve = points[i + 1];
+
+    // case M
+    if (!i) {
+      if (currentCurve[0] === nextCurve[0] && currentCurve[1] === nextCurve[1]) {
+        enabledPoints.push(i);
+      }
+      continue;
+    }
+
+    const c1x = currentCurve[2];
+    const c1y = currentCurve[3];
+    const p1x = currentCurve[4];
+    const p1y = currentCurve[5];
+
+    // last curve
+    if (!nextCurve) {
+      if (c1x === p1x && c1y === p1y) enabledPoints.push(i);
+      continue;
+    }
+
+    const c0x = nextCurve[0];
+    const c0y = nextCurve[1];
+
+    if (c0x === p1x && c0y === p1y && c1x === p1x && c1y === p1y) {
+      enabledPoints.push(i);
+    }
+  }
+
+  return enabledPoints;
+}
+
+export function checkForDisabledCollinearPoints(points: number[][]) {
+  const disabledPoints: number[] = [];
+
+  for (let i = 0; i < points.length; i++) {
+    const currentCurve = points[i]; // M or C
+    const nextCurve = points[i + 1];
+
+    // case M
+    if (!i) continue;
+
+    // last curve
+    if (!nextCurve) continue;
+
+    const c0x = nextCurve[0];
+    const c0y = nextCurve[1];
+    const c1x = currentCurve[2];
+    const c1y = currentCurve[3];
+    const p1x = currentCurve[4];
+    const p1y = currentCurve[5];
+
+    // the anchor point has smooth corners enabled
+    if (c0x === p1x && c0y === p1y && c1x === p1x && c1y === p1y) continue;
+
+    if (!arePointsOnSameLine([c1x, c1y], [p1x, p1y], [c0x, c0y])) disabledPoints.push(i);
+  }
+
+  return disabledPoints;
+}
+
+

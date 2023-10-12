@@ -11,6 +11,10 @@ function lerp(p0x: number, p0y: number, p1x: number, p1y: number, t: number): Po
   return { x, y };
 }
 
+function slope([x0, y0]: number[], [x1, y1]: number[]) {
+  return (y1 - y0) / (x1 - x0);
+}
+
 /** Use De Casteljau's algorithm to split the curve at parameter `t` */
 export function splitCurveAtT(
   p0x: number,
@@ -182,6 +186,24 @@ export function generateEasingFunctionFromArray(curves: number[][]) {
 
     return 0;
   };
+}
+
+/** Check if three points are collinear. */
+export function arePointsOnSameLine(
+  point1: [number, number],
+  point2: [number, number],
+  point3: [number, number],
+  tolerance = 0.02
+) {
+  const slope1_2 = slope(point1, point2);
+  const slope2_3 = slope(point2, point3);
+  const slope3_1 = slope(point3, point1);
+
+  // Check if the absolute difference between slopes is within the tolerance
+  const diff1 = Math.abs(slope1_2 - slope2_3);
+  const diff2 = Math.abs(slope2_3 - slope3_1);
+
+  return diff1 <= tolerance && diff2 <= tolerance && diff1 <= tolerance;
 }
 
 /** Calculate the opposite control point position for a moving control point, relative to a given center point. */

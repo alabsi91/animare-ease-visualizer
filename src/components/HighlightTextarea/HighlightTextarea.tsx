@@ -50,8 +50,8 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
       el.innerText = e;
       return el;
     });
-
-    // Loop over pattrens (string or regular expression).
+    
+    // Loop over patterns (string or regular expression).
     for (let i = 0; i < highlight.length; i++) {
       let index = 0;
       const pattern = highlight[i].match;
@@ -78,10 +78,12 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
     }
 
     // merge spans
-    const spans = [letters[0]];
+    const spans = letters[0] ? [letters[0]] : [];
     for (let i = 1; i < letters.length; i++) {
       const preSpan = letters[i - 1];
       const span = letters[i];
+
+      if(!span || !preSpan) continue;
 
       const spanTag = span.outerHTML.match(/<.*?>/)?.[0];
       const preSpanTag = preSpan.outerHTML.match(/<.*?>/)?.[0];

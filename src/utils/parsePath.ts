@@ -10,10 +10,20 @@ import { convertPointsToRelativeValues } from './utils';
 type CommandsUpperCase = 'M' | 'L' | 'H' | 'V' | 'C' | 'S' | 'Q' | 'T' | 'A' | 'Z';
 type Commands = Lowercase<CommandsUpperCase> | CommandsUpperCase;
 
-type Segments = {
-  command: Commands;
-  values: number[];
-};
+type FixedArray<N extends number, A extends any[] = []> = A['length'] extends N ? A : FixedArray<N, [number, ...A]>;
+
+type SEG<T extends CommandsUpperCase, N extends number> = { command: Lowercase<T> | T; values: FixedArray<N> };
+type Segments =
+  | SEG<'M', 2>
+  | SEG<'L', 2>
+  | SEG<'H', 1>
+  | SEG<'V', 1>
+  | SEG<'C', 6>
+  | SEG<'S', 4>
+  | SEG<'Q', 4>
+  | SEG<'T', 2>
+  | SEG<'A', 7>
+  | SEG<'Z', 0>;
 
 function parseToSegmentsFromPathString(path: string) {
   // normalize path
@@ -38,10 +48,13 @@ function parseToSegmentsFromPathString(path: string) {
     const command = row[0] as Commands;
     const values = row.slice(1).split(' ').filter(Boolean).map(parseFloat);
 
-    if ((command === 'M' || command === 'm') && values.length > 2) {
+    if (command === 'M' || command === 'm') {
       segments.push({ command, values: [values[0], values[1]] });
-      for (let i = 2; i < values.length; i = i + 2) {
-        segments.push({ command: command === 'M' ? 'L' : 'l', values: [values[i], values[i + 1]] });
+
+      if (values.length > 2) {
+        for (let i = 2; i < values.length; i = i + 2) {
+          segments.push({ command: command === 'M' ? 'L' : 'l', values: [values[i], values[i + 1]] as FixedArray<2> });
+        }
       }
       continue;
     }
@@ -64,7 +77,6 @@ function parseToSegmentsFromPathString(path: string) {
       continue;
     }
     if (command === 'C' || command === 'c') {
-      console.log(values);
       for (let i = 0; i < values.length; i = i + 6) {
         segments.push({
           command,
@@ -124,8 +136,9 @@ function parseToSegmentsFromPathString(path: string) {
       }
       continue;
     }
-
-    segments.push({ command, values });
+    if (command === 'Z' || command === 'z') {
+      segments.push({ command, values: [] });
+    }
   }
 
   return segments;
@@ -138,7 +151,6 @@ function isLowerCase(char: string) {
 /** Convert all SVG path commands to Cubic Bezier curves with relative values (0-1) */
 export function parse(path: string, viewBoxSize?: { x: number; y: number; width: number; height: number }): string {
   const segments = parseToSegmentsFromPathString(path);
-  console.log('segments :', segments);
 
   const curves: number[][] = [];
 
@@ -158,7 +170,12 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 0) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${0}`);
       }
-      curves.push(lineToCubicBezier(x, y, segments[0].values[0], segments[0].values[1]));
+
+      const firstCommand = segments[0];
+      if (firstCommand.command === 'M' || firstCommand.command === 'm') {
+        curves.push(lineToCubicBezier(x, y, firstCommand.values[0], firstCommand.values[1]));
+      }
+
       continue;
     }
     // M x y (or) m dx dy
@@ -411,6 +428,8 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
     viewBox.width = viewBoxSize.width;
     viewBox.height = viewBoxSize.height;
   } else {
+    viewBox.x = minX;
+    viewBox.y = minY;
     viewBox.width = maxX - minX;
     viewBox.height = maxY - minY;
   }
@@ -421,10 +440,10 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
   for (let i = 0; i < percentagePoints.length; i++) {
     const e = percentagePoints[i];
     if (!i) {
-      pathString += `M${e[0]} ${e[1]} C${e[2]} ${e[3]} ${e[4]} ${e[5]} ${e[6]} ${e[7]}`;
+      pathString += `M ${e[0]} ${e[1]} C ${e[2]} ${e[3]} ${e[4]} ${e[5]} ${e[6]} ${e[7]}\n`;
       continue;
     }
-    pathString += `C${e[2]} ${e[3]} ${e[4]} ${e[5]} ${e[6]} ${e[7]}`;
+    pathString += `C ${e[2]} ${e[3]} ${e[4]} ${e[5]} ${e[6]} ${e[7]}\n`;
   }
 
   return pathString;

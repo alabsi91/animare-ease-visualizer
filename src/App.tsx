@@ -16,6 +16,8 @@ import { eases } from './presets';
 import { AppProvider } from './utils/AppContext';
 import { calculateMirrorPoint, generateEasingFunctionFromString } from './utils/geometry';
 import {
+  checkForDisabledCollinearPoints,
+  checkForEnabledSmoothCornerPoints,
   checkOverlap,
   clamp,
   constructPathFromPoints,
@@ -370,6 +372,14 @@ export default function App() {
   };
 
   useEffect(() => {
+    toggledAnchors.clear();
+    const enabledSmoothCorners = checkForEnabledSmoothCornerPoints(points);
+    enabledSmoothCorners.forEach(toggledAnchors.add, toggledAnchors);
+
+    toggledCollinear.clear();
+    const disabledCollinear = checkForDisabledCollinearPoints(points);
+    disabledCollinear.forEach(toggledCollinear.add, toggledCollinear);
+
     const onMouseUp = () => {
       document.removeEventListener('pointermove', mouseMove);
       activePathPoint.current = null;
@@ -426,8 +436,16 @@ export default function App() {
     path.style.transition = 'all 500ms ease 0s';
 
     isPresetSelected.current = true;
-    toggledAnchors.clear();
     const Points = pathToPoints(value);
+
+    toggledAnchors.clear();
+    const enabledSmoothCorners = checkForEnabledSmoothCornerPoints(Points);
+    enabledSmoothCorners.forEach(toggledAnchors.add, toggledAnchors);
+
+    toggledCollinear.clear();
+    const disabledCollinear = checkForDisabledCollinearPoints(Points);
+    disabledCollinear.forEach(toggledCollinear.add, toggledCollinear);
+
     setPoints(Points);
     setPreset(value);
 
