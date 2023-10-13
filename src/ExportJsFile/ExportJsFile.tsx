@@ -76,10 +76,12 @@ export default function ExportJsFile() {
       return;
     }
 
+    console.log('done')
+
     // download as js file
     const string = `const values = Float32Array.from(${JSON.stringify([
         ...values,
-      ])});\nconst length = values.length;\nconst ${fileName} = (t) => values[Math.floor(t * length)] ?? values[length - 1];\nexport default ${fileName};`,
+      ])});\nconst length = values.length;\nconst ${fileName} = t => {\n  'worklet';\n  return values[Math.floor(t * length)] ?? values[length - 1];\n}\nexport default ${fileName};`,
       blob = new Blob([string], { type: 'text/plain' }),
       url = URL.createObjectURL(blob),
       link = document.createElement('a');

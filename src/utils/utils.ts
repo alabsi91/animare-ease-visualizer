@@ -120,19 +120,18 @@ export async function convertEasingFunctionToPoints(
 
   const values = new Float32Array(samples);
   let count = 0;
-  let percent = 0;
 
   const easingFunction = generateEasingFunctionFromArray(curves);
 
   for (let i = 0; i < samples; i++) {
     if (stopped) throw new Error('stopped');
 
-    percent = (i + 1) / curves.length;
-    onUpdate?.(percent);
-
-    await new Promise(resolve => setTimeout(resolve, 10));
-
     const t = i / (samples - 1);
+
+    onUpdate?.(t);
+
+    await new Promise(resolve => setTimeout(resolve, 1));
+
     values[count++] = easingFunction(t);
   }
 
@@ -250,5 +249,3 @@ export function checkForDisabledCollinearPoints(points: number[][]) {
 
   return disabledPoints;
 }
-
-

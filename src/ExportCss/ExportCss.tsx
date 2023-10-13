@@ -17,6 +17,7 @@ export default function ExportCss() {
   const [property, setProperty] = useState('transform: translateX({value}%);');
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(100);
+  const [accuracy, setAccuracy] = useState(100);
 
   const [isSimple, setIsSimple] = useState(false);
 
@@ -39,12 +40,16 @@ export default function ExportCss() {
     }
 
     const easingFunction = generateEasingFunctionFromArray(curves);
+    const increaseBy = Math.round(100 / accuracy);
 
-    for (let i = 0; i <= 100; i++) {
+    for (let i = 0; i < 100; i += increaseBy) {
       const progress = i / 100;
       const value = +(from + (to - from) * easingFunction(progress)).toFixed(2);
       results += `  ${i}% { ${property.replaceAll('{value}', value.toString())} }\n`;
     }
+
+    const lastValue = +(from + (to - from) * easingFunction(1)).toFixed(2);
+    results += `  ${100}% { ${property.replaceAll('{value}', lastValue.toString())} }\n`;
 
     results = `@keyframes my-custom-easing {\n${results}}`;
 
@@ -69,7 +74,7 @@ export default function ExportCss() {
 
   useEffect(() => {
     highlight();
-  }, [from, to, property]);
+  }, [from, to, property, accuracy]);
 
   return (
     <div id='css-dialog'>
@@ -94,6 +99,19 @@ export default function ExportCss() {
                     '<span class="hljs-built_in">{</span><span class="hljs-number">value</span><span class="hljs-built_in">}</span>'
                   )
               }
+            />
+          </div>
+
+          <div className='css-input-container'>
+            <p>Accuracy</p>
+            <input
+              value={accuracy}
+              type='number'
+              title='A number between 1 and 100'
+              onChange={e => {
+                const value = isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber;
+                setAccuracy(value < 1 ? 1 : value > 100 ? 100 : value);
+              }}
             />
           </div>
 
