@@ -522,7 +522,7 @@ export default function App() {
         <SidePanel />
 
         <div style={{ position: 'relative' }}>
-          <h2 className='title'>Animare Ease Visualizer</h2>
+          <h2 className='title'>Easing Visualizer</h2>
 
           <Panel />
         </div>
