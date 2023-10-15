@@ -156,8 +156,8 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
 
   const viewBox = { width: 0, height: 0, x: 0, y: 0 };
 
-  let x = 0;
-  let y = 0;
+  let p0x = 0;
+  let p0y = 0;
   let minX = 0;
   let maxX = 0;
   let minY = 0;
@@ -173,7 +173,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
 
       const firstCommand = segments[0];
       if (firstCommand.command === 'M' || firstCommand.command === 'm') {
-        curves.push(lineToCubicBezier(x, y, firstCommand.values[0], firstCommand.values[1]));
+        curves.push(lineToCubicBezier(p0x, p0y, firstCommand.values[0], firstCommand.values[1]));
       }
 
       continue;
@@ -187,16 +187,16 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
-        seg.values[0] += x; // dx
-        seg.values[1] += y; // dy
+        seg.values[0] += p0x; // dx
+        seg.values[1] += p0y; // dy
       }
 
-      x = seg.values[0];
-      y = seg.values[1];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0x = seg.values[0];
+      p0y = seg.values[1];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
     // L x y (or) l dx dy
@@ -208,18 +208,18 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
-        seg.values[0] += x; // dx
-        seg.values[1] += y; // dy
+        seg.values[0] += p0x; // dx
+        seg.values[1] += p0y; // dy
       }
 
-      curves.push(lineToCubicBezier(x, y, seg.values[0], seg.values[1]));
+      curves.push(lineToCubicBezier(p0x, p0y, seg.values[0], seg.values[1]));
 
-      x = seg.values[0];
-      y = seg.values[1];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0x = seg.values[0];
+      p0y = seg.values[1];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
     // H x (or) h dx
@@ -231,14 +231,14 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
-        seg.values[0] += x; // dx
+        seg.values[0] += p0x; // dx
       }
 
-      curves.push(lineToCubicBezier(x, y, seg.values[0], y));
+      curves.push(lineToCubicBezier(p0x, p0y, seg.values[0], p0y));
 
-      x = seg.values[0];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
+      p0x = seg.values[0];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
       continue;
     }
     // V y (or) v dy
@@ -250,14 +250,14 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
-        seg.values[0] += y; // dy
+        seg.values[0] += p0y; // dy
       }
 
-      curves.push(lineToCubicBezier(x, y, x, seg.values[0]));
+      curves.push(lineToCubicBezier(p0x, p0y, p0x, seg.values[0]));
 
-      y = seg.values[0];
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0y = seg.values[0];
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
     // C x1 y1, x2 y2, x y (or) c dx1 dy1, dx2 dy2, dx dy
@@ -270,22 +270,22 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
 
       if (isLowerCase(seg.command)) {
         seg.command = 'C';
-        seg.values[0] += x; // dx1
-        seg.values[1] += y; // dy1
-        seg.values[2] += x; // dx2
-        seg.values[3] += y; // dy2
-        seg.values[4] += x; // dx
-        seg.values[5] += y; // dy
+        seg.values[0] += p0x; // dx1
+        seg.values[1] += p0y; // dy1
+        seg.values[2] += p0x; // dx2
+        seg.values[3] += p0y; // dy2
+        seg.values[4] += p0x; // dx
+        seg.values[5] += p0y; // dy
       }
 
-      curves.push([x, y, ...seg.values]);
+      curves.push([p0x, p0y, ...seg.values]);
 
-      x = seg.values[4];
-      y = seg.values[5];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0x = seg.values[4];
+      p0y = seg.values[5];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
     // S x2 y2, x y (or) s dx2 dy2, dx dy
@@ -298,23 +298,32 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
 
       if (isLowerCase(seg.command)) {
         seg.command = 'S';
-        seg.values[0] += x; // dx2
-        seg.values[1] += y; // dy2
-        seg.values[2] += x; // dx
-        seg.values[3] += y; // dy
+        seg.values[0] += p0x; // dx2
+        seg.values[1] += p0y; // dy2
+        seg.values[2] += p0x; // dx
+        seg.values[3] += p0y; // dy
       }
 
       const prevCurve = curves[curves.length - 1];
       curves.push(
-        SeveralBezierToCubicBezier(x, y, seg.values[0], seg.values[1], seg.values[2], seg.values[3], prevCurve[4], prevCurve[5])
+        SeveralBezierToCubicBezier(
+          p0x,
+          p0y,
+          seg.values[0],
+          seg.values[1],
+          seg.values[2],
+          seg.values[3],
+          prevCurve[4],
+          prevCurve[5]
+        )
       );
 
-      x = seg.values[2];
-      y = seg.values[3];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0x = seg.values[2];
+      p0y = seg.values[3];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
     // Q x1 y1, x y (or) q dx1 dy1, dx dy
@@ -327,20 +336,20 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
 
       if (isLowerCase(seg.command)) {
         seg.command = 'Q';
-        seg.values[0] += x; // dx1
-        seg.values[1] += y; // dy1
-        seg.values[2] += x; // dx
-        seg.values[3] += y; // dy
+        seg.values[0] += p0x; // dx1
+        seg.values[1] += p0y; // dy1
+        seg.values[2] += p0x; // dx
+        seg.values[3] += p0y; // dy
       }
 
-      curves.push(quadraticCurveToCubic(x, y, seg.values[0], seg.values[1], seg.values[2], seg.values[3]));
+      curves.push(quadraticCurveToCubic(p0x, p0y, seg.values[0], seg.values[1], seg.values[2], seg.values[3]));
 
-      x = seg.values[2];
-      y = seg.values[3];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0x = seg.values[2];
+      p0y = seg.values[3];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
     // T x y (or) t dx dy
@@ -353,8 +362,8 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
 
       if (isLowerCase(seg.command)) {
         seg.command = 'T';
-        seg.values[0] += x; // dx
-        seg.values[1] += y; // dy
+        seg.values[0] += p0x; // dx
+        seg.values[1] += p0y; // dy
       }
 
       const prevSegment = segments[i - 1];
@@ -364,14 +373,14 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
         prevCX = prevSegment.values[0];
         prevCY = prevSegment.values[1];
       }
-      curves.push(tShortcutToCubic(x, y, seg.values[0], seg.values[1], prevCX, prevCY));
+      curves.push(tShortcutToCubic(p0x, p0y, seg.values[0], seg.values[1], prevCX, prevCY));
 
-      x = seg.values[0];
-      y = seg.values[1];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0x = seg.values[0];
+      p0y = seg.values[1];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
     // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
@@ -385,39 +394,35 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
 
       if (isLowerCase(seg.command)) {
         seg.command = 'A';
-        seg.values[5] += y; // dx
-        seg.values[6] += y; // dy
+        seg.values[5] += p0y; // dx
+        seg.values[6] += p0y; // dy
       }
 
-      const r1 = Math.abs(seg.values[0]);
-      const r2 = Math.abs(seg.values[1]);
-      const arcX = seg.values[5];
-      const arcY = seg.values[6];
+      const rx = Math.abs(seg.values[0]);
+      const ry = Math.abs(seg.values[1]);
+      const p1x = seg.values[5];
+      const p1y = seg.values[6];
 
-      if (r1 === 0 || r2 === 0) {
-        curves.push([x, y, x, y, arcX, arcY, arcX, arcY]);
-      } else {
-        const toCubic = arcToCubicCurves(
-          x,
-          y,
-          arcX,
-          arcY,
-          r1, // rx
-          r2, // ry
-          seg.values[2], // x-axis-rotation
-          seg.values[3], // large-arc-flag
-          seg.values[4] // sweep-flag
-        );
+      const toCubic = arcToCubicCurves(
+        p0x,
+        p0y,
+        p1x,
+        p1y,
+        rx,
+        ry,
+        seg.values[2], // x-axis-rotation
+        seg.values[3], // large-arc-flag
+        seg.values[4] // sweep-flag
+      );
 
-        curves.push(...toCubic);
-      }
+      curves.push(...toCubic);
 
-      x = seg.values[5];
-      y = seg.values[6];
-      minX = Math.min(minX, x);
-      maxX = Math.max(maxX, x);
-      minY = Math.min(minY, y);
-      maxY = Math.max(maxY, y);
+      p0x = seg.values[5];
+      p0y = seg.values[6];
+      minX = Math.min(minX, p0x);
+      maxX = Math.max(maxX, p0x);
+      minY = Math.min(minY, p0y);
+      maxY = Math.max(maxY, p0y);
       continue;
     }
   }

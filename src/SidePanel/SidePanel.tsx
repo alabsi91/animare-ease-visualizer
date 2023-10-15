@@ -3,16 +3,16 @@ import { useAnimare } from 'animare/react';
 import React, { useCallback, useEffect, useRef } from 'react';
 import './SidePanel.css';
 
-import { exportTypes, useApp } from '../utils/AppContext';
-import { eases } from '../presets';
 import HighlightTextarea from '../components/HighlightTextarea/HighlightTextarea';
 import Select from '../components/Select/Select';
+import { eases } from '../presets';
+import { exportTypes, useApp } from '../utils/AppContext';
 import { parse } from '../utils/parsePath';
+import { checkForDisabledCollinearPoints, getPointsFromPathString } from '../utils/utils';
 
 import type { animareOnUpdate } from 'animare/lib/methods/types';
-import type { ExportTypes } from '../utils/AppContext';
-import { checkForDisabledCollinearPoints, checkForEnabledSmoothCornerPoints, getPointsFromPathString } from '../utils/utils';
 import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
+import type { ExportTypes } from '../utils/AppContext';
 
 export default function SidePanel() {
   const ctx = useApp();
@@ -84,10 +84,6 @@ export default function SidePanel() {
 
     if (isValid) {
       ctx.undoStack.current.push(currentPath);
-
-      ctx.toggledAnchors.clear();
-      const enabledSmoothCorners = checkForEnabledSmoothCornerPoints(points);
-      enabledSmoothCorners.forEach(ctx.toggledAnchors.add, ctx.toggledAnchors);
 
       ctx.toggledCollinear.clear();
       const disabledCollinear = checkForDisabledCollinearPoints(points);

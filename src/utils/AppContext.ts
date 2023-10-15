@@ -19,8 +19,6 @@ type ctxType = {
 
   /** Current SVG view box X and Y */
   viewBoxCoordinate: MutableRefObject<{ x: number; y: number }>;
-  /** - The set of point that has the smooth corner enabled. */
-  toggledAnchors: Set<number>;
   /** - The set of point that control points are not collinear. */
   toggledCollinear: Set<number>;
 

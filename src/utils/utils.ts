@@ -184,41 +184,35 @@ export function throttle(func: Function, delay: number) {
   };
 }
 
-export function checkForEnabledSmoothCornerPoints(points: number[][]) {
-  const enabledPoints: number[] = [];
+export function isPointHasSmoothCorner(points: number[][], pointIndex: number) {
+  const currentCurve = points[pointIndex]; // M or C
+  const nextCurve = points[pointIndex + 1];
 
-  for (let i = 0; i < points.length; i++) {
-    const currentCurve = points[i]; // M or C
-    const nextCurve = points[i + 1];
-
-    // case M
-    if (!i) {
-      if (currentCurve[0] === nextCurve[0] && currentCurve[1] === nextCurve[1]) {
-        enabledPoints.push(i);
-      }
-      continue;
+  // case M
+  if (!pointIndex) {
+    if (currentCurve[0] === nextCurve[0] && currentCurve[1] === nextCurve[1]) {
+      return true;
     }
-
-    const c1x = currentCurve[2];
-    const c1y = currentCurve[3];
-    const p1x = currentCurve[4];
-    const p1y = currentCurve[5];
-
-    // last curve
-    if (!nextCurve) {
-      if (c1x === p1x && c1y === p1y) enabledPoints.push(i);
-      continue;
-    }
-
-    const c0x = nextCurve[0];
-    const c0y = nextCurve[1];
-
-    if (c0x === p1x && c0y === p1y && c1x === p1x && c1y === p1y) {
-      enabledPoints.push(i);
-    }
+    return false;
   }
 
-  return enabledPoints;
+  const c1x = currentCurve[2];
+  const c1y = currentCurve[3];
+  const p1x = currentCurve[4];
+  const p1y = currentCurve[5];
+
+  // last curve
+  if (!nextCurve) {
+    if (c1x === p1x && c1y === p1y) return true;
+    return false;
+  }
+
+  const c0x = nextCurve[0];
+  const c0y = nextCurve[1];
+
+  if (c0x === p1x && c0y === p1y && c1x === p1x && c1y === p1y) return true;
+
+  return false;
 }
 
 export function checkForDisabledCollinearPoints(points: number[][]) {

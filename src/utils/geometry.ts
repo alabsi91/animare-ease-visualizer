@@ -5,9 +5,9 @@ type Point = {
   y: number;
 };
 
-function lerp(p0x: number, p0y: number, p1x: number, p1y: number, t: number): Point {
-  const x = p0x + (p1x - p0x) * t;
-  const y = p0y + (p1y - p0y) * t;
+function lerp(x0: number, y0: number, x1: number, y1: number, t: number): Point {
+  const x = x0 + (x1 - x0) * t;
+  const y = y0 + (y1 - y0) * t;
   return { x, y };
 }
 
@@ -93,7 +93,7 @@ export function solvePositionYFromT(
   c1y: number,
   p1x: number,
   p1y: number,
-  pointX: number
+  t: number
 ): number {
   // Desired precision on the computation.
   const epsilon = 1e-6;
@@ -112,9 +112,9 @@ export function solvePositionYFromT(
     if (++times > 50) return y;
 
     // Return the located Y-coordinate value.
-    if (Math.abs(x - pointX) <= epsilon) return y;
+    if (Math.abs(x - t) <= epsilon) return y;
 
-    if (x >= pointX) end = target;
+    if (x >= t) end = target;
     else start = target;
 
     target = (start + end) / 2;
@@ -158,10 +158,10 @@ export function generateEasingFunctionFromString(path: string) {
 
     let from = 0;
     for (let i = 0; i < curves.length; i++) {
-      const [x0, y0, x1, y1, x2, y2, x3, y3] = curves[i];
-      if (t >= from && t <= x3) {
-        from = x3;
-        return solvePositionYFromT(x0, y0, x1, y1, x2, y2, x3, y3, t);
+      const [p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y] = curves[i];
+      if (t >= from && t <= p1x) {
+        from = p1x;
+        return solvePositionYFromT(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, t);
       }
     }
 
@@ -177,10 +177,10 @@ export function generateEasingFunctionFromArray(curves: number[][]) {
 
     let from = 0;
     for (let i = 0; i < curves.length; i++) {
-      const [x0, y0, x1, y1, x2, y2, x3, y3] = curves[i];
-      if (t >= from && t <= x3) {
-        from = x3;
-        return solvePositionYFromT(x0, y0, x1, y1, x2, y2, x3, y3, t);
+      const [p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y] = curves[i];
+      if (t >= from && t <= p1x) {
+        from = p1x;
+        return solvePositionYFromT(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, t);
       }
     }
 
@@ -232,79 +232,82 @@ export function calculateMirrorPoint(
   return { x: mirrorX, y: mirrorY };
 }
 
-/** Convert L command to C */
-export function lineToCubicBezier(x0: number, y0: number, x1: number, y1: number) {
-  const mx = (x0 + x1) / 2; // Midpoint X
-  const my = (y0 + y1) / 2; // Midpoint Y
-  return [x0, y0, mx, my, mx, my, x1, y1];
+/** Convert `L p0x p0y p1x p1y` command to `C p0x p0y c0x c0y c1x c1y p1x p1y` */
+export function lineToCubicBezier(p0x: number, p0y: number, p1x: number, p1y: number) {
+  const mx = (p0x + p1x) / 2; // Midpoint X
+  const my = (p0y + p1y) / 2; // Midpoint Y
+  return [p0x, p0y, mx, my, mx, my, p1x, p1y];
 }
 
-/** Convert S command to C */
+/** Convert `S p0x p0y cx cy p1x p1y` command to `C p0x p0y c0x c0y c1x c1y p1x p1y` */
 export function SeveralBezierToCubicBezier(
-  x0: number,
-  y0: number,
-  x2: number,
-  y2: number,
-  x3: number,
-  y3: number,
-  prevCX?: number,
-  prevCY?: number
+  p0x: number,
+  p0y: number,
+  cx: number,
+  cy: number,
+  p1x: number,
+  p1y: number,
+  prev_c1x?: number,
+  prev_c1y?: number
 ) {
   let cx1, cy1;
 
   // If the previous command was C or S, calculate reflection control points
-  if (typeof prevCX === 'number' && typeof prevCY === 'number') {
-    cx1 = (x0 - prevCX) * 2 + prevCX;
-    cy1 = (y0 - prevCY) * 2 + prevCY;
+  if (typeof prev_c1x === 'number' && typeof prev_c1y === 'number') {
+    cx1 = (p0x - prev_c1x) * 2 + prev_c1x;
+    cy1 = (p0y - prev_c1y) * 2 + prev_c1y;
   } else {
     // If the previous command was not C or S, use the initial point
-    cx1 = x0;
-    cy1 = y0;
+    cx1 = p0x;
+    cy1 = p0y;
   }
 
-  return [x0, y0, cx1, cy1, x2, y2, x3, y3];
+  return [p0x, p0y, cx1, cy1, cx, cy, p1x, p1y];
 }
 
-/** Convert Q command to C */
-export function quadraticCurveToCubic(x0: number, y0: number, x1: number, y1: number, x2: number, y2: number) {
+/** Convert `Q p0x p0y cx cy p1x p1y` command to `C p0x p0y c0x c0y c1x c1y p1x p1y` */
+export function quadraticCurveToCubic(p0x: number, p0y: number, cx: number, cy: number, p1x: number, p1y: number) {
   // Calculate the cubic Bezier control points
-  const cx1 = x0 + (2 / 3) * (x1 - x0);
-  const cy1 = y0 + (2 / 3) * (y1 - y0);
-  const cx2 = x2 + (2 / 3) * (x1 - x2);
-  const cy2 = y2 + (2 / 3) * (y1 - y2);
+  const c0x = p0x + (2 / 3) * (cx - p0x);
+  const c0y = p0y + (2 / 3) * (cy - p0y);
+  const c1x = p1x + (2 / 3) * (cx - p1x);
+  const c1y = p1y + (2 / 3) * (cy - p1y);
 
-  return [x0, y0, cx1, cy1, cx2, cy2, x2, y2];
+  return [p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y];
 }
 
-/** Convert T command to C */
-export function tShortcutToCubic(x0: number, y0: number, x1: number, y1: number, prevCX?: number, prevCY?: number) {
+/** Convert `T p0x p0y p1x p1y` command to `C p0x p0y c0x c0y c1x c1y p1x p1y` */
+export function tShortcutToCubic(p0x: number, p0y: number, p1x: number, p1y: number, prev_cx?: number, prev_cy?: number) {
   let qx1, qy1;
 
   // If the previous command was Q or T, calculate the reflection control point
-  if (typeof prevCX === 'number' && typeof prevCY === 'number') {
-    qx1 = (x0 - prevCX) * 2 + prevCX;
-    qy1 = (y0 - prevCY) * 2 + prevCY;
+  if (typeof prev_cx === 'number' && typeof prev_cy === 'number') {
+    qx1 = (p0x - prev_cx) * 2 + prev_cx;
+    qy1 = (p0y - prev_cy) * 2 + prev_cy;
   } else {
     // If the previous command was not Q or T, use the initial point
-    qx1 = x0;
-    qy1 = y0;
+    qx1 = p0x;
+    qy1 = p0y;
   }
 
   // Use the calculated control point in the cubic Bezier conversion
-  return quadraticCurveToCubic(x0, y0, qx1, qy1, x1, y1);
+  return quadraticCurveToCubic(p0x, p0y, qx1, qy1, p1x, p1y);
 }
 
-/** Convert A command to C */
+/** 
+ * Convert `A p0x p0y rx ry x-axis-rotation large-arc-flag sweep-flag p1x p1y` command 
+ * to array of `C p0x p0y c0x c0y c1x c1y p1x p1y` command
+ */
 export function arcToCubicCurves(
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-  r1: number,
-  r2: number,
-  angle: number,
-  largeArcFlag: number,
-  sweepFlag: number,
+  p0x: number,
+  p0y: number,
+  p1x: number,
+  p1y: number,
+  rx: number,
+  ry: number,
+  xAxisRotation: number,
+  largeArcFlag: number, // 0 | 1
+  sweepFlag: number, // 0 | 1
   _recursive?: number[]
 ): number[][] {
   const degToRad = (degrees: number) => (Math.PI * degrees) / 180;
@@ -315,7 +318,7 @@ export function arcToCubicCurves(
     return { x: X, y: Y };
   };
 
-  const angleRad = degToRad(angle);
+  const angleRad = degToRad(xAxisRotation);
   let params: number[][] = [];
   let f1, f2, cx, cy;
 
@@ -325,42 +328,42 @@ export function arcToCubicCurves(
     cx = _recursive[2];
     cy = _recursive[3];
   } else {
-    const p1 = rotate(x1, y1, -angleRad);
-    x1 = p1.x;
-    y1 = p1.y;
+    const p1 = rotate(p0x, p0y, -angleRad);
+    p0x = p1.x;
+    p0y = p1.y;
 
-    const p2 = rotate(x2, y2, -angleRad);
-    x2 = p2.x;
-    y2 = p2.y;
+    const p2 = rotate(p1x, p1y, -angleRad);
+    p1x = p2.x;
+    p1y = p2.y;
 
-    const x = (x1 - x2) / 2;
-    const y = (y1 - y2) / 2;
-    let h = (x * x) / (r1 * r1) + (y * y) / (r2 * r2);
+    const x = (p0x - p1x) / 2;
+    const y = (p0y - p1y) / 2;
+    let h = (x * x) / (rx * rx) + (y * y) / (ry * ry);
 
     if (h > 1) {
       h = Math.sqrt(h);
-      r1 = h * r1;
-      r2 = h * r2;
+      rx = h * rx;
+      ry = h * ry;
     }
 
     const sign = largeArcFlag === sweepFlag ? -1 : 1;
 
-    const r1Pow = r1 * r1;
-    const r2Pow = r2 * r2;
+    const r1Pow = rx * rx;
+    const r2Pow = ry * ry;
 
     const left = r1Pow * r2Pow - r1Pow * y * y - r2Pow * x * x;
     const right = r1Pow * y * y + r2Pow * x * x;
 
     const k = sign * Math.sqrt(Math.abs(left / right));
 
-    cx = (k * r1 * y) / r2 + (x1 + x2) / 2;
-    cy = (k * -r2 * x) / r1 + (y1 + y2) / 2;
+    cx = (k * rx * y) / ry + (p0x + p1x) / 2;
+    cy = (k * -ry * x) / rx + (p0y + p1y) / 2;
 
-    f1 = Math.asin(parseFloat(((y1 - cy) / r2).toFixed(9)));
-    f2 = Math.asin(parseFloat(((y2 - cy) / r2).toFixed(9)));
+    f1 = Math.asin(parseFloat(((p0y - cy) / ry).toFixed(9)));
+    f2 = Math.asin(parseFloat(((p1y - cy) / ry).toFixed(9)));
 
-    if (x1 < cx) f1 = Math.PI - f1;
-    if (x2 < cx) f2 = Math.PI - f2;
+    if (p0x < cx) f1 = Math.PI - f1;
+    if (p1x < cx) f2 = Math.PI - f2;
     if (f1 < 0) f1 = Math.PI * 2 + f1;
     if (f2 < 0) f2 = Math.PI * 2 + f2;
     if (sweepFlag && f1 > f2) f1 = f1 - Math.PI * 2;
@@ -371,8 +374,8 @@ export function arcToCubicCurves(
 
   if (Math.abs(df) > (Math.PI * 120) / 180) {
     const f2old = f2;
-    const x2old = x2;
-    const y2old = y2;
+    const x2old = p1x;
+    const y2old = p1y;
 
     if (sweepFlag && f2 > f1) {
       f2 = f1 + ((Math.PI * 120) / 180) * 1;
@@ -380,9 +383,9 @@ export function arcToCubicCurves(
       f2 = f1 + ((Math.PI * 120) / 180) * -1;
     }
 
-    x2 = cx + r1 * Math.cos(f2);
-    y2 = cy + r2 * Math.sin(f2);
-    params = arcToCubicCurves(x2, y2, x2old, y2old, r1, r2, angle, 0, sweepFlag, [f2, f2old, cx, cy]);
+    p1x = cx + rx * Math.cos(f2);
+    p1y = cy + ry * Math.sin(f2);
+    params = arcToCubicCurves(p1x, p1y, x2old, y2old, rx, ry, xAxisRotation, 0, sweepFlag, [f2, f2old, cx, cy]);
   }
 
   df = f2 - f1;
@@ -392,13 +395,13 @@ export function arcToCubicCurves(
     c2 = Math.cos(f2),
     s2 = Math.sin(f2),
     t = Math.tan(df / 4),
-    hx = (4 / 3) * r1 * t,
-    hy = (4 / 3) * r2 * t;
+    hx = (4 / 3) * rx * t,
+    hy = (4 / 3) * ry * t;
 
-  const m1 = [x1, y1],
-    m2 = [x1 + hx * s1, y1 - hy * c1],
-    m3 = [x2 + hx * s2, y2 - hy * c2],
-    m4 = [x2, y2];
+  const m1 = [p0x, p0y],
+    m2 = [p0x + hx * s1, p0y - hy * c1],
+    m3 = [p1x + hx * s2, p1y - hy * c2],
+    m4 = [p1x, p1y];
 
   m2[0] = 2 * m1[0] - m2[0];
   m2[1] = 2 * m1[1] - m2[1];
@@ -412,7 +415,7 @@ export function arcToCubicCurves(
     const r1 = rotate(params[i][0], params[i][1], angleRad);
     const r2 = rotate(params[i + 1][0], params[i + 1][1], angleRad);
     const r3 = rotate(params[i + 2][0], params[i + 2][1], angleRad);
-    curves.push([x1, y1, r1.x, r1.y, r2.x, r2.y, r3.x, r3.y]);
+    curves.push([p0x, p0y, r1.x, r1.y, r2.x, r2.y, r3.x, r3.y]);
   }
 
   return curves;

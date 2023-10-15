@@ -17,7 +17,6 @@ import { AppProvider } from './utils/AppContext';
 import { calculateMirrorPoint, generateEasingFunctionFromString } from './utils/geometry';
 import {
   checkForDisabledCollinearPoints,
-  checkForEnabledSmoothCornerPoints,
   checkOverlap,
   clamp,
   constructPathFromPoints,
@@ -35,8 +34,6 @@ let timeout = false,
   /** - To pause checking for path overlapping while zooming using the slide. */
   isZooming = false;
 
-/** - The set of point that has the smooth corner enabled. */
-const toggledAnchors = new Set<number>();
 /** - The set of point that control points are not collinear. */
 const toggledCollinear = new Set<number>();
 
@@ -212,17 +209,6 @@ export default function App() {
       currentCurve[currentCurve.length - 2] = x;
       currentCurve[currentCurve.length - 1] = y;
 
-      // If the smooth corners are enabled for this point.
-      if (toggledAnchors.has(currentPointIndex)) {
-        const index = currentPointIndex === 0 ? 0 : 2;
-        Points[currentPointIndex === 0 ? 1 : currentPointIndex][index] = x;
-        Points[currentPointIndex === 0 ? 1 : currentPointIndex][index + 1] = y;
-        if (nextCurve) {
-          nextCurve[0] = x;
-          nextCurve[1] = y;
-        }
-      }
-
       setPoints(Points);
       return;
     }
@@ -372,10 +358,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    toggledAnchors.clear();
-    const enabledSmoothCorners = checkForEnabledSmoothCornerPoints(points);
-    enabledSmoothCorners.forEach(toggledAnchors.add, toggledAnchors);
-
     toggledCollinear.clear();
     const disabledCollinear = checkForDisabledCollinearPoints(points);
     disabledCollinear.forEach(toggledCollinear.add, toggledCollinear);
@@ -438,10 +420,6 @@ export default function App() {
     isPresetSelected.current = true;
     const Points = pathToPoints(value);
 
-    toggledAnchors.clear();
-    const enabledSmoothCorners = checkForEnabledSmoothCornerPoints(Points);
-    enabledSmoothCorners.forEach(toggledAnchors.add, toggledAnchors);
-
     toggledCollinear.clear();
     const disabledCollinear = checkForDisabledCollinearPoints(Points);
     disabledCollinear.forEach(toggledCollinear.add, toggledCollinear);
@@ -495,7 +473,6 @@ export default function App() {
     setAutoHideHandles,
     setDuration,
     setPoints,
-    toggledAnchors,
     toggledCollinear,
     toggleExportDialog,
     undoStack,

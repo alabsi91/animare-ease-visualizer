@@ -2,7 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import './SvgPanel.css';
 
 import { useApp } from '../utils/AppContext';
-import { clamp } from '../utils/utils';
+import { clamp, isPointHasSmoothCorner } from '../utils/utils';
 import { calculateMirrorPoint, solveTFromPositionX, splitCurveAtT } from '../utils/geometry';
 import { constructPathFromPoints } from '../utils/utils';
 
@@ -14,7 +14,7 @@ export default function Panel() {
 
   /** Render grid numbers inside the SVG panel. */
   const drawGraphNumbers = useCallback(() => {
-    const textElements = [];
+    const textElements: JSX.Element[] = [];
     for (let i = 0; i < 11; i++) {
       const e = ctx.gridPoints.current[i];
 
@@ -184,7 +184,7 @@ export default function Panel() {
 
   /** Render and attach events to points on the path. */
   const drawAnchorPoints = () => {
-    const elements = [];
+    const elements: JSX.Element[] = [];
     for (let i = 0; i < ctx.points.length; i++) {
       const e = ctx.points[i];
 
@@ -215,26 +215,36 @@ export default function Panel() {
           nextCurve[0] = x;
           nextCurve[1] = y;
 
-          ctx.mouseMove(e); // force update
+          ctx.setPoints(curves);
         }
 
         // Toggle smooth corner.
         if (e.shiftKey) {
-          if (ctx.toggledAnchors.delete(i)) {
-            const curves = [...ctx.points];
-            const nextCurve = curves[i + 1];
-            const ctrlIndex = i === 0 ? 0 : 2;
-            curves[i][ctrlIndex] -= 10;
-            curves[i][ctrlIndex + 1] += 10;
-            if (nextCurve) {
-              nextCurve[0] += 10;
-              nextCurve[1] -= 10;
-            }
+          const isSmoothCornerEnabled = isPointHasSmoothCorner(ctx.points, i);
+
+          const curves = [...ctx.points];
+          const currentCurve = curves[i];
+          const nextCurve = curves[i + 1];
+
+          const p1x = currentCurve[currentCurve.length - 2];
+          const p1y = currentCurve[currentCurve.length - 1];
+
+          // case M
+          if (!i) {
+            nextCurve[0] = isSmoothCornerEnabled ? p1x + 10 : p1x;
+            nextCurve[1] = isSmoothCornerEnabled ? p1y - 10 : p1y;
+          } else if (!nextCurve) {
+            // last curve
+            currentCurve[2] = isSmoothCornerEnabled ? p1x - 10 : p1x;
+            currentCurve[3] = isSmoothCornerEnabled ? p1y + 10 : p1y;
           } else {
-            ctx.toggledAnchors.add(i);
+            nextCurve[0] = isSmoothCornerEnabled ? p1x + 10 : p1x;
+            nextCurve[1] = isSmoothCornerEnabled ? p1y - 10 : p1y;
+            currentCurve[2] = isSmoothCornerEnabled ? p1x - 10 : p1x;
+            currentCurve[3] = isSmoothCornerEnabled ? p1y + 10 : p1y;
           }
 
-          ctx.mouseMove(e); // force update
+          ctx.setPoints(curves);
         }
 
         document.addEventListener('pointermove', ctx.mouseMove);
