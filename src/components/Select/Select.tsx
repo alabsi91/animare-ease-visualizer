@@ -10,25 +10,24 @@ const TOP_MARGIN = 10;
 const BOTTOM_MARGIN = 30;
 const DURATION = 200;
 
-type BASIC = string | number | boolean | null | undefined;
-type Props<T extends Array<BASIC>> = {
-  names: readonly string[];
-  values: readonly [...T];
-  defaultValue?: [...T][number];
-  value?: [...T][number];
+type Props<T extends unknown> = {
+  labels: readonly string[];
+  values: readonly T[];
+  defaultValue?: T[][number];
+  value?: T[][number];
   SelectButton: React.FunctionComponent<{ title: string; isOpen: boolean; onClick: () => void }>;
   containerStyle?: React.CSSProperties;
   minWidth?: number;
   highlightSelected?: boolean;
-  onChange: (value: T[number]) => void;
+  onChange: (value: T) => void;
 };
-export type SelectRef<F extends Array<any> = string[]> = {
-  setValue: (value: [...F][number]) => void;
+export type SelectRef<F extends unknown> = {
+  setValue: (value: F) => void;
 };
 
-function SelectComponent<T extends Array<BASIC>>(
+function SelectComponent<T extends unknown>(
   {
-    names,
+    labels,
     values,
     SelectButton,
     value,
@@ -38,17 +37,17 @@ function SelectComponent<T extends Array<BASIC>>(
     highlightSelected = true,
     onChange,
   }: Props<T>,
-  ref: React.ForwardedRef<SelectRef>
+  ref: React.ForwardedRef<SelectRef<T>>
 ) {
-  if (names.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
+  if (labels.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
 
-  const [selected, setSelected] = useState(names[values.indexOf(value ?? defaultValue ?? values[0])]);
+  const [selected, setSelected] = useState(labels[values.indexOf(value ?? defaultValue ?? values[0])]);
   const [show, setShow] = useState(false);
 
   const dialogRef = useRef<HTMLDialogElement>(null!);
 
   const getMenuHeight = () => {
-    const menuHeight = names.length * ITEM_HEIGHT;
+    const menuHeight = labels.length * ITEM_HEIGHT;
     const container = dialogRef.current.parentElement;
     if (!container) return menuHeight;
 
@@ -87,7 +86,7 @@ function SelectComponent<T extends Array<BASIC>>(
     // highlight and scroll to the selected item
     if (highlightSelected) {
       const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
-      const selectedLi = lists[names.indexOf(selected)];
+      const selectedLi = lists[labels.indexOf(selected)];
 
       if (selectedLi) {
         lists.forEach(el => el.classList.remove(style.selected));
@@ -145,11 +144,11 @@ function SelectComponent<T extends Array<BASIC>>(
 
   useEffect(() => {
     if (typeof value === 'undefined') return;
-    setSelected(names[values.indexOf(value)]);
+    setSelected(labels[values.indexOf(value)]);
   }, [value]);
 
   const Menu = () => {
-    return names.map((name, idx) => (
+    return labels.map((name, idx) => (
       <li key={`${values[idx]}item-key`}>
         <button
           className={style.item}
@@ -170,7 +169,7 @@ function SelectComponent<T extends Array<BASIC>>(
     setShow(false);
   };
 
-  useImperativeHandle(ref, () => ({ setValue: v => setSelected(names[values.indexOf(v)]) }), []);
+  useImperativeHandle(ref, () => ({ setValue: (v: T) => setSelected(labels[values.indexOf(v)]) }), []);
 
   const toggle = () => {
     setShow(!show);
@@ -187,8 +186,8 @@ function SelectComponent<T extends Array<BASIC>>(
   );
 }
 
-const Select = forwardRef(SelectComponent) as <T extends Array<BASIC>>(
-  props: Props<T> & { ref?: React.ForwardedRef<SelectRef> }
+const Select = forwardRef(SelectComponent) as <T extends unknown>(
+  props: Props<T> & { ref?: React.ForwardedRef<SelectRef<T>> }
 ) => ReturnType<typeof SelectComponent>;
 
 export default Select;

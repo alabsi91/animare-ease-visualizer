@@ -216,7 +216,7 @@ export default function SidePanel() {
           <p>Presets</p>
 
           <Select
-            names={Object.keys(eases)}
+            labels={Object.keys(eases)}
             values={Object.values(eases)}
             value={ctx.preset}
             onChange={ctx.onPresetSelect}
@@ -233,7 +233,7 @@ export default function SidePanel() {
         </div>
 
         <Select
-          names={exportTypes}
+          labels={exportTypes}
           values={exportTypes}
           onChange={onExportSelect}
           SelectButton={ExportButton}

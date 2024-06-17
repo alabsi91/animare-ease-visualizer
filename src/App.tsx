@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './index.css';
 
 import ExportCss from './ExportCss/ExportCss';
+import ExportCssLinear from './ExportCssLinear/ExportCssLinear';
 import ExportJsFile from './ExportJsFile/ExportJsFile';
 import ExportSvg from './ExportSvg/ExportSvg';
 import SidePanel from './SidePanel/SidePanel';
@@ -61,6 +62,7 @@ export default function App() {
   const exportJsDialogRef = useRef<DialogRef>(null!);
   const exportSvgDialogRef = useRef<DialogRef>(null!);
   const cssDialogRef = useRef<DialogRef>(null!);
+  const cssLinearDialogRef = useRef<DialogRef>(null!);
 
   const pathToPoints = (path: string) => {
     const viewBox = {
@@ -443,7 +445,8 @@ export default function App() {
   const setDuration = (duration: number) => animation?.setOptions({ duration });
 
   const toggleExportDialog = (dialog: ExportTypes) => {
-    if (dialog === 'CSS') cssDialogRef.current.toggle();
+    if (dialog === 'CSS Keyframe') cssDialogRef.current.toggle();
+    if (dialog === 'CSS linear') cssLinearDialogRef.current.toggle();
     if (dialog === 'SVG Path') exportSvgDialogRef.current.toggle();
     if (dialog === 'JS File') exportJsDialogRef.current.toggle();
   };
@@ -493,6 +496,10 @@ export default function App() {
 
       <Dialog ref={cssDialogRef} unmoutOnHide>
         <ExportCss />
+      </Dialog>
+
+      <Dialog ref={cssLinearDialogRef} unmoutOnHide>
+        <ExportCssLinear />
       </Dialog>
 
       <div className='container'>

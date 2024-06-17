@@ -2,12 +2,14 @@
   margin: 0px;
   margin-bottom: 30px;
 }
+
 .css-input-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
 }
+
 .css-input-container > input {
   all: unset;
   color: var(--text-color);
@@ -21,20 +23,24 @@
   flex-grow: 1;
   transition: background-color 300ms ease;
 }
+
 .css-input-container > input:focus {
   background-color: var(--input-focused);
   border: solid 1px var(--main-color);
 }
+
 .css-input-container > p {
   text-align: left;
   margin: 0;
   margin-right: 10px;
   min-width: 65px;
 }
+
 .pre-container {
   position: relative;
   margin-block: 24px;
 }
+
 .css-dialog-pre {
   padding: 20px;
   margin: 0px auto;
@@ -63,9 +69,11 @@
   user-select: none;
   transition: transform 100ms ease;
 }
+
 .css-dialog-copy-button:hover {
   transform: scale(1.05);
 }
+
 .css-dialog-copy-button:active {
   transform: translate(2px, 2px);
 }
@@ -87,9 +95,11 @@
   user-select: none;
   transition: transform 100ms ease-in-out;
 }
+
 .css-dialog-close-button:hover {
   transform: scale(1.01);
 }
+
 .css-dialog-close-button:active {
   transform: translate(2px, 2px);
 }

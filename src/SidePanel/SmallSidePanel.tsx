@@ -113,7 +113,7 @@ export default function SmallSidePanel() {
         <Select
           containerStyle={{ flex: 0 }}
           minWidth={175}
-          names={Object.keys(eases) as (keyof Eases)[]}
+          labels={Object.keys(eases) as (keyof Eases)[]}
           values={Object.values(eases) as Eases[keyof Eases][]}
           value={ctx.preset}
           onChange={ctx.onPresetSelect}
@@ -122,7 +122,8 @@ export default function SmallSidePanel() {
 
         <Select
           containerStyle={{ flex: 0 }}
-          names={exportTypes}
+          minWidth={175}
+          labels={exportTypes}
           values={exportTypes}
           onChange={onExportSelect}
           SelectButton={ExportButton}

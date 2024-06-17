@@ -78,7 +78,7 @@ export default function ExportCss() {
 
   return (
     <div id='css-dialog'>
-      <h2 className='css-dialog-title'>Export as CSS</h2>
+      <h2 className='css-dialog-title'>Export as CSS Keyframe</h2>
 
       {!isSimple && (
         <>
@@ -144,7 +144,7 @@ export default function ExportCss() {
         </button>
       </div>
 
-      <button className='css-dialog-close-button' onClick={() => ctx.toggleExportDialog('CSS')}>
+      <button className='css-dialog-close-button' onClick={() => ctx.toggleExportDialog('CSS Keyframe')}>
         Close
       </button>
     </div>

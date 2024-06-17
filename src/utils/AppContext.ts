@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 import type { SetStateAction, Dispatch, MutableRefObject } from 'react';
 import type { Eases } from '../presets';
 
-export const exportTypes = ['CSS', 'SVG Path', 'JS File'] as const;
+export const exportTypes = ['CSS Keyframe', 'CSS linear', 'SVG Path', 'JS File'] as const;
 export type ExportTypes = (typeof exportTypes)[number];
 
 type ctxType = {

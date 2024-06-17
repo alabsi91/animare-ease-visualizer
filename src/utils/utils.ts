@@ -114,9 +114,11 @@ export async function convertEasingFunctionToPoints(
 ) {
   let stopped = false;
 
-  signal?.addEventListener('abort', () => {
+  const onAbort = () => {
     stopped = true;
-  });
+  };
+
+  if (signal) signal.addEventListener('abort', onAbort, { once: true });
 
   const values = new Float32Array(samples);
   let count = 0;
@@ -135,6 +137,7 @@ export async function convertEasingFunctionToPoints(
     values[count++] = easingFunction(t);
   }
 
+  if (signal) signal.removeEventListener('abort', onAbort);
   return values;
 }
 
