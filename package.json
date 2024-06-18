@@ -12,7 +12,7 @@
   "dependencies": {
     "animare": "^1.1.0-beta.22",
     "highlight.js": "^11.9.0",
-    "idify-react-component": "file:../idify-react-component",
+    "idify-react-component": "^1.0.1",
     "prettier": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
