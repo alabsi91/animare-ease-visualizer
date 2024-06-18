@@ -1,8 +1,10 @@
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import { useEffect } from 'react';
-import { useApp } from '../utils/AppContext';
 import './ExportSvg.css';
+
+import Dialog from '../components/Dialog/Dialog';
+import { useApp } from '../utils/AppContext';
 
 hljs.registerLanguage('javascript', javascript);
 
@@ -63,7 +65,7 @@ animare.single({
         </button>
       </div>
 
-      <button className='svg-dialog-close-button' onClick={() => ctx.toggleExportDialog('SVG Path')}>
+      <button className='svg-dialog-close-button' onClick={() => Dialog.$exportSvg?.toggle()}>
         Close
       </button>
     </div>

@@ -4,16 +4,16 @@ import { useAnimare } from 'animare/react';
 import React, { useCallback, useEffect, useRef } from 'react';
 import './SidePanel.css';
 
+import Dialog from '../components/Dialog/Dialog';
 import HighlightTextarea from '../components/HighlightTextarea/HighlightTextarea';
 import Select from '../components/Select/Select';
 import { eases } from '../presets';
-import { exportTypes, useApp } from '../utils/AppContext';
+import { ExportTypes, useApp } from '../utils/AppContext';
 import { parse } from '../utils/parsePath';
 import { checkForDisabledCollinearPoints, getPointsFromPathString } from '../utils/utils';
 
 import type { OnUpdateCallback, TimelineGlobalOptions } from 'animare';
 import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
-import type { ExportTypes } from '../utils/AppContext';
 
 export default function SidePanel() {
   const ctx = useApp();
@@ -138,7 +138,20 @@ export default function SidePanel() {
   }, []);
 
   const onExportSelect = (value: ExportTypes) => {
-    ctx.toggleExportDialog(value);
+    switch (value) {
+      case ExportTypes.CSS_Keyframe:
+        Dialog.$exportCssKeyframe?.toggle();
+        break;
+      case ExportTypes.CSS_Linear:
+        Dialog.$exportCssLinear?.toggle();
+        break;
+      case ExportTypes.SVG_Path:
+        Dialog.$exportSvg?.toggle();
+        break;
+      case ExportTypes.JS_File:
+        Dialog.$exportJs?.toggle();
+        break;
+    }
   };
 
   const toggleShortcuts = () => {
@@ -242,8 +255,8 @@ export default function SidePanel() {
         </div>
 
         <Select
-          labels={exportTypes}
-          values={exportTypes}
+          labels={Object.values(ExportTypes)}
+          values={Object.values(ExportTypes)}
           onChange={onExportSelect}
           SelectButton={ExportButton}
           highlightSelected={false}

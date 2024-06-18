@@ -3,9 +3,9 @@ import javascript from 'highlight.js/lib/languages/javascript';
 import React, { useEffect, useState } from 'react';
 import './ExportJsFile.css';
 
+import Dialog from '../components/Dialog/Dialog';
 import { useApp } from '../utils/AppContext';
-import { convertEasingFunctionToPoints } from '../utils/utils';
-import { preparePointsForAnimation } from '../utils/utils';
+import { convertEasingFunctionToPoints, preparePointsForAnimation } from '../utils/utils';
 
 hljs.registerLanguage('javascript', javascript);
 
@@ -38,7 +38,7 @@ export default function ExportJsFile() {
       target.style.removeProperty('background-color');
       progressInner.style.width = '0%';
       progressText.innerHTML = '0%';
-      ctx.toggleExportDialog('JS File');
+      Dialog.$exportJs?.toggle();
       return;
     }
 
@@ -56,7 +56,7 @@ export default function ExportJsFile() {
         progressText.innerHTML = '0%';
         target.style.removeProperty('background-color');
         target.innerHTML = 'Generate';
-        ctx.toggleExportDialog('JS File');
+        Dialog.$exportJs?.toggle();
       }
     };
 

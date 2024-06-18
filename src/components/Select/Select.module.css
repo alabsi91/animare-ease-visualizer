@@ -36,7 +36,6 @@
   border-radius: 5px;
   box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02);
   border: solid #a370f02a 1px;
-  transition: height 200ms ease;
 }
 .itemsContainer::backdrop {
   background-color: transparent;

@@ -2,8 +2,12 @@ import { createContext, useContext } from 'react';
 import type { SetStateAction, Dispatch, MutableRefObject } from 'react';
 import type { Eases } from '../presets';
 
-export const exportTypes = ['CSS Keyframe', 'CSS linear', 'SVG Path', 'JS File'] as const;
-export type ExportTypes = (typeof exportTypes)[number];
+export enum ExportTypes {
+  'CSS_Keyframe' = 'CSS Keyframe',
+  'CSS_Linear' = 'CSS Linear',
+  'SVG_Path' = 'SVG Path',
+  'JS_File' = 'JS File',
+}
 
 type ctxType = {
   /** - SVG's drawing area size. */
@@ -46,7 +50,6 @@ type ctxType = {
   eventPoint: MutableRefObject<number[][]>;
 
   onZoom: (value: number) => void;
-  toggleExportDialog: (dialog: ExportTypes) => void;
   getPathStringFromPoints: (p?: number[][]) => string;
   mouseMove: (e: React.MouseEvent<Element> | MouseEvent) => void;
 

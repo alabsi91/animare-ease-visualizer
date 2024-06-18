@@ -2,12 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import style from './Select.module.css';
 
 const clamp = (value: number, min: number, max: number) => (value < min ? min : value > max ? max : value);
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const MAX_HEIGHT = 600;
 const ITEM_HEIGHT = 40;
-const TOP_MARGIN = 10;
-const BOTTOM_MARGIN = 30;
+/** the Space between the start of the menu and the button that opens it */
+const START_MARGIN = 10;
+/** the Space between the end of the menu and the edge of the screen top/bottom */
+const END_MARGIN = 30;
 const DURATION = 200;
 
 type Props<T> = {
@@ -40,30 +41,37 @@ export default function Select<T>({
 
   const dialogRef = useRef<HTMLDialogElement>(null!);
 
-  const getMenuHeight = () => {
+  const calcMenuBounding = () => {
     const menuHeight = labels.length * ITEM_HEIGHT;
-    const container = dialogRef.current.parentElement;
-    if (!container) return menuHeight;
+    const container = dialogRef.current.parentElement!;
 
-    const { bottom } = container.getBoundingClientRect();
+    const { left, top, bottom, width } = container.getBoundingClientRect();
+    const openDownwards = window.innerHeight - (bottom + END_MARGIN) > top + START_MARGIN;
 
-    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HEIGHT);
+    const maxHeight = Math.min(openDownwards ? window.innerHeight - (bottom + END_MARGIN) : top - END_MARGIN, MAX_HEIGHT);
+    const height = clamp(menuHeight, 0, maxHeight);
+    const topPos = openDownwards ? bottom + START_MARGIN : top - START_MARGIN - height;
 
-    return clamp(menuHeight, 0, maxHeight);
+    return {
+      height,
+      maxHeight,
+      width: Math.max(width, minWidth),
+      top: topPos,
+      left,
+      openDownwards,
+    };
   };
 
   const setMenuPos = useCallback(() => {
     const container = dialogRef.current.parentElement;
     if (!container || !dialogRef.current) return;
 
-    const { left, bottom, width } = container.getBoundingClientRect();
+    const { maxHeight, width, top, left } = calcMenuBounding();
 
-    dialogRef.current.style.left = left + 'px';
-    dialogRef.current.style.top = bottom + TOP_MARGIN + 'px';
-    dialogRef.current.style.width = Math.max(width, minWidth) + 'px';
-
-    const maxHeight = Math.min(window.innerHeight - (bottom + BOTTOM_MARGIN), MAX_HEIGHT);
     dialogRef.current.style.maxHeight = maxHeight + 'px';
+    dialogRef.current.style.width = width + 'px';
+    dialogRef.current.style.left = left + 'px';
+    dialogRef.current.style.top = top + 'px';
   }, []);
 
   const clickOutSide = useCallback((e: MouseEvent) => {
@@ -74,14 +82,17 @@ export default function Select<T>({
     if (!isClickInside && dialogRef.current.open) setShow(false);
   }, []);
 
-  const open = async () => {
+  const open = () => {
+    if (dialogRef.current.open) return;
+
     dialogRef.current.showModal();
 
-    // highlight and scroll to the selected item
     if (highlightSelected) {
+      // highlight
       const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
       const selectedLi = lists[labels.indexOf(selected)];
 
+      //  scroll to the highlight item
       if (selectedLi) {
         lists.forEach(el => el.classList.remove(style.selected));
         dialogRef.current.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
@@ -89,45 +100,55 @@ export default function Select<T>({
       }
     }
 
-    setMenuPos();
+    const { height, maxHeight, width, top, left, openDownwards } = calcMenuBounding();
 
-    const menuHeight = getMenuHeight();
-    const hasScrollBar = dialogRef.current.scrollHeight > menuHeight;
+    dialogRef.current.style.maxHeight = maxHeight + 'px';
+    dialogRef.current.style.width = width + 'px';
+    dialogRef.current.style.left = left + 'px';
+    dialogRef.current.style.top = top + 'px';
 
+    const hasScrollBar = dialogRef.current.scrollHeight > height;
     if (!hasScrollBar) dialogRef.current.style.overflow = 'hidden';
-    dialogRef.current.style.height = '0px'; // animate from height 0
-    await sleep(1);
-    dialogRef.current.style.height = menuHeight + 'px'; // animate to height
+
+    dialogRef.current.animate(
+      [
+        { height: '0px', transform: openDownwards ? 'translateY(0px)' : `translateY(${height}px)` },
+        { height: height + 'px', transform: 'translateY(0px)' },
+      ],
+      { duration: DURATION, easing: 'ease', fill: 'none' },
+    ).onfinish = () => {
+      dialogRef.current.style.overflow = 'auto';
+
+      document.addEventListener('click', clickOutSide);
+      window.addEventListener('scroll', setMenuPos);
+      window.addEventListener('resize', setMenuPos);
+    };
 
     // items fade in
     const items = dialogRef.current.querySelectorAll<HTMLLIElement>(`.${style.itemsContainer} ul li`);
     items.forEach(e => e.classList.add(style['fade-in']));
-
-    await sleep(DURATION);
-
-    dialogRef.current.style.removeProperty('height');
-    dialogRef.current.style.overflow = 'auto';
-
-    document.addEventListener('click', clickOutSide);
-    window.addEventListener('scroll', setMenuPos);
-    window.addEventListener('resize', setMenuPos);
   };
 
-  const close = async () => {
-    const menuHeight = getMenuHeight();
-    const hasScrollBar = dialogRef.current.scrollHeight > menuHeight;
+  const close = () => {
+    if (!dialogRef.current.open) return;
+
+    const { height, openDownwards } = calcMenuBounding();
+    const hasScrollBar = dialogRef.current.scrollHeight > height;
 
     if (!hasScrollBar) dialogRef.current.style.overflow = 'hidden';
-    dialogRef.current.style.height = menuHeight + 'px'; // animate from height
-    await sleep(1);
-    dialogRef.current.style.height = '0px'; // animate to height 0
 
-    await sleep(DURATION);
-
-    dialogRef.current.close();
-    document.removeEventListener('click', clickOutSide);
-    window.removeEventListener('scroll', setMenuPos);
-    window.removeEventListener('resize', setMenuPos);
+    dialogRef.current.animate(
+      [
+        { height: height + 'px', transform: 'translateY(0px)' },
+        { height: '0px', transform: openDownwards ? 'translateY(0px)' : `translateY(${height}px)` },
+      ],
+      { duration: DURATION, easing: 'ease', fill: 'none' },
+    ).onfinish = () => {
+      dialogRef.current.close();
+      document.removeEventListener('click', clickOutSide);
+      window.removeEventListener('scroll', setMenuPos);
+      window.removeEventListener('resize', setMenuPos);
+    };
   };
 
   useEffect(() => {

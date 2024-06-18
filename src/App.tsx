@@ -16,7 +16,7 @@ import usePan from './hooks/usePan';
 import useZoom from './hooks/useZoom';
 import { eases } from './presets';
 import { AppProvider } from './utils/AppContext';
-import { calculateMirrorPoint, generateEasingFunctionFromString } from './utils/geometry';
+import { calculateMirrorPoint } from './utils/geometry';
 import {
   checkForDisabledCollinearPoints,
   checkOverlap,
@@ -27,7 +27,6 @@ import {
 } from './utils/utils';
 
 import type { Eases } from './presets';
-import type { ExportTypes } from './utils/AppContext';
 
 /** - Threshold for checking path overlapping. */
 let timeout = false,
@@ -438,9 +437,7 @@ export default function App() {
 
   const playCurrentEasing = () => {
     const pathString = getPathStringFromPoints();
-    const easingFunction = generateEasingFunctionFromString(pathString);
-
-    animation.updateValues([{ name: '1', ease: easingFunction }]);
+    animation.updateValues([{ name: '1', ease: ease.custom(pathString) }]);
 
     if (animation.timelineInfo.isPaused) animation.resume();
     else animation.play();
@@ -454,13 +451,6 @@ export default function App() {
       { name: '1', duration },
       { name: '2', duration },
     ]);
-  };
-
-  const toggleExportDialog = (dialog: ExportTypes) => {
-    if (dialog === 'CSS Keyframe') Dialog.$exportCssKeyframe?.toggle();
-    if (dialog === 'CSS linear') Dialog.$exportCssLinear?.toggle();
-    if (dialog === 'SVG Path') Dialog.$exportSvg?.toggle();
-    if (dialog === 'JS File') Dialog.$exportJs?.toggle();
   };
 
   // add event listener to drag SVG panel around SPACE + DRAGG
@@ -489,7 +479,6 @@ export default function App() {
     setDuration,
     setPoints,
     toggledCollinear,
-    toggleExportDialog,
     undoStack,
     viewBoxCoordinate,
     viewBoxSize,
@@ -518,7 +507,7 @@ export default function App() {
         <SidePanel />
 
         <div style={{ position: 'relative' }}>
-          <h2 className='title'>Easing Visualizer</h2>
+          <h2 className='title'>Animare Easing Visualizer</h2>
 
           <Panel />
         </div>

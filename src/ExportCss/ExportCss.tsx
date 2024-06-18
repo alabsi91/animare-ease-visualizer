@@ -4,10 +4,11 @@ import 'highlight.js/styles/rainbow.css';
 import { useEffect, useState } from 'react';
 import './ExportCss.css';
 
-import { useApp } from '../utils/AppContext';
-import { formatCode, preparePointsForAnimation } from '../utils/utils';
+import Dialog from '../components/Dialog/Dialog';
 import HighlightInput from '../components/HighlightInput/HighlightInput';
+import { useApp } from '../utils/AppContext';
 import { generateEasingFunctionFromArray } from '../utils/geometry';
+import { formatCode, preparePointsForAnimation } from '../utils/utils';
 
 hljs.registerLanguage('css', css);
 
@@ -147,7 +148,7 @@ export default function ExportCss() {
         </button>
       </div>
 
-      <button className='css-dialog-close-button' onClick={() => ctx.toggleExportDialog('CSS Keyframe')}>
+      <button className='css-dialog-close-button' onClick={() => Dialog.$exportCssKeyframe?.toggle()}>
         Close
       </button>
     </div>

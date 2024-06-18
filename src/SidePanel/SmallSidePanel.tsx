@@ -4,13 +4,13 @@ import { useAnimare } from 'animare/react';
 import React, { useCallback } from 'react';
 import './SmallSidePanel.css';
 
+import Dialog from '../components/Dialog/Dialog';
 import Select from '../components/Select/Select';
 import { eases } from '../presets';
-import { exportTypes, useApp } from '../utils/AppContext';
+import { ExportTypes, useApp } from '../utils/AppContext';
 
 import type { OnUpdateCallback, TimelineGlobalOptions } from 'animare';
 import type { Eases } from '../presets';
-import type { ExportTypes } from '../utils/AppContext';
 
 export default function SmallSidePanel() {
   const ctx = useApp();
@@ -101,7 +101,20 @@ export default function SmallSidePanel() {
   }, []);
 
   const onExportSelect = (value: ExportTypes) => {
-    ctx.toggleExportDialog(value);
+    switch (value) {
+      case ExportTypes.CSS_Keyframe:
+        Dialog.$exportCssKeyframe?.toggle();
+        break;
+      case ExportTypes.CSS_Linear:
+        Dialog.$exportCssLinear?.toggle();
+        break;
+      case ExportTypes.SVG_Path:
+        Dialog.$exportSvg?.toggle();
+        break;
+      case ExportTypes.JS_File:
+        Dialog.$exportJs?.toggle();
+        break;
+    }
   };
 
   return (
@@ -132,8 +145,8 @@ export default function SmallSidePanel() {
         <Select
           containerStyle={{ flex: 0 }}
           minWidth={175}
-          labels={exportTypes}
-          values={exportTypes}
+          labels={Object.values(ExportTypes)}
+          values={Object.values(ExportTypes)}
           onChange={onExportSelect}
           SelectButton={ExportButton}
           highlightSelected={false}
