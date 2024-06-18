@@ -1,5 +1,5 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import style from './Select.module.css';
-import { useCallback, useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
 const clamp = (value: number, min: number, max: number) => (value < min ? min : value > max ? max : value);
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -21,24 +21,18 @@ type Props<T> = {
   highlightSelected?: boolean;
   onChange: (value: T) => void;
 };
-export type SelectRef<F> = {
-  setValue: (value: F) => void;
-};
 
-function SelectComponent<T>(
-  {
-    labels,
-    values,
-    SelectButton,
-    value,
-    defaultValue,
-    containerStyle,
-    minWidth = 100,
-    highlightSelected = true,
-    onChange,
-  }: Props<T>,
-  ref: React.ForwardedRef<SelectRef<T>>,
-) {
+export default function Select<T>({
+  labels,
+  values,
+  SelectButton,
+  value,
+  defaultValue,
+  containerStyle,
+  minWidth = 100,
+  highlightSelected = true,
+  onChange,
+}: Props<T>) {
   if (labels.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
 
   const [selected, setSelected] = useState(labels[values.indexOf(value ?? defaultValue ?? values[0])]);
@@ -97,10 +91,13 @@ function SelectComponent<T>(
 
     setMenuPos();
 
-    dialogRef.current.style.overflow = 'hidden';
+    const menuHeight = getMenuHeight();
+    const hasScrollBar = dialogRef.current.scrollHeight > menuHeight;
+
+    if (!hasScrollBar) dialogRef.current.style.overflow = 'hidden';
     dialogRef.current.style.height = '0px'; // animate from height 0
     await sleep(1);
-    dialogRef.current.style.height = getMenuHeight() + 'px'; // animate to height
+    dialogRef.current.style.height = menuHeight + 'px'; // animate to height
 
     // items fade in
     const items = dialogRef.current.querySelectorAll<HTMLLIElement>(`.${style.itemsContainer} ul li`);
@@ -117,8 +114,11 @@ function SelectComponent<T>(
   };
 
   const close = async () => {
-    dialogRef.current.style.overflow = 'hidden';
-    dialogRef.current.style.height = getMenuHeight() + 'px'; // animate from height
+    const menuHeight = getMenuHeight();
+    const hasScrollBar = dialogRef.current.scrollHeight > menuHeight;
+
+    if (!hasScrollBar) dialogRef.current.style.overflow = 'hidden';
+    dialogRef.current.style.height = menuHeight + 'px'; // animate from height
     await sleep(1);
     dialogRef.current.style.height = '0px'; // animate to height 0
 
@@ -169,8 +169,6 @@ function SelectComponent<T>(
     setShow(false);
   };
 
-  useImperativeHandle(ref, () => ({ setValue: (v: T) => setSelected(labels[values.indexOf(v)]) }), []);
-
   const toggle = () => {
     setShow(!show);
   };
@@ -180,14 +178,10 @@ function SelectComponent<T>(
       <SelectButton title={selected} isOpen={show} onClick={toggle} />
 
       <dialog ref={dialogRef} onCancel={onCancel} className={style.itemsContainer}>
-        <ul>{Menu()}</ul>
+        <ul>
+          <Menu />
+        </ul>
       </dialog>
     </div>
   );
 }
-
-const Select = forwardRef(SelectComponent) as <T>(
-  props: Props<T> & { ref?: React.ForwardedRef<SelectRef<T>> },
-) => ReturnType<typeof SelectComponent>;
-
-export default Select;

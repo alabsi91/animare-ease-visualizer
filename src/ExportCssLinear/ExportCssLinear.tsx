@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import './ExportCssLinear.css';
 
 import { useApp } from '../utils/AppContext';
-import { convertEasingFunctionToPoints, preparePointsForAnimation } from '../utils/utils';
+import { convertEasingFunctionToPoints, formatCode, preparePointsForAnimation } from '../utils/utils';
 
 hljs.registerLanguage('javascript', javascript);
 
@@ -19,11 +19,12 @@ export default function ExportCssLinear() {
   const values = useRef([0, 1]);
   const isGenerating = useRef(false);
 
-  const generateCode = () => {
+  const generateCode = async () => {
     const pre = document.querySelector<HTMLPreElement>('.download-dialog-pre');
     if (!pre) return;
-    const code = `:root {\n  ${cssVarName}: linear(\n    ${values.current.join(',\n    ')}\n  );\n}`;
-    pre.innerHTML = hljs.highlight(code, { language: 'css' }).value;
+    const code = `:root{${cssVarName}:linear(${values.current.join(',')});}`;
+    const formatted = await formatCode(code);
+    pre.innerHTML = hljs.highlight(formatted, { language: 'css' }).value;
   };
 
   const generateClick = async () => {

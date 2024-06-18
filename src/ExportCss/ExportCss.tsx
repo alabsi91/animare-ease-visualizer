@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import './ExportCss.css';
 
 import { useApp } from '../utils/AppContext';
-import { preparePointsForAnimation } from '../utils/utils';
+import { formatCode, preparePointsForAnimation } from '../utils/utils';
 import HighlightInput from '../components/HighlightInput/HighlightInput';
 import { generateEasingFunctionFromArray } from '../utils/geometry';
 
@@ -33,9 +33,9 @@ export default function ExportCss() {
     let results = '';
 
     if (curves.length === 1) {
-      results = `.element {\n  transition: transform 0.6s cubic-bezier(${+curves[0][2].toFixed(3)}, ${+curves[0][3].toFixed(
+      results = `.element{transition:transform 0.6s cubic-bezier(${+curves[0][2].toFixed(3)},${+curves[0][3].toFixed(
         3,
-      )}, ${+curves[0][4].toFixed(3)}, ${+curves[0][5].toFixed(3)});\n}`;
+      )},${+curves[0][4].toFixed(3)},${+curves[0][5].toFixed(3)});}`;
       return results;
     }
 
@@ -45,31 +45,34 @@ export default function ExportCss() {
     for (let i = 0; i < 100; i += increaseBy) {
       const progress = i / 100;
       const value = +(from + (to - from) * easingFunction(progress)).toFixed(2);
-      results += `  ${i}% { ${property.replaceAll('{value}', value.toString())} }\n`;
+      results += `${i}%{${property.replaceAll('{value}', value.toString())}}`;
     }
 
     const lastValue = +(from + (to - from) * easingFunction(1)).toFixed(2);
-    results += `  ${100}% { ${property.replaceAll('{value}', lastValue.toString())} }\n`;
+    results += `${100}%{${property.replaceAll('{value}', lastValue.toString())}}`;
 
-    results = `@keyframes my-custom-easing {\n${results}}`;
+    results = `@keyframes my-custom-easing{${results}}`;
 
     return results;
   };
 
-  const highlight = () => {
+  const highlight = async () => {
     const pre = document.querySelector<HTMLPreElement>('.css-dialog-pre');
     if (!pre) return;
 
-    const string = generate();
+    const code = generate();
+    const formatted = await formatCode(code);
 
-    setIsSimple(string.startsWith('.element'));
+    setIsSimple(code.startsWith('.element'));
 
-    pre.innerHTML = hljs.highlight(string, { language: 'css' }).value;
+    pre.innerHTML = hljs.highlight(formatted, { language: 'css' }).value;
   };
 
   const copyHandle = () => {
     const string = generate();
-    navigator.clipboard.writeText(string);
+    formatCode(string).then(formatted => {
+      navigator.clipboard.writeText(formatted);
+    });
   };
 
   useEffect(() => {

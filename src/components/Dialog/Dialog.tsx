@@ -1,7 +1,8 @@
-import { useRef, forwardRef, useImperativeHandle, useEffect, useCallback, useState } from 'react';
+import { CreateFromFC } from 'idify-react-component';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styles from './Dialog.module.css';
 
-type propsT = {
+type Props = {
   /** - Bind the visibility of the dialog to a state. */
   show?: boolean;
   /** - This callback will only be called if the `show` prop is provided and when the dialog is being dismissed. */
@@ -11,7 +12,7 @@ type propsT = {
   /** - Hides the dialog when the user clicks anywhere outside of it. */
   hideOnOutsideClick?: boolean;
   /** - Unmounts the children when the component is hidden and remounts them when it is shown again.*/
-  unmoutOnHide?: boolean;
+  unmountOnHide?: boolean;
   children: React.ReactNode;
   style?: React.HTMLAttributes<HTMLDialogElement>['style'];
 };
@@ -22,95 +23,98 @@ export type DialogRef = {
   toggle: () => void;
 };
 
-export default forwardRef<DialogRef, propsT>(
-  (
-    { children, show, hideOnOutsideClick = true, unmoutOnHide = false, onShow, onHide, onRequestClose, style }: propsT,
-    ref: React.Ref<DialogRef>,
-  ) => {
-    const [mount, setMount] = useState(!unmoutOnHide);
+function DialogRC(props: Props, ref: React.ForwardedRef<DialogRef>) {
+  const { hideOnOutsideClick = true } = props;
 
-    const dialogEl = useRef<HTMLDialogElement>(null);
+  const [mount, setMount] = useState(!props.unmountOnHide);
 
-    const clickOutside = useCallback((e: MouseEvent) => {
-      if (!dialogEl.current) return;
+  const dialogEl = useRef<HTMLDialogElement>(null);
 
-      const { x, y, width, height } = dialogEl.current.getBoundingClientRect();
-      const isClickInside = e.clientX >= x && e.clientX <= x + width && e.clientY <= y + height && e.clientY >= y;
-      if (isClickInside) return;
+  const clickOutside = useCallback((e: MouseEvent) => {
+    if (!dialogEl.current) return;
 
-      if (typeof show === 'boolean') {
-        onRequestClose?.();
-        return;
-      }
+    const { x, y, width, height } = dialogEl.current.getBoundingClientRect();
+    const isClickInside = e.clientX >= x && e.clientX <= x + width && e.clientY <= y + height && e.clientY >= y;
+    if (isClickInside) return;
 
-      closeMethod();
-    }, []);
-
-    const showMethod = () => {
-      if (!dialogEl.current) return;
-      dialogEl.current.showModal();
-      onShow?.();
-      if (unmoutOnHide) setMount(true);
-
-      if (hideOnOutsideClick) {
-        const addEvent = () => document.addEventListener('click', clickOutside);
-        dialogEl.current.addEventListener('animationend', addEvent, { once: true });
-      }
-    };
-
-    function closeMethod() {
-      if (!dialogEl.current) return;
-
-      if (show === true) {
-        onRequestClose?.();
-        return;
-      }
-
-      dialogEl.current.classList.add(styles.hide);
-
-      if (hideOnOutsideClick) document.removeEventListener('click', clickOutside);
-
-      const onAnimationend = () => {
-        if (!dialogEl.current) return;
-        dialogEl.current.classList.remove(styles.hide);
-        dialogEl.current.close();
-        onHide?.();
-        if (unmoutOnHide) setMount(false);
-      };
-      dialogEl.current.addEventListener('animationend', onAnimationend, { once: true });
+    if (typeof props.show === 'boolean') {
+      props.onRequestClose?.();
+      return;
     }
 
-    const toggle = () => {
-      if (dialogEl.current?.open) closeMethod();
-      else showMethod();
+    closeMethod();
+  }, []);
+
+  const showMethod = () => {
+    if (!dialogEl.current) return;
+
+    props.onShow?.();
+
+    if (props.unmountOnHide) setMount(true);
+
+    dialogEl.current.showModal();
+
+    if (hideOnOutsideClick) {
+      const addEvent = () => document.addEventListener('click', clickOutside);
+      dialogEl.current.addEventListener('animationend', addEvent, { once: true });
+    }
+  };
+
+  function closeMethod() {
+    if (!dialogEl.current) return;
+
+    if (props.show) {
+      props.onRequestClose?.();
+      return;
+    }
+
+    dialogEl.current.classList.add(styles.hide);
+
+    if (hideOnOutsideClick) document.removeEventListener('click', clickOutside);
+
+    const onAnimationend = () => {
+      if (!dialogEl.current) return;
+      dialogEl.current.classList.remove(styles.hide);
+      dialogEl.current.close();
+      props.onHide?.();
+      if (props.unmountOnHide) setMount(false);
     };
+    dialogEl.current.addEventListener('animationend', onAnimationend, { once: true });
+  }
 
-    useImperativeHandle(ref, () => ({
-      show: showMethod,
-      hide: closeMethod,
-      toggle,
-    }));
+  const toggle = () => {
+    if (dialogEl.current?.open) closeMethod();
+    else showMethod();
+  };
 
-    useEffect(() => {
-      if (typeof show !== 'boolean') return;
-      const isOpen = dialogEl.current?.open;
-      if (show && !isOpen) showMethod();
-      if (!show && isOpen) closeMethod();
-    }, [show]);
+  useImperativeHandle(ref, () => ({
+    show: showMethod,
+    hide: closeMethod,
+    toggle,
+  }));
 
-    useEffect(() => {
-      return () => document.removeEventListener('click', clickOutside);
-    }, []);
+  useEffect(() => {
+    if (typeof props.show !== 'boolean') return;
+    const isOpen = dialogEl.current?.open;
+    if (props.show && !isOpen) showMethod();
+    if (!props.show && isOpen) closeMethod();
+  }, [props.show]);
 
-    const onCancel: React.ReactEventHandler<HTMLDialogElement> = e => {
-      e.preventDefault();
-      closeMethod();
-    };
+  useEffect(() => {
+    return () => document.removeEventListener('click', clickOutside);
+  }, []);
 
-    return (
-      <dialog ref={dialogEl} onCancel={onCancel} style={style} id={styles.container}>
-        {mount && children}
-      </dialog>
-    );
-  },
-);
+  const onCancel: React.ReactEventHandler<HTMLDialogElement> = e => {
+    e.preventDefault();
+    closeMethod();
+  };
+
+  return (
+    <dialog ref={dialogEl} className={styles.container} onCancel={onCancel} style={props.style}>
+      {mount && props.children}
+    </dialog>
+  );
+}
+
+const Dialog = CreateFromFC(DialogRC).setIdType<'exportJs' | 'exportSvg' | 'exportCssKeyframe' | 'exportCssLinear'>();
+export default Dialog;

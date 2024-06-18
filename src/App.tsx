@@ -10,7 +10,7 @@ import ExportSvg from './ExportSvg/ExportSvg';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';
 import Panel from './SvgPanel/SvgPanel';
-import Dialog, { type DialogRef } from './components/Dialog/Dialog';
+import Dialog from './components/Dialog/Dialog';
 import usePan from './hooks/usePan';
 import useZoom from './hooks/useZoom';
 import { eases } from './presets';
@@ -57,12 +57,6 @@ export default function App() {
   const isPresetSelected = useRef(true);
   /** - The selected (focused) point, used for deletion. */
   const selectedPoint = useRef<number | null>(null);
-
-  /** - To show and hide the download to js file dialog. */
-  const exportJsDialogRef = useRef<DialogRef>(null!);
-  const exportSvgDialogRef = useRef<DialogRef>(null!);
-  const cssDialogRef = useRef<DialogRef>(null!);
-  const cssLinearDialogRef = useRef<DialogRef>(null!);
 
   const pathToPoints = (path: string) => {
     const viewBox = {
@@ -445,10 +439,10 @@ export default function App() {
   const setDuration = (duration: number) => animation?.setOptions({ duration });
 
   const toggleExportDialog = (dialog: ExportTypes) => {
-    if (dialog === 'CSS Keyframe') cssDialogRef.current.toggle();
-    if (dialog === 'CSS linear') cssLinearDialogRef.current.toggle();
-    if (dialog === 'SVG Path') exportSvgDialogRef.current.toggle();
-    if (dialog === 'JS File') exportJsDialogRef.current.toggle();
+    if (dialog === 'CSS Keyframe') Dialog.$exportCssKeyframe?.toggle();
+    if (dialog === 'CSS linear') Dialog.$exportCssLinear?.toggle();
+    if (dialog === 'SVG Path') Dialog.$exportSvg?.toggle();
+    if (dialog === 'JS File') Dialog.$exportJs?.toggle();
   };
 
   // add event listener to drag SVG panel around SPACE + DRAGG
@@ -486,19 +480,19 @@ export default function App() {
 
   return (
     <AppProvider value={contextValue}>
-      <Dialog ref={exportJsDialogRef} unmoutOnHide>
+      <Dialog id='exportJs' unmountOnHide>
         <ExportJsFile />
       </Dialog>
 
-      <Dialog ref={exportSvgDialogRef} unmoutOnHide>
+      <Dialog id='exportSvg' unmountOnHide>
         <ExportSvg />
       </Dialog>
 
-      <Dialog ref={cssDialogRef} unmoutOnHide>
+      <Dialog id='exportCssKeyframe' unmountOnHide>
         <ExportCss />
       </Dialog>
 
-      <Dialog ref={cssLinearDialogRef} unmoutOnHide>
+      <Dialog id='exportCssLinear' unmountOnHide>
         <ExportCssLinear />
       </Dialog>
 

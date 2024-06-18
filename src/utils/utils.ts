@@ -1,4 +1,6 @@
 import { arePointsOnSameLine, findPointFromT, generateEasingFunctionFromArray } from './geometry';
+import * as prettier from 'prettier';
+import css from 'prettier/plugins/postcss';
 
 type ViewBox = {
   x: number;
@@ -246,4 +248,19 @@ export function checkForDisabledCollinearPoints(points: number[][]) {
   }
 
   return disabledPoints;
+}
+
+export async function formatCode(code: string): Promise<string> {
+  return await prettier.format(code, {
+    arrowParens: 'avoid',
+    printWidth: 130,
+    jsxSingleQuote: true,
+    semi: true,
+    bracketSpacing: true,
+    bracketSameLine: false,
+    endOfLine: 'auto',
+    singleQuote: true,
+    parser: 'css',
+    plugins: [css],
+  });
 }
