@@ -1,14 +1,15 @@
-import animare, { ease, organize } from 'animare';
+import animare, { Timing, createAnimations } from 'animare';
+import { ease } from 'animare/plugins';
 import { useAnimare } from 'animare/react';
 import React, { useCallback } from 'react';
 import './SmallSidePanel.css';
 
 import Select from '../components/Select/Select';
-import { exportTypes, useApp } from '../utils/AppContext';
 import { eases } from '../presets';
+import { exportTypes, useApp } from '../utils/AppContext';
 
+import type { OnUpdateCallback, TimelineGlobalOptions } from 'animare';
 import type { Eases } from '../presets';
-import type { animareOnUpdate } from 'animare/lib/methods/types';
 import type { ExportTypes } from '../utils/AppContext';
 
 export default function SmallSidePanel() {
@@ -46,28 +47,36 @@ export default function SmallSidePanel() {
     const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
     const width = sidePanel.offsetWidth;
 
-    const { from, to, delay, get } = organize({
-      translateX: { from: 110, to: 0, delay: 120 },
-      gridTemplateColumns: { from: 76, to: width },
-    });
+    const animations = createAnimations([
+      { name: 'translateX', from: 110, to: 0, delay: 120 },
+      { name: 'gridTemplateColumns', from: 76, to: width },
+    ]);
 
-    const callback: animareOnUpdate = (values, { isFinished }) => {
-      const { gridTemplateColumns, translateX } = get(values);
+    const globalOptions: TimelineGlobalOptions = {
+      ease: ease.out.quad,
+      duration: 200,
+      autoPlay: false,
+      timing: Timing.FromStart,
+    };
 
-      sidePanel.style.transform = `translateX(-${translateX}%)`;
-      container.style.gridTemplateColumns = `${gridTemplateColumns}px 1fr`;
+    const callback: OnUpdateCallback<typeof animations> = (values, { isFinished }) => {
+      const { gridTemplateColumns, translateX } = values;
+
+      sidePanel.style.transform = `translateX(-${translateX.value}%)`;
+      container.style.gridTemplateColumns = `${gridTemplateColumns.value}px 1fr`;
 
       if (isFinished) container.style.removeProperty('grid-template-columns');
     };
 
-    return animare({ from, to, duration: 200, delay, autoPlay: false, ease: ease.out.quad }, callback);
+    return animare.timeline(animations, callback, globalOptions);
   });
 
   const open = () => {
     const container = document.querySelector('.container') as HTMLDivElement;
     container.style.removeProperty('grid-template-columns');
     const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
-    sidePanelAnimation?.play({ to: [0, sidePanel.offsetWidth] });
+    sidePanelAnimation.updateValues([{ name: 'gridTemplateColumns', to: sidePanel.offsetWidth }]);
+    sidePanelAnimation.play();
   };
 
   const PresetsButton = useCallback(({ onClick }: { onClick: () => void }) => {

@@ -1,4 +1,5 @@
-import animare, { ease, organize } from 'animare';
+import animare, { Timing, createAnimations } from 'animare';
+import { ease } from 'animare/plugins';
 import { useAnimare } from 'animare/react';
 import React, { useCallback, useEffect, useRef } from 'react';
 import './SidePanel.css';
@@ -10,7 +11,7 @@ import { exportTypes, useApp } from '../utils/AppContext';
 import { parse } from '../utils/parsePath';
 import { checkForDisabledCollinearPoints, getPointsFromPathString } from '../utils/utils';
 
-import type { animareOnUpdate } from 'animare/lib/methods/types';
+import type { OnUpdateCallback, TimelineGlobalOptions } from 'animare';
 import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
 import type { ExportTypes } from '../utils/AppContext';
 
@@ -42,24 +43,32 @@ export default function SidePanel() {
     const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
     const width = sidePanel.offsetWidth;
 
-    const { from, to, delay, get } = organize({
-      translateX: { from: 0, to: 110 },
-      gridTemplateColumns: { from: width, to: 76, delay: 120 },
-    });
+    const animations = createAnimations([
+      { name: 'translateX', from: 0, to: 110 },
+      { name: 'gridTemplateColumns', from: width, to: 76, delay: 120 },
+    ]);
 
-    const callback: animareOnUpdate = values => {
-      const { gridTemplateColumns, translateX } = get(values);
-
-      sidePanel.style.transform = `translateX(-${translateX}%)`;
-      container.style.gridTemplateColumns = `${gridTemplateColumns}px 1fr`;
+    const globalOptions: TimelineGlobalOptions = {
+      ease: ease.out.quad,
+      duration: 200,
+      autoPlay: false,
+      timing: Timing.FromStart,
     };
 
-    return animare({ from, to, duration: 200, delay, autoPlay: false, ease: ease.out.quad }, callback);
+    const callback: OnUpdateCallback<typeof animations> = values => {
+      const { gridTemplateColumns, translateX } = values;
+
+      sidePanel.style.transform = `translateX(-${translateX.value}%)`;
+      container.style.gridTemplateColumns = `${gridTemplateColumns.value}px 1fr`;
+    };
+
+    return animare.timeline(animations, callback, globalOptions);
   });
 
   const close = () => {
     const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
-    sidePanelAnimation?.play({ from: [0, sidePanel.offsetWidth] });
+    sidePanelAnimation.updateValues([{ name: 'gridTemplateColumns', from: sidePanel.offsetWidth }]);
+    sidePanelAnimation.play();
   };
 
   const onTextAreaChange = (e: React.FocusEvent<HTMLTextAreaElement>) => {

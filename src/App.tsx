@@ -1,4 +1,5 @@
-import animare, { ease } from 'animare';
+import animare, { Timing } from 'animare';
+import { ease } from 'animare/plugins';
 import { useAnimare } from 'animare/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './index.css';
@@ -290,15 +291,20 @@ export default function App() {
       maskedPath = document.querySelector('.animation-path') as SVGMaskElement,
       fpsEl = document.querySelector('#fps') as SVGTextElement;
 
-    return animare(
+    return animare.group(
       {
         from: [zoom.current, viewBoxSize.current + zoom.current, 0],
         to: [viewBoxSize.current + zoom.current, zoom.current, viewBoxSize.current],
         duration: 2000,
         ease: [ease.linear, ease.custom(getPathStringFromPoints())],
+        timing: Timing.FromStart,
         autoPlay: false,
       },
-      async ([x, y, w], { isFirstFrame, isFinished, fps }) => {
+      async (info, { isFirstFrame, isFinished, fps }) => {
+        const x = info[0].value,
+          y = info[1].value,
+          w = info[2].value;
+
         if (isFirstFrame) {
           lineH.style.display = 'block';
           lineV.style.display = 'block';
@@ -401,10 +407,12 @@ export default function App() {
     zoom.current = 455 - value;
     gridPoints.current = new Array(11).fill(0).map((_, i) => zoom.current + (i * viewBoxSize.current) / 10);
     setPoints(pathToPoints(p));
-    animation?.setOptions({
-      from: [zoom.current, viewBoxSize.current + zoom.current, 0],
-      to: [viewBoxSize.current + zoom.current, zoom.current, viewBoxSize.current],
-    });
+
+    animation.updateValues([
+      { name: '0', from: zoom.current, to: viewBoxSize.current + zoom.current },
+      { name: '1', from: viewBoxSize.current + zoom.current, to: zoom.current },
+      { name: '2', from: zoom.current, to: viewBoxSize.current + zoom.current },
+    ]);
   };
 
   const onPresetSelect = (value: Eases[keyof Eases]) => {
@@ -423,20 +431,30 @@ export default function App() {
     setPoints(Points);
     setPreset(value);
 
-    setTimeout(() => (path.style.transition = 'none'), 500);
+    setTimeout(() => {
+      path.style.transition = 'none';
+    }, 500);
   };
 
   const playCurrentEasing = () => {
     const pathString = getPathStringFromPoints();
     const easingFunction = generateEasingFunctionFromString(pathString);
 
-    animation?.setOptions({ ease: [ease.linear, easingFunction] });
-    animation?.resume();
+    animation.updateValues([{ name: '1', ease: easingFunction }]);
+
+    if (animation.timelineInfo.isPaused) animation.resume();
+    else animation.play();
   };
 
-  const pauseAnimation = () => animation?.pause();
+  const pauseAnimation = () => animation.pause();
 
-  const setDuration = (duration: number) => animation?.setOptions({ duration });
+  const setDuration = (duration: number) => {
+    animation.updateValues([
+      { name: '0', duration },
+      { name: '1', duration },
+      { name: '2', duration },
+    ]);
+  };
 
   const toggleExportDialog = (dialog: ExportTypes) => {
     if (dialog === 'CSS Keyframe') Dialog.$exportCssKeyframe?.toggle();

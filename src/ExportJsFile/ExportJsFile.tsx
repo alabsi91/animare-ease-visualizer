@@ -94,41 +94,13 @@ export default function ExportJsFile() {
     if (!pre) return;
 
     const string = `// How to use ❔
+import animare from 'animare';
 import ${fileName} from './${fileName}';
 
-// animare
-animare({
-  // ...
+animare.single({
+  // ...options
   ease: ${fileName} // 👈
 }, callback);
-
-// Anime.js
-anime({
-  // ...
-  easing: ${fileName} // 👈
-});
-
-// GreenSock JS
-gsap.to(element, {
-  // ...
-  ease: ${fileName} // 👈
-});
-
-// Mo.js
-new mojs.Tween({
-   // ...
-  easing: ${fileName} // 👈
-});
-
-// Vivus.js
-new Vivus(
-  element,
-  {
-   // ...
-    animTimingFunction: ${fileName} // 👈
-  },
-  callback
-);
 `;
 
     pre.innerHTML = hljs.highlight(string, { language: 'javascript' }).value;

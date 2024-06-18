@@ -32,25 +32,13 @@ export default function ExportSvg() {
     const path = ctx.getPathStringFromPoints();
 
     const string = `// How to use ❔
+import animare from 'animare';
+import { ease } from 'animare/plugins';
 
-// animare
-animare({
-  // ...
+animare.single({
+  // ...options
   ease: ease.custom("${path}") // 👈
 }, callback);
-
-// GreenSock JS
-gsap.registerPlugin(CustomEase);
-gsap.to(element, {
-  // ...
-  ease: CustomEase.create("custom", "${path}") // 👈
-});
-
-// Mo.js
-new mojs.Tween({
-   // ...
-  easing: mojs.easing.path("${path}") // 👈
-});
 `;
 
     pre.innerHTML = hljs.highlight(string, { language: 'javascript' }).value;

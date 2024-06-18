@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "animare": "^1.1.0-beta.22",
+    "animare": "github:alabsi91/animare",
     "highlight.js": "^11.9.0",
     "idify-react-component": "^1.0.1",
     "prettier": "^3.3.2",
