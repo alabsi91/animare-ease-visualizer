@@ -1,7 +1,26 @@
 {
-  "extends": ["react-app", "plugin:jsx-a11y/recommended"],
-  "plugins": ["jsx-a11y"],
+  "root": true,
+  "env": { "browser": true, "es2020": true },
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "ignorePatterns": ["lib", "scripts"],
   "rules": {
-    "react-hooks/exhaustive-deps": 0
+    "quotes": [1, "single", { "avoidEscape": true, "allowTemplateLiterals": false }],
+    "object-shorthand": 1,
+    "require-await": 1,
+    "@typescript-eslint/consistent-type-imports": 2,
+    "@typescript-eslint/no-namespace": 0,
+    "@typescript-eslint/await-thenable": 1,
+    "no-useless-escape": 1,
+    "no-useless-return": 1,
+    "no-useless-call": 1,
+    "no-unused-expressions": 1,
+    "prettier/prettier": 1
   }
 }

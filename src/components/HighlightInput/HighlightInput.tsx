@@ -12,7 +12,7 @@ export type HighlightInputRef = {
   setValue: (value: string) => void;
 };
 const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef, Props> = function (props, ref) {
-  let { highlight, plugin, ...inputProps } = props;
+  const { highlight, plugin, ...inputProps } = props;
 
   const [currentValue, setCurrentValue] = useState(props.value ?? props.defaultValue ?? '');
 

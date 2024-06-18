@@ -29,7 +29,7 @@ export default function ExportSvg() {
   useEffect(() => {
     const pre = document.querySelector<HTMLPreElement>('.svg-dialog-example-pre');
     if (!pre) return;
-    const path = ctx.getPathStringFromPoints()
+    const path = ctx.getPathStringFromPoints();
 
     const string = `// How to use ❔
 

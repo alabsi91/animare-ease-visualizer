@@ -23,7 +23,7 @@ export default function SidePanel() {
   useEffect(() => {
     // update textarea text
     textareaRef.current.setValue(
-      ctx.getPathStringFromPoints().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC')
+      ctx.getPathStringFromPoints().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'),
     );
   }, [ctx.points]);
 

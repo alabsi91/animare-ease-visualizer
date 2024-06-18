@@ -12,7 +12,7 @@ export type HighlightTextareaRef = {
   setValue: (value: string) => void;
 };
 const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextareaRef, Props> = function (props, ref) {
-  let { highlight, plugin, ...inputProps } = props;
+  const { highlight, plugin, ...inputProps } = props;
 
   const [currentValue, setCurrentValue] = useState(props.value ?? props.defaultValue ?? '');
 
@@ -50,7 +50,7 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
       el.innerText = e;
       return el;
     });
-    
+
     // Loop over patterns (string or regular expression).
     for (let i = 0; i < highlight.length; i++) {
       let index = 0;
@@ -83,7 +83,7 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
       const preSpan = letters[i - 1];
       const span = letters[i];
 
-      if(!span || !preSpan) continue;
+      if (!span || !preSpan) continue;
 
       const spanTag = span.outerHTML.match(/<.*?>/)?.[0];
       const preSpanTag = preSpan.outerHTML.match(/<.*?>/)?.[0];
@@ -137,7 +137,7 @@ const HighlightTextareaComponent: React.ForwardRefRenderFunction<HighlightTextar
   };
 
   const updateValue = (v: string | number | readonly string[]) => {
-    if(!v) return;
+    if (!v) return;
     textareaRef.current.value = v.toString();
     setCurrentValue(v);
   };

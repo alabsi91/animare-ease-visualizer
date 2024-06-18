@@ -4,7 +4,7 @@ import type { MutableRefObject } from 'react';
 export default function usePan(
   svgViewBoxSize: MutableRefObject<number>,
   zoom: MutableRefObject<number>,
-  viewBoxCoordinate: MutableRefObject<{x: number, y: number}>
+  viewBoxCoordinate: MutableRefObject<{ x: number; y: number }>,
 ) {
   const startingPos = useRef({ x: 0, y: 0, viewX: 0, viewY: 0 });
 
@@ -21,7 +21,7 @@ export default function usePan(
     svg.setAttribute('viewBox', `${x + startingPos.current.viewX} ${y + startingPos.current.viewY} ${boxSize} ${boxSize}`);
   }, []);
 
-  const panMouseUp = useCallback((e: MouseEvent) => {
+  const panMouseUp = useCallback(() => {
     document.body.style.cursor = 'grab';
     document.removeEventListener('pointermove', panMove);
   }, []);

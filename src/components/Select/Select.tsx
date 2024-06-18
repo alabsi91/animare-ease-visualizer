@@ -10,7 +10,7 @@ const TOP_MARGIN = 10;
 const BOTTOM_MARGIN = 30;
 const DURATION = 200;
 
-type Props<T extends unknown> = {
+type Props<T> = {
   labels: readonly string[];
   values: readonly T[];
   defaultValue?: T[][number];
@@ -21,11 +21,11 @@ type Props<T extends unknown> = {
   highlightSelected?: boolean;
   onChange: (value: T) => void;
 };
-export type SelectRef<F extends unknown> = {
+export type SelectRef<F> = {
   setValue: (value: F) => void;
 };
 
-function SelectComponent<T extends unknown>(
+function SelectComponent<T>(
   {
     labels,
     values,
@@ -37,7 +37,7 @@ function SelectComponent<T extends unknown>(
     highlightSelected = true,
     onChange,
   }: Props<T>,
-  ref: React.ForwardedRef<SelectRef<T>>
+  ref: React.ForwardedRef<SelectRef<T>>,
 ) {
   if (labels.length !== values.length) throw new Error('[Select] `names` and `values` should have the same length !!');
 
@@ -186,8 +186,8 @@ function SelectComponent<T extends unknown>(
   );
 }
 
-const Select = forwardRef(SelectComponent) as <T extends unknown>(
-  props: Props<T> & { ref?: React.ForwardedRef<SelectRef<T>> }
+const Select = forwardRef(SelectComponent) as <T>(
+  props: Props<T> & { ref?: React.ForwardedRef<SelectRef<T>> },
 ) => ReturnType<typeof SelectComponent>;
 
 export default Select;

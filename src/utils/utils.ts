@@ -110,7 +110,7 @@ export async function convertEasingFunctionToPoints(
   curves: number[][],
   samples = 1000,
   onUpdate?: (i: number) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) {
   let stopped = false;
 
@@ -177,9 +177,10 @@ export function checkOverlap(points: number[][]): boolean {
   return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function throttle(func: Function, delay: number) {
   let lastCall = 0;
-  return function wrapper(...args: any[]) {
+  return function wrapper(...args: unknown[]) {
     const now = new Date().getTime();
     if (now - lastCall < delay) return;
     lastCall = now;

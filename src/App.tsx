@@ -10,7 +10,7 @@ import ExportSvg from './ExportSvg/ExportSvg';
 import SidePanel from './SidePanel/SidePanel';
 import SmallSidePanel from './SidePanel/SmallSidePanel';
 import Panel from './SvgPanel/SvgPanel';
-import Dialog, { DialogRef } from './components/Dialog/Dialog';
+import Dialog, { type DialogRef } from './components/Dialog/Dialog';
 import usePan from './hooks/usePan';
 import useZoom from './hooks/useZoom';
 import { eases } from './presets';
@@ -335,7 +335,7 @@ export default function App() {
           await new Promise(resolve => setTimeout(resolve, 300));
           path.style.removeProperty('transition');
         }
-      }
+      },
     );
   });
 

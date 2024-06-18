@@ -10,7 +10,7 @@ import { convertPointsToRelativeValues } from './utils';
 type CommandsUpperCase = 'M' | 'L' | 'H' | 'V' | 'C' | 'S' | 'Q' | 'T' | 'A' | 'Z';
 type Commands = Lowercase<CommandsUpperCase> | CommandsUpperCase;
 
-type FixedArray<N extends number, A extends any[] = []> = A['length'] extends N ? A : FixedArray<N, [number, ...A]>;
+type FixedArray<N extends number, A extends unknown[] = []> = A['length'] extends N ? A : FixedArray<N, [number, ...A]>;
 
 type SEG<T extends CommandsUpperCase, N extends number> = { command: Lowercase<T> | T; values: FixedArray<N> };
 type Segments =
@@ -107,7 +107,8 @@ function parseToSegmentsFromPathString(path: string) {
       // Separate numbers from flags
       let start = 3;
       if (values.length % 7 !== 0) {
-        while (true) {
+        const isTrue = true;
+        while (isTrue) {
           const arcFlagStr = values[start]?.toString();
           if (typeof arcFlagStr === 'undefined') break;
 
@@ -314,8 +315,8 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
           seg.values[2],
           seg.values[3],
           prevCurve[4],
-          prevCurve[5]
-        )
+          prevCurve[5],
+        ),
       );
 
       p0x = seg.values[2];
@@ -412,7 +413,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
         ry,
         seg.values[2], // x-axis-rotation
         seg.values[3], // large-arc-flag
-        seg.values[4] // sweep-flag
+        seg.values[4], // sweep-flag
       );
 
       curves.push(...toCubic);

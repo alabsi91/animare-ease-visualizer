@@ -21,7 +21,7 @@ export default function ExportCss() {
 
   const [isSimple, setIsSimple] = useState(false);
 
-  const generate = async () => {
+  const generate = () => {
     const viewBox = {
       x: ctx.zoom.current,
       y: ctx.zoom.current,
@@ -34,7 +34,7 @@ export default function ExportCss() {
 
     if (curves.length === 1) {
       results = `.element {\n  transition: transform 0.6s cubic-bezier(${+curves[0][2].toFixed(3)}, ${+curves[0][3].toFixed(
-        3
+        3,
       )}, ${+curves[0][4].toFixed(3)}, ${+curves[0][5].toFixed(3)});\n}`;
       return results;
     }
@@ -56,19 +56,19 @@ export default function ExportCss() {
     return results;
   };
 
-  const highlight = async () => {
+  const highlight = () => {
     const pre = document.querySelector<HTMLPreElement>('.css-dialog-pre');
     if (!pre) return;
 
-    const string = await generate();
+    const string = generate();
 
     setIsSimple(string.startsWith('.element'));
 
     pre.innerHTML = hljs.highlight(string, { language: 'css' }).value;
   };
 
-  const copyHandle = async () => {
-    const string = await generate();
+  const copyHandle = () => {
+    const string = generate();
     navigator.clipboard.writeText(string);
   };
 
@@ -96,7 +96,7 @@ export default function ExportCss() {
                   .highlight(input, { language: 'css' })
                   .value.replaceAll(
                     '{value}',
-                    '<span class="hljs-built_in">{</span><span class="hljs-number">value</span><span class="hljs-built_in">}</span>'
+                    '<span class="hljs-built_in">{</span><span class="hljs-number">value</span><span class="hljs-built_in">}</span>',
                   )
               }
             />

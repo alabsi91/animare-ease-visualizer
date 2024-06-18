@@ -31,7 +31,7 @@ export default function Panel() {
           y={verticalPos.y}
         >
           {verticalNumber}
-        </text>
+        </text>,
       );
 
       // horizontal
@@ -47,7 +47,7 @@ export default function Panel() {
           y={horizontalPos.y}
         >
           {horizontalNumber}
-        </text>
+        </text>,
       );
     }
 
@@ -71,7 +71,7 @@ export default function Panel() {
           y1={verticalLineStartPos.y}
           x2={verticalLineEndPos.x}
           y2={verticalLineEndPos.y}
-        />
+        />,
       );
 
       // horizontal
@@ -85,7 +85,7 @@ export default function Panel() {
           y1={horizontalLineStartPos.y}
           x2={horizontalLineEndPos.x}
           y2={horizontalLineEndPos.y}
-        />
+        />,
       );
     }
 
@@ -175,7 +175,7 @@ export default function Panel() {
           >
             <circle className='handle-point point' onPointerDown={onMouseDown} cx={e.x1} cy={e.y1} r={pointRadius} />
           </a>
-        </Fragment>
+        </Fragment>,
       );
     }
 
@@ -299,7 +299,7 @@ export default function Panel() {
             cy={e[e.length - 1]}
             r={pointRadius}
           />
-        </a>
+        </a>,
       );
     }
 
@@ -312,7 +312,7 @@ export default function Panel() {
 
     ctx.registerMoveForUndo();
 
-    const svg = document.querySelector(`.svg`) as SVGSVGElement;
+    const svg = document.querySelector('.svg') as SVGSVGElement;
     const { left, width } = svg.getBoundingClientRect();
 
     // Calculate mouse X-coordinates.

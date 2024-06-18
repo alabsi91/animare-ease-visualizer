@@ -25,7 +25,7 @@ export function splitCurveAtT(
   c1y: number,
   p1x: number,
   p1y: number,
-  t: number
+  t: number,
 ) {
   const q0 = lerp(p0x, p0y, c0x, c0y, t);
   const q1 = lerp(c0x, c0y, c1x, c1y, t);
@@ -53,7 +53,7 @@ export function solveTFromPositionX(
   c1y: number,
   p1x: number,
   p1y: number,
-  targetX: number
+  targetX: number,
 ) {
   // Desired precision on the computation.
   const epsilon = 1e-6;
@@ -93,7 +93,7 @@ export function solvePositionYFromT(
   c1y: number,
   p1x: number,
   p1y: number,
-  t: number
+  t: number,
 ): number {
   // Desired precision on the computation.
   const epsilon = 1e-6;
@@ -133,7 +133,7 @@ export function findPointFromT(
   c1y: number,
   p1x: number,
   p1y: number,
-  t: number
+  t: number,
 ) {
   const point = { x: 0, y: 0 },
     mt = 1 - t,
@@ -193,7 +193,7 @@ export function arePointsOnSameLine(
   point1: [number, number],
   point2: [number, number],
   point3: [number, number],
-  tolerance = 0.02
+  tolerance = 0.02,
 ) {
   const slope1_2 = slope(point1, point2);
   const slope2_3 = slope(point2, point3);
@@ -213,7 +213,7 @@ export function calculateMirrorPoint(
   oppositePointX: number,
   oppositePointY: number,
   centerX: number,
-  centerY: number
+  centerY: number,
 ): Point {
   // Calculate the vector from the midpoint to the moving point
   const vectorX = movingPointX - centerX;
@@ -248,7 +248,7 @@ export function SeveralBezierToCubicBezier(
   p1x: number,
   p1y: number,
   prev_c1x?: number,
-  prev_c1y?: number
+  prev_c1y?: number,
 ) {
   let cx1, cy1;
 
@@ -294,8 +294,8 @@ export function tShortcutToCubic(p0x: number, p0y: number, p1x: number, p1y: num
   return quadraticCurveToCubic(p0x, p0y, qx1, qy1, p1x, p1y);
 }
 
-/** 
- * Convert `A p0x p0y rx ry x-axis-rotation large-arc-flag sweep-flag p1x p1y` command 
+/**
+ * Convert `A p0x p0y rx ry x-axis-rotation large-arc-flag sweep-flag p1x p1y` command
  * to array of `C p0x p0y c0x c0y c1x c1y p1x p1y` command
  */
 export function arcToCubicCurves(
@@ -308,7 +308,7 @@ export function arcToCubicCurves(
   xAxisRotation: number,
   largeArcFlag: number, // 0 | 1
   sweepFlag: number, // 0 | 1
-  _recursive?: number[]
+  _recursive?: number[],
 ): number[][] {
   const degToRad = (degrees: number) => (Math.PI * degrees) / 180;
 

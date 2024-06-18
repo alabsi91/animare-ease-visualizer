@@ -22,7 +22,7 @@ export default function ExportCssLinear() {
   const generateCode = () => {
     const pre = document.querySelector<HTMLPreElement>('.download-dialog-pre');
     if (!pre) return;
-    const code = `:root {\n  ${cssVarName}: linear(\n    ${values.current.join(`,\n    `)}\n  );\n}`;
+    const code = `:root {\n  ${cssVarName}: linear(\n    ${values.current.join(',\n    ')}\n  );\n}`;
     pre.innerHTML = hljs.highlight(code, { language: 'css' }).value;
   };
 

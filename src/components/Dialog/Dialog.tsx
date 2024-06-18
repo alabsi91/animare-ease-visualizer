@@ -25,7 +25,7 @@ export type DialogRef = {
 export default forwardRef<DialogRef, propsT>(
   (
     { children, show, hideOnOutsideClick = true, unmoutOnHide = false, onShow, onHide, onRequestClose, style }: propsT,
-    ref: React.Ref<DialogRef>
+    ref: React.Ref<DialogRef>,
   ) => {
     const [mount, setMount] = useState(!unmoutOnHide);
 
@@ -112,5 +112,5 @@ export default forwardRef<DialogRef, propsT>(
         {mount && children}
       </dialog>
     );
-  }
+  },
 );
