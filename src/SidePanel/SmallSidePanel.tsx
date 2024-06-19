@@ -20,7 +20,7 @@ export default function SmallSidePanel() {
     const svg = target.closest('svg') as SVGSVGElement;
     const checkbox = document.getElementById('snappeToGrid') as HTMLInputElement;
     ctx.magnet.current = !ctx.magnet.current;
-    if (ctx.magnet.current) svg.style.fill = 'var(--active-point)';
+    if (ctx.magnet.current) svg.style.fill = 'var(--main-color)';
     if (!ctx.magnet.current) svg.style.removeProperty('fill');
     checkbox.checked = ctx.magnet.current;
   };
@@ -32,7 +32,7 @@ export default function SmallSidePanel() {
 
     ctx.setAutoHideHandles(!ctx.autoHideHandles);
 
-    if (ctx.autoHideHandles) svg.style.fill = 'var(--active-point)';
+    if (ctx.autoHideHandles) svg.style.fill = 'var(--main-color)';
     if (!ctx.autoHideHandles) svg.style.removeProperty('fill');
 
     checkbox.checked = ctx.autoHideHandles;
@@ -45,11 +45,13 @@ export default function SmallSidePanel() {
   const sidePanelAnimation = useAnimare(() => {
     const container = document.querySelector('.container') as HTMLDivElement;
     const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
+    const smallPanel = document.querySelector('.small-side-panel') as HTMLDivElement;
     const width = sidePanel.offsetWidth;
 
     const animations = createAnimations([
       { name: 'translateX', from: 110, to: 0, delay: 120 },
       { name: 'gridTemplateColumns', from: 76, to: width },
+      { name: 'hideSmallPanel', to: 100 },
     ]);
 
     const globalOptions: TimelineGlobalOptions = {
@@ -60,10 +62,11 @@ export default function SmallSidePanel() {
     };
 
     const callback: OnUpdateCallback<typeof animations> = (values, { isFinished }) => {
-      const { gridTemplateColumns, translateX } = values;
+      const { gridTemplateColumns, translateX, hideSmallPanel } = values;
 
       sidePanel.style.transform = `translateX(-${translateX.value}%)`;
       container.style.gridTemplateColumns = `${gridTemplateColumns.value}px 1fr`;
+      smallPanel.style.transform = `translateX(-${hideSmallPanel.value}%)`;
 
       if (isFinished) container.style.removeProperty('grid-template-columns');
     };
@@ -154,7 +157,7 @@ export default function SmallSidePanel() {
 
         <button title='Enable snapping to the grid' onClick={toggleMagnet}>
           <svg
-            style={{ fill: !ctx.magnet.current ? 'var(--text-color)' : 'var(--active-point)' }}
+            style={{ fill: !ctx.magnet.current ? 'var(--text-color)' : 'var(--main-color)' }}
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 24 24'
           >
@@ -164,7 +167,7 @@ export default function SmallSidePanel() {
 
         <button title='Auto hide anchor points.' onClick={togglePathPoints}>
           <svg
-            style={{ fill: !ctx.autoHideHandles ? 'var(--text-color)' : 'var(--active-point)' }}
+            style={{ fill: !ctx.autoHideHandles ? 'var(--text-color)' : 'var(--main-color)' }}
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 24 24'
           >

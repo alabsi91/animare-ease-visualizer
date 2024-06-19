@@ -309,7 +309,7 @@ export default function App() {
           lineV.style.display = 'block';
           maskedPath.style.display = 'block';
           path.style.transition = 'none';
-          path.style.stroke = 'var(--blured-path)';
+          path.style.stroke = 'var(--blurred-path)';
           if (!autoHideHandles)
             document.querySelectorAll<HTMLAnchorElement>('.auto-hide').forEach(e => (e!.style.display = 'none'));
         }

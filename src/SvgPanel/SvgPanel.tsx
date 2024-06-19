@@ -439,7 +439,7 @@ export default function Panel() {
       {/* for animation group */}
       <g>
         <mask id='animation-path-mask'>
-          <rect fill='white' x={ctx.zoom.current} y={0} width={0} height={ctx.viewBoxSize.current + ctx.zoom.current * 2} />
+          <rect fill='#fff' x={ctx.zoom.current} y={0} width={0} height={ctx.viewBoxSize.current + ctx.zoom.current * 2} />
         </mask>
 
         <path className='animation-path' d={pathString} mask='url(#animation-path-mask)' />

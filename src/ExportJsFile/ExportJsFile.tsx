@@ -115,12 +115,12 @@ animare.single({
         <pre className='download-dialog-pre custom-scrollbar' />
       </div>
 
-      <div className='inputsContainer'>
+      <div className='inputsContainer' title='How many samples? the more the better the result'>
         <p>Samples</p>
         <input type='number' placeholder='samples' value={samples} onChange={e => setSamples(+e.target.value)} />
       </div>
 
-      <div className='inputsContainer'>
+      <div className='inputsContainer' title='Name of the exported variable, should be a valid javascript variable'>
         <p>Name</p>
         <input placeholder='CustomEasing' value={fileName} onChange={e => setFileName(e.target.value)} spellCheck={false} />
       </div>

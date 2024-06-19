@@ -107,8 +107,8 @@ export default function ExportCssLinear() {
         </button>
       </div>
 
-      <div className='inputsContainer'>
-        <p>Samples</p>
+      <div className='inputsContainer' title='How many samples to generate, the more the better the result'>
+        <p>Accuracy</p>
         <input
           type='number'
           placeholder='samples'
@@ -120,7 +120,7 @@ export default function ExportCssLinear() {
         />
       </div>
 
-      <div className='inputsContainer'>
+      <div className='inputsContainer' title='Custom CSS variable name'>
         <p>Name</p>
         <input placeholder='CustomEasing' value={cssVarName} onChange={e => setCssVarName(e.target.value)} spellCheck={false} />
       </div>

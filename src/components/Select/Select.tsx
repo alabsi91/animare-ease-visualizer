@@ -43,7 +43,8 @@ export default function Select<T>({
 
   const calcMenuBounding = () => {
     const menuHeight = labels.length * ITEM_HEIGHT;
-    const container = dialogRef.current.parentElement!;
+    const container = dialogRef.current.parentElement;
+    if (!container) return { height: 0 };
 
     const { left, top, bottom, width } = container.getBoundingClientRect();
     const openDownwards = window.innerHeight - (bottom + END_MARGIN) > top + START_MARGIN;

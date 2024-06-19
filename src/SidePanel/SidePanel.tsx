@@ -41,11 +41,13 @@ export default function SidePanel() {
   const sidePanelAnimation = useAnimare(() => {
     const container = document.querySelector('.container') as HTMLDivElement;
     const sidePanel = document.querySelector('.sidePanel') as HTMLDivElement;
+    const smallPanel = document.querySelector('.small-side-panel') as HTMLDivElement;
     const width = sidePanel.offsetWidth;
 
     const animations = createAnimations([
       { name: 'translateX', from: 0, to: 110 },
       { name: 'gridTemplateColumns', from: width, to: 76, delay: 120 },
+      { name: 'showSmallPanel', from: 100, to: 0 },
     ]);
 
     const globalOptions: TimelineGlobalOptions = {
@@ -56,10 +58,11 @@ export default function SidePanel() {
     };
 
     const callback: OnUpdateCallback<typeof animations> = values => {
-      const { gridTemplateColumns, translateX } = values;
+      const { gridTemplateColumns, translateX, showSmallPanel } = values;
 
       sidePanel.style.transform = `translateX(-${translateX.value}%)`;
       container.style.gridTemplateColumns = `${gridTemplateColumns.value}px 1fr`;
+      smallPanel.style.transform = `translateX(-${showSmallPanel.value}%)`;
     };
 
     return animare.timeline(animations, callback, globalOptions);
@@ -188,50 +191,34 @@ export default function SidePanel() {
           </svg>
         </div>
         <ul>
-          <li>
-            <code>ALT + CLICK</code>
-            <br />
-            <p>Click on the line to add a new point.</p>
+          <li title='Add a new point'>
+            <code>ALT + CLICK</code> Add a new point
           </li>
-          <li>
-            <code>CTRL + DRAG</code>
-            <br />
-            <p>Drag the control point to move it independently.</p>
+          <li title='Move the control point'>
+            <code>CTRL + DRAG</code> Move the control point
           </li>
-          <li>
-            <code>CTRL + CLICK</code>
-            <br />
-            <p>Click on the anchor point to reset its control points.</p>
+          <li title='Reset control points'>
+            <code>CTRL + CLICK</code> Reset control points
           </li>
-          <li>
-            <code>SHIFT + CLICK</code>
-            <br />
-            <p>Click on the anchor point to toggle smooth corners.</p>
+          <li title='Toggle smooth corners'>
+            <code>SHIFT + CLICK</code> Toggle smooth corners
           </li>
-          <li>
-            <code>SPACE + DRAG</code>
-            <br />
-            <p>Drag to pan the canvas.</p>
+          <li title='Pan the canvas'>
+            <code>SPACE + DRAG</code> Pan the canvas
           </li>
-          <li>
-            <code>CTRL + MOUSE WHEEL</code>
-            <br />
-            <p>Use the mouse wheel to zoom in and out.</p>
+          <li title='Zoom in/out'>
+            <code>CTRL + MOUSE WHEEL</code> Zoom in/out
           </li>
-          <li>
-            <code>DELETE</code>
-            <br />
-            <p>Delete the selected anchor point.</p>
+          <li title='Delete the point'>
+            <code>DELETE</code> Delete the point
           </li>
-          <li>
-            <code>CTRL-Z</code>
-            <br />
-            <p>Undo the last modification.</p>
+          <li title='Undo last change'>
+            <code>CTRL-Z</code> Undo last change
           </li>
         </ul>
       </div>
 
-      <hr />
+      <hr style={{ marginTop: 10 }} />
 
       <div className='options'>
         <div className='build-in-eases'>

@@ -86,12 +86,11 @@ export default function ExportCss() {
 
       {!isSimple && (
         <>
-          <div className='css-input-container'>
+          <div className='css-input-container' title='Ensure the use of `{value}` as the animated value variable'>
             <p>Property</p>
 
             <HighlightInput
               value={property}
-              title='Ensure the use of `{value}` as the animated value variable'
               type='text'
               spellCheck={false}
               onChange={e => setProperty(e.target.value)}
@@ -106,12 +105,11 @@ export default function ExportCss() {
             />
           </div>
 
-          <div className='css-input-container'>
+          <div className='css-input-container' title='A number between 1 and 100'>
             <p>Accuracy</p>
             <input
               value={accuracy}
               type='number'
-              title='A number between 1 and 100'
               onChange={e => {
                 const value = isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber;
                 setAccuracy(value < 1 ? 1 : value > 100 ? 100 : value);
@@ -119,24 +117,18 @@ export default function ExportCss() {
             />
           </div>
 
-          <div className='css-input-container'>
+          <div className='css-input-container' title='Animate starting from this value'>
             <p>From</p>
             <input
               value={from}
-              title='Animate starting from this value'
               type='number'
               onChange={e => setFrom(isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)}
             />
           </div>
 
-          <div className='css-input-container'>
+          <div className='css-input-container' title='End animation at this value'>
             <p>To</p>
-            <input
-              value={to}
-              title='End animation at this value'
-              type='number'
-              onChange={e => setTo(isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)}
-            />
+            <input value={to} type='number' onChange={e => setTo(isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)} />
           </div>
         </>
       )}
