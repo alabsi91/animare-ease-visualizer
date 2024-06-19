@@ -90,13 +90,14 @@ export default function Select<T>({
 
     if (highlightSelected) {
       // highlight
-      const lists = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
-      const selectedLi = lists[labels.indexOf(selected)];
+      const ul = dialogRef.current.querySelector<HTMLUListElement>('ul:first-of-type');
+      const listItems = dialogRef.current.querySelectorAll<HTMLUListElement>('li');
+      const selectedLi = listItems[labels.indexOf(selected)];
 
       //  scroll to the highlight item
-      if (selectedLi) {
-        lists.forEach(el => el.classList.remove(style.selected));
-        dialogRef.current.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
+      if (selectedLi && ul) {
+        listItems.forEach(el => el.classList.remove(style.selected));
+        ul.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
         selectedLi.classList.add(style.selected);
       }
     }
