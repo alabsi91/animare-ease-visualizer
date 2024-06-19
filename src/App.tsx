@@ -410,7 +410,7 @@ export default function App() {
     animation.updateValues([
       { name: '0', from: zoom.current, to: viewBoxSize.current + zoom.current },
       { name: '1', from: viewBoxSize.current + zoom.current, to: zoom.current },
-      { name: '2', from: zoom.current, to: viewBoxSize.current + zoom.current },
+      { name: '2', from: 0, to: viewBoxSize.current },
     ]);
   };
 
