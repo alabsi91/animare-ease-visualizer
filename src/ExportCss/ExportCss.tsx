@@ -20,7 +20,7 @@ export default function ExportCss() {
   const [to, setTo] = useState(100);
   const [accuracy, setAccuracy] = useState(100);
 
-  const [isSimple, setIsSimple] = useState(false);
+  const [isOneCubicBezier, setIsOneCubicBezier] = useState(false);
 
   const generate = () => {
     const viewBox = {
@@ -64,7 +64,7 @@ export default function ExportCss() {
     const code = generate();
     const formatted = await formatCode(code);
 
-    setIsSimple(code.startsWith('.element'));
+    setIsOneCubicBezier(code.startsWith('.element'));
 
     pre.innerHTML = hljs.highlight(formatted, { language: 'css' }).value;
   };
@@ -84,7 +84,7 @@ export default function ExportCss() {
     <div id='css-dialog'>
       <h2 className='css-dialog-title'>Export as CSS Keyframe</h2>
 
-      {!isSimple && (
+      {!isOneCubicBezier && (
         <>
           <div className='css-input-container' title='Ensure the use of `{value}` as the animated value variable'>
             <p>Property</p>
@@ -131,6 +131,13 @@ export default function ExportCss() {
             <input value={to} type='number' onChange={e => setTo(isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)} />
           </div>
         </>
+      )}
+
+      {isOneCubicBezier && (
+        <div className='warning'>
+          The current path uses a single curve, which can be represented with the CSS <strong>cubic-bezier()</strong> function.
+          Consider using multiple curves to generate the result as a keyframe animation.
+        </div>
       )}
 
       <div className='pre-container'>

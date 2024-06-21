@@ -408,9 +408,9 @@ export default function App() {
     setPoints(pathToPoints(p));
 
     animation.updateValues([
-      { name: '0', from: zoom.current, to: viewBoxSize.current + zoom.current },
-      { name: '1', from: viewBoxSize.current + zoom.current, to: zoom.current },
-      { name: '2', from: 0, to: viewBoxSize.current },
+      { index: 0, from: zoom.current, to: viewBoxSize.current + zoom.current },
+      { index: 1, from: viewBoxSize.current + zoom.current, to: zoom.current },
+      { index: 2, from: 0, to: viewBoxSize.current },
     ]);
   };
 
@@ -437,7 +437,7 @@ export default function App() {
 
   const playCurrentEasing = () => {
     const pathString = getPathStringFromPoints();
-    animation.updateValues([{ name: '1', ease: ease.custom(pathString) }]);
+    animation.updateValues([{ index: 1, ease: ease.custom(pathString) }]);
 
     if (animation.timelineInfo.isPaused) animation.resume();
     else animation.play();
@@ -447,9 +447,9 @@ export default function App() {
 
   const setDuration = (duration: number) => {
     animation.updateValues([
-      { name: '0', duration },
-      { name: '1', duration },
-      { name: '2', duration },
+      { index: 0, duration },
+      { index: 1, duration },
+      { index: 2, duration },
     ]);
   };
 

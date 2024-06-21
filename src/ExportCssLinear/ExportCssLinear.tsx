@@ -15,6 +15,7 @@ export default function ExportCssLinear() {
 
   const [samples, setSamples] = useState(50);
   const [cssVarName, setCssVarName] = useState('--custom-easing');
+  const [isOneCubicBezier, setIsOneCubicBezier] = useState(false);
 
   const values = useRef([0, 1]);
   const isGenerating = useRef(false);
@@ -22,7 +23,11 @@ export default function ExportCssLinear() {
   const generateCode = async () => {
     const pre = document.querySelector<HTMLPreElement>('.download-dialog-pre');
     if (!pre) return;
-    const code = `:root{${cssVarName}:linear(${values.current.join(',')});}`;
+
+    const code = isOneCubicBezier
+      ? `:root{${cssVarName}:cubic-bezier(${values.current.join(',')});}`
+      : `:root{${cssVarName}:linear(${values.current.join(',')});}`;
+
     const formatted = await formatCode(code);
     pre.innerHTML = hljs.highlight(formatted, { language: 'css' }).value;
   };
@@ -73,6 +78,15 @@ export default function ExportCssLinear() {
       };
 
       const curves = preparePointsForAnimation(ctx.points, viewBox);
+      setIsOneCubicBezier(curves.length === 1);
+
+      if (curves.length === 1) {
+        values.current = [+curves[0][2].toFixed(3), +curves[0][3].toFixed(3), +curves[0][4].toFixed(3), +curves[0][5].toFixed(3)];
+        onUpdate(1);
+        generateCode();
+        return;
+      }
+
       const points = await convertEasingFunctionToPoints(curves, samples, onUpdate, controller.signal);
       values.current = Array.from(points).map(e => +e.toFixed(3));
 
@@ -84,7 +98,9 @@ export default function ExportCssLinear() {
   };
 
   const copyHandle = () => {
-    const string = `${cssVarName}: linear(${values.current.join(', ')});`;
+    const string = isOneCubicBezier
+      ? `${cssVarName}: cubic-bezier(${values.current.join(', ')});`
+      : `${cssVarName}: linear(${values.current.join(', ')});`;
     navigator.clipboard.writeText(string);
   };
 
@@ -94,11 +110,18 @@ export default function ExportCssLinear() {
 
   useEffect(() => {
     generateCode();
-  }, [cssVarName]);
+  }, [cssVarName, isOneCubicBezier]);
 
   return (
     <div>
       <h3 className='download-dialog-title'>Export as CSS linear()</h3>
+
+      {isOneCubicBezier && (
+        <div className='warning'>
+          The current path uses a single curve, which can be represented with the CSS <strong>cubic-bezier()</strong> function.
+          Consider using multiple curves to generate the result as a <strong>linear()</strong> css function.
+        </div>
+      )}
 
       <div className='pre-container'>
         <pre className='download-dialog-pre custom-scrollbar' />
@@ -107,18 +130,20 @@ export default function ExportCssLinear() {
         </button>
       </div>
 
-      <div className='inputsContainer' title='How many samples to generate, the more the better the result'>
-        <p>Accuracy</p>
-        <input
-          type='number'
-          placeholder='samples'
-          value={samples}
-          onChange={e => setSamples(+e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && !isGenerating.current) generateClick();
-          }}
-        />
-      </div>
+      {!isOneCubicBezier && (
+        <div className='inputsContainer' title='How many samples to generate, the more the better the result'>
+          <p>Accuracy</p>
+          <input
+            type='number'
+            placeholder='samples'
+            value={samples}
+            onChange={e => setSamples(+e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !isGenerating.current) generateClick();
+            }}
+          />
+        </div>
+      )}
 
       <div className='inputsContainer' title='Custom CSS variable name'>
         <p>Name</p>

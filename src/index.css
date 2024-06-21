@@ -89,3 +89,11 @@ hr {
 input[type='checkbox'] {
   accent-color: var(--main-color);
 }
+
+.warning {
+  background-color: #ffc40236;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  margin-block: 24px;
+}
