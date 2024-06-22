@@ -15,7 +15,7 @@
 
 .close-panel {
   position: sticky;
-  top: 20px;
+  top: 16px;
   float: right;
   display: flex;
   flex-direction: row;
@@ -42,8 +42,40 @@
   transform: scale(1.1);
 }
 
+.links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  padding-block: 26px;
+}
+
+.links span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.links svg {
+  color: var(--text-color);
+  font-size: 1em;
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.links a {
+  display: flex;
+  color: var(--text-color);
+  padding: 0.5em;
+  margin: -0.5em;
+}
+
 .hints {
-  margin-top: 5px;
   overflow: hidden;
   max-height: 680px;
   --bounce: linear(
@@ -102,7 +134,7 @@
 }
 
 .close {
-  max-height: 60px;
+  max-height: 50px;
   transition: max-height 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -113,9 +145,8 @@
 .hints-title-container {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
 }
 
 .hints-title-container h2 {
