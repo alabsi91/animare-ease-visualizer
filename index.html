@@ -8,34 +8,26 @@
     <!-- <meta name="viewport" content="width=device-width, initial-scale=10" /> -->
     <meta name="description" content="Animare Ease Visualizer" />
     <title>Animare Ease Visualizer</title>
-    <!-- Google Tag Manager -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'GTM-WV93M7Z9');
-    </script>
-    <!-- End Google Tag Manager -->
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript>
-      <iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-WV93M7Z9"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      >
-      </iframe>
-    </noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+      import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js';
+
+      const firebaseConfig = {
+        apiKey: 'AIzaSyAU26SFWmVYNvIFymLkA55DUhhiZ_3vBME',
+        authDomain: 'animare-ease-visualizer.firebaseapp.com',
+        projectId: 'animare-ease-visualizer',
+        storageBucket: 'animare-ease-visualizer.appspot.com',
+        messagingSenderId: '991573433444',
+        appId: '1:991573433444:web:00569b4bf02b4edfaad371',
+        measurementId: 'G-KG471HBTE5',
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
   </body>
 </html>
