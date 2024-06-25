@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host --force",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "test": "tsc --noEmit && eslint src --ext .ts,.tsx",
     "preview": "vite preview"
   },
