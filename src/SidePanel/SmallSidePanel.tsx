@@ -7,7 +7,7 @@ import './SmallSidePanel.css';
 import Dialog from '../components/Dialog/Dialog';
 import Select from '../components/Select/Select';
 import { eases } from '../presets';
-import { ExportTypes, useApp } from '../utils/AppContext';
+import { DialogExportTypes, useApp } from '../utils/AppContext';
 
 import type { OnUpdateCallback, TimelineGlobalOptions } from 'animare';
 import type { Eases } from '../presets';
@@ -103,21 +103,8 @@ export default function SmallSidePanel() {
     );
   }, []);
 
-  const onExportSelect = (value: ExportTypes) => {
-    switch (value) {
-      case ExportTypes.CSS_Keyframe:
-        Dialog.$exportCssKeyframe?.toggle();
-        break;
-      case ExportTypes.CSS_Linear:
-        Dialog.$exportCssLinear?.toggle();
-        break;
-      case ExportTypes.SVG_Path:
-        Dialog.$exportSvg?.toggle();
-        break;
-      case ExportTypes.JS_File:
-        Dialog.$exportJs?.toggle();
-        break;
-    }
+  const onExportSelect = (value: DialogExportTypes) => {
+    Dialog[value]?.toggle();
   };
 
   return (
@@ -148,8 +135,8 @@ export default function SmallSidePanel() {
         <Select
           containerStyle={{ flex: 0 }}
           minWidth={175}
-          labels={Object.values(ExportTypes)}
-          values={Object.values(ExportTypes)}
+          labels={Object.values(DialogExportTypes)}
+          values={Object.values(DialogExportTypes)}
           onChange={onExportSelect}
           SelectButton={ExportButton}
           highlightSelected={false}

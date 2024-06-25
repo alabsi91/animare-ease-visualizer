@@ -1,5 +1,7 @@
 import { CreateFromFC } from 'idify-react-component';
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+
+import { DialogExportTypes } from '../../utils/AppContext';
 import styles from './Dialog.module.css';
 
 type Props = {
@@ -121,5 +123,5 @@ function DialogRC(props: Props, ref: React.ForwardedRef<DialogRef>) {
   );
 }
 
-const Dialog = CreateFromFC(DialogRC).setIdType<'exportJs' | 'exportSvg' | 'exportCssKeyframe' | 'exportCssLinear'>();
+const Dialog = CreateFromFC(DialogRC, DialogExportTypes, '');
 export default Dialog;

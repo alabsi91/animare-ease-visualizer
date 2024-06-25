@@ -2,11 +2,11 @@ import { createContext, useContext } from 'react';
 import type { SetStateAction, Dispatch, MutableRefObject } from 'react';
 import type { Eases } from '../presets';
 
-export enum ExportTypes {
-  'CSS_Keyframe' = 'CSS Keyframe',
-  'CSS_Linear' = 'CSS Linear',
-  'SVG_Path' = 'SVG Path',
-  'JS_File' = 'JS File',
+export enum DialogExportTypes {
+  CSS_Keyframe = 'CSS Keyframe',
+  CSS_Linear = 'CSS Linear',
+  SVG_Path = 'SVG Path',
+  JS_File = 'JS File',
 }
 
 type ctxType = {

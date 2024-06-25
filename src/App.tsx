@@ -15,7 +15,7 @@ import Dialog from './components/Dialog/Dialog';
 import usePan from './hooks/usePan';
 import useZoom from './hooks/useZoom';
 import { eases } from './presets';
-import { AppProvider } from './utils/AppContext';
+import { AppProvider, DialogExportTypes } from './utils/AppContext';
 import { calculateMirrorPoint } from './utils/geometry';
 import {
   checkForDisabledCollinearPoints,
@@ -487,19 +487,19 @@ export default function App() {
 
   return (
     <AppProvider value={contextValue}>
-      <Dialog id='exportJs' unmountOnHide>
+      <Dialog id={DialogExportTypes.JS_File} unmountOnHide>
         <ExportJsFile />
       </Dialog>
 
-      <Dialog id='exportSvg' unmountOnHide>
+      <Dialog id={DialogExportTypes.SVG_Path} unmountOnHide>
         <ExportSvg />
       </Dialog>
 
-      <Dialog id='exportCssKeyframe' unmountOnHide>
+      <Dialog id={DialogExportTypes.CSS_Keyframe} unmountOnHide>
         <ExportCss />
       </Dialog>
 
-      <Dialog id='exportCssLinear' unmountOnHide>
+      <Dialog id={DialogExportTypes.CSS_Linear} unmountOnHide>
         <ExportCssLinear />
       </Dialog>
 
