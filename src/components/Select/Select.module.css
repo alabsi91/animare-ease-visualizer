@@ -36,6 +36,8 @@
   border-radius: 5px;
   box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02);
   border: solid #a370f02a 1px;
+  overflow: hidden;
+  overflow: clip;
 }
 .itemsContainer::backdrop {
   background-color: transparent;

@@ -1,5 +1,7 @@
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styles from './HighlightInput.module.css';
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+
+import type React from 'react';
 
 type InputType = React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -11,12 +13,13 @@ type Props = {
 export type HighlightInputRef = {
   setValue: (value: string) => void;
 };
-const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef, Props> = function (props, ref) {
+
+const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef, Props> = (props, ref) => {
   const { highlight, plugin, ...inputProps } = props;
 
   const [currentValue, setCurrentValue] = useState(props.value ?? props.defaultValue ?? '');
 
-  const paragraphRef = useRef<HTMLParagraphElement>(null!);
+  const paragraphRef = useRef<HTMLParagraphElement>(null);
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = e => {
     const text = e.target.value;
@@ -29,13 +32,13 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
 
     // if plugin props provided
     if (plugin) {
-      paragraphRef.current.innerHTML = plugin(value);
+      if (paragraphRef.current) paragraphRef.current.innerHTML = plugin(value);
       return;
     }
 
     // if nothing provided
     if (!Array.isArray(highlight)) {
-      paragraphRef.current.textContent = value;
+      if (paragraphRef.current) paragraphRef.current.textContent = value;
       return;
     }
 
@@ -89,8 +92,12 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
       spans.push(span);
     }
 
-    paragraphRef.current.innerHTML = '';
-    spans.forEach(el => paragraphRef.current.appendChild(el));
+    if (paragraphRef.current) {
+      paragraphRef.current.innerHTML = '';
+      for (const item of spans) {
+        if (paragraphRef.current) paragraphRef.current.appendChild(item);
+      }
+    }
   };
 
   useEffect(() => {
@@ -103,7 +110,7 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
 
   const onInputScroll: React.UIEventHandler<HTMLInputElement> = e => {
     const inputEl = e.target as HTMLInputElement;
-    paragraphRef.current.scrollTo({ left: inputEl.scrollLeft });
+    if (paragraphRef.current) paragraphRef.current.scrollTo({ left: inputEl.scrollLeft });
     props.onScroll?.(e);
   };
 
@@ -113,11 +120,11 @@ const HighlightInputComponent: React.ForwardRefRenderFunction<HighlightInputRef,
     <div className={styles.container}>
       <input
         {...inputProps}
-        className={styles.input + ' ' + styles.textStyle}
+        className={`${styles.input} ${styles.textStyle}`}
         onChange={onInputChange}
         onScroll={onInputScroll} // ! not working on Safari
       />
-      <p ref={paragraphRef} className={styles.paragraph + ' ' + styles.textStyle} />
+      <p ref={paragraphRef} className={`${styles.paragraph} ${styles.textStyle}`} />
     </div>
   );
 };

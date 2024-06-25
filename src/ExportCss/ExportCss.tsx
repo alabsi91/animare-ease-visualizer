@@ -6,7 +6,7 @@ import './ExportCss.css';
 
 import Dialog from '../components/Dialog/Dialog';
 import HighlightInput from '../components/HighlightInput/HighlightInput';
-import { useApp } from '../utils/AppContext';
+import { DialogExportTypes, useApp } from '../utils/AppContext';
 import { generateEasingFunctionFromArray } from '../utils/geometry';
 import { formatCode, preparePointsForAnimation } from '../utils/utils';
 
@@ -111,7 +111,7 @@ export default function ExportCss() {
               value={accuracy}
               type='number'
               onChange={e => {
-                const value = isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber;
+                const value = Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber;
                 setAccuracy(value < 1 ? 1 : value > 100 ? 100 : value);
               }}
             />
@@ -122,13 +122,17 @@ export default function ExportCss() {
             <input
               value={from}
               type='number'
-              onChange={e => setFrom(isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)}
+              onChange={e => setFrom(Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)}
             />
           </div>
 
           <div className='css-input-container' title='End animation at this value'>
             <p>To</p>
-            <input value={to} type='number' onChange={e => setTo(isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)} />
+            <input
+              value={to}
+              type='number'
+              onChange={e => setTo(Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber)}
+            />
           </div>
         </>
       )}
@@ -142,12 +146,12 @@ export default function ExportCss() {
 
       <div className='pre-container'>
         <pre className='css-dialog-pre custom-scrollbar' />
-        <button className='css-dialog-copy-button' onClick={copyHandle}>
+        <button type='button' className='css-dialog-copy-button' onClick={copyHandle}>
           Copy
         </button>
       </div>
 
-      <button className='css-dialog-close-button' onClick={() => Dialog.$exportCssKeyframe?.toggle()}>
+      <button type='button' className='css-dialog-close-button' onClick={() => Dialog[DialogExportTypes.CSS_Keyframe]?.toggle()}>
         Close
       </button>
     </div>

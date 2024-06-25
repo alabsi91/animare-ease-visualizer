@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import './ExportSvg.css';
 
 import Dialog from '../components/Dialog/Dialog';
-import { useApp } from '../utils/AppContext';
+import { DialogExportTypes, useApp } from '../utils/AppContext';
 
 hljs.registerLanguage('javascript', javascript);
 
@@ -60,12 +60,12 @@ animare.single({
 
       <div className='svg-dialog-pre-container'>
         <pre className='svg-dialog-pre custom-scrollbar' />
-        <button className='svg-dialog-copy-button' onClick={copyHandle}>
+        <button type='button' className='svg-dialog-copy-button' onClick={copyHandle}>
           Copy
         </button>
       </div>
 
-      <button className='svg-dialog-close-button' onClick={() => Dialog.$exportSvg?.toggle()}>
+      <button type='button' className='svg-dialog-close-button' onClick={() => Dialog[DialogExportTypes.SVG_Path]?.toggle()}>
         Close
       </button>
     </div>

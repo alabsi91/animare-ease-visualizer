@@ -28,7 +28,10 @@ export default function usePan(
 
   const panMouseDown = useCallback((e: MouseEvent) => {
     const svg = document.querySelector('.svg') as SVGSVGElement;
-    const viwBox = svg.getAttribute('viewBox')!.split(' ').map(parseFloat);
+    const viwBox = svg
+      .getAttribute('viewBox')
+      ?.split(' ')
+      .map(e => Number.parseFloat(e)) ?? [0, 0];
     startingPos.current.x = e.pageX;
     startingPos.current.y = e.pageY;
     startingPos.current.viewX = viwBox[0];

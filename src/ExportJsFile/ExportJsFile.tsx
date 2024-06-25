@@ -1,11 +1,13 @@
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './ExportJsFile.css';
 
 import Dialog from '../components/Dialog/Dialog';
-import { useApp } from '../utils/AppContext';
+import { DialogExportTypes, useApp } from '../utils/AppContext';
 import { convertEasingFunctionToPoints, preparePointsForAnimation } from '../utils/utils';
+
+import type React from 'react';
 
 hljs.registerLanguage('javascript', javascript);
 
@@ -23,7 +25,7 @@ export default function ExportJsFile() {
     if (fileName.trim() !== fileName) return alert('File name must not contain spaces');
     try {
       // eslint-disable-next-line no-new-func
-      new Function(fileName, 'var ' + fileName);
+      new Function(fileName, `var ${fileName}`);
     } catch (_) {
       return alert('File name must be a valid javascript variable name');
     }
@@ -38,7 +40,7 @@ export default function ExportJsFile() {
       target.style.removeProperty('background-color');
       progressInner.style.width = '0%';
       progressText.innerHTML = '0%';
-      Dialog.$exportJs?.toggle();
+      Dialog[DialogExportTypes.JS_File]?.toggle();
       return;
     }
 
@@ -56,7 +58,7 @@ export default function ExportJsFile() {
         progressText.innerHTML = '0%';
         target.style.removeProperty('background-color');
         target.innerHTML = 'Generate';
-        Dialog.$exportJs?.toggle();
+        Dialog[DialogExportTypes.JS_File]?.toggle();
       }
     };
 
@@ -77,14 +79,13 @@ export default function ExportJsFile() {
     }
 
     // download as js file
-    const string = `const values = ${JSON.stringify([
-        ...values,
-      ])};\nconst length = values.length;\nconst ${fileName} = t => {\n  'worklet';\n  return values[Math.floor(t * length)] ?? values[length - 1];\n}\nexport default ${fileName};`,
-      blob = new Blob([string], { type: 'text/plain' }),
-      url = URL.createObjectURL(blob),
-      link = document.createElement('a');
+    const string = `const values = ${JSON.stringify([...values])};\nconst length = values.length;\nconst ${fileName} = t => {\n  'worklet';\n  return values[Math.floor(t * length)] ?? values[length - 1];\n}\nexport default ${fileName};`;
+    const blob = new Blob([string], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
     link.href = url;
-    link.download = fileName + '.js';
+    link.download = `${fileName}.js`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -131,7 +132,7 @@ animare.single({
 
       <p id='progressText'>0%</p>
 
-      <button className='okButtons' onClick={generateClick}>
+      <button type='button' className='okButtons' onClick={generateClick}>
         Generate
       </button>
     </div>

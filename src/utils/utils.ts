@@ -67,11 +67,11 @@ export function constructPathFromPoints(points: number[][]): string {
     const separator = i === points.length - 1 ? '' : ' ';
 
     if (!i) {
-      d += `M ${e[0]} ${e[1]}` + separator;
+      d += `M ${e[0]} ${e[1]}${separator}`;
       continue;
     }
 
-    d += `C ${e[0]} ${e[1]} ${e[2]} ${e[3]} ${e[4]} ${e[5]}` + separator;
+    d += `C ${e[0]} ${e[1]} ${e[2]} ${e[3]} ${e[4]} ${e[5]}${separator}`;
   }
 
   return d;
@@ -87,7 +87,7 @@ export function getPointsFromPathString(path: string, viewBox: ViewBox) {
   // get numbers from the string and convert them from percentage values.
   const pathData = path
     .match(/-?[0-9.]+/g)
-    ?.map((v, i) => (i % 2 === 0 ? parseFloat(v) * width + x : parseFloat(v) * height + y));
+    ?.map((v, i) => (i % 2 === 0 ? Number.parseFloat(v) * width + x : Number.parseFloat(v) * height + y));
 
   const points: number[][] = [];
 
@@ -112,7 +112,7 @@ export async function convertEasingFunctionToPoints(
   curves: number[][],
   samples = 1000,
   onUpdate?: (i: number) => void,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) {
   let stopped = false;
 
@@ -179,8 +179,7 @@ export function checkOverlap(points: number[][]): boolean {
   return false;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function throttle(func: Function, delay: number) {
+export function throttle(func: (...args: unknown[]) => unknown, delay: number) {
   let lastCall = 0;
   return function wrapper(...args: unknown[]) {
     const now = new Date().getTime();

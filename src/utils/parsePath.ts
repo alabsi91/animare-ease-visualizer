@@ -46,7 +46,7 @@ function parseToSegmentsFromPathString(path: string) {
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const command = row[0] as Commands;
-    const values = row.slice(1).split(' ').filter(Boolean).map(parseFloat);
+    const values = row.slice(1).split(' ').filter(Boolean).map(Number.parseFloat);
 
     if (command === 'M' || command === 'm') {
       segments.push({ command, values: [values[0], values[1]] });
@@ -184,7 +184,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 2) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${2}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -205,7 +205,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 2) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${2}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -228,7 +228,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 1) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${1}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -247,7 +247,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 1) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${1}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -266,7 +266,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 6) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${6}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -294,7 +294,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 4) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${4}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -332,7 +332,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 4) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${4}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -358,7 +358,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 2) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${2}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -390,7 +390,7 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       if (seg.values.length !== 7) {
         throw new Error(`Input is not a valid "${seg.command}" command; it has ${seg.values.length} points instead of ${7}`);
       }
-      const isValid = seg.values.every(value => typeof value === 'number' && !isNaN(value));
+      const isValid = seg.values.every(value => typeof value === 'number' && !Number.isNaN(value));
       if (!isValid) throw new Error(`Failed to parse the "${seg.command}" command properly`);
 
       if (isLowerCase(seg.command)) {
@@ -424,7 +424,6 @@ export function parse(path: string, viewBoxSize?: { x: number; y: number; width:
       maxX = Math.max(maxX, p0x);
       minY = Math.min(minY, p0y);
       maxY = Math.max(maxY, p0y);
-      continue;
     }
   }
 

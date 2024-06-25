@@ -1,10 +1,12 @@
-import React, { Fragment, useCallback } from 'react';
+import { Fragment, useCallback } from 'react';
 import './SvgPanel.css';
 
 import { useApp } from '../utils/AppContext';
 import { clamp, isPointHasSmoothCorner } from '../utils/utils';
 import { calculateMirrorPoint, solveTFromPositionX, splitCurveAtT } from '../utils/geometry';
 import { constructPathFromPoints } from '../utils/utils';
+
+import type React from 'react';
 
 /** The radius of the points along the path */
 const pointRadius = 2;
@@ -23,7 +25,7 @@ export default function Panel() {
       const verticalPos = { x: ctx.zoom.current - 5, y: e };
       textElements.push(
         <text
-          key={'numberV' + i}
+          key={`numberV${i}`}
           className='grid-text'
           dominantBaseline='middle'
           textAnchor='end'
@@ -39,7 +41,7 @@ export default function Panel() {
       const horizontalPos = { x: e, y: ctx.viewBoxSize.current + ctx.zoom.current + 5 };
       textElements.push(
         <text
-          key={'numberH' + i}
+          key={`numberH${i}`}
           className='grid-text'
           dominantBaseline='hanging'
           textAnchor='middle'
@@ -65,7 +67,7 @@ export default function Panel() {
       const verticalLineEndPos = { x: ctx.viewBoxSize.current + ctx.zoom.current, y: e };
       lineElements.push(
         <line
-          key={'lineV' + i}
+          key={`lineV${i}`}
           className='grid-line'
           x1={verticalLineStartPos.x}
           y1={verticalLineStartPos.y}
@@ -79,7 +81,7 @@ export default function Panel() {
       const horizontalLineEndPos = { x: e, y: ctx.viewBoxSize.current + ctx.zoom.current };
       lineElements.push(
         <line
-          key={'lineH' + i}
+          key={`lineH${i}`}
           className='grid-line'
           x1={horizontalLineStartPos.x}
           y1={horizontalLineStartPos.y}
@@ -141,20 +143,22 @@ export default function Panel() {
           if (!ctx.autoHideHandles || [point, ...ctrlAnchors].includes(activeEl)) return;
 
           // Hide all control points.
-          document
-            .querySelectorAll<HTMLAnchorElement>(`[data-for-curve="${pointIndex}"]`)
-            .forEach(e => (e.style.display = 'none'));
+          const ctrlPoints = document.querySelectorAll<HTMLAnchorElement>(`[data-for-curve="${pointIndex}"]`);
+          for (const point of ctrlPoints) point.style.display = 'none';
 
           // Hide all points when another point is not active.
           if (document.activeElement?.nodeName !== 'a') {
             const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-            circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'none'));
+            for (const circle of circles) {
+              const parent = circle.parentElement as HTMLAnchorElement;
+              parent.style.display = 'none';
+            }
           }
         }, 0);
       };
 
       elements.push(
-        <Fragment key={'handlesPointsLine' + i}>
+        <Fragment key={`handlesPointsLine${i}`}>
           <line
             style={{ display: ctx.autoHideHandles ? 'none' : 'block' }}
             className='handle-line auto-hide'
@@ -255,11 +259,14 @@ export default function Panel() {
 
         // Show attached control points.
         const ctrl = document.querySelectorAll<SVGLineElement>(`[data-for-curve="${i}"]`);
-        ctrl.forEach(e => (e.style.display = 'block'));
+        for (const point of ctrl) point.style.display = 'block';
 
         // Show all points
         const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-        circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'block'));
+        for (const circle of circles) {
+          const parent = circle.parentElement as HTMLAnchorElement;
+          parent.style.display = 'block';
+        }
       };
 
       const onBlur = () => {
@@ -271,19 +278,22 @@ export default function Panel() {
 
           // Hide all control points.
           const ctrl = document.querySelectorAll<SVGLineElement>(`[data-for-curve="${i}"]`);
-          ctrl.forEach(e => (e.style.display = 'none'));
+          for (const point of ctrl) point.style.display = 'none';
 
           // Hide all points when another point is not active.
           if (document.activeElement?.nodeName !== 'a') {
             const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-            circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'none'));
+            for (const circle of circles) {
+              const parent = circle.parentElement as HTMLAnchorElement;
+              parent.style.display = 'none';
+            }
           }
         }, 0);
       };
 
       elements.push(
         <a
-          key={'Points' + i}
+          key={`Points${i}`}
           style={{ display: ctx.autoHideHandles ? 'none' : 'block' }}
           className='auto-hide'
           href='#Points'
@@ -335,14 +345,14 @@ export default function Panel() {
     const previousCurve = Points[insertIndex - 1]; // M or C
     const currentCurve = Points[insertIndex]; // C
 
-    const p0x = previousCurve[previousCurve.length - 2],
-      p0y = previousCurve[previousCurve.length - 1],
-      c0x = currentCurve[0],
-      c0y = currentCurve[1],
-      c1x = currentCurve[2],
-      c1y = currentCurve[3],
-      p1x = currentCurve[4],
-      p1y = currentCurve[5];
+    const p0x = previousCurve[previousCurve.length - 2];
+    const p0y = previousCurve[previousCurve.length - 1];
+    const c0x = currentCurve[0];
+    const c0y = currentCurve[1];
+    const c1x = currentCurve[2];
+    const c1y = currentCurve[3];
+    const p1x = currentCurve[4];
+    const p1y = currentCurve[5];
 
     const t = solveTFromPositionX(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, x);
     const { left: leftCurve, right: rightCurve } = splitCurveAtT(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, t);
@@ -361,15 +371,19 @@ export default function Panel() {
   const onPathFocus = () => {
     if (!ctx.autoHideHandles) return;
     const circles = document.querySelectorAll<SVGCircleElement>('.path-point');
-    circles.forEach(e => ((e.parentElement as HTMLAnchorElement).style.display = 'block'));
+    for (const circle of circles) {
+      const parent = circle.parentElement as HTMLAnchorElement;
+      parent.style.display = 'block';
+    }
   };
 
   /** Hide the points when the path loses focus, but only when `autoHideHandles` is enabled. */
   const onPathBlur = () => {
     // ? This workaround is necessary due to a bug in Firefox.
     setTimeout(() => {
-      if (!ctx.autoHideHandles || document.activeElement!.nodeName === 'a') return;
-      document.querySelectorAll<SVGCircleElement>('.auto-hide').forEach(e => (e.style.display = 'none'));
+      if (!ctx.autoHideHandles || document.activeElement?.nodeName === 'a') return;
+      const points = document.querySelectorAll<SVGCircleElement>('.auto-hide');
+      for (const point of points) point.style.display = 'none';
     }, 0);
   };
 

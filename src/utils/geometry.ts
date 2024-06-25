@@ -60,10 +60,10 @@ export function solveTFromPositionX(
 
   // A binary search algorithm is used to determine the Y-coordinate value
   // corresponding to a specified position on the X-coordinate.
-  let start = 0,
-    end = 1,
-    target = (start + end) / 2,
-    times = 0;
+  let start = 0;
+  let end = 1;
+  let target = (start + end) / 2;
+  let times = 0;
 
   while (target >= start && target <= 1) {
     const { x, y } = findPointFromT(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, target);
@@ -100,10 +100,10 @@ export function solvePositionYFromT(
 
   // A binary search algorithm is used to determine the Y-coordinate value
   // corresponding to a specified position on the X-coordinate.
-  let start = 0,
-    end = 1,
-    target = (start + end) / 2,
-    times = 0;
+  let start = 0;
+  let end = 1;
+  let target = (start + end) / 2;
+  let times = 0;
 
   while (target >= start && target <= 1) {
     const { x, y } = findPointFromT(p0x, p0y, c0x, c0y, c1x, c1y, p1x, p1y, target);
@@ -135,10 +135,10 @@ export function findPointFromT(
   p1y: number,
   t: number,
 ) {
-  const point = { x: 0, y: 0 },
-    mt = 1 - t,
-    mt2 = mt * mt,
-    mt3 = mt2 * mt;
+  const point = { x: 0, y: 0 };
+  const mt = 1 - t;
+  const mt2 = mt * mt;
+  const mt3 = mt2 * mt;
 
   point.x = p0x * mt3 + c0x * 3 * mt2 * t + c1x * 3 * mt * t * t + p1x * t ** 3;
   point.y = p0y * mt3 + c0y * 3 * mt2 * t + c1y * 3 * mt * t * t + p1y * t ** 3;
@@ -250,7 +250,8 @@ export function SeveralBezierToCubicBezier(
   prev_c1x?: number,
   prev_c1y?: number,
 ) {
-  let cx1, cy1;
+  let cx1: number;
+  let cy1: number;
 
   // If the previous command was C or S, calculate reflection control points
   if (typeof prev_c1x === 'number' && typeof prev_c1y === 'number') {
@@ -278,7 +279,8 @@ export function quadraticCurveToCubic(p0x: number, p0y: number, cx: number, cy: 
 
 /** Convert `T p0x p0y p1x p1y` command to `C p0x p0y c0x c0y c1x c1y p1x p1y` */
 export function tShortcutToCubic(p0x: number, p0y: number, p1x: number, p1y: number, prev_cx?: number, prev_cy?: number) {
-  let qx1, qy1;
+  let qx1: number;
+  let qy1: number;
 
   // If the previous command was Q or T, calculate the reflection control point
   if (typeof prev_cx === 'number' && typeof prev_cy === 'number') {
@@ -320,7 +322,10 @@ export function arcToCubicCurves(
 
   const angleRad = degToRad(xAxisRotation);
   let params: number[][] = [];
-  let f1, f2, cx, cy;
+  let f1: number;
+  let f2: number;
+  let cx: number;
+  let cy: number;
 
   if (_recursive) {
     f1 = _recursive[0];
@@ -359,8 +364,8 @@ export function arcToCubicCurves(
     cx = (k * rx * y) / ry + (p0x + p1x) / 2;
     cy = (k * -ry * x) / rx + (p0y + p1y) / 2;
 
-    f1 = Math.asin(parseFloat(((p0y - cy) / ry).toFixed(9)));
-    f2 = Math.asin(parseFloat(((p1y - cy) / ry).toFixed(9)));
+    f1 = Math.asin(Number.parseFloat(((p0y - cy) / ry).toFixed(9)));
+    f2 = Math.asin(Number.parseFloat(((p1y - cy) / ry).toFixed(9)));
 
     if (p0x < cx) f1 = Math.PI - f1;
     if (p1x < cx) f2 = Math.PI - f2;
@@ -390,18 +395,18 @@ export function arcToCubicCurves(
 
   df = f2 - f1;
 
-  const c1 = Math.cos(f1),
-    s1 = Math.sin(f1),
-    c2 = Math.cos(f2),
-    s2 = Math.sin(f2),
-    t = Math.tan(df / 4),
-    hx = (4 / 3) * rx * t,
-    hy = (4 / 3) * ry * t;
+  const c1 = Math.cos(f1);
+  const s1 = Math.sin(f1);
+  const c2 = Math.cos(f2);
+  const s2 = Math.sin(f2);
+  const t = Math.tan(df / 4);
+  const hx = (4 / 3) * rx * t;
+  const hy = (4 / 3) * ry * t;
 
-  const m1 = [p0x, p0y],
-    m2 = [p0x + hx * s1, p0y - hy * c1],
-    m3 = [p1x + hx * s2, p1y - hy * c2],
-    m4 = [p1x, p1y];
+  const m1 = [p0x, p0y];
+  const m2 = [p0x + hx * s1, p0y - hy * c1];
+  const m3 = [p1x + hx * s2, p1y - hy * c2];
+  const m4 = [p1x, p1y];
 
   m2[0] = 2 * m1[0] - m2[0];
   m2[1] = 2 * m1[1] - m2[1];

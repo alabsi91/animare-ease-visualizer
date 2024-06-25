@@ -125,7 +125,7 @@ export default function ExportCssLinear() {
 
       <div className='pre-container'>
         <pre className='download-dialog-pre custom-scrollbar' />
-        <button className='css-dialog-copy-button' onClick={copyHandle}>
+        <button type='button' className='css-dialog-copy-button' onClick={copyHandle}>
           Copy
         </button>
       </div>
@@ -156,7 +156,7 @@ export default function ExportCssLinear() {
 
       <p id='progressText'>0%</p>
 
-      <button className='okButtons' onClick={generateClick}>
+      <button type='button' className='okButtons' onClick={generateClick}>
         Generate
       </button>
     </div>

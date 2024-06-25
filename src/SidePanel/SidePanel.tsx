@@ -1,7 +1,7 @@
 import animare, { Timing, createAnimations } from 'animare';
 import { ease } from 'animare/plugins';
 import { useAnimare } from 'animare/react';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import './SidePanel.css';
 
 import Dialog from '../components/Dialog/Dialog';
@@ -13,16 +13,18 @@ import { parse } from '../utils/parsePath';
 import { checkForDisabledCollinearPoints, getPointsFromPathString } from '../utils/utils';
 
 import type { OnUpdateCallback, TimelineGlobalOptions } from 'animare';
+import type React from 'react';
 import type { HighlightTextareaRef } from '../components/HighlightTextarea/HighlightTextarea';
 
 export default function SidePanel() {
   const ctx = useApp();
 
-  const textareaRef = useRef<HighlightTextareaRef>(null!);
+  const textareaRef = useRef<HighlightTextareaRef>(null);
   const textareaCurrentValue = useRef('');
 
   useEffect(() => {
     // update textarea text
+    if (!textareaRef.current) return;
     textareaRef.current.setValue(
       ctx.getPathStringFromPoints().replace(/\s*M/gi, 'M').replace(/\s*S/g, '\nS').replace(/\s*C/g, '\nC'),
     );
@@ -106,6 +108,7 @@ export default function SidePanel() {
     }
 
     // use the current path instead
+    if (!textareaRef.current) return;
     textareaRef.current.setValue(currentPath.replace(/\s*M/gi, 'M').replace(/\s*C/g, '\nC'));
   };
 
@@ -121,10 +124,11 @@ export default function SidePanel() {
 
   const SelectButton = useCallback(({ title, onClick, isOpen }: { title: string; isOpen: boolean; onClick: () => void }) => {
     return (
-      <div className={'builtin-select-container ' + (isOpen ? 'builtin-select-active' : '')}>
-        <button className='builtin-select-button' onClick={onClick}>
+      <div className={`builtin-select-container ${isOpen ? 'builtin-select-active' : ''}`}>
+        <button type='button' className='builtin-select-button' onClick={onClick}>
           {title}
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+            <title>{title}</title>
             <path d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z' />
           </svg>
         </button>
@@ -134,7 +138,7 @@ export default function SidePanel() {
 
   const ExportButton = useCallback(({ onClick }: { onClick: () => void }) => {
     return (
-      <button className='buttons' style={{ marginTop: 10 }} onClick={onClick}>
+      <button type='button' className='buttons' style={{ marginTop: 10 }} onClick={onClick}>
         Export
       </button>
     );
@@ -164,28 +168,31 @@ export default function SidePanel() {
 
   return (
     <div className='sidePanel custom-scrollbar'>
-      <div className='close-panel'>
-        <svg onClick={close} role='button' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+      <button type='button' onClick={close} className='close-panel'>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+          <title>Close</title>
           <path d='M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' />
         </svg>
-      </div>
+      </button>
 
       <div className='links'>
-        <a href='https://github.com/alabsi91/animare' target='_blank' rel='me'>
+        <a href='https://github.com/alabsi91/animare' target='_blank' rel='noreferrer me'>
           <span>GitHub</span>
           <svg aria-hidden='true' width='16' height='16' viewBox='0 0 24 24' fill='currentColor'>
-            <path d='M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z'></path>
+            <title>GitHub</title>
+            <path d='M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z' />
           </svg>
         </a>
 
-        <a href='https://x.com/alabsi91' target='_blank' rel='me'>
+        <a href='https://x.com/alabsi91' target='_blank' rel='noreferrer me'>
           <span>X</span>
           <svg aria-hidden='true' width='16' height='16' viewBox='0 0 24 24' fill='currentColor'>
-            <path d='M 18.242188 2.25 L 21.554688 2.25 L 14.324219 10.507812 L 22.828125 21.75 L 16.171875 21.75 L 10.953125 14.933594 L 4.992188 21.75 L 1.679688 21.75 L 9.40625 12.914062 L 1.257812 2.25 L 8.082031 2.25 L 12.792969 8.480469 Z M 17.082031 19.773438 L 18.914062 19.773438 L 7.082031 4.125 L 5.113281 4.125 Z M 17.082031 19.773438 '></path>
+            <title>X</title>
+            <path d='M 18.242188 2.25 L 21.554688 2.25 L 14.324219 10.507812 L 22.828125 21.75 L 16.171875 21.75 L 10.953125 14.933594 L 4.992188 21.75 L 1.679688 21.75 L 9.40625 12.914062 L 1.257812 2.25 L 8.082031 2.25 L 12.792969 8.480469 Z M 17.082031 19.773438 L 18.914062 19.773438 L 7.082031 4.125 L 5.113281 4.125 Z M 17.082031 19.773438 ' />
           </svg>
         </a>
 
-        <a href='https://alabsi91.github.io/animare' target='_blank' rel='me'>
+        <a href='https://alabsi91.github.io/animare' target='_blank' rel='noreferrer me'>
           <span>animare</span>
           <svg
             fill='currentColor'
@@ -194,8 +201,9 @@ export default function SidePanel() {
             enableBackground='new 0 0 500 500'
             xml-space='preserve'
           >
-            <path d='M250-0.006C111.926-0.006,0,111.932,0,250.006c0,138.062,111.926,250,250,250c138.062,0,250-111.938,250-250C500,111.932,388.062-0.006,250-0.006z M250,469.371c-120.961,0-219.365-98.404-219.365-219.365   S129.039,30.629,250,30.629c120.955,0,219.365,98.416,219.365,219.377S370.955,469.371,250,469.371z'></path>
-            <polygon points='173.005,250.006 173.005,349.953 361.28,250.006 173.005,150.059'></polygon>
+            <title>animare Docs</title>
+            <path d='M250-0.006C111.926-0.006,0,111.932,0,250.006c0,138.062,111.926,250,250,250c138.062,0,250-111.938,250-250C500,111.932,388.062-0.006,250-0.006z M250,469.371c-120.961,0-219.365-98.404-219.365-219.365   S129.039,30.629,250,30.629c120.955,0,219.365,98.416,219.365,219.377S370.955,469.371,250,469.371z' />
+            <polygon points='173.005,250.006 173.005,349.953 361.28,250.006 173.005,150.059' />
           </svg>
         </a>
       </div>
@@ -203,12 +211,13 @@ export default function SidePanel() {
       <hr style={{ marginTop: 0, marginBottom: 16 }} />
 
       <div className='hints'>
-        <div className='hints-title-container'>
+        <button type='button' className='hints-title-container' onClick={toggleShortcuts}>
           <h2>Shortcuts</h2>
-          <svg onClick={toggleShortcuts} role='button' xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'>
+            <title>collapse/expand</title>
             <path d='M480.1-358.5q-6.1 0-10.85-2t-9.25-7L263.331-564.169Q254.5-572.5 254.5-584t9-20.5Q272-613 284-613t20.901 8.401L480-429l175.599-175.599Q664-613 675.5-613t20.5 8.5q8.5 9 8.5 21t-8.331 20.331L500.5-367.5q-5 5-9.65 7t-10.75 2Z' />
           </svg>
-        </div>
+        </button>
         <ul>
           <li title='Add a new point'>
             <code>ALT + CLICK</code> Add a new point
@@ -252,10 +261,10 @@ export default function SidePanel() {
           />
         </div>
         <div className='buttons-container'>
-          <button className='buttons' onClick={ctx.playCurrentEasing}>
+          <button type='button' className='buttons' onClick={ctx.playCurrentEasing}>
             Play
           </button>
-          <button className='buttons' onClick={ctx.pauseAnimation}>
+          <button type='button' className='buttons' onClick={ctx.pauseAnimation}>
             Pause
           </button>
         </div>
@@ -274,7 +283,9 @@ export default function SidePanel() {
             id='snappeToGrid'
             type='checkbox'
             defaultChecked={ctx.magnet.current}
-            onChange={e => (ctx.magnet.current = e.target.checked)}
+            onChange={e => {
+              ctx.magnet.current = e.target.checked;
+            }}
           />
           <label htmlFor='snappeToGrid'>Enable snapping to the grid.</label>
         </div>
@@ -298,7 +309,9 @@ export default function SidePanel() {
           ref={textareaRef}
           defaultValue={ctx.getPathStringFromPoints()}
           rows={ctx.points.length}
-          onFocus={e => (textareaCurrentValue.current = e.target.value)}
+          onFocus={e => {
+            textareaCurrentValue.current = e.target.value;
+          }}
           onBlur={onTextAreaChange}
           onKeyDown={textAreaOnKeyDown}
           wrap='hard'

@@ -39,11 +39,11 @@ export default function Select<T>({
   const [selected, setSelected] = useState(labels[values.indexOf(value ?? defaultValue ?? values[0])]);
   const [show, setShow] = useState(false);
 
-  const dialogRef = useRef<HTMLDialogElement>(null!);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   const calcMenuBounding = () => {
     const menuHeight = labels.length * ITEM_HEIGHT;
-    const container = dialogRef.current.parentElement;
+    const container = dialogRef.current?.parentElement;
     if (!container) return { height: 0 };
 
     const { left, top, bottom, width } = container.getBoundingClientRect();
@@ -64,15 +64,15 @@ export default function Select<T>({
   };
 
   const setMenuPos = useCallback(() => {
-    const container = dialogRef.current.parentElement;
+    const container = dialogRef.current?.parentElement;
     if (!container || !dialogRef.current) return;
 
     const { maxHeight, width, top, left } = calcMenuBounding();
 
-    dialogRef.current.style.maxHeight = maxHeight + 'px';
-    dialogRef.current.style.width = width + 'px';
-    dialogRef.current.style.left = left + 'px';
-    dialogRef.current.style.top = top + 'px';
+    dialogRef.current.style.maxHeight = `${maxHeight}px`;
+    dialogRef.current.style.width = `${width}px`;
+    dialogRef.current.style.left = `${left}px`;
+    dialogRef.current.style.top = `${top}px`;
   }, []);
 
   const clickOutSide = useCallback((e: MouseEvent) => {
@@ -84,6 +84,8 @@ export default function Select<T>({
   }, []);
 
   const open = () => {
+    if (!dialogRef.current) return;
+
     if (dialogRef.current.open) return;
 
     dialogRef.current.showModal();
@@ -96,31 +98,26 @@ export default function Select<T>({
 
       //  scroll to the highlight item
       if (selectedLi && ul) {
-        listItems.forEach(el => el.classList.remove(style.selected));
-        ul.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' });
+        for (const item of listItems) item.classList.remove(style.selected);
+        setTimeout(() => ul.scrollTo({ top: selectedLi.offsetTop, behavior: 'auto' }), 1);
         selectedLi.classList.add(style.selected);
       }
     }
 
     const { height, maxHeight, width, top, left, openDownwards } = calcMenuBounding();
 
-    dialogRef.current.style.maxHeight = maxHeight + 'px';
-    dialogRef.current.style.width = width + 'px';
-    dialogRef.current.style.left = left + 'px';
-    dialogRef.current.style.top = top + 'px';
-
-    const hasScrollBar = dialogRef.current.scrollHeight > height;
-    if (!hasScrollBar) dialogRef.current.style.overflow = 'hidden';
+    dialogRef.current.style.maxHeight = `${maxHeight}px`;
+    dialogRef.current.style.width = `${width}px`;
+    dialogRef.current.style.left = `${left}px`;
+    dialogRef.current.style.top = `${top}px`;
 
     dialogRef.current.animate(
       [
         { height: '0px', transform: openDownwards ? 'translateY(0px)' : `translateY(${height}px)` },
-        { height: height + 'px', transform: 'translateY(0px)' },
+        { height: `${height}px`, transform: 'translateY(0px)' },
       ],
       { duration: DURATION, easing: 'ease', fill: 'none' },
     ).onfinish = () => {
-      dialogRef.current.style.overflow = 'auto';
-
       document.addEventListener('click', clickOutSide);
       window.addEventListener('scroll', setMenuPos);
       window.addEventListener('resize', setMenuPos);
@@ -128,25 +125,23 @@ export default function Select<T>({
 
     // items fade in
     const items = dialogRef.current.querySelectorAll<HTMLLIElement>(`.${style.itemsContainer} ul li`);
-    items.forEach(e => e.classList.add(style['fade-in']));
+    for (const item of items) item.classList.add(style['fade-in']);
   };
 
   const close = () => {
+    if (!dialogRef.current) return;
     if (!dialogRef.current.open) return;
 
     const { height, openDownwards } = calcMenuBounding();
-    const hasScrollBar = dialogRef.current.scrollHeight > height;
-
-    if (!hasScrollBar) dialogRef.current.style.overflow = 'hidden';
 
     dialogRef.current.animate(
       [
-        { height: height + 'px', transform: 'translateY(0px)' },
+        { height: `${height}px`, transform: 'translateY(0px)' },
         { height: '0px', transform: openDownwards ? 'translateY(0px)' : `translateY(${height}px)` },
       ],
       { duration: DURATION, easing: 'ease', fill: 'none' },
     ).onfinish = () => {
-      dialogRef.current.close();
+      dialogRef.current?.close();
       document.removeEventListener('click', clickOutSide);
       window.removeEventListener('scroll', setMenuPos);
       window.removeEventListener('resize', setMenuPos);
@@ -174,6 +169,7 @@ export default function Select<T>({
     return labels.map((name, idx) => (
       <li key={`${values[idx]}item-key`}>
         <button
+          type='button'
           className={style.item}
           onClick={() => {
             setShow(false);

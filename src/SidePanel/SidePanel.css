@@ -14,6 +14,8 @@
 }
 
 .close-panel {
+  background-color: transparent;
+  border: none;
   position: sticky;
   top: 16px;
   float: right;
@@ -143,10 +145,14 @@
 }
 
 .hints-title-container {
+  background-color: transparent;
+  border: none;
   display: flex;
+  width: 100%;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
 }
 
 .hints-title-container h2 {
@@ -162,7 +168,7 @@
   transition: transform 300ms ease-out;
 }
 
-.hints-title-container svg:hover {
+.hints-title-container:hover svg {
   fill: var(--secondary-color);
   transform: scale(1.1);
 }

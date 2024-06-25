@@ -1,7 +1,7 @@
 import animare, { Timing } from 'animare';
 import { ease } from 'animare/plugins';
 import { useAnimare } from 'animare/react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './index.css';
 
 import ExportCss from './ExportCss/ExportCss';
@@ -27,13 +27,14 @@ import {
 } from './utils/utils';
 
 import type { Eases } from './presets';
+import type React from 'react';
 
 /** - Threshold for checking path overlapping. */
-let timeout = false,
-  /** - To set the path color after the animation end (red or normal). */
-  isOverLapping = false,
-  /** - To pause checking for path overlapping while zooming using the slide. */
-  isZooming = false;
+let timeout = false;
+/** - To set the path color after the animation end (red or normal). */
+let isOverLapping = false;
+/** - To pause checking for path overlapping while zooming using the slide. */
+let isZooming = false;
 
 /** - The set of point that control points are not collinear. */
 const toggledCollinear = new Set<number>();
@@ -81,8 +82,8 @@ export default function App() {
   const getStickingPoints = () => {
     const Points = eventPoint.current; // a copy of the current path points.
 
-    const pointsX: number[] = [], // stick to these points on the x axis
-      pointsY: number[] = []; // stick to these points on the y axis
+    const pointsX: number[] = []; // stick to these points on the x axis
+    const pointsY: number[] = []; // stick to these points on the y axis
 
     // grab x and y positions for points and control points on the path  -> M, ...C
     for (let i = 0; i < Points.length; i++) {
@@ -281,14 +282,14 @@ export default function App() {
   }, []);
 
   const animation = useAnimare(() => {
-    const ball = document.querySelector('.animation-point') as SVGCircleElement,
-      fillLine = document.querySelector('.animation-fill-line') as SVGLineElement,
-      lineH = document.querySelector('.animation-horizontal-line') as SVGLineElement,
-      lineV = document.querySelector('.animation-vertical-line') as SVGLineElement,
-      mask = document.querySelector('#animation-path-mask rect') as SVGRectElement,
-      path = document.querySelector('.path') as SVGPathElement,
-      maskedPath = document.querySelector('.animation-path') as SVGMaskElement,
-      fpsEl = document.querySelector('#fps') as SVGTextElement;
+    const ball = document.querySelector('.animation-point') as SVGCircleElement;
+    const fillLine = document.querySelector('.animation-fill-line') as SVGLineElement;
+    const lineH = document.querySelector('.animation-horizontal-line') as SVGLineElement;
+    const lineV = document.querySelector('.animation-vertical-line') as SVGLineElement;
+    const mask = document.querySelector('#animation-path-mask rect') as SVGRectElement;
+    const path = document.querySelector('.path') as SVGPathElement;
+    const maskedPath = document.querySelector('.animation-path') as SVGMaskElement;
+    const fpsEl = document.querySelector('#fps') as SVGTextElement;
 
     return animare.group(
       {
@@ -300,9 +301,9 @@ export default function App() {
         autoPlay: false,
       },
       async (info, { isFirstFrame, isFinished, fps }) => {
-        const x = info[0].value,
-          y = info[1].value,
-          w = info[2].value;
+        const x = info[0].value;
+        const y = info[1].value;
+        const w = info[2].value;
 
         if (isFirstFrame) {
           lineH.style.display = 'block';
@@ -310,12 +311,14 @@ export default function App() {
           maskedPath.style.display = 'block';
           path.style.transition = 'none';
           path.style.stroke = 'var(--blurred-path)';
-          if (!autoHideHandles)
-            document.querySelectorAll<HTMLAnchorElement>('.auto-hide').forEach(e => (e!.style.display = 'none'));
+          if (!autoHideHandles) {
+            const points = document.querySelectorAll<HTMLAnchorElement>('.auto-hide');
+            for (const point of points) point.style.display = 'none';
+          }
         }
 
         ball.setAttribute('cy', y.toString());
-        fpsEl.textContent = fps + ' FPS';
+        fpsEl.textContent = `${fps} FPS`;
         fillLine.setAttribute('y2', y.toString());
         mask.setAttribute('width', Math.abs(w).toString());
         lineH.setAttribute('y2', y.toString());
@@ -328,9 +331,9 @@ export default function App() {
           lineV.style.display = 'none';
           maskedPath.style.display = 'none';
           path.style.stroke = isOverLapping ? 'red' : 'var(--active-path)';
-          document
-            .querySelectorAll<HTMLAnchorElement>('.auto-hide')
-            .forEach(e => (e.style.display = autoHideHandles ? 'none' : 'block'));
+          const points = document.querySelectorAll<HTMLAnchorElement>('.auto-hide');
+          for (const point of points) point.style.display = autoHideHandles ? 'none' : 'block';
+
           await new Promise(resolve => setTimeout(resolve, 300));
           path.style.removeProperty('transition');
         }

@@ -55,10 +55,11 @@ type ctxType = {
 
   // animations
   playCurrentEasing: () => void;
-  pauseAnimation: () => void | undefined;
-  setDuration: (duration: number) => void | undefined;
+  pauseAnimation: () => void;
+  setDuration: (duration: number) => void;
 };
 
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
 const CTX = createContext<ctxType>(null!);
 
 export const AppProvider = CTX.Provider;
