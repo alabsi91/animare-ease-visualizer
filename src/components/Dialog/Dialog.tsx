@@ -124,5 +124,5 @@ function DialogRC(props: Props, ref: React.ForwardedRef<DialogRef>) {
   );
 }
 
-const Dialog = CreateFromFC(DialogRC, DialogExportTypes, '');
+const Dialog = CreateFromFC(DialogRC, { ids: DialogExportTypes, prefix: '' });
 export default Dialog;
