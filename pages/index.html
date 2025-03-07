@@ -1,0 +1,43 @@
+<layout src="@layouts/main.layout.html" title="Animare Ease Visualizer" description="Animare Ease Visualizer">
+  <body>
+    <main>
+      <layout src="@parts/sidePanel.part.html"></layout>
+      <layout src="@parts/smallSidePanel.part.html"></layout>
+      <graph-editor></graph-editor>
+    </main>
+
+    <alert-component></alert-component>
+
+    <layout src="@parts/shortuctsDialog/shortcutsDialog.part.html"></layout>
+    <layout src="@parts/exportDialog/cssKeyframe.part.html"></layout>
+    <layout src="@parts/exportDialog/cssLinear.part.html"></layout>
+    <layout src="@parts/exportDialog/svgPath.part.html"></layout>
+    <layout src="@parts/exportDialog/jsFunction.part.html"></layout>
+
+    <div class="theme-layer"></div>
+
+    <script type="module" bundle="include-packages" preload>
+      import "@components/GraphEditor/graphEditorComponent.ts";
+      import "@components/codeEditor/codeEditor.ts";
+      import "@components/alert/alert.ts";
+      import "@components/toggleCheckbox/toggleCheckbox.ts";
+      import "@components/menu/menu.ts";
+      import "@components/selectOption/selectOption.ts";
+      import "@components/tooltip/tooltip.ts";
+      import "@components/dialog/dialog.ts";
+      import "@components/slider/slider.ts";
+      import "@/scripts/main.ts";
+    </script>
+  </body>
+</layout>
+
+<insert selector="head">
+  <link class="svg-highlight" rel="stylesheet" href="@styles/svg_path_highlight.css" inline />
+  <link
+    class="atom-one-dark"
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    inline
+  />
+  <link rel="stylesheet" href="@styles/export_dialog.css" inline />
+</insert>

@@ -1,0 +1,242 @@
+{
+  "ease-spring": {
+    "prefix": "easeSpring",
+    "body": ["--ease-spring(${1:mass=1}, ${2:stiffness=100}, ${3:damping=10}, ${4:velocity=0}, ${5:duration=1000});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-custom": {
+    "prefix": "easeCustom",
+    "body": ["--ease-custom(\"${1:SVG_path}\");"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-back": {
+    "prefix": "easeInBack",
+    "body": ["--ease-in-back(${1:1.70158});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-back": {
+    "prefix": "easeOutBack",
+    "body": ["--ease-out-back(${1:1.70158});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-back": {
+    "prefix": "easeInOutBack",
+    "body": ["--ease-in-out-back(${1:1.70158});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-bounce": {
+    "prefix": "easeInBounce",
+    "body": ["--ease-in-bounce();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-bounce": {
+    "prefix": "easeOutBounce",
+    "body": ["--ease-out-bounce();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-bounce": {
+    "prefix": "easeInOutBounce",
+    "body": ["--ease-in-out-bounce();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-circ": {
+    "prefix": "easeInCirc",
+    "body": ["--ease-in-circ();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-circ": {
+    "prefix": "easeOutCirc",
+    "body": ["--ease-out-circ();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-circ": {
+    "prefix": "easeInOutCirc",
+    "body": ["--ease-in-out-circ();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-cubic": {
+    "prefix": "easeInCubic",
+    "body": ["--ease-in-cubic();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-cubic": {
+    "prefix": "easeOutCubic",
+    "body": ["--ease-out-cubic();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-cubic": {
+    "prefix": "easeInOutCubic",
+    "body": ["--ease-in-out-cubic();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-elastic": {
+    "prefix": "easeInElastic",
+    "body": ["--ease-in-elastic();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-elastic": {
+    "prefix": "easeOutElastic",
+    "body": ["--ease-out-elastic();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-elastic": {
+    "prefix": "easeInOutElastic",
+    "body": ["--ease-in-out-elastic();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-expo": {
+    "prefix": "easeInExpo",
+    "body": ["--ease-in-expo();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-expo": {
+    "prefix": "easeOutExpo",
+    "body": ["--ease-out-expo();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-expo": {
+    "prefix": "easeInOutExpo",
+    "body": ["--ease-in-out-expo();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-sine": {
+    "prefix": "easeInSine",
+    "body": ["--ease-in-sine();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-sine": {
+    "prefix": "easeOutSine",
+    "body": ["--ease-out-sine();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-sine": {
+    "prefix": "easeInOutSine",
+    "body": ["--ease-in-out-sine();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-quad": {
+    "prefix": "easeInQuad",
+    "body": ["--ease-in-quad();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-quad": {
+    "prefix": "easeOutQuad",
+    "body": ["--ease-out-quad();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-quad": {
+    "prefix": "easeInOutQuad",
+    "body": ["--ease-in-out-quad();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-quart": {
+    "prefix": "easeInQuart",
+    "body": ["--ease-in-quart();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-quart": {
+    "prefix": "easeOutQuart",
+    "body": ["--ease-out-quart();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-quart": {
+    "prefix": "easeInOutQuart",
+    "body": ["--ease-in-out-quart();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-quint": {
+    "prefix": "easeInQuint",
+    "body": ["--ease-in-quint();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-quint": {
+    "prefix": "easeOutQuint",
+    "body": ["--ease-out-quint();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-quint": {
+    "prefix": "easeInOutQuint",
+    "body": ["--ease-in-out-quint();"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-poly": {
+    "prefix": "easeInPoly",
+    "body": ["--ease-in-poly(${1:2});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-poly": {
+    "prefix": "easeOutPoly",
+    "body": ["--ease-out-poly(${1:2});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-poly": {
+    "prefix": "easeInOutPoly",
+    "body": ["--ease-in-out-poly(${1:2});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+
+  "ease-in-wobble": {
+    "prefix": "easeInWobble",
+    "body": ["--ease-in-wobble(${1:2});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-out-wobble": {
+    "prefix": "easeOutWobble",
+    "body": ["--ease-out-wobble(${1:2});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+  "ease-in-out-wobble": {
+    "prefix": "easeInOutWobble",
+    "body": ["--ease-in-out-wobble(${1:2});"],
+    "scope": "css",
+    "description": "PostCSS plugin for generating CSS `linear` function.",
+  },
+}

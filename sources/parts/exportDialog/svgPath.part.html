@@ -1,0 +1,24 @@
+<dialog-component class="export-dialog" id="export-svg-dialog" backdrop-close="false">
+  <h1 class="export-dialog-title">Export as SVG</h1>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-svg-scale">Scale</label>
+      <input type="number" name="scale" id="export-svg-scale" value="100" autocomplete="off" />
+    </div>
+
+    <code-editor
+      class="export-code-preview"
+      id="export-svg-code-preview"
+      stylesheet=".atom-one-dark"
+      linenumbers="true"
+      copy-button="true"
+      readonly="true"
+    ></code-editor>
+
+    <div class="export-buttons-container">
+      <button class="export-btn" id="export-svg-copy-btn">Copy</button>
+      <button class="export-btn" id="export-svg-download-btn">Download</button>
+    </div>
+  </div>
+</dialog-component>

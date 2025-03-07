@@ -1,0 +1,29 @@
+<dialog-component class="export-dialog" id="export-js-function-dialog" backdrop-close="false">
+  <h1 class="export-dialog-title">Export as JavaScript function</h1>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-js-function-samples">Samples</label>
+      <input type="number" name="samples" id="export-js-function-samples" autocomplete="off" value="100" />
+    </div>
+
+    <div class="label-input-container">
+      <label for="export-js-function-name">Name</label>
+      <input type="text" name="name" id="export-js-function-name" autocomplete="off" value="customEasing" />
+    </div>
+
+    <code-editor
+      class="export-code-preview"
+      id="export-js-function-code-preview"
+      stylesheet=".atom-one-dark"
+      linenumbers="true"
+      copy-button="true"
+      readonly="true"
+    ></code-editor>
+
+    <div class="export-buttons-container">
+      <button class="export-btn" id="export-js-function-copy-btn">Copy</button>
+      <button class="export-btn" id="export-js-function-download-btn">Download</button>
+    </div>
+  </div>
+</dialog-component>

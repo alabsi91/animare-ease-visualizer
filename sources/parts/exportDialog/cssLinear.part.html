@@ -1,0 +1,34 @@
+<dialog-component class="export-dialog" id="export-css-linear-dialog" backdrop-close="false">
+  <h1 class="export-dialog-title">Export as CSS linear()</h1>
+
+  <div class="warning" id="export-css-linear-warning">
+    The current path uses a single curve, which can be represented with the CSS
+    <strong>cubic-bezier()</strong>
+    function. Consider using multiple curves to generate the result as a
+    <strong>linear()</strong>
+    css function.
+  </div>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-css-linear-samples">Samples</label>
+      <input type="number" name="samples" id="export-css-linear-samples" autocomplete="off" value="100" />
+    </div>
+
+    <div class="label-input-container">
+      <label for="export-css-linear-name">Name</label>
+      <input type="text" name="name" id="export-css-linear-name" autocomplete="off" value="--custom-easing" />
+    </div>
+
+    <code-editor
+      class="export-code-preview"
+      id="export-css-linear-code-preview"
+      stylesheet=".atom-one-dark"
+      linenumbers="true"
+      copy-button="true"
+      readonly="true"
+    ></code-editor>
+
+    <button class="export-btn" id="export-css-linear-copy-btn">Copy</button>
+  </div>
+</dialog-component>

@@ -1,0 +1,36 @@
+{
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "tooltip-component",
+      "description": {
+        "kind": "markdown",
+        "value": "# tooltip-component\n\nA tooltip component that displays a message when hovered over.\n\n- Works only for fine input devices by design.\n- Not selectable and hidden from screen readers.\n- Pointer events are disabled.\n- To offset the tooltip, use `margin` on the `::part(container)` element.\n\n**Usage**\n\n```html\n<button id=\"tooltip-button\">Show Alert</button>\n\n<tooltip-component for=\"tooltip-button\" prefer-direction=\"right\">\n  <p>A button to show alert</p>\n</tooltip-component>\n```\n\n**Methods**\n\n- `open()` Open the tooltip.\n- `close()` Close the tooltip.\n- `toggle()` Toggle the tooltip between open and closed.\n\n**Props**\n\n- `for` (Get/Set) The element to attach the tooltip to.\n- `preferDirection` (Get/Set) Open the tooltip in the preferred direction if possible. Defaults to `top`.\n- `isOpen` (Get) Returns `true` if the tooltip is open.\n\n**Events**\n\n- `open` Emitted when the tooltip is opened.\n- `close` Emitted when the tooltip is closed.\n\n**Slots**\n\n- `Default` The content of the tooltip.\n\n**Attributes**\n\n- `\"for\"` The element to attach the tooltip to.\n- `\"prefer-direction\"` Open the tooltip in the preferred direction if possible. Defaults to `top`.\n\n**CSS Properties**\n\n- `--background-color` The background color of the tooltip.\n- `--border-color` The border color of the tooltip.\n- `--arrow-size` The size of the arrow that points to the element that the tooltip is attached to.\n- `--arrow-color` The color of the arrow that points to the element that the tooltip is attached to.\n- `--animation-duration` The easing function of the show/hide animation.\n- `--animation-easing` The easing function of the show/hide animation.\n\n**CSS Parts**\n\n- `::part(container)` The tooltip container element\n- `::part(arrow)` The arrow element\n\n**CSS States**\n\n- `:state(open)`\n"
+      },
+      "attributes": [
+        {
+          "name": "for",
+          "description": "The element to attach the tooltip to."
+        },
+        {
+          "name": "prefer-direction",
+          "description": "Open the tooltip in the preferred direction if possible. Defaults to `top`.",
+          "values": [
+            {
+              "name": "top"
+            },
+            {
+              "name": "bottom"
+            },
+            {
+              "name": "left"
+            },
+            {
+              "name": "right"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+:host {
+  display: block;
+  background-color: var(--clr-grid-line);
+  background-image: radial-gradient(var(--clr-panel-background) 1px, var(--clr-grid-line) 1px);
+  background-size: 20px 20px;
+  touch-action: pinch-zoom;
+
+  --dur-clr-transition: 150ms;
+  --clr-panel-background: #303030;
+  --clr-grid-line: #222;
+  --clr-graph-txt: #aaa;
+
+  /* anchors */
+  --clr-anchor-circle: #a370f0;
+  --clr-active-anchor-circle: #8e45fc;
+  --clr-focus-anchor-circle-stroke: #fff;
+  --size-anchor-circle: 6px;
+  --size-anchor-stroke: 2px;
+
+  /* ctrl */
+  --clr-ctrl-circle: #0175ff;
+  --clr-active-ctrl-circle: #5ea6ff;
+  --clr-ctrl-line: #0175ff;
+  --clr-active-ctrl-line: #5ea6ff;
+  --size-ctrl-circle: 5px;
+
+  /* path */
+  --clr-path: #cecece;
+  --clr-active-path: #fff;
+  --clr-filled-path: #8e45fc;
+  --size-path-thickness: 2px;
+  --size-filled-path-thickness: 3px;
+
+  @media (prefers-reduced-motion) {
+    --dur-clr-transition: 0ms;
+  }
+}
+
+.main-svg {
+  display: block;
+  width: 100%;
+}
+
+.graph-panel {
+  overflow: visible;
+}
+
+.graph-panel-background {
+  fill: var(--clr-panel-background);
+}
+
+.graph-panel-grid-lines line {
+  stroke: var(--clr-grid-line);
+  stroke-width: 1px;
+}
+
+.graph-panel-fps-counter {
+  fill: var(--clr-graph-txt);
+  font-family: monospace;
+  font-size: clamp(8px, 1px * var(--grid-size) / 30, 18px) !important;
+  font-weight: bold;
+  user-select: none;
+}
+
+.graph-panel-grid-numbers text,
+.graph-panel-labels text {
+  fill: var(--clr-graph-txt);
+  font-family: monospace;
+  font-size: clamp(8px, 1px * var(--grid-size) / 50, 18px);
+  user-select: none;
+}
+
+.svg-anim-representation {
+  .empty-line {
+    stroke: var(--clr-graph-txt);
+    stroke-width: 1px;
+  }
+
+  .filled-line {
+    stroke: var(--clr-anchor-circle);
+    stroke-width: 1px;
+  }
+
+  .circle-indicator {
+    fill: var(--clr-anchor-circle);
+    r: clamp(2px, calc(1px * var(--grid-size) / 80), 6px);
+  }
+
+  .target-vertical-line,
+  .target-horizontal-line {
+    stroke: var(--clr-anchor-circle);
+    stroke-width: 1px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity var(--dur-clr-transition) linear;
+
+    &.hidden {
+      opacity: 0;
+    }
+  }
+}
+
+.graph-svg {
+  overflow: visible;
+
+  .anchors-group,
+  .ctrl-group {
+    transition: opacity var(--dur-clr-transition) linear;
+  }
+}
+
+.graph-svg.hide-points {
+  .anchors-group,
+  .ctrl-group {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+}
+
+.graph-svg.auto-hide-points {
+  .anchors-group,
+  .ctrl-group {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:has(*:focus) {
+    .anchors-group,
+    .ctrl-group {
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+}
+
+.graph-path {
+  stroke: var(--clr-path);
+  stroke-width: var(--size-path-thickness);
+  cursor: pointer;
+  outline: none;
+  transition: stroke var(--dur-clr-transition) linear;
+}
+
+.graph-panel:has(*:focus) {
+  .graph-path {
+    stroke: var(--clr-active-path);
+  }
+}
+
+.graph-path-use {
+  --size-path-thickness: var(--size-filled-path-thickness);
+  --clr-active-path: var(--clr-filled-path);
+  --clr-path: var(--clr-filled-path);
+
+  pointer-events: none;
+}
+
+.anchor-circle {
+  r: calc((var(--size-anchor-circle) / var(--grid-size)) * 100);
+  stroke-width: calc((var(--size-anchor-stroke) / var(--grid-size)) * 100);
+  fill: var(--clr-anchor-circle);
+  stroke: transparent;
+  cursor: pointer;
+  outline: none;
+  transition:
+    fill var(--dur-clr-transition) linear,
+    stroke var(--dur-clr-transition) linear;
+
+  &:focus {
+    stroke: var(--clr-focus-anchor-circle-stroke);
+  }
+}
+
+.active-anchor-circle {
+  fill: var(--clr-active-anchor-circle);
+}
+
+.ctrl-circle {
+  r: calc((var(--size-ctrl-circle) / var(--grid-size)) * 100);
+  fill: var(--clr-ctrl-circle);
+  cursor: pointer;
+  outline: none;
+  transition: fill var(--dur-clr-transition) linear;
+}
+
+.active-ctrl-circle {
+  fill: var(--clr-active-ctrl-circle);
+}
+
+.ctrl-line {
+  stroke: var(--clr-ctrl-line);
+  stroke-width: 1px;
+  transition: stroke var(--dur-clr-transition) linear;
+}
+
+.active-ctrl-line {
+  stroke: var(--clr-active-ctrl-line);
+}

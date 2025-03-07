@@ -1,0 +1,30 @@
+.shortcuts-dialog {
+  .shortcuts-dialog-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
+
+  ul {
+    color: #ddd;
+    padding-left: 1.2em;
+  }
+
+  .list-item-shortcut {
+    margin: 0;
+    margin-top: 0.5em;
+  }
+
+  .list-bullet-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 0;
+  }
+
+  .list-item-description {
+    color: var(--clr-text);
+    margin-top: 0.5em;
+  }
+}

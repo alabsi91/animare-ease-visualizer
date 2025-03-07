@@ -1,0 +1,126 @@
+{
+  "version": 1.1,
+  "globalAttributes": [
+    {
+      "name": "markdown",
+      "description": "Process the element content as markdown.",
+      "valueSet": "v"
+    },
+    {
+      "name": "md",
+      "description": "Process the element content as markdown.",
+      "valueSet": "v"
+    }
+  ],
+  "tags": [
+    {
+      "name": "script",
+      "attributes": [
+        { "name": "server", "description": "Executes the script tag at build time only.", "valueSet": "v" },
+        {
+          "name": "inline",
+          "description": "Inline the referenced script file by the `src` attribute inside the script tag",
+          "valueSet": "v"
+        },
+        {
+          "name": "bundle",
+          "description": "Bundle the referenced script file by the `src` attribute inside the script tag",
+          "values": [{ "name": "true" }, { "name": "include-packages" }]
+        },
+        {
+          "name": "minify",
+          "description": "Minify the contents of the script tag.",
+          "valueSet": "v"
+        },
+        {
+          "name": "preload",
+          "description": {
+            "kind": "markdown",
+            "value": "Fetch script dependencies in parallel when the page loads.\n\n**Example:** \n```html\n<!-- preload all dependencies -->\n<script src=\"script.js\" preload></script>\n\n<!-- preload only css files and zod.js -->\n<script src=\"script.js\" preload=\"**/*.css **/zod.js\"></script>\n```"
+          }
+        }
+      ]
+    },
+    {
+      "name": "link",
+      "attributes": [
+        {
+          "name": "inline",
+          "description": "Inline the referenced css file by the `href` attribute into a `<style>` tag for `<link>` tags with `rel=stylesheet`.",
+          "valueSet": "v"
+        },
+        {
+          "name": "minify",
+          "description": "Minify the contents of the `<style>` tag when the `inline` attribute is used for `<link>` tags with `rel=stylesheet`.",
+          "valueSet": "v"
+        }
+      ]
+    },
+    {
+      "name": "layout",
+      "description": {
+        "kind": "markdown",
+        "value": "An HTML element to use a defined layout.\n\n**attributes:**\n- **src:** The path to the layout file. **Required**\n- **[props]:** specific for each layout."
+      },
+      "attributes": [
+        {
+          "name": "src",
+          "description": "The path to the layout file."
+        }
+      ]
+    },
+    {
+      "name": "render-static",
+      "description": {
+        "kind": "markdown",
+        "value": "Render JSX component as static HTML at build time.\n\n**attributes:**\n- **from:** The path to the component file. **Required**\n- **import:** The component name in the component file. **Required**\n- **[props]:** to pass JavaScript wrapp the prop value in `{}`, example `data=\"{ [{title: 'title string'}] }\"`"
+      },
+      "attributes": [
+        {
+          "name": "from",
+          "description": "The path to the component file."
+        },
+        {
+          "name": "import",
+          "description": "The component name in the component file."
+        }
+      ]
+    },
+    {
+      "name": "insert",
+      "description": {
+        "kind": "markdown",
+        "value": "Insert content of `<insert />` at a specific location in a target element at build time.\n\n**attributes:**\n- **selector:** CSS selector for the target element. **Required**\n- **where:** Insert position. **Default:** `beforeend`\n- **replace:** Replace the target element. **Overrides:** `where`"
+      },
+      "attributes": [
+        {
+          "name": "selector",
+          "description": "CSS selector for the target element."
+        },
+        {
+          "name": "where",
+          "description": "Insert position: `beforebegin` | `afterbegin` | `beforeend` | `afterend`, **default** is `beforeend`",
+          "values": [{ "name": "beforebegin" }, { "name": "afterbegin" }, { "name": "beforeend" }, { "name": "afterend" }]
+        },
+        {
+          "name": "replace",
+          "description": "Replace the target element. **overrides** `where` attribute.",
+          "valueSet": "v"
+        }
+      ]
+    },
+    {
+      "name": "markdown",
+      "description": {
+        "kind": "markdown",
+        "value": "Include a markdown file in HTML by referencing it.\n\n**attributes:**\n- **src:** The path to the markdown file. **Required**"
+      },
+      "attributes": [
+        {
+          "name": "src",
+          "description": "The path to the markdown file."
+        }
+      ]
+    }
+  ]
+}

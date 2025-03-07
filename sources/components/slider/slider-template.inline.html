@@ -1,0 +1,25 @@
+<!-- @part - The slider container element -->
+<div class="container" part="container">
+  <div class="custom-slider-container" aria-hidden="true">
+    <!-- @part - The slider track element -->
+    <div part="track" class="custom-slider-track">
+      <!-- @part - The slider fill element -->
+      <div class="fill" part="fill"></div>
+    </div>
+    <!-- @part - The slider thumb element -->
+    <div part="thumb" class="custom-slider-thumb"></div>
+  </div>
+
+  <!-- @part - The underlying range input element -->
+  <input id="range-input" part="input" type="range" />
+
+  <div class="ticks" aria-hidden="true"></div>
+
+  <div class="bubble-container" aria-hidden="true">
+    <!-- @part - The bubble element -->
+    <div part="bubble" class="bubble"></div>
+  </div>
+
+  <!-- @slot - For the `<datalist>` element. -->
+  <slot></slot>
+</div>

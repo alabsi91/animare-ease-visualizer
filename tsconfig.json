@@ -1,26 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./sources/*"],
+      "@assets/*": ["./sources/assets/*"],
+      "@styles/*": ["./sources/styles/*"],
+      "@layouts/*": ["./sources/layouts/*"],
+      "@components/*": ["./sources/components/*"],
+      "@parts/*": ["./sources/parts/*"],
+      "@types": ["./sources/types"]
+    },
+    "lib": ["dom", "dom.iterable", "esnext"],
 
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-
-    /* Linting */
+    "types": [],
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "alwaysStrict": true,
+    "target": "ES2022",
+    "module": "Preserve",
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["sources"]
 }

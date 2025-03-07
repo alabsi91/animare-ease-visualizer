@@ -1,0 +1,369 @@
+{
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "root": {
+      "type": "string",
+      "description": "The root directory of the project.\n\n**Default**: `process.cwd()`",
+      "markdownDescription": "The root directory of the project.\n\n**Default**: `process.cwd()`"
+    },
+    "pagesDir": {
+      "type": "string",
+      "description": "The pages directory.\n\n**Default**: `\"pages\"`",
+      "markdownDescription": "The pages directory.\n\n**Default**: `\"pages\"`"
+    },
+    "jsx": {
+      "type": "string",
+      "enum": [
+        "react",
+        "preact",
+        "solid",
+        "none"
+      ],
+      "description": "Process JSX with Babel.\n\n**Choices**: `\"react\" | \"preact\" | \"solid\" | \"none\"`\n\n**Default**: `\"none\"`",
+      "markdownDescription": "Process JSX with Babel.\n\n**Choices**: `\"react\" | \"preact\" | \"solid\" | \"none\"`\n\n**Default**: `\"none\"`"
+    },
+    "ignorePatterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of glob patterns to ignore.\n\n**Default**: `[\"node_modules/**\",\"package.json\",\"package-lock.json\",\"tsconfig.json\",\"eslint.config.mjs\"]`",
+      "markdownDescription": "List of glob patterns to ignore.\n\n**Default**: `[\"node_modules/**\",\"package.json\",\"package-lock.json\",\"tsconfig.json\",\"eslint.config.mjs\"]`"
+    },
+    "browserslist": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of browsers to use.\n\n**Default**: `[\"last 2 Chrome versions\",\"last 2 Firefox versions\",\"last 2 Safari versions\",\"last 2 Edge versions\"]`",
+      "markdownDescription": "List of browsers to use.\n\n**Default**: `[\"last 2 Chrome versions\",\"last 2 Firefox versions\",\"last 2 Safari versions\",\"last 2 Edge versions\"]`"
+    },
+    "dev": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "anyOf": [
+            {
+              "format": "ipv4"
+            },
+            {
+              "format": "ipv6"
+            }
+          ],
+          "description": "Host name.\n\n**Default**: `\"0.0.0.0\"`",
+          "markdownDescription": "Host name.\n\n**Default**: `\"0.0.0.0\"`"
+        },
+        "port": {
+          "type": "string",
+          "description": "Port number.\n\n**Default**: `\"3000\"`",
+          "markdownDescription": "Port number.\n\n**Default**: `\"3000\"`"
+        },
+        "entry": {
+          "type": "string",
+          "description": "Entry url pathname when opening the browser.\n\n**Example:** `http://localhost:3000/subdir`.\n\n**Default**: `\"/\"`",
+          "markdownDescription": "Entry url pathname when opening the browser.\n\n**Example:** `http://localhost:3000/subdir`.\n\n**Default**: `\"/\"`"
+        }
+      },
+      "additionalProperties": false
+    },
+    "build": {
+      "type": "object",
+      "properties": {
+        "outDir": {
+          "type": "string",
+          "description": "The output directory.\n\n**Default**: `\"dist\"`",
+          "markdownDescription": "The output directory.\n\n**Default**: `\"dist\"`"
+        },
+        "minify": {
+          "type": "boolean",
+          "description": "Whether to minify the output.\n\n**Default**: `false`",
+          "markdownDescription": "Whether to minify the output.\n\n**Default**: `false`"
+        },
+        "cleanOutDir": {
+          "type": "boolean",
+          "description": "Clean up the output directory before building.\n\n**Default**: `false`",
+          "markdownDescription": "Clean up the output directory before building.\n\n**Default**: `false`"
+        },
+        "removeUnusedFiles": {
+          "type": "boolean",
+          "description": "Remove unused files from the output directory after building.\n\n**Default**: `false`",
+          "markdownDescription": "Remove unused files from the output directory after building.\n\n**Default**: `false`"
+        },
+        "unusedIgnorePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of glob patterns to ignore when checking for unused files.",
+          "markdownDescription": "List of glob patterns to ignore when checking for unused files."
+        },
+        "nodeModulesOutDir": {
+          "type": "string",
+          "description": "The output directory for npm packages.\n\n**Default**: `packages`",
+          "markdownDescription": "The output directory for npm packages.\n\n**Default**: `packages`"
+        },
+        "webP": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to convert images to WebP.\n\n**Default**: `true`",
+              "markdownDescription": "Whether to convert images to WebP.\n\n**Default**: `true`"
+            },
+            "quality": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "WebP quality of the output image `(0-100)`.\n\n**Default**: `null`",
+              "markdownDescription": "WebP quality of the output image `(0-100)`.\n\n**Default**: `null`"
+            },
+            "preset": {
+              "type": "string",
+              "enum": [
+                "default",
+                "photo",
+                "picture",
+                "drawing",
+                "icon",
+                "text"
+              ],
+              "description": "WebP preset.\n\n**Choices:** `\"default\" | \"picture\" | \"photo\" | \"drawing\" | \"icon\" | \"text\"`.\n\n**Default**: `\"default\"`",
+              "markdownDescription": "WebP preset.\n\n**Choices:** `\"default\" | \"picture\" | \"photo\" | \"drawing\" | \"icon\" | \"text\"`.\n\n**Default**: `\"default\"`"
+            }
+          },
+          "additionalProperties": false,
+          "description": "WebP options",
+          "markdownDescription": "WebP options"
+        }
+      },
+      "required": [
+        "webP"
+      ],
+      "additionalProperties": false,
+      "description": "Build options",
+      "markdownDescription": "Build options"
+    },
+    "generate": {
+      "type": "object",
+      "properties": {
+        "serviceWorker": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "globPatterns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "**Default**: `**/**`",
+              "markdownDescription": "**Default**: `**/**`"
+            },
+            "globIgnores": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "**Default**: `[\"**/node_modules/**/*\"]`",
+              "markdownDescription": "**Default**: `[\"**/node_modules/**/*\"]`"
+            },
+            "globFollow": {
+              "type": "boolean",
+              "description": "**Default**: `true`",
+              "markdownDescription": "**Default**: `true`"
+            },
+            "globStrict": {
+              "type": "boolean",
+              "description": "**Default**: `true`",
+              "markdownDescription": "**Default**: `true`"
+            },
+            "swDest": {
+              "type": "string",
+              "description": "**Default**: `sw.js`",
+              "markdownDescription": "**Default**: `sw.js`"
+            },
+            "sourcemap": {
+              "type": "boolean",
+              "description": "**Default**: `false`",
+              "markdownDescription": "**Default**: `false`"
+            },
+            "skipWaiting": {
+              "type": "boolean",
+              "description": "**Default**: `true`",
+              "markdownDescription": "**Default**: `true`"
+            },
+            "clientsClaim": {
+              "type": "boolean",
+              "description": "**Default**: `true`",
+              "markdownDescription": "**Default**: `true`"
+            },
+            "inlineWorkboxRuntime": {
+              "type": "boolean",
+              "description": "**Default**: `false`",
+              "markdownDescription": "**Default**: `false`"
+            },
+            "cleanupOutdatedCaches": {
+              "type": "boolean",
+              "description": "**Default**: `true`",
+              "markdownDescription": "**Default**: `true`"
+            },
+            "offlineGoogleAnalytics": {
+              "type": "boolean",
+              "description": "**Default**: `false`",
+              "markdownDescription": "**Default**: `false`"
+            },
+            "cacheId": {
+              "type": "string",
+              "description": "**Default**: `undefined`",
+              "markdownDescription": "**Default**: `undefined`"
+            },
+            "directoryIndex": {
+              "type": "string",
+              "description": "**Default**: `undefined`",
+              "markdownDescription": "**Default**: `undefined`"
+            },
+            "maximumFileSizeToCacheInBytes": {
+              "type": "number",
+              "description": "**Default**: `2097152`",
+              "markdownDescription": "**Default**: `2097152`"
+            },
+            "modifyURLPrefix": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "**Default**: `undefined`",
+              "markdownDescription": "**Default**: `undefined`"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Generate service worker.\n\n**Default**: `false`",
+          "markdownDescription": "Generate service worker.\n\n**Default**: `false`"
+        },
+        "sitemap": {
+          "type": "string",
+          "format": "uri",
+          "description": "Generate sitemap.xml if a url is provided.\n\n**Default**: `\"\"`",
+          "markdownDescription": "Generate sitemap.xml if a url is provided.\n\n**Default**: `\"\"`"
+        },
+        "robotsTxt": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "userAgent": {
+                "type": "string"
+              },
+              "allow": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "disallow": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "userAgent"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Generate `robots.txt`",
+          "markdownDescription": "Generate `robots.txt`"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Generate options",
+      "markdownDescription": "Generate options"
+    },
+    "packages": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Entry path relative to the package. Example: `\"./cjs/react-dom.production.min.js\"`",
+              "markdownDescription": "Entry path relative to the package. Example: `\"./cjs/react-dom.production.min.js\"`"
+            },
+            "esm": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether the entry point supports ESM. Default: `true`",
+              "markdownDescription": "Whether the entry point supports ESM. Default: `true`"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "description": "**Example:**\n ```json\n\"packages\": {\n    \"react-dom\": {\n      \"./client\": {\n        \"path\": \"./cjs/react-dom.production.min.js\",\n        \"esm\": false\n      }\n    }\n}\n```",
+        "markdownDescription": "**Example:**\n ```json\n\"packages\": {\n    \"react-dom\": {\n      \"./client\": {\n        \"path\": \"./cjs/react-dom.production.min.js\",\n        \"esm\": false\n      }\n    }\n}\n```"
+      },
+      "description": "Unfortunately, not all NPM packages provide a clear entry point for ESM, and some offer hidden entry points that can reduce bundle size. For example, `lottie-web` includes a lighter version that isn’t specified in the `package.json` file. Additionally, with packages like `react` and `react-dom`, you can target only essential files to significantly decrease the output size.\n\n**Example:**\n```json\n\"packages\": {\n    \"react-dom\": {\n      \"./client\": {\n        \"path\": \"./cjs/react-dom.production.min.js\",\n        \"esm\": false\n      }\n    }\n}\n```",
+      "markdownDescription": "Unfortunately, not all NPM packages provide a clear entry point for ESM, and some offer hidden entry points that can reduce bundle size. For example, `lottie-web` includes a lighter version that isn’t specified in the `package.json` file. Additionally, with packages like `react` and `react-dom`, you can target only essential files to significantly decrease the output size.\n\n**Example:**\n```json\n\"packages\": {\n    \"react-dom\": {\n      \"./client\": {\n        \"path\": \"./cjs/react-dom.production.min.js\",\n        \"esm\": false\n      }\n    }\n}\n```"
+    },
+    "babelPlugins": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "postcssPlugins": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

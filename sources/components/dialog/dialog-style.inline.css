@@ -1,0 +1,163 @@
+:host {
+  /* The size of the close button svg icon. */
+  --close-icon-size: 24px;
+
+  /* The color of the close button svg icon. */
+  --close-icon-color: currentcolor;
+
+  /* The duration of the open/close animation. */
+  --animations-duration: 0.3s;
+
+  /* The color of the dialog backdrop. */
+  --backdrop-color: rgb(0 0 0 / 55%);
+
+  /* The color of the dialog background. */
+  --background-color: #303030;
+
+  display: contents;
+
+  @media (prefers-reduced-motion) {
+    --animations-duration: 0s;
+  }
+}
+
+dialog {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: unset;
+  max-height: unset;
+  border: none;
+  padding: 0;
+  background: var(--backdrop-color);
+  backdrop-filter: blur(2px);
+  overflow: clip;
+}
+
+.content {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: calc(90% - 80px);
+  height: fit-content;
+  max-width: 600px;
+  max-height: 80%;
+  padding: 2em;
+  border-radius: 10px;
+  background-color: var(--background-color);
+  box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
+}
+
+dialog::backdrop {
+  display: none;
+}
+
+dialog[open] .content {
+  animation: show var(--animations-duration) ease forwards;
+}
+
+@keyframes show {
+  from {
+    transform: translateY(70%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+dialog[open] {
+  animation: bg-show var(--animations-duration) ease forwards;
+}
+
+@keyframes bg-show {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+dialog.hide .content {
+  animation: hide var(--animations-duration) ease-in forwards;
+}
+
+@keyframes hide {
+  to {
+    transform: translateY(70%);
+    opacity: 0;
+  }
+}
+
+dialog.hide {
+  animation: bg-hide var(--animations-duration) ease-in forwards;
+}
+
+@keyframes bg-hide {
+  to {
+    opacity: 0;
+  }
+}
+
+dialog button.close-button {
+  float: inline-end;
+  display: grid;
+  place-items: center;
+  margin-top: -1em;
+  margin-inline-end: -1em;
+  padding: 0.2rem;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 200ms ease-in-out;
+
+  @media (prefers-reduced-motion) {
+    transition: none;
+  }
+}
+
+dialog button.close-button svg {
+  width: var(--close-icon-size);
+  height: var(--close-icon-size);
+  fill: var(--close-icon-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  dialog button.close-button:hover {
+    background-color: hsl(from var(--close-icon-color) h s l / 10%);
+  }
+
+  @supports (scrollbar-width: 6px) {
+    .custom-scrollbar {
+      scrollbar-width: 6px;
+      scrollbar-color: #7a7a7a50;
+    }
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: #7a7a7a00;
+  }
+
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #7a7a7a50;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}

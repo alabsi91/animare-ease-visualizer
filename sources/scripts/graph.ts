@@ -1,0 +1,55 @@
+import { elements } from "./elements";
+import { graphAnimation } from "./graphAnimation";
+import { checkOverlap } from "./helpers";
+import { storage } from "./storage";
+
+export function initGraph() {
+  const size = Math.max(Math.min(elements.graphEditor.offsetWidth, elements.graphEditor.offsetHeight) - 200, 200);
+  elements.graphEditor.settings.panelSize = size;
+  elements.graphEditor.graphPanel.center();
+
+  const lastPathDrawn = storage.lastPathDrawn;
+  if (lastPathDrawn) {
+    elements.graphEditor.setFromPathStr(lastPathDrawn);
+    graphAnimation.setCustomEase(lastPathDrawn);
+    checkGraphOverlap();
+  }
+
+  elements.graphEditor.addEventListener("complete", graphEditorCompleteHandler);
+}
+
+export function checkGraphOverlap() {
+  const isOverlapping = checkOverlap(elements.graphEditor.points.value);
+  if (isOverlapping) {
+    elements.graphEditor.style.setProperty("--clr-path", "red");
+    elements.graphEditor.style.setProperty("--clr-active-path", "red");
+    elements.alert.alert({
+      type: "warning",
+      message: "Invalid graph: Easing function cannot move backward in time",
+      closeBtn: false,
+    });
+    return;
+  }
+
+  elements.graphEditor.style.removeProperty("--clr-path");
+  elements.graphEditor.style.removeProperty("--clr-active-path");
+}
+
+function graphEditorCompleteHandler() {
+  onGraphPathChange(elements.graphEditor.points.valueStr);
+}
+
+export function onGraphPathChange(pathStr: string) {
+  // animation
+  graphAnimation.setCustomEase(pathStr);
+
+  // presets menu
+  const currentPreset = elements.presetsMenu.value;
+  if (currentPreset !== "none") elements.presetsMenu.value = "none";
+
+  // save to local storage
+  storage.lastPathDrawn = pathStr;
+
+  // check overlap
+  checkGraphOverlap();
+}

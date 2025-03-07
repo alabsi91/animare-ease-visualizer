@@ -1,0 +1,170 @@
+/* stylelint-disable property-no-vendor-prefix */
+:root {
+  --clr-accent: #a370f0;
+  --clr-text: #aaa;
+  --clr-text-faded: #808080;
+  --clr-navigation-background: #14141450;
+  --clr-border: #2b2b2b;
+  --clr-input: #303030;
+  --clr-input-active: #0e0e10;
+  --clr-bg: #222;
+
+  @media screen and (max-width: 800px) {
+    --base-font-size: 12px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 1rem;
+  font-family: -apple-system, blinkmacsystemfont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--clr-bg);
+  background-image: radial-gradient(#303030 1px, var(--clr-bg) 1px);
+  background-size: 20px 20px;
+  color: var(--clr-text);
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
+button,
+label,
+input {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+label {
+  cursor: pointer;
+}
+
+input {
+  padding: 0.5em;
+  border: 1px solid #ffffff1a;
+  border-radius: 4px;
+  background-color: var(--clr-input);
+  color: var(--clr-text);
+  outline: none;
+  transition-property: border-color, background-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+input:focus {
+  background-color: var(--clr-input-active);
+  border-color: var(--clr-accent);
+  color: hsl(from var(--clr-text) h s calc(l * 1.2));
+}
+
+input[type="number"] {
+  font-family: monospace;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+kbd {
+  display: inline-block;
+  text-align: center;
+  border: 2px solid var(--clr-accent);
+  border-radius: 0.25em;
+  min-width: 1.5em;
+  margin-right: 0.15em;
+  padding: 0 5px;
+  box-shadow: 2px 2px #252525;
+
+  & > * {
+    display: block;
+  }
+}
+
+alert-component::part(item-container) {
+  flex-direction: row;
+}
+
+graph-editor {
+  background-color: unset;
+  background-image: unset;
+  background-size: unset;
+  height: 100dvh;
+}
+
+code-editor {
+  --background-color: var(--clr-input);
+
+  border: solid 1px transparent;
+}
+
+code-editor::part(wrapper) {
+  outline: none;
+  transition-property: border-color, background-color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+code-editor:state(focus)::part(wrapper) {
+  background-color: var(--clr-input-active);
+  border-color: var(--clr-accent);
+}
+
+code-editor::part(box) {
+  padding-bottom: 1em;
+  min-width: 0;
+}
+
+toggle-checkbox {
+  --active-color: var(--clr-accent);
+  --inactive-color: #00000021;
+
+  margin-block: 1em;
+
+  &::part(label) {
+    text-align: start;
+  }
+}
+
+select-option {
+  --active-color: var(--clr-accent);
+
+  &::part(option) {
+    justify-content: space-between;
+  }
+}
+
+menu-component::part(container) {
+  background-color: hsl(from var(--clr-input-active) h s l / 90%);
+  backdrop-filter: blur(5px);
+  padding: 0.5em;
+}
+
+slider-component {
+  --thickness: 10px;
+  --filled-color: var(--clr-accent);
+
+  &::part(bubble) {
+    display: none;
+  }
+}
+
+dialog-component {
+  &::part(content) {
+    overflow: auto;
+  }
+}

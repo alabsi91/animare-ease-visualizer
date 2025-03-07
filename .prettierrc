@@ -1,0 +1,10 @@
+{
+  "plugins": ["prettier-plugin-jsdoc"],
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "printWidth": 130,
+  "semi": true,
+  "arrowParens": "avoid",
+  "htmlWhitespaceSensitivity": "ignore",
+  "singleQuote": false
+}

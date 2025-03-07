@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="@styles/global.css" inline />
+    <link rel="stylesheet" href="@styles/main.css" inline />
+    <link rel="manifest" href="@assets/favicon/manifest.json" />
+    <link rel="icon" href="@assets/favicon/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="@assets/favicon/apple-touch-icon.png" />
+    <meta name="description" content="{{ description }}" />
+    <title>{{ title }}</title>
+  </head>
+  <slot />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAU26SFWmVYNvIFymLkA55DUhhiZ_3vBME",
+      authDomain: "animare-ease-visualizer.firebaseapp.com",
+      projectId: "animare-ease-visualizer",
+      storageBucket: "animare-ease-visualizer.appspot.com",
+      messagingSenderId: "991573433444",
+      appId: "1:991573433444:web:00569b4bf02b4edfaad371",
+      measurementId: "G-KG471HBTE5",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    getAnalytics(app);
+  </script>
+</html>

@@ -1,0 +1,10 @@
+<!-- @part - The tooltip container element -->
+<div class="popover" popover="manual" part="container" aria-hidden="true" tabindex="-1">
+  <!-- @slot - The content of the tooltip. -->
+  <slot></slot>
+
+  <!-- @part - The arrow element -->
+  <svg part="arrow" class="arrow" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M12 12L0 0H24L12 12Z" vector-effect="non-scaling-stroke" />
+  </svg>
+</div>

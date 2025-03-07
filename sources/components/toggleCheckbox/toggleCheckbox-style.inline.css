@@ -1,0 +1,101 @@
+:host {
+  /* The easing function of the toggle animation. */
+  --easing: ease;
+
+  /* The duration of the toggle animation. */
+  --animation-duration: 0.3s;
+
+  /* The color of the toggle checkbox when it's checked. */
+  --active-color: #2196f3;
+
+  /* The color of the toggle checkbox when it's not checked. */
+  --inactive-color: transparent;
+
+  /* The color of the checked icon. */
+  --checked-icon-color: #fff;
+
+  /* The size of the toggle checkbox. */
+  --size: 24px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media (prefers-reduced-motion) {
+    --animation-duration: 0s;
+  }
+}
+
+.checkbox {
+  display: grid;
+  place-items: stretch;
+  width: var(--size);
+  height: var(--size);
+  border: solid 2px #494949;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: var(--inactive-color);
+  margin: 0;
+  padding: 0;
+  overflow: clip;
+  cursor: pointer;
+  transition-property: border-color;
+  transition-duration: calc(var(--animation-duration) / 2);
+  transition-timing-function: var(--easing);
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.background {
+  background-color: transparent;
+  scale: 0;
+  border-radius: 50%;
+  transition-property: background-color, border-radius, scale;
+  transition-duration: calc(var(--animation-duration) / 2);
+  transition-timing-function: var(--easing);
+}
+
+.checked-icon {
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  fill: var(--checked-icon-color);
+  scale: 0;
+  translate: 0 100%;
+  transition-property: scale, translate, visibility;
+  transition-behavior: allow-discrete;
+  transition-duration: var(--animation-duration);
+  transition-timing-function: var(--easing);
+}
+
+.checkbox[aria-checked="true"] {
+  border-width: 0;
+  border-color: transparent;
+
+  .background {
+    background-color: var(--active-color);
+    border-radius: inherit;
+    scale: 1;
+  }
+
+  .checked-icon {
+    scale: 1;
+    visibility: visible;
+    translate: 0;
+  }
+}
+
+.checkbox[aria-disabled="true"] {
+  cursor: unset;
+  opacity: 0.5;
+}
+
+label {
+  flex: 1;
+  user-select: none;
+  cursor: pointer;
+}

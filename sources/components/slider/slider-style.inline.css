@@ -1,0 +1,242 @@
+:host {
+  /* prettier-ignore */
+  --easing: --ease-spring(1, 100, 5, 0, 1500);
+
+  /* The easing function of the slider animation when it's active. */
+  --active-easing: --ease-out-back(2);
+
+  /* The duration of the slider animation when it's not active. */
+  --animation-duration: 0.4s;
+
+  /* The duration of the slider animation when it is active. */
+  --active-animation-duration: 0.25s;
+
+  /* @ignore */
+  --value: 0%;
+
+  /* The thickness of the slider. */
+  --thickness: 18px;
+
+  /* The size of the slider thumb. */
+  --thumb-size: 22px;
+
+  /* The background color of the slider thumb. */
+  --thumb-color: #fff;
+
+  /* The background color of filled part of the slider track. */
+  --filled-color: #2196f3;
+
+  /* The color of the empty part of the slider track. */
+  --empty-color: #aaa;
+
+  /* The scale of the slider when it is active. */
+  --scale-by: 2;
+
+  /* Whether to use the RTL direction. Use `-1` for `false` and `1` for `true`. The component will detect the direction automatically. */
+  --is-rtl: -1;
+
+  @media (prefers-reduced-motion) {
+    --animation-duration: 0s;
+    --active-animation-duration: 0s;
+  }
+}
+
+label {
+  display: block;
+  text-align: left;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  transition: opacity var(--active-animation-duration) var(--active-easing);
+}
+
+label:has(+ .active) {
+  opacity: 0;
+}
+
+.container {
+  display: grid;
+  place-items: center;
+
+  &.disabled {
+    opacity: 0.5;
+  }
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.custom-slider-container {
+  position: relative;
+  width: calc(100% - var(--thumb-size));
+  height: var(--thickness);
+  pointer-events: none;
+}
+
+.custom-slider-track {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  background: var(--empty-color);
+  background-repeat: no-repeat;
+  overflow: clip;
+  box-shadow: 0 0.1rem 1rem -0.5rem rgb(0 0 0 / 40%);
+  transition-property: transform, border-radius;
+  transition-duration: var(--animation-duration);
+  transition-timing-function: var(--easing);
+}
+
+.fill {
+  border-radius: inherit;
+  width: calc(var(--value) * 1%);
+  height: 100%;
+  background: var(--filled-color);
+  background-repeat: no-repeat;
+}
+
+.custom-slider-thumb {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: calc(var(--value) * 1%);
+  translate: calc(50% * var(--is-rtl)) -50%;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: calc(var(--thumb-size) / 2);
+  background-color: var(--thumb-color);
+  box-shadow: 0 0 7px 0 #0006;
+  transition-property: transform, border-radius, width, height, box-shadow;
+  transition-duration: var(--animation-duration);
+  transition-timing-function: var(--easing);
+}
+
+.active .custom-slider-container {
+  .custom-slider-track {
+    transform: scaleY(var(--scale-by));
+    border-radius: 0;
+    transition-duration: var(--active-animation-duration);
+    transition-timing-function: var(--active-easing);
+  }
+
+  .custom-slider-thumb {
+    transform: scaleY(var(--scale-by));
+    border-radius: 0;
+    width: 1px;
+    height: 100%;
+    box-shadow: none;
+    transition-duration: var(--active-animation-duration);
+    transition-timing-function: var(--active-easing);
+  }
+}
+
+.ticks {
+  position: relative;
+  width: calc(100% - var(--thumb-size));
+  height: calc(var(--thickness) + 12px);
+  pointer-events: none;
+  transition: transform var(--animation-duration) var(--easing);
+
+  div {
+    position: absolute;
+    bottom: 0;
+    translate: -50% 0;
+    width: 1px;
+    height: 4px;
+    background: var(--thumb-color);
+  }
+}
+
+.active .ticks {
+  transform: translateY(calc((var(--thickness) * (var(--scale-by) - 1)) / 2));
+  transition-duration: var(--active-animation-duration);
+  transition-timing-function: var(--active-easing);
+}
+
+.bubble-container {
+  position: relative;
+  width: calc(100% - var(--thumb-size));
+  height: var(--thickness);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bubble {
+  position: absolute;
+  top: -5px;
+  inset-inline-start: calc(var(--value) * 1%);
+  translate: calc(50% * var(--is-rtl)) -100%;
+  transform: scale(0);
+  opacity: 0;
+  font-weight: bold;
+  font-family: monospace;
+  transition-property: transform, opacity;
+  transition-duration: var(--animation-duration);
+  transition-timing-function: var(--easing);
+}
+
+.active .bubble-container {
+  transform: translateY(calc((var(--thickness) * (1 - var(--scale-by))) / 2));
+  transition-duration: var(--active-animation-duration);
+  transition-timing-function: var(--active-easing);
+
+  .bubble {
+    transform: scale(1);
+    opacity: 1;
+    transition-duration: var(--active-animation-duration);
+    transition-timing-function: var(--active-easing);
+  }
+}
+
+input[type="range"] {
+  background: transparent;
+  width: 100%;
+  min-block-size: 22px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.disabled input[type="range"] {
+  cursor: unset;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: var(--thickness);
+}
+
+input[type="range"]::-moz-range-track {
+  height: var(--thickness);
+  background: transparent;
+  border: 0;
+}
+
+input[type="range"]::-ms-track {
+  height: var(--thickness);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  margin-top: calc((var(--thickness) - var(--thumb-size) - 1px) / 2);
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  background: transparent;
+  border: none;
+}
+
+input[type="range"]::-moz-range-thumb {
+  appearance: none;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  background: transparent;
+  border: none;
+}
+
+input[type="range"]::-ms-thumb {
+  appearance: none;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  background: transparent;
+  border: none;
+  margin-top: 0;
+}

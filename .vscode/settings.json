@@ -1,0 +1,25 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.enable": true,
+  "eslint.validate": ["javascript", "html"],
+  "vsicons.associations.files": [{ "icon": "bolt", "extensions": [".static.json"], "format": "svg", "overrides": "json" }],
+  "json.schemas": [
+    {
+      "fileMatch": [".static.json"],
+      "url": ".vscode/configSchema.json"
+    }
+  ],
+  "html.customData": [
+    ".vscode/static.html-data.json",
+    "./sources/components/codeEditor/codeEditor.html-data.json",
+    "./sources/components/alert/alert.html-data.json",
+    "./sources/components/toggleCheckbox/toggleCheckbox.html-data.json",
+    "./sources/components/menu/menu.html-data.json",
+    "./sources/components/selectOption/selectOption.html-data.json",
+    "./sources/components/tooltip/tooltip.html-data.json",
+    "./sources/components/dialog/dialog.html-data.json",
+    "./sources/components/accordion/accordion.html-data.json",
+    "./sources/components/slider/slider.html-data.json",
+    "./sources/components/colorPicker/colorPicker.html-data.json"
+  ]
+}

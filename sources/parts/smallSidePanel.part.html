@@ -1,0 +1,61 @@
+<div class="small-side-panel">
+  <div class="panel-container">
+    <div>
+      <button class="toggle-panel-btn show-side-panel" aria-label="show side panel">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+          <path
+            d="M360-160v-640q0-17 11.5-28.5T400-840q17 0 28.5 11.5T440-800v640q0 17-11.5 28.5T400-120q-17 0-28.5-11.5T360-160Zm160-168v-304q0-14 12-19t22 5l138 138q12 12 12 28t-12 28L554-314q-10 10-22 5t-12-19Z"
+          />
+        </svg>
+      </button>
+      <tooltip-component for=".show-side-panel" prefer-direction="right">
+        <span>Show side panel</span>
+      </tooltip-component>
+
+      <div class="divider"></div>
+
+      <button class="small-panel-controls-btn play-btn" aria-label="Play animation">
+        <svg class="small-control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+          <path d="M320-200v-560l440 280-440 280Z" />
+        </svg>
+      </button>
+
+      <br />
+
+      <button class="small-panel-controls-btn pause-btn" aria-label="Pause animation">
+        <svg class="small-control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+          <path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
+        </svg>
+      </button>
+
+      <br />
+
+      <button class="small-panel-controls-btn stop-btn" aria-label="Stop animation">
+        <svg class="small-control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+          <path d="M240-240v-480h480v480H240Z" />
+        </svg>
+      </button>
+    </div>
+
+    <div>
+      <div class="divider"></div>
+
+      <button
+        class="icon-btn open-shortcuts-dialog"
+        dialog-open="shortcuts-dialog"
+        aria-label="Open keyboard shortcuts dialog"
+        style="margin-bottom: 1em"
+      >
+        <svg src="@assets/keyboard.svg" aria-hidden="true" inline></svg>
+      </button>
+      <tooltip-component for=".small-side-panel .open-shortcuts-dialog" prefer-direction="left">
+        <span>Keyboard Shortcuts</span>
+      </tooltip-component>
+
+      <layout src="./contactUs.part.html"></layout>
+      <tooltip-component for=".small-side-panel .contact-us-custom-trigger" prefer-direction="right">
+        <span>Contact Us</span>
+      </tooltip-component>
+    </div>
+  </div>
+</div>

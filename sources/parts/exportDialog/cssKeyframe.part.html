@@ -1,0 +1,46 @@
+<dialog-component class="export-dialog" id="export-css-keyframe-dialog" backdrop-close="false">
+  <h1 class="export-dialog-title">Export as CSS Keyframes</h1>
+
+  <div class="content">
+    <div class="warning" id="export-css-keyframe-warning">
+      The current path uses a single curve, which can be represented with the CSS
+      <strong>cubic-bezier()</strong>
+      function. Consider using multiple curves to generate the result as a keyframes animation.
+    </div>
+
+    <div class="export-inputs-container" id="export-css-keyframe-inputs-container">
+      <div class="label-input-container">
+        <label for="export-css-keyframe-property">Property</label>
+        <code-editor id="export-css-keyframe-property" one-line="true" stylesheet=".atom-one-dark">
+          <pre>transform: translateX({value}%);</pre>
+        </code-editor>
+      </div>
+
+      <div class="label-input-container">
+        <label for="export-css-keyframe-samples">Samples</label>
+        <input type="number" name="samples" id="export-css-keyframe-samples" autocomplete="off" value="100" />
+      </div>
+
+      <div class="label-input-container">
+        <label for="export-css-keyframe-from">From</label>
+        <input type="number" name="from" id="export-css-keyframe-from" autocomplete="off" value="0" />
+      </div>
+
+      <div class="label-input-container">
+        <label for="export-css-keyframe-to">To</label>
+        <input type="number" name="to" id="export-css-keyframe-to" autocomplete="off" value="100" />
+      </div>
+    </div>
+
+    <code-editor
+      class="export-code-preview"
+      id="export-css-keyframe-code-preview"
+      stylesheet=".atom-one-dark"
+      linenumbers="true"
+      copy-button="true"
+      readonly="true"
+    ></code-editor>
+
+    <button class="export-btn" id="export-css-keyframe-copy-btn">Copy</button>
+  </div>
+</dialog-component>
