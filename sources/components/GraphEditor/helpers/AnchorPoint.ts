@@ -241,20 +241,20 @@ export class AnchorPoint {
 
       // snap to grid
       if (this.graphEditor.settings.anchorSnapToGrid) {
-        x = this.#gridPoints.find(p => x + snapThreshold > p && x - snapThreshold < p) || x;
-        y = this.#gridPoints.find(p => y + snapThreshold > p && y - snapThreshold < p) || y;
+        x = this.#gridPoints.find(p => x + snapThreshold > p && x - snapThreshold < p) ?? x;
+        y = this.#gridPoints.find(p => y + snapThreshold > p && y - snapThreshold < p) ?? y;
       }
 
       // snap to other anchor points
       if (this.graphEditor.settings.anchorSnapToOtherAnchors) {
-        x = this.#otherAnchorXCoordinates.find(p => x + snapThreshold > p && x - snapThreshold < p) || x;
-        y = this.#otherAnchorYCoordinates.find(p => y + snapThreshold > p && y - snapThreshold < p) || y;
+        x = this.#otherAnchorXCoordinates.find(p => x + snapThreshold > p && x - snapThreshold < p) ?? x;
+        y = this.#otherAnchorYCoordinates.find(p => y + snapThreshold > p && y - snapThreshold < p) ?? y;
       }
 
       // snap to other control points
       if (this.graphEditor.settings.anchorSnapToOtherCtrl) {
-        x = this.#otherCtrlXCoordinates.find(p => x + snapThreshold > p && x - snapThreshold < p) || x;
-        y = this.#otherCtrlYCoordinates.find(p => y + snapThreshold > p && y - snapThreshold < p) || y;
+        x = this.#otherCtrlXCoordinates.find(p => x + snapThreshold > p && x - snapThreshold < p) ?? x;
+        y = this.#otherCtrlYCoordinates.find(p => y + snapThreshold > p && y - snapThreshold < p) ?? y;
       }
     }
 
