@@ -66,10 +66,9 @@ function createAnimation() {
   return {
     setCustomEase: (pathStr: string) => {
       anim.updateValues([{ name: "ease", ease: ease.custom(pathStr) }]);
-      if (!anim.timelineInfo.isPaused) return;
+      if (anim.timelineInfo.isFinished || anim.timelineInfo.isFirstFrame) return;
       anim.seek(anim.timelineInfo.elapsedTime);
       anim.playOneFrame();
-      anim.timelineInfo.isPaused = true;
     },
     play: () => {
       // reset
