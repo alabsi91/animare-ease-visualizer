@@ -14,8 +14,8 @@ export type ViewBoxParams = {
  * - The viewBox size should match the size of it's html container
  */
 export class GraphViewPort {
-  graphEditor: GraphEditor;
-  element: SVGElement;
+  readonly graphEditor: GraphEditor;
+  readonly element: SVGElement;
 
   #x = 0;
   /** ViewBox x */

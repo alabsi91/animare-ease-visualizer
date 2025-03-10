@@ -2,8 +2,8 @@ import type { GraphEditor } from "../graphEditorComponent";
 import type { KeyModifiers } from "./types";
 
 class KeyboardAssignment {
-  keys: Set<string>;
-  modifiers: Set<KeyModifiers>;
+  readonly keys: Set<string>;
+  readonly modifiers: Set<KeyModifiers>;
 
   constructor({ modifiers = [], keys = [] }: { modifiers?: KeyModifiers[]; keys?: string[] }) {
     this.keys = new Set(keys.map(k => k.toLowerCase()));

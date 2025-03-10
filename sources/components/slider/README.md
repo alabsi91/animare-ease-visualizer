@@ -33,15 +33,15 @@ A wrapper around `<input type="range" />` that allow custom styling.
 
 **CSS Properties**
 
-- `--easing`
-- `--active-easing` The easing function of the slider animation when it's active.
-- `--animation-duration` The duration of the slider animation when it's not active.
-- `--active-animation-duration` The duration of the slider animation when it is active.
-- `--thickness` The thickness of the slider.
-- `--thumb-size` The size of the slider thumb.
-- `--thumb-color` The background color of the slider thumb.
-- `--filled-color` The background color of filled part of the slider track.
-- `--empty-color` The color of the empty part of the slider track.
+- `--ease-anim`
+- `--ease-active-anim` The easing function of the slider animation when it's active.
+- `--dur-anim` The duration of the slider animation when it's not active.
+- `--dur-anim-active` The duration of the slider animation when it is active.
+- `--sz-thickness` The thickness of the slider.
+- `--sz-thumb` The size of the slider thumb.
+- `--clr-thumb` The background color of the slider thumb.
+- `--clr-filled` The background color of filled part of the slider track.
+- `--clr-empty` The color of the empty part of the slider track.
 - `--scale-by` The scale of the slider when it is active.
 - `--is-rtl` Whether to use the RTL direction. Use `-1` for `false` and `1` for `true`. The component will detect the direction automatically.
 

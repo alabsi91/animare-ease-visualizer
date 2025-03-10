@@ -1,6 +1,16 @@
-import type { IWebComponent } from "../wc";
+import type { BooleanString, IWebComponent, WComponent } from "../wc";
 
-type ObservedAttributes = (typeof DialogComponent.observedAttributes)[number];
+type ExtraAttributes = {
+  "backdrop-close": BooleanString;
+  "escape-close": BooleanString;
+  "close-button": BooleanString;
+  onopen: (e: CustomEvent) => void;
+  onclose: (e: CustomEvent) => void;
+};
+
+type ComponentTypes = WComponent<typeof DialogComponent, ExtraAttributes>;
+
+const COMPONENT_NAME = "dialog-component";
 
 /**
  * A dialog web component.
@@ -14,14 +24,28 @@ type ObservedAttributes = (typeof DialogComponent.observedAttributes)[number];
  *   listener to close the dialog.
  */
 class DialogComponent extends HTMLElement implements IWebComponent {
-  #dialogEl: HTMLDialogElement;
-  #closeButtonEl: HTMLButtonElement;
+  static readonly htmlFragment = (() => {
+    const template = document.createElement("template");
+    template.innerHTML = import_as_string("./dialog-template.inline.html", { minify: true });
+    return template.content;
+  })();
 
-  /** Fired when the dialog is opened */
-  #openEvent = new CustomEvent("open");
-  /** Fired when the dialog is closed */
-  #closeEvent = new CustomEvent("close");
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./dialog-style.inline.css", { minify: true }));
+    return sheet;
+  })();
 
+  readonly #dialogEl: HTMLDialogElement;
+  readonly #closeButtonEl: HTMLButtonElement;
+  readonly #abortController = new AbortController();
+
+  /** Event fired when the dialog is opened. */
+  readonly #openEvent = new CustomEvent("open");
+  /** Event fired when the dialog is closed. */
+  readonly #closeEvent = new CustomEvent("close");
+
+  //#region Public Props
   /** Dismiss the dialog when clicking outside the dialog. Defaults to `true`. */
   backdropClose = true;
 
@@ -47,19 +71,15 @@ class DialogComponent extends HTMLElement implements IWebComponent {
   get dialog(): HTMLDialogElement {
     return this.#dialogEl;
   }
+  //#endregion
 
+  //#region HTMLElement Methods
   constructor() {
     super();
 
-    const style = import_as_string("@components/dialog/dialog-style.inline.css", { minify: true });
-    const template = import_as_string("@components/dialog/dialog-template.inline.html", { minify: true });
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-
     const shadow = this.attachShadow({ mode: "open" });
-    shadow.innerHTML = template;
-    shadow.appendChild(styleTag);
+    shadow.adoptedStyleSheets = [DialogComponent.stylesheet];
+    shadow.appendChild(DialogComponent.htmlFragment.cloneNode(true));
 
     this.#dialogEl = shadow.querySelector("dialog")!;
 
@@ -80,13 +100,19 @@ class DialogComponent extends HTMLElement implements IWebComponent {
       this.#dialogEl.setAttribute(attr.name, attr.value);
     }
 
-    // to force our close animation
-    this.#dialogEl.addEventListener("cancel", e => {
-      e.preventDefault();
-      if (this.escapeClose) this.close();
-    });
+    const signal = this.#abortController.signal;
 
-    this.#closeButtonEl.addEventListener("click", this.close);
+    // to force our close animation
+    this.#dialogEl.addEventListener(
+      "cancel",
+      e => {
+        e.preventDefault();
+        if (this.escapeClose) this.close();
+      },
+      { signal }
+    );
+
+    this.#closeButtonEl.addEventListener("click", this.close, { signal });
 
     // triggers
     const id = this.getAttribute("id");
@@ -95,30 +121,34 @@ class DialogComponent extends HTMLElement implements IWebComponent {
       openTriggers.forEach(trigger => {
         trigger.setAttribute("aria-haspopup", "dialog");
         if (this.id) trigger.setAttribute("aria-controls", this.id);
-        return trigger.addEventListener("click", this.open);
+        trigger.addEventListener("click", this.open, { signal });
       });
 
       const closeTriggers = document.querySelectorAll(`button[dialog-close="${id}"]`);
       closeTriggers.forEach(trigger => {
         trigger.setAttribute("aria-haspopup", "dialog");
         if (this.id) trigger.setAttribute("aria-controls", this.id);
-        return trigger.addEventListener("click", this.close);
+        trigger.addEventListener("click", this.close, { signal });
       });
 
       const toggleTriggers = document.querySelectorAll(`button[dialog-toggle="${id}"]`);
       toggleTriggers.forEach(trigger => {
         trigger.setAttribute("aria-haspopup", "dialog");
         if (this.id) trigger.setAttribute("aria-controls", this.id);
-        return trigger.addEventListener("click", this.toggle);
+        trigger.addEventListener("click", this.toggle, { signal });
       });
     }
+  }
+
+  disconnectedCallback(): void {
+    this.#abortController.abort();
   }
 
   static get observedAttributes() {
     return ["backdrop-close", "escape-close", "close-button"] as const;
   }
 
-  attributeChangedCallback(name: ObservedAttributes, _oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "backdrop-close") {
       this.backdropClose = newValue === "true" || newValue === "";
       return;
@@ -138,12 +168,13 @@ class DialogComponent extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "backdrop-close") return this.backdropClose.toString();
     if (qualifiedName === "close-button") return this.#showCloseButton.toString();
     if (qualifiedName === "escape-close") return this.escapeClose.toString();
     return super.getAttribute(qualifiedName);
   }
+  //#endregion
 
   #clickOutside(e: MouseEvent) {
     const content = this.#dialogEl.querySelector(".content");
@@ -158,6 +189,7 @@ class DialogComponent extends HTMLElement implements IWebComponent {
     }
   }
 
+  //#region Public Methods
   /** Open the dialog */
   open = () => {
     this.dispatchEvent(this.#openEvent);
@@ -174,10 +206,10 @@ class DialogComponent extends HTMLElement implements IWebComponent {
     // animate then close
     this.#dialogEl.classList.add("hide");
     this.#dialogEl.onanimationend = () => {
+      this.dispatchEvent(this.#closeEvent);
       this.#dialogEl.classList.remove("hide");
       this.#dialogEl.close();
       this.#dialogEl.onanimationend = null;
-      this.dispatchEvent(this.#closeEvent);
     };
   };
 
@@ -190,18 +222,17 @@ class DialogComponent extends HTMLElement implements IWebComponent {
 
     this.open();
   };
+  //#endregion
 }
 
-customElements.define("dialog-component", DialogComponent);
+customElements.define(COMPONENT_NAME, DialogComponent);
 
 export type { DialogComponent };
 
-type DialogComponentLocal = DialogComponent;
-
 declare global {
-  type DialogComponent = DialogComponentLocal;
+  type DialogComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    "dialog-component": DialogComponent;
+    [COMPONENT_NAME]: DialogComponent;
   }
 }

@@ -5,12 +5,13 @@ import type { GraphEditor } from "../graphEditorComponent";
 import type { PathCommands } from "./types";
 
 export class HistoryManager {
-  graphEditor: GraphEditor;
-  points: Points;
-  graph: Graph;
+  readonly graphEditor: GraphEditor;
+  readonly points: Points;
+  readonly graph: Graph;
 
-  #undoStack: PathCommands[] = [];
-  #redoStack: PathCommands[] = [];
+  readonly #undoStack: PathCommands[] = [];
+  readonly #redoStack: PathCommands[] = [];
+
   #snapshot: PathCommands | null = null;
 
   constructor(graphEditor: GraphEditor) {

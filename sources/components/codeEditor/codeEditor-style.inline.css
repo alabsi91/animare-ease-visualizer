@@ -6,35 +6,35 @@
   --font-weight: normal;
 
   /* The default font size of the code editor. */
-  --font-size: 1rem;
+  --sz-font: 1rem;
 
   /* The default line height of the code editor. */
   --line-height: 1.5;
 
   /* The default background color of the code editor. */
-  --background-color: #1f1f1f;
+  --clr-background: #1f1f1f;
 
   /* The background color of the selected text. */
-  --selection-color: #3a3a9e;
+  --clr-text-selection: #3a3a9e;
 
   /* The color of the scrollbar. */
-  --scrollbar-color: #292929;
+  --clr-scrollbar: #292929;
 
   /* The width of the line numbers column. */
-  --line-numbers-width: calc(var(--font-size) * 3);
+  --sz-line-numbers-width: calc(var(--sz-font) * 3);
 
   display: block;
 }
 
 .wrapper {
   border-radius: 4px;
-  background-color: var(--background-color);
+  background-color: var(--clr-background);
   border: 1px solid #ffffff1a;
   box-shadow: 0 0.1rem 1rem -0.5rem #0006;
   transition: background-color 100ms linear;
 
   &:has(.textarea:focus:not(:read-only)) {
-    background-color: hsl(from var(--background-color) h s max(10, l * 0.8));
+    background-color: hsl(from var(--clr-background) h s max(10, l * 0.8));
     outline: solid 1px currentcolor;
   }
 }
@@ -54,21 +54,16 @@
   border: none;
   padding: 0.4rem;
   border-radius: 8px;
-  background-color: hsl(from var(--background-color) h s calc(l * 0.9));
+  background-color: hsl(from var(--clr-background) h s calc(l * 0.9));
   cursor: pointer;
   opacity: 0.5;
-  transition: opacity 200ms linear, scale 100ms linear;
+  transition: opacity 200ms linear;
 
   &:hover {
     opacity: 1;
   }
 
-  &:active {
-    scale: 0.9;
-  }
-
   svg {
-    display: block;
     width: 20px;
     height: 20px;
     fill: currentcolor;
@@ -89,14 +84,14 @@
   }
 
   &::selection {
-    color: var(--selection-color);
-    background-color: var(--selection-color);
+    color: var(--clr-text-selection);
+    background-color: var(--clr-text-selection);
   }
 
   /* stylelint-disable-next-line selector-no-vendor-prefix */
   &::-moz-selection {
-    color: var(--selection-color);
-    background-color: var(--selection-color);
+    color: var(--clr-text-selection);
+    background-color: var(--clr-text-selection);
   }
 }
 
@@ -110,11 +105,11 @@
 .box {
   border: none;
   white-space: pre;
-  word-break: break-word;
+  word-break: break-all;
   overflow-wrap: break-word;
   font-family: var(--font-family);
   font-weight: var(--font-weight);
-  font-size: var(--font-size);
+  font-size: var(--sz-font);
   line-height: var(--line-height);
 }
 
@@ -124,7 +119,7 @@
 
 .line-numbers-placeholder {
   display: none;
-  width: var(--line-numbers-width);
+  width: var(--sz-line-numbers-width);
 }
 
 ol {
@@ -132,15 +127,15 @@ ol {
   flex-direction: column;
   margin: 0;
   padding: 0;
-  padding-inline-start: var(--line-numbers-width);
+  padding-inline-start: var(--sz-line-numbers-width);
 
   li::marker {
     content: counter(list-item) "  ";
     font-family: var(--font-family);
     font-weight: var(--font-weight);
-    font-size: var(--font-size);
+    font-size: var(--sz-font);
     line-height: var(--line-height);
-    color: hsl(from var(--background-color) h s max(25, l * 3));
+    color: hsl(from var(--clr-background) h s max(25, l * 3));
     transition-property: color;
     transition-duration: 100ms;
     transition-timing-function: linear;
@@ -148,15 +143,15 @@ ol {
 
   li.active::marker {
     font-weight: bold;
-    color: hsl(from var(--background-color) h s max(35, l * 5));
+    color: hsl(from var(--clr-background) h s max(35, l * 5));
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  @supports (scrollbar-width: 6px) {
+  @supports (scrollbar-width: thin) {
     .textarea {
-      scrollbar-width: 6px;
-      scrollbar-color: var(--scrollbar-color);
+      scrollbar-width: thin;
+      scrollbar-color: var(--clr-scrollbar);
       scrollbar-base-color: #3a3a9e;
       scrollbar-track-color: #3a3a9e;
     }
@@ -176,7 +171,7 @@ ol {
   }
 
   .textarea::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-color);
+    background: var(--clr-scrollbar);
     border-radius: 10px;
     border: none;
     cursor: pointer;

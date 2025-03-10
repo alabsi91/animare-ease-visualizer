@@ -74,12 +74,12 @@ The menu web component is a versatile dropdown like that can be use in different
 
 **CSS Properties**
 
-- `--background-color` The background color of the menu.
-- `--animation-easing` The easing function of the open/close animation.
-- `--animation-duration` The duration of the open/close animation.
-- `--scrollbar-color` The color of the menu scrollbar.
-- `--close-icon-size` The size of the close button svg icon.
-- `--close-icon-color` The color of the close button svg icon.
+- `--clr-background` The background color of the menu.
+- `--ease-anim` The easing function of the open/close animation.
+- `--dur-anim` The duration of the open/close animation.
+- `--clr-scrollbar` The color of the menu scrollbar.
+- `--sz-close-icon` The size of the close button svg icon.
+- `--clr-close-icon` The color of the close button svg icon.
 
 **CSS Parts**
 

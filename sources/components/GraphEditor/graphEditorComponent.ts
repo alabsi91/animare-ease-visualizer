@@ -13,26 +13,31 @@ import type { PathCommands } from "./helpers/types";
 const PATH_COMMANDS_RE = /^M(?:\s(?:-?\d+(?:\.\d+)?)){2}(?:\sC(?:\s(?:-?\d+(?:\.\d+)?)){6}){1,}/i;
 
 export class GraphEditor extends HTMLElement {
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./graphEditor.inline.css", { minify: true }));
+    return sheet;
+  })();
+
   /**
    * - The svg viewBox size (width/height) that contain the graph path, anchor points, and control points
    * - You should change the value in the css side too.
    */
   readonly PATH_SVG_VIEW_BOX_SIZE = 100;
 
-  viewport: GraphViewPort;
-  graphPanel: GraphPanel;
-  graph: Graph;
-  points: Points;
-  settings: Settings;
-  historyManager: HistoryManager;
-  keyboardShortcutManager: KeyboardShortcutManager;
-
-  abortController = new AbortController();
-  commandsRef: (CubicCommand | MoveCommand)[] = [];
+  readonly viewport: GraphViewPort;
+  readonly graphPanel: GraphPanel;
+  readonly graph: Graph;
+  readonly points: Points;
+  readonly settings: Settings;
+  readonly historyManager: HistoryManager;
+  readonly keyboardShortcutManager: KeyboardShortcutManager;
+  readonly abortController = new AbortController();
   readonly events = {
     /** Fired when the use finish drawing */
     onComplete: new CustomEvent("complete"),
   };
+  commandsRef: (CubicCommand | MoveCommand)[] = [];
 
   #resizeObserver: ResizeObserver | null = null;
   #isPointerDown = false;
@@ -43,9 +48,8 @@ export class GraphEditor extends HTMLElement {
   constructor() {
     super();
 
-    const style = import_as_string("./graphEditor.inline.css", { minify: true });
-
     const shadow = this.attachShadow({ mode: "open" });
+    shadow.adoptedStyleSheets = [GraphEditor.stylesheet];
 
     // Settings
     this.settings = new Settings(this);
@@ -75,10 +79,6 @@ export class GraphEditor extends HTMLElement {
 
     // History manager
     this.historyManager = new HistoryManager(this);
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-    shadow.appendChild(styleTag);
   }
 
   connectedCallback() {

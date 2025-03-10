@@ -24,6 +24,11 @@ A dialog web component.
 - `isOpen` (Get) True when the dialog is open.
 - `dialog` (Get) The underlying dialog element.
 
+**Events**
+
+- `open` Event fired when the dialog is opened.
+- `close` Event fired when the dialog is closed.
+
 **Slots**
 
 - `close-icon` The icon to use for the close button.
@@ -37,11 +42,11 @@ A dialog web component.
 
 **CSS Properties**
 
-- `--close-icon-size` The size of the close button svg icon.
-- `--close-icon-color` The color of the close button svg icon.
-- `--animations-duration` The duration of the open/close animation.
-- `--backdrop-color` The color of the dialog backdrop.
-- `--background-color` The color of the dialog background.
+- `--sz-close-icon` The size of the close button svg icon.
+- `--clr-close-icon` The color of the close button svg icon.
+- `--dur-anim` The duration of the open/close animation.
+- `--clr-backdrop` The color of the dialog backdrop.
+- `--clr-background` The color of the dialog background.
 
 **CSS Parts**
 

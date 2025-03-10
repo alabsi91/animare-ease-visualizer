@@ -1,18 +1,38 @@
-import type { IWebComponent } from "../wc";
+import type { IWebComponent, WComponent } from "../wc";
 
-type ObservedAttributes = (typeof SliderComponent.observedAttributes)[number];
+type ExtraAttributes = {
+  onchange: (e: CustomEvent) => void;
+};
+
+type ComponentTypes = WComponent<typeof SliderComponent, ExtraAttributes>;
+
+const COMPONENT_NAME = "slider-component";
 
 /** A wrapper around `<input type="range" />` that allow custom styling. */
 class SliderComponent extends HTMLElement implements IWebComponent {
-  static formAssociated = true; // a form component
+  static readonly htmlFragment = (() => {
+    const template = document.createElement("template");
+    template.innerHTML = import_as_string("./slider-template.inline.html", { minify: true });
+    return template.content;
+  })();
 
-  #internals: ElementInternals;
-  #inputEl: HTMLInputElement;
-  #bubbleEl: HTMLDivElement;
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./slider-style.inline.css", { minify: true }));
+    return sheet;
+  })();
+
+  static formAssociated = true;
+
+  readonly #internals: ElementInternals;
+  readonly #inputEl: HTMLInputElement;
+  readonly #bubbleEl: HTMLDivElement;
+  readonly #abortController = new AbortController();
 
   /** Fired when the value is changed. */
-  #changeEvent = new CustomEvent("change");
+  readonly #changeEvent = new CustomEvent("change");
 
+  //#region Public Props
   /** Get the underlying `<input type="range" />` element */
   get input(): HTMLInputElement {
     return this.#inputEl;
@@ -70,8 +90,9 @@ class SliderComponent extends HTMLElement implements IWebComponent {
   set disabled(value: boolean) {
     this.setAttribute("disabled", value.toString());
   }
+  //#endregion
 
-  // Form association
+  //#region Form association
   get form() {
     return this.#internals.form;
   }
@@ -90,22 +111,17 @@ class SliderComponent extends HTMLElement implements IWebComponent {
   get validationMessage() {
     return this.#inputEl.validationMessage;
   }
+  //#endregion
 
+  //#endregion HtmlElement Methods
   constructor() {
     super();
 
     this.#internals = this.attachInternals();
 
-    const style = import_as_string("@components/slider/slider-style.inline.css", { minify: true });
-    const template = import_as_string("@components/slider/slider-template.inline.html", { minify: true });
-
     const shadow = this.attachShadow({ mode: "open" });
-    shadow.innerHTML = template;
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-
-    shadow.appendChild(styleTag);
+    shadow.adoptedStyleSheets = [SliderComponent.stylesheet];
+    shadow.appendChild(SliderComponent.htmlFragment.cloneNode(true));
 
     const inputEl = shadow.querySelector<HTMLInputElement>('input[type="range"]');
     if (!inputEl) {
@@ -127,10 +143,16 @@ class SliderComponent extends HTMLElement implements IWebComponent {
   connectedCallback(): void {
     this.#updateCustomSlider(); // initial
 
-    this.#inputEl.addEventListener("input", () => {
-      this.dispatchEvent(this.#changeEvent);
-      this.#updateCustomSlider();
-    });
+    const signal = this.#abortController.signal;
+
+    this.#inputEl.addEventListener(
+      "input",
+      () => {
+        this.dispatchEvent(this.#changeEvent);
+        this.#updateCustomSlider();
+      },
+      { signal }
+    );
 
     const shadowRoot = this.shadowRoot;
     if (!shadowRoot) {
@@ -144,21 +166,33 @@ class SliderComponent extends HTMLElement implements IWebComponent {
       return;
     }
 
-    this.#inputEl.addEventListener("pointerdown", () => {
-      if (this.#inputEl.disabled) return;
-      container.classList.add("active");
-      this.#internals.states.add("active");
-    });
+    this.#inputEl.addEventListener(
+      "pointerdown",
+      () => {
+        if (this.#inputEl.disabled) return;
+        container.classList.add("active");
+        this.#internals.states.add("active");
+      },
+      { signal }
+    );
 
-    document.addEventListener("pointerup", () => {
-      container.classList.remove("active");
-      this.#internals.states.delete("active");
-    });
+    document.addEventListener(
+      "pointerup",
+      () => {
+        container.classList.remove("active");
+        this.#internals.states.delete("active");
+      },
+      { signal }
+    );
 
-    document.addEventListener("touchend", () => {
-      container.classList.remove("active");
-      this.#internals.states.delete("active");
-    });
+    document.addEventListener(
+      "touchend",
+      () => {
+        container.classList.remove("active");
+        this.#internals.states.delete("active");
+      },
+      { signal }
+    );
 
     const slot = shadowRoot.querySelector("slot");
     if (!slot) return;
@@ -166,6 +200,10 @@ class SliderComponent extends HTMLElement implements IWebComponent {
     const slotContents = slot.assignedNodes().map(node => node.cloneNode(true));
     this.shadowRoot.append(...slotContents);
     slot.remove();
+  }
+
+  disconnectedCallback(): void {
+    this.#abortController.abort();
   }
 
   /**
@@ -177,7 +215,7 @@ class SliderComponent extends HTMLElement implements IWebComponent {
     return ["label", "aria-label", "min", "max", "value", "step", "list", "disabled"] as const;
   }
 
-  attributeChangedCallback(name: ObservedAttributes, _oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "label") {
       if (!newValue) return;
       const shadow = this.shadowRoot;
@@ -265,13 +303,14 @@ class SliderComponent extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "value") return this.value.toString();
     if (qualifiedName === "min") return this.min.toString();
     if (qualifiedName === "max") return this.max.toString();
     if (qualifiedName === "step") return this.step.toString();
     return super.getAttribute(qualifiedName);
   }
+  //#endregion
 
   #updateCustomSlider = () => {
     const inputEl = this.#inputEl;
@@ -283,16 +322,14 @@ class SliderComponent extends HTMLElement implements IWebComponent {
   };
 }
 
-customElements.define("slider-component", SliderComponent);
+customElements.define(COMPONENT_NAME, SliderComponent);
 
 export type { SliderComponent };
 
-type SliderComponentLocal = SliderComponent;
-
 declare global {
-  type SliderComponent = SliderComponentLocal;
+  type SliderComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    "slider-component": SliderComponent;
+    [COMPONENT_NAME]: SliderComponent;
   }
 }

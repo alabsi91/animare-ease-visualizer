@@ -1,33 +1,33 @@
 :host {
   /* prettier-ignore */
-  --easing: --ease-spring(1, 100, 5, 0, 1500);
+  --ease-anim: --ease-spring(1, 100, 5, 0, 1500);
 
   /* The easing function of the slider animation when it's active. */
-  --active-easing: --ease-out-back(2);
+  --ease-active-anim: --ease-out-back(2);
 
   /* The duration of the slider animation when it's not active. */
-  --animation-duration: 0.4s;
+  --dur-anim: 0.4s;
 
   /* The duration of the slider animation when it is active. */
-  --active-animation-duration: 0.25s;
+  --dur-anim-active: 0.25s;
 
   /* @ignore */
   --value: 0%;
 
   /* The thickness of the slider. */
-  --thickness: 18px;
+  --sz-thickness: 18px;
 
   /* The size of the slider thumb. */
-  --thumb-size: 22px;
+  --sz-thumb: 22px;
 
   /* The background color of the slider thumb. */
-  --thumb-color: #fff;
+  --clr-thumb: #fff;
 
   /* The background color of filled part of the slider track. */
-  --filled-color: #2196f3;
+  --clr-filled: #2196f3;
 
   /* The color of the empty part of the slider track. */
-  --empty-color: #aaa;
+  --clr-empty: #aaa;
 
   /* The scale of the slider when it is active. */
   --scale-by: 2;
@@ -36,8 +36,8 @@
   --is-rtl: -1;
 
   @media (prefers-reduced-motion) {
-    --animation-duration: 0s;
-    --active-animation-duration: 0s;
+    --dur-anim: 0s;
+    --dur-anim-active: 0s;
   }
 }
 
@@ -46,7 +46,7 @@ label {
   text-align: left;
   margin-left: 10px;
   margin-bottom: 10px;
-  transition: opacity var(--active-animation-duration) var(--active-easing);
+  transition: opacity var(--dur-anim-active) var(--ease-active-anim);
 }
 
 label:has(+ .active) {
@@ -68,8 +68,8 @@ label:has(+ .active) {
 
 .custom-slider-container {
   position: relative;
-  width: calc(100% - var(--thumb-size));
-  height: var(--thickness);
+  width: calc(100% - var(--sz-thumb));
+  height: var(--sz-thickness);
   pointer-events: none;
 }
 
@@ -77,20 +77,20 @@ label:has(+ .active) {
   width: 100%;
   height: 100%;
   border-radius: 1rem;
-  background: var(--empty-color);
+  background: var(--clr-empty);
   background-repeat: no-repeat;
   overflow: clip;
   box-shadow: 0 0.1rem 1rem -0.5rem rgb(0 0 0 / 40%);
   transition-property: transform, border-radius;
-  transition-duration: var(--animation-duration);
-  transition-timing-function: var(--easing);
+  transition-duration: var(--dur-anim);
+  transition-timing-function: var(--ease-anim);
 }
 
 .fill {
   border-radius: inherit;
   width: calc(var(--value) * 1%);
   height: 100%;
-  background: var(--filled-color);
+  background: var(--clr-filled);
   background-repeat: no-repeat;
 }
 
@@ -99,22 +99,22 @@ label:has(+ .active) {
   top: 50%;
   inset-inline-start: calc(var(--value) * 1%);
   translate: calc(50% * var(--is-rtl)) -50%;
-  width: var(--thumb-size);
-  height: var(--thumb-size);
-  border-radius: calc(var(--thumb-size) / 2);
-  background-color: var(--thumb-color);
+  width: var(--sz-thumb);
+  height: var(--sz-thumb);
+  border-radius: calc(var(--sz-thumb) / 2);
+  background-color: var(--clr-thumb);
   box-shadow: 0 0 7px 0 #0006;
   transition-property: transform, border-radius, width, height, box-shadow;
-  transition-duration: var(--animation-duration);
-  transition-timing-function: var(--easing);
+  transition-duration: var(--dur-anim);
+  transition-timing-function: var(--ease-anim);
 }
 
 .active .custom-slider-container {
   .custom-slider-track {
     transform: scaleY(var(--scale-by));
     border-radius: 0;
-    transition-duration: var(--active-animation-duration);
-    transition-timing-function: var(--active-easing);
+    transition-duration: var(--dur-anim-active);
+    transition-timing-function: var(--ease-active-anim);
   }
 
   .custom-slider-thumb {
@@ -123,17 +123,17 @@ label:has(+ .active) {
     width: 1px;
     height: 100%;
     box-shadow: none;
-    transition-duration: var(--active-animation-duration);
-    transition-timing-function: var(--active-easing);
+    transition-duration: var(--dur-anim-active);
+    transition-timing-function: var(--ease-active-anim);
   }
 }
 
 .ticks {
   position: relative;
-  width: calc(100% - var(--thumb-size));
-  height: calc(var(--thickness) + 12px);
+  width: calc(100% - var(--sz-thumb));
+  height: calc(var(--sz-thickness) + 12px);
   pointer-events: none;
-  transition: transform var(--animation-duration) var(--easing);
+  transition: transform var(--dur-anim) var(--ease-anim);
 
   div {
     position: absolute;
@@ -141,20 +141,20 @@ label:has(+ .active) {
     translate: -50% 0;
     width: 1px;
     height: 4px;
-    background: var(--thumb-color);
+    background: var(--clr-thumb);
   }
 }
 
 .active .ticks {
-  transform: translateY(calc((var(--thickness) * (var(--scale-by) - 1)) / 2));
-  transition-duration: var(--active-animation-duration);
-  transition-timing-function: var(--active-easing);
+  transform: translateY(calc((var(--sz-thickness) * (var(--scale-by) - 1)) / 2));
+  transition-duration: var(--dur-anim-active);
+  transition-timing-function: var(--ease-active-anim);
 }
 
 .bubble-container {
   position: relative;
-  width: calc(100% - var(--thumb-size));
-  height: var(--thickness);
+  width: calc(100% - var(--sz-thumb));
+  height: var(--sz-thickness);
   pointer-events: none;
   z-index: 1;
 }
@@ -169,20 +169,20 @@ label:has(+ .active) {
   font-weight: bold;
   font-family: monospace;
   transition-property: transform, opacity;
-  transition-duration: var(--animation-duration);
-  transition-timing-function: var(--easing);
+  transition-duration: var(--dur-anim);
+  transition-timing-function: var(--ease-anim);
 }
 
 .active .bubble-container {
-  transform: translateY(calc((var(--thickness) * (1 - var(--scale-by))) / 2));
-  transition-duration: var(--active-animation-duration);
-  transition-timing-function: var(--active-easing);
+  transform: translateY(calc((var(--sz-thickness) * (1 - var(--scale-by))) / 2));
+  transition-duration: var(--dur-anim-active);
+  transition-timing-function: var(--ease-active-anim);
 
   .bubble {
     transform: scale(1);
     opacity: 1;
-    transition-duration: var(--active-animation-duration);
-    transition-timing-function: var(--active-easing);
+    transition-duration: var(--dur-anim-active);
+    transition-timing-function: var(--ease-active-anim);
   }
 }
 
@@ -202,40 +202,40 @@ input[type="range"] {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: var(--thickness);
+  height: var(--sz-thickness);
 }
 
 input[type="range"]::-moz-range-track {
-  height: var(--thickness);
+  height: var(--sz-thickness);
   background: transparent;
   border: 0;
 }
 
 input[type="range"]::-ms-track {
-  height: var(--thickness);
+  height: var(--sz-thickness);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;
-  margin-top: calc((var(--thickness) - var(--thumb-size) - 1px) / 2);
-  width: var(--thumb-size);
-  height: var(--thumb-size);
+  margin-top: calc((var(--sz-thickness) - var(--sz-thumb) - 1px) / 2);
+  width: var(--sz-thumb);
+  height: var(--sz-thumb);
   background: transparent;
   border: none;
 }
 
 input[type="range"]::-moz-range-thumb {
   appearance: none;
-  width: var(--thumb-size);
-  height: var(--thumb-size);
+  width: var(--sz-thumb);
+  height: var(--sz-thumb);
   background: transparent;
   border: none;
 }
 
 input[type="range"]::-ms-thumb {
   appearance: none;
-  width: var(--thumb-size);
-  height: var(--thumb-size);
+  width: var(--sz-thumb);
+  height: var(--sz-thumb);
   background: transparent;
   border: none;
   margin-top: 0;

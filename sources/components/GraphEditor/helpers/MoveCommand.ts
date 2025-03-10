@@ -3,9 +3,9 @@ import type { GraphEditor } from "../graphEditorComponent";
 import type { Points } from "./Points";
 
 export class MoveCommand {
-  graphEditor: GraphEditor;
-  points: Points;
-  anchorPoint: AnchorPoint;
+  readonly graphEditor: GraphEditor;
+  readonly points: Points;
+  readonly anchorPoint: AnchorPoint;
 
   constructor(graphEditor: GraphEditor, cmdIdx: number) {
     this.graphEditor = graphEditor;

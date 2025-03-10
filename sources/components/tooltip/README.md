@@ -27,6 +27,7 @@ A tooltip component that displays a message when hovered over.
 
 - `for` (Get/Set) The element to attach the tooltip to.
 - `preferDirection` (Get/Set) Open the tooltip in the preferred direction if possible. Defaults to `top`.
+- `revealDelay` (Get/Set) The delay before the tooltip is revealed.
 - `isOpen` (Get) Returns `true` if the tooltip is open.
 
 **Events**
@@ -42,15 +43,16 @@ A tooltip component that displays a message when hovered over.
 
 - `"for"` The element to attach the tooltip to.
 - `"prefer-direction"` Open the tooltip in the preferred direction if possible. Defaults to `top`.
+- `"reveal-delay"` The delay before the tooltip is revealed.
 
 **CSS Properties**
 
-- `--background-color` The background color of the tooltip.
-- `--border-color` The border color of the tooltip.
-- `--arrow-size` The size of the arrow that points to the element that the tooltip is attached to.
-- `--arrow-color` The color of the arrow that points to the element that the tooltip is attached to.
-- `--animation-duration` The easing function of the show/hide animation.
-- `--animation-easing` The easing function of the show/hide animation.
+- `--clr-background` The background color of the tooltip.
+- `--clr-border` The border color of the tooltip.
+- `--sz-arrow` The size of the arrow that points to the element that the tooltip is attached to.
+- `--clr-arrow` The color of the arrow that points to the element that the tooltip is attached to.
+- `--dur-anim` The easing function of the show/hide animation.
+- `--ease-anim` The easing function of the show/hide animation.
 
 **CSS Parts**
 

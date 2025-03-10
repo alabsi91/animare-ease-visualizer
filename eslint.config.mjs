@@ -2,9 +2,7 @@ import pluginJs from "@eslint/js";
 import html from "@html-eslint/eslint-plugin";
 import compat from "eslint-plugin-compat";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import pluginReact from "eslint-plugin-react";
 import globals from "globals";
-import jsxA11y from "eslint-plugin-jsx-a11y";
 import tsEslint from "typescript-eslint";
 import htmlScriptTag from "eslint-plugin-html";
 
@@ -13,8 +11,6 @@ export default [
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tsEslint.configs.strict,
-  pluginReact.configs.flat.recommended,
-  jsxA11y.flatConfigs.recommended,
   eslintPluginPrettierRecommended,
   compat.configs["flat/recommended"],
   {

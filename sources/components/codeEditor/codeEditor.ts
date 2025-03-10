@@ -1,7 +1,17 @@
-import type { IWebComponent } from "../wc";
+import type { BooleanString, IWebComponent, WComponent } from "../wc";
 
-type ObservedAttributes = (typeof CodeEditor.observedAttributes)[number];
+type ExtraAttributes = {
+  "copy-button"?: BooleanString;
+  "one-line"?: BooleanString;
+  onchange?: (e: CustomEvent) => void;
+  oncopy?: (e: CustomEvent) => void;
+};
+
+type ComponentTypes = WComponent<typeof CodeEditor, ExtraAttributes>;
+
 type Highlighter = (code: string) => string | Promise<string>;
+
+const COMPONENT_NAME = "code-editor";
 
 /**
  * A simple code editor component that can highlight code.
@@ -26,20 +36,41 @@ type Highlighter = (code: string) => string | Promise<string>;
  * ```
  */
 class CodeEditor extends HTMLElement implements IWebComponent {
-  static formAssociated = true;
-  #abortController = new AbortController();
-  #internals: ElementInternals;
-  #editorEl: HTMLTextAreaElement;
-  #highlightedEl: HTMLDivElement;
-  #lineNumbersPlaceholderEl: HTMLDivElement;
-  #copyButtonEl: HTMLButtonElement;
+  static readonly htmlFragment = (() => {
+    const template = document.createElement("template");
+    template.innerHTML = import_as_string("./codeEditor-template.inline.html", { minify: true });
+    return template.content;
+  })();
+
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./codeEditor-style.inline.css", { minify: true }));
+    return sheet;
+  })();
+
+  static readonly #wrappers = [
+    { open: "'", close: "'" },
+    { open: '"', close: '"' },
+    { open: "`", close: "`" },
+    { open: "(", close: ")" },
+    { open: "{", close: "}" },
+    { open: "[", close: "]" },
+  ];
+
+  readonly #internals: ElementInternals;
+  readonly #editorEl: HTMLTextAreaElement;
+  readonly #highlightedEl: HTMLDivElement;
+  readonly #lineNumbersPlaceholderEl: HTMLDivElement;
+  readonly #copyButtonEl: HTMLButtonElement;
+  readonly #abortController = new AbortController();
   #resizeObserver: ResizeObserver | null = null;
 
   /** Emitted when the value changes. */
-  #change = new CustomEvent("change");
+  readonly #change = new CustomEvent("change");
   /** Emitted when the copy button is clicked. */
-  #copy = new CustomEvent("copy");
+  readonly #copy = new CustomEvent("copy");
 
+  //#region Public Props
   /** The code string. */
   get value(): string {
     return this.#editorEl.value;
@@ -175,33 +206,20 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     this.#editorEl.classList.toggle("hidden-scrollbar", val);
     this.#update();
   }
+  //#endregion
 
-  #wrappers = [
-    { open: "'", close: "'" },
-    { open: '"', close: '"' },
-    { open: "`", close: "`" },
-    { open: "(", close: ")" },
-    { open: "{", close: "}" },
-    { open: "[", close: "]" },
-  ];
-
+  //#region HTMLElement Methods
   constructor() {
     super();
 
     this.#internals = this.attachInternals();
 
-    const style = import_as_string("@components/codeEditor/codeEditor-style.inline.css", { minify: true });
-    const template = import_as_string("@components/codeEditor/codeEditor-template.inline.html", { minify: true });
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.adoptedStyleSheets = [CodeEditor.stylesheet];
+    shadow.appendChild(CodeEditor.htmlFragment.cloneNode(true));
 
     const codeStyleTag = document.createElement("style");
     codeStyleTag.classList.add("code-style");
-
-    const shadow = this.attachShadow({ mode: "open" });
-    shadow.innerHTML = template;
-    shadow.appendChild(styleTag);
     shadow.appendChild(codeStyleTag);
 
     const editorEl = shadow.querySelector<HTMLTextAreaElement>(".textarea");
@@ -240,9 +258,8 @@ class CodeEditor extends HTMLElement implements IWebComponent {
       if (!entry) return;
 
       this.#highlightedEl.style.width = this.#linenumbers
-        ? `calc(${entry.contentRect.width}px + var(--line-numbers-width))`
+        ? `calc(${entry.contentRect.width}px + var(--sz-line-numbers-width))`
         : `${entry.contentRect.width}px`;
-
       this.#highlightedEl.style.height = `${entry.contentRect.height}px`;
 
       this.#highlightedEl.style.top = `${this.#editorEl.offsetTop}px`;
@@ -265,7 +282,7 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     return ["value", "readonly", "tabsize", "stylesheet", "expand", "wrap", "linenumbers", "copy-button", "one-line"] as const;
   }
 
-  attributeChangedCallback(name: ObservedAttributes, _oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "value") {
       this.value = newValue ?? "";
       this.dispatchEvent(this.#change);
@@ -325,7 +342,7 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "value") return this.value;
     if (qualifiedName === "readonly") return this.readonly.toString();
     if (qualifiedName === "tabsize") return this.tabsize.toString();
@@ -337,7 +354,9 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     if (qualifiedName === "one-line") return this.oneLine.toString();
     return super.getAttribute(qualifiedName);
   }
+  //#endregion
 
+  //#region Private Methods
   /** Get the default slot text content and set it to the textarea. */
   #onSlotChange = (e: Event) => {
     const defaultSlot = e.target as HTMLSlotElement;
@@ -412,7 +431,7 @@ class CodeEditor extends HTMLElement implements IWebComponent {
   #beforeInputHandler = (e: InputEvent) => {
     const key = e.data ?? "";
 
-    const wrapper = this.#wrappers.find(wrapper => wrapper.open === key);
+    const wrapper = CodeEditor.#wrappers.find(wrapper => wrapper.open === key);
     if (!wrapper) return;
 
     const el = this.#editorEl;
@@ -455,10 +474,8 @@ class CodeEditor extends HTMLElement implements IWebComponent {
       el.setSelectionRange(crateStart, crateEnd);
     }
 
-    if (this.expand) {
-      const rowsCount = el.value.split(/\n/g).length;
-      this.#editorEl.rows = rowsCount;
-    }
+    const rowsCount = el.value.split(/\n/g).length;
+    this.#editorEl.rows = rowsCount;
 
     const highlighted = await this.#highlighter(el.value);
     const trailingSpaces = el.value.match(/\s*$/g)!;
@@ -488,18 +505,17 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     this.#internals.states.delete("focus");
     this.#highlightedEl.querySelector("li.active")?.classList.remove("active");
   };
+  //#endregion
 }
 
-customElements.define("code-editor", CodeEditor);
+customElements.define(COMPONENT_NAME, CodeEditor);
 
 export type { CodeEditor };
 
-type CodeEditorLocal = CodeEditor;
-
 declare global {
-  type CodeEditor = CodeEditorLocal;
+  type CodeEditor = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    ["code-editor"]: CodeEditor;
+    [COMPONENT_NAME]: CodeEditor;
   }
 }

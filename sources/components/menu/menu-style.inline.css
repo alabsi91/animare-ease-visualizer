@@ -1,26 +1,26 @@
 :host {
   /* The background color of the menu. */
-  --background-color: #333;
+  --clr-background: #333;
 
   /* The easing function of the open/close animation. */
-  --animation-easing: ease-out;
+  --ease-anim: ease-out;
 
   /* The duration of the open/close animation. */
-  --animation-duration: 0.2s;
+  --dur-anim: 0.2s;
 
   /* The color of the menu scrollbar. */
-  --scrollbar-color: #292929;
+  --clr-scrollbar: #292929;
 
   /* The size of the close button svg icon. */
-  --close-icon-size: 24px;
+  --sz-close-icon: 24px;
 
   /* The color of the close button svg icon. */
-  --close-icon-color: currentcolor;
+  --clr-close-icon: currentcolor;
 
   display: contents;
 
   @media (prefers-reduced-motion) {
-    --animation-duration: 0s;
+    --dur-anim: 0s;
   }
 }
 
@@ -29,7 +29,7 @@
   margin: 1rem 0;
   border: solid 1px rgba(255 255 255 / 10%);
   border-radius: 12px;
-  background-color: var(--background-color);
+  background-color: var(--clr-background);
   overflow: hidden auto;
   overscroll-behavior: contain;
   box-sizing: border-box;
@@ -42,7 +42,7 @@
   opacity: 0;
   backdrop-filter: blur(0);
   transition-property: opacity, backdrop-filter;
-  transition-duration: var(--animation-duration);
+  transition-duration: var(--dur-anim);
   transition-timing-function: ease;
 }
 
@@ -97,21 +97,21 @@
   }
 
   svg {
-    width: var(--close-icon-size);
-    height: var(--close-icon-size);
-    fill: var(--close-icon-color);
+    width: var(--sz-close-icon);
+    height: var(--sz-close-icon);
+    fill: var(--clr-close-icon);
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .popover .close-button:hover {
-    background-color: hsl(from var(--close-icon-color) h s l / 10%);
+    background-color: hsl(from var(--clr-close-icon) h s l / 10%);
   }
 
-  @supports (scrollbar-width: 6px) {
+  @supports (scrollbar-width: thin) {
     .popover {
-      scrollbar-width: 6px;
-      scrollbar-color: var(--scrollbar-color);
+      scrollbar-width: thin;
+      scrollbar-color: var(--clr-scrollbar);
     }
   }
 
@@ -125,7 +125,7 @@
   }
 
   .popover::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-color);
+    background: var(--clr-scrollbar);
     border-radius: 10px;
     border: none;
   }

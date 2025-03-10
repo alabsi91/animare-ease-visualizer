@@ -34,12 +34,12 @@ presented in a series, giving the user multiple choices to make.
 
 **CSS Properties**
 
-- `--easing` The easing function of the toggle animation.
-- `--animation-duration` The duration of the toggle animation.
-- `--active-color` The color of the toggle checkbox when it's checked.
-- `--inactive-color` The color of the toggle checkbox when it's not checked.
-- `--checked-icon-color` The color of the checked icon.
-- `--size` The size of the toggle checkbox.
+- `--ease-anim` The easing function of the toggle animation.
+- `--dur-anim` The duration of the toggle animation.
+- `--clr-active` The color of the toggle checkbox when it's checked.
+- `--clr-inactive` The color of the toggle checkbox when it's not checked.
+- `--clr-checked-icon` The color of the checked icon.
+- `--sz-checkbox` The size of the toggle checkbox.
 
 **CSS Parts**
 

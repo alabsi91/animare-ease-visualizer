@@ -5,11 +5,11 @@ import type { GraphEditor } from "../graphEditorComponent";
 import type { Points } from "./Points";
 
 export class CubicCommand {
-  graphEditor: GraphEditor;
-  points: Points;
-  anchorPoint: AnchorPoint;
-  controlPoint1: ControlPoint;
-  controlPoint2: ControlPoint;
+  readonly graphEditor: GraphEditor;
+  readonly points: Points;
+  readonly anchorPoint: AnchorPoint;
+  readonly controlPoint1: ControlPoint;
+  readonly controlPoint2: ControlPoint;
 
   constructor(graphEditor: GraphEditor, cmdIdx: number) {
     this.graphEditor = graphEditor;

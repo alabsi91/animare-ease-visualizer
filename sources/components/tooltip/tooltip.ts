@@ -1,6 +1,15 @@
-import type { IWebComponent } from "../wc";
+import type { IWebComponent, NumberString, WComponent } from "../wc";
 
-type ObservedAttributes = (typeof TooltipComponent.observedAttributes)[number];
+type ExtraAttributes = {
+  "prefer-direction": PreferDirection;
+  "reveal-delay": NumberString;
+  onchange: (e: CustomEvent) => void;
+};
+
+type ComponentTypes = WComponent<typeof TooltipComponent, ExtraAttributes>;
+
+const COMPONENT_NAME = "tooltip-component";
+
 type PreferDirection = "top" | "bottom" | "left" | "right";
 
 /**
@@ -22,16 +31,30 @@ type PreferDirection = "top" | "bottom" | "left" | "right";
  * ```
  */
 class TooltipComponent extends HTMLElement implements IWebComponent {
-  #internals: ElementInternals;
-  #popoverEl: HTMLDivElement;
+  static readonly htmlFragment = (() => {
+    const template = document.createElement("template");
+    template.innerHTML = import_as_string("./tooltip-template.inline.html", { minify: true });
+    return template.content;
+  })();
+
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./tooltip-style.inline.css", { minify: true }));
+    return sheet;
+  })();
+
+  readonly #internals: ElementInternals;
+  readonly #popoverEl: HTMLDivElement;
+  readonly #abortController = new AbortController();
+  #revealDelayTimeoutId: number | null = null;
+  #currentHoveredElement: HTMLElement | null = null;
 
   /** Emitted when the tooltip is opened. */
-  #openEvent = new CustomEvent("open");
+  readonly #openEvent = new CustomEvent("open");
   /** Emitted when the tooltip is closed. */
-  #closeEvent = new CustomEvent("close");
+  readonly #closeEvent = new CustomEvent("close");
 
-  #activeElement: HTMLElement | null = null;
-
+  //#region Public Props
   #attachTo: HTMLElement[] = [];
   /** The element to attach the tooltip to. */
   get for() {
@@ -40,8 +63,8 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
   set for(value: HTMLElement | HTMLElement[] | string | null) {
     setTimeout(() => {
       if (this.#attachTo) {
-        this.#attachTo.forEach(e => e.removeEventListener("pointerenter", this.#hoverEnterHandler));
-        this.#attachTo.forEach(e => e.removeEventListener("pointerleave", this.#hoverLeaveHandler));
+        this.#attachTo.forEach(el => el.removeEventListener("pointerenter", this.#hoverEnterHandler));
+        this.#attachTo.forEach(el => el.removeEventListener("pointerleave", this.#hoverLeaveHandler));
       }
 
       if (value === null) {
@@ -49,15 +72,16 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
       } else if (typeof value === "string") {
         const elements = document.querySelectorAll<HTMLElement>(value);
         this.#attachTo = Array.from(elements);
-      } else if (value instanceof HTMLElement) {
-        this.#attachTo = [value];
       } else if (Array.isArray(value)) {
         this.#attachTo = value;
+      } else if (value instanceof HTMLElement) {
+        this.#attachTo = [value];
       }
 
       if (!this.#attachTo) return;
-      this.#attachTo.forEach(e => e.addEventListener("pointerenter", this.#hoverEnterHandler));
-      this.#attachTo.forEach(e => e.addEventListener("pointerleave", this.#hoverLeaveHandler));
+      const signal = this.#abortController.signal;
+      this.#attachTo.forEach(el => el.addEventListener("pointerenter", this.#hoverEnterHandler, { signal }));
+      this.#attachTo.forEach(el => el.addEventListener("pointerleave", this.#hoverLeaveHandler, { signal }));
     }, 0);
   }
 
@@ -70,26 +94,30 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
     this.#preferDirection = value;
   }
 
-  #isOpen = false;
-  /** Returns `true` if the tooltip is open. */
-  get isOpen(): boolean {
-    return this.#isOpen;
+  #revealDelay: number = 500;
+  /** The delay before the tooltip is revealed. */
+  get revealDelay(): number {
+    return this.#revealDelay;
+  }
+  set revealDelay(value: number) {
+    this.#revealDelay = value;
   }
 
+  /** Returns `true` if the tooltip is open. */
+  get isOpen(): boolean {
+    return this.#internals.states.has("open");
+  }
+  //#endregion
+
+  //#region HtmlElement Methods
   constructor() {
     super();
 
     this.#internals = this.attachInternals();
 
-    const style = import_as_string("@components/tooltip/tooltip-style.inline.css", { minify: true });
-    const template = import_as_string("@components/tooltip/tooltip-template.inline.html", { minify: true });
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-
     const shadow = this.attachShadow({ mode: "open" });
-    shadow.innerHTML = template;
-    shadow.appendChild(styleTag);
+    shadow.adoptedStyleSheets = [TooltipComponent.stylesheet];
+    shadow.appendChild(TooltipComponent.htmlFragment.cloneNode(true));
 
     const popoverEl = shadow.querySelector<HTMLDivElement>(".popover");
     if (!popoverEl) {
@@ -99,11 +127,15 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
     this.#popoverEl = popoverEl!;
   }
 
-  static get observedAttributes() {
-    return ["for", "prefer-direction"] as const;
+  disconnectedCallback(): void {
+    this.#abortController.abort();
   }
 
-  attributeChangedCallback(name: ObservedAttributes, _oldValue: string | null, newValue: string | null): void {
+  static get observedAttributes() {
+    return ["for", "prefer-direction", "reveal-delay"] as const;
+  }
+
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null): void {
     if (name === "for") {
       this.for = newValue;
       return;
@@ -127,80 +159,90 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
       return;
     }
 
+    if (name === "reveal-delay") {
+      const num = Number(newValue);
+      const isNumber = !isNaN(num) && isFinite(num);
+      if (!isNumber) return;
+      this.revealDelay = num;
+      return;
+    }
+
     const _exhaustiveCheck: never = name;
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "prefer-direction") return this.#preferDirection;
     return super.getAttribute(qualifiedName);
   }
+  //#endregion
 
-  #calcMenuBounding = () => {
+  //#region Private Methods
+  #string2Number = (str: string, defaultValue: number = 0) => {
+    const num = parseFloat(str);
+    if (isNaN(num) || !isFinite(num)) return defaultValue;
+    return num;
+  };
+
+  #calcTooltipPos = () => {
     const tooltipEl = this.#popoverEl;
-    const attachToEl = this.#activeElement;
 
-    if (!attachToEl) return { top: 0, left: 0 };
+    const hoveredEl = this.#currentHoveredElement;
+    if (!hoveredEl) return { top: 0, left: 0 };
 
-    const computedStyle = window.getComputedStyle(tooltipEl);
+    const tooltipStyle = window.getComputedStyle(tooltipEl);
 
-    const string2Number = (str: string, defaultValue: number = 0) => {
-      const num = parseFloat(str);
-      if (isNaN(num) || !isFinite(num)) return defaultValue;
-      return num;
+    const tooltipWidth = this.#string2Number(tooltipStyle.width);
+    const tooltipHeight = this.#string2Number(tooltipStyle.height);
+    if (!tooltipWidth || !tooltipHeight) return { top: 0, left: 0 };
+
+    const tooltipOffset = {
+      top: this.#string2Number(tooltipStyle.marginTop),
+      bottom: this.#string2Number(tooltipStyle.marginBottom),
+      left: this.#string2Number(tooltipStyle.marginLeft),
+      right: this.#string2Number(tooltipStyle.marginRight),
     };
 
-    const offset = {
-      top: string2Number(computedStyle.marginTop),
-      bottom: string2Number(computedStyle.marginBottom),
-      left: string2Number(computedStyle.marginLeft),
-      right: string2Number(computedStyle.marginRight),
-    };
+    const hoveredElRect = hoveredEl.getBoundingClientRect();
 
-    const rect = attachToEl.getBoundingClientRect();
-    const menuWidth = string2Number(computedStyle.width);
-    const menuHeight = string2Number(computedStyle.height);
+    const upwardSpace = hoveredElRect.top;
+    const hasEnoughSpaceUp = upwardSpace > tooltipHeight + tooltipOffset.top + tooltipOffset.bottom;
 
-    if (!menuWidth || !menuHeight) return { top: 0, left: 0 };
+    const downwardSpace = document.documentElement.clientHeight - hoveredElRect.bottom;
+    const hasEnoughSpaceDown = downwardSpace > tooltipHeight + tooltipOffset.top + tooltipOffset.bottom;
 
-    const upwardSpace = rect.top;
-    const hasEnoughSpaceUp = upwardSpace > menuHeight + offset.top + offset.bottom;
+    const onLeftSpace = hoveredElRect.left;
+    const hasEnoughSpaceLeft = onLeftSpace >= tooltipWidth + tooltipOffset.left + tooltipOffset.right;
 
-    const downwardSpace = document.documentElement.clientHeight - rect.bottom;
-    const hasEnoughSpaceDown = downwardSpace > menuHeight + offset.top + offset.bottom;
-
-    const onLeftSpace = rect.left;
-    const hasEnoughSpaceLeft = onLeftSpace >= menuWidth + offset.left + offset.right;
-
-    const onRightSpace = document.documentElement.clientWidth - rect.right;
-    const hasEnoughSpaceRight = onRightSpace >= menuWidth + offset.left + offset.right;
+    const onRightSpace = document.documentElement.clientWidth - hoveredElRect.right;
+    const hasEnoughSpaceRight = onRightSpace >= tooltipWidth + tooltipOffset.left + tooltipOffset.right;
 
     const getPosForDirection = (dir: PreferDirection) => {
-      this.#popoverEl.classList.remove("top", "bottom", "left", "right");
-      this.#popoverEl.classList.add(dir);
+      tooltipEl.classList.remove("top", "bottom", "left", "right");
+      tooltipEl.classList.add(dir);
 
       if (dir === "top")
         return {
-          top: rect.top - offset.top * 2 - menuHeight,
-          left: rect.left + rect.width / 2 - menuWidth / 2 - offset.left,
+          top: hoveredElRect.top - tooltipOffset.top * 2 - tooltipHeight,
+          left: hoveredElRect.left + hoveredElRect.width / 2 - tooltipWidth / 2 - tooltipOffset.left,
         };
 
       if (dir === "bottom")
         return {
-          top: rect.bottom,
-          left: rect.left + rect.width / 2 - menuWidth / 2 - offset.left,
+          top: hoveredElRect.bottom,
+          left: hoveredElRect.left + hoveredElRect.width / 2 - tooltipWidth / 2 - tooltipOffset.left,
         };
 
       if (dir === "left")
         return {
-          top: rect.top + rect.height / 2 - menuHeight / 2 - offset.top,
-          left: rect.left - (menuWidth + offset.left + offset.right),
+          top: hoveredElRect.top + hoveredElRect.height / 2 - tooltipHeight / 2 - tooltipOffset.top,
+          left: hoveredElRect.left - (tooltipWidth + tooltipOffset.left + tooltipOffset.right),
         };
 
       if (dir === "right")
         return {
-          top: rect.top + rect.height / 2 - menuHeight / 2 - offset.top,
-          left: rect.right,
+          top: hoveredElRect.top + hoveredElRect.height / 2 - tooltipHeight / 2 - tooltipOffset.top,
+          left: hoveredElRect.right,
         };
 
       return { top: 0, left: 0 };
@@ -241,75 +283,67 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
     return { top: 0, left: 0 };
   };
 
-  #setMenuPos = () => {
-    const popoverEl = this.#popoverEl;
+  #setTooltipPos = () => {
+    const tooltipEl = this.#popoverEl;
 
     // clean style for re-calculation
-    popoverEl.style.removeProperty("left");
-    popoverEl.style.removeProperty("top");
+    tooltipEl.style.removeProperty("left");
+    tooltipEl.style.removeProperty("top");
 
-    const { top, left } = this.#calcMenuBounding();
+    const { top, left } = this.#calcTooltipPos();
 
-    popoverEl.style.left = `${left}px`;
-    popoverEl.style.top = `${top}px`;
+    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.top = `${top}px`;
   };
 
   #hoverEnterHandler = (e: PointerEvent) => {
     const isFineInput = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     if (!isFineInput) return;
 
-    if (this.#isOpen) return;
-
-    this.#activeElement = e.target as HTMLElement;
-    this.open();
+    if (this.isOpen) return;
+    this.#currentHoveredElement = e.target as HTMLElement;
+    if (this.#revealDelayTimeoutId) clearTimeout(this.#revealDelayTimeoutId);
+    this.#revealDelayTimeoutId = setTimeout(() => this.open(), this.#revealDelay);
   };
 
   #hoverLeaveHandler = () => {
-    if (this.#isOpen) this.close();
+    if (this.#revealDelayTimeoutId) clearTimeout(this.#revealDelayTimeoutId);
+    this.#currentHoveredElement = null;
+    this.close();
   };
+  //#endregion
 
+  //#region Public Methods
   /** Open the tooltip. */
-  #timerRef: number | null = null;
   open = () => {
-    this.#isOpen = true;
+    this.dispatchEvent(this.#openEvent);
+    this.#internals.states.add("open");
+    this.#popoverEl.showPopover();
 
-    if (this.#timerRef !== null) clearTimeout(this.#timerRef);
+    const signal = this.#abortController.signal;
+    window.addEventListener("scroll", this.#setTooltipPos, { signal });
+    window.addEventListener("resize", this.#setTooltipPos, { signal });
 
-    this.#timerRef = setTimeout(() => {
-      this.dispatchEvent(this.#openEvent);
-      this.#internals.states.add("open");
-      this.#popoverEl.showPopover();
+    this.#setTooltipPos();
+    const computedStyle = getComputedStyle(this);
+    const durationStr = computedStyle.getPropertyValue("--dur-anim") ?? "0.3s";
+    const duration = parseFloat(durationStr) * (durationStr.endsWith("ms") ? 1 : 1000);
+    const easing = computedStyle.getPropertyValue("--ease-anim") ?? "ease-out";
 
-      window.addEventListener("scroll", this.#setMenuPos);
-      window.addEventListener("resize", this.#setMenuPos);
-
-      this.#setMenuPos();
-      const durationStr = getComputedStyle(this).getPropertyValue("--animation-duration") ?? "0.3s";
-      const duration = parseFloat(durationStr) * (durationStr.endsWith("ms") ? 1 : 1000);
-      const easing = getComputedStyle(this).getPropertyValue("--animation-easing") ?? "ease-out";
-
-      this.#popoverEl.animate([{ opacity: 0.1 }, { opacity: 1 }], { duration, easing });
-    }, 500);
+    this.#popoverEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration, easing });
   };
 
   /** Close the tooltip. */
   close = () => {
-    this.#isOpen = false;
-    this.#activeElement = null;
-
-    if (this.#timerRef !== null) {
-      clearTimeout(this.#timerRef);
-      this.#timerRef = null;
-    }
-
     this.#internals.states.delete("open");
 
-    window.removeEventListener("scroll", this.#setMenuPos);
-    window.removeEventListener("resize", this.#setMenuPos);
+    window.removeEventListener("scroll", this.#setTooltipPos);
+    window.removeEventListener("resize", this.#setTooltipPos);
 
-    const durationStr = getComputedStyle(this).getPropertyValue("--animation-duration") ?? "0.3s";
+    const computedStyle = getComputedStyle(this);
+    const durationStr = computedStyle.getPropertyValue("--dur-anim") ?? "0.3s";
     const duration = parseFloat(durationStr) * (durationStr.endsWith("ms") ? 1 : 1000);
-    const easing = getComputedStyle(this).getPropertyValue("--animation-easing") ?? "ease-out";
+    const easing = computedStyle.getPropertyValue("--ease-anim") ?? "ease-out";
 
     const animation = this.#popoverEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing, fill: "backwards" });
     animation.onfinish = () => {
@@ -320,24 +354,23 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
 
   /** Toggle the tooltip between open and closed. */
   toggle = () => {
-    if (this.#isOpen) {
+    if (this.isOpen) {
       this.close();
       return;
     }
     this.open();
   };
+  //#endregion
 }
 
-customElements.define("tooltip-component", TooltipComponent);
+customElements.define(COMPONENT_NAME, TooltipComponent);
 
 export type { TooltipComponent };
 
-type TooltipComponentLocal = TooltipComponent;
-
 declare global {
-  type TooltipComponent = TooltipComponentLocal;
+  type TooltipComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    "tooltip-component": TooltipComponent;
+    [COMPONENT_NAME]: TooltipComponent;
   }
 }

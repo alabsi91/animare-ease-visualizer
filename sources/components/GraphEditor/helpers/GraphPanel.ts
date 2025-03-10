@@ -21,8 +21,8 @@ export class GraphPanel {
   readonly #TXT_OFFSET: number | string = 0; // px or percentage
   readonly #ANIM_REPR_OFFSET: number = 4; // percentage only
 
-  graphEditor: GraphEditor;
-  element: SVGElement;
+  readonly graphEditor: GraphEditor;
+  readonly element: SVGElement;
 
   #animFilledLine: SVGLineElement = null!;
   #animCircleIndicator: SVGCircleElement = null!;

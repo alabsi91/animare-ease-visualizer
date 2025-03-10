@@ -5,21 +5,22 @@ import type { Points } from "./Points";
 import type { PointAddress } from "./types";
 
 export class ControlPoint {
-  #gridPoints: number[] = new Array(11).fill(0).map((_, i) => i / 10);
-  #anchorsXCoordinates: number[] = [];
-  #anchorsYCoordinates: number[] = [];
-  #otherCtrlXCoordinates: number[] = [];
-  #otherCtrlYCoordinates: number[] = [];
+  readonly ctrlAddress: PointAddress;
+  readonly graphEditor: GraphEditor;
+  readonly points: Points;
+  readonly svgLine: SVGLineElement;
+  readonly svgCircle: SVGCircleElement;
+
+  readonly #gridPoints: number[] = new Array(11).fill(0).map((_, i) => i / 10);
+  readonly #anchorsXCoordinates: number[] = [];
+  readonly #anchorsYCoordinates: number[] = [];
+  readonly #otherCtrlXCoordinates: number[] = [];
+  readonly #otherCtrlYCoordinates: number[] = [];
+
   #startPointerPos = { x: 0, y: 0 };
   #lockedDirection: "x" | "y" | null = null;
   #isCtrlFree = false;
   #updateHistory = false;
-
-  ctrlAddress: PointAddress;
-  graphEditor: GraphEditor;
-  points: Points;
-  svgLine: SVGLineElement;
-  svgCircle: SVGCircleElement;
 
   #isActive = false;
   get isActive() {

@@ -5,11 +5,11 @@ import type { GraphEditor } from "../graphEditorComponent";
 import type { C_CMD, M_CMD } from "./types";
 
 export class Path {
-  element: SVGPathElement;
-  graphEditor: GraphEditor;
-  points: Points;
-  maskGroup: SVGGElement;
-  maskRect: SVGRectElement;
+  readonly element: SVGPathElement;
+  readonly graphEditor: GraphEditor;
+  readonly points: Points;
+  readonly maskGroup: SVGGElement;
+  readonly maskRect: SVGRectElement;
 
   get d() {
     return this.element.getAttribute("d")!;

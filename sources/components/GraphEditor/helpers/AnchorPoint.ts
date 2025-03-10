@@ -3,16 +3,17 @@ import type { Points } from "./Points";
 import type { PointAddress } from "./types";
 
 export class AnchorPoint {
-  graphEditor: GraphEditor;
-  points: Points;
+  readonly graphEditor: GraphEditor;
+  readonly points: Points;
+  readonly svgCircle: SVGCircleElement;
   cmdIdx: number;
-  svgCircle: SVGCircleElement;
 
-  #gridPoints: number[] = new Array(11).fill(0).map((_, i) => i / 10);
-  #otherAnchorXCoordinates: number[] = [];
-  #otherAnchorYCoordinates: number[] = [];
-  #otherCtrlXCoordinates: number[] = [];
-  #otherCtrlYCoordinates: number[] = [];
+  readonly #gridPoints: number[] = new Array(11).fill(0).map((_, i) => i / 10);
+  readonly #otherAnchorXCoordinates: number[] = [];
+  readonly #otherAnchorYCoordinates: number[] = [];
+  readonly #otherCtrlXCoordinates: number[] = [];
+  readonly #otherCtrlYCoordinates: number[] = [];
+
   #startPointerPos = { x: 0, y: 0 };
   #lockedDirection: "x" | "y" | null = null;
   #isChanged = false;

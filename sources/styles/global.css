@@ -95,10 +95,6 @@ kbd {
   }
 }
 
-alert-component::part(item-container) {
-  flex-direction: row;
-}
-
 graph-editor {
   background-color: unset;
   background-image: unset;
@@ -107,7 +103,7 @@ graph-editor {
 }
 
 code-editor {
-  --background-color: var(--clr-input);
+  --clr-background: var(--clr-input);
 
   border: solid 1px transparent;
 }
@@ -130,8 +126,8 @@ code-editor::part(box) {
 }
 
 toggle-checkbox {
-  --active-color: var(--clr-accent);
-  --inactive-color: #00000021;
+  --clr-active: var(--clr-accent);
+  --clr-inactive: #00000021;
 
   margin-block: 1em;
 
@@ -141,7 +137,7 @@ toggle-checkbox {
 }
 
 select-option {
-  --active-color: var(--clr-accent);
+  --clr-active: var(--clr-accent);
 
   &::part(option) {
     justify-content: space-between;
@@ -155,8 +151,8 @@ menu-component::part(container) {
 }
 
 slider-component {
-  --thickness: 10px;
-  --filled-color: var(--clr-accent);
+  --sz-thickness: 10px;
+  --clr-filled: var(--clr-accent);
 
   &::part(bubble) {
     display: none;

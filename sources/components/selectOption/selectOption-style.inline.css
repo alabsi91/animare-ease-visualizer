@@ -1,14 +1,14 @@
 :host {
   /* The background color of the option element. */
-  --background-color: #333;
+  --clr-background: #333;
 
   /* The background color of the option element when it is active. */
-  --active-color: #2196f3;
+  --clr-active: #2196f3;
 
   /* The background color of the option element when it is hovered. */
-  --hover-color: #3b3b3b;
+  --clr-hover: #3b3b3b;
 
-  display: contents;
+  display: block;
 }
 
 .option {
@@ -33,12 +33,12 @@
 
 .option[aria-selected="true"],
 .option[aria-checked="true"] {
-  background-color: var(--active-color);
+  background-color: var(--clr-active);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .option:not([aria-selected="true"], [aria-checked="true"]):hover {
-    background-color: var(--hover-color);
+    background-color: var(--clr-hover);
   }
 }
 

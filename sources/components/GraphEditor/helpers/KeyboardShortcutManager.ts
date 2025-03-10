@@ -10,10 +10,10 @@ type ShortcutEvent = {
 export class KeyboardShortcutManager {
   readonly #modifierKeys = new Set(["Control", "Alt", "Shift"]);
 
-  graphEditor: GraphEditor;
-  settings: Settings;
-  keysPressed: Set<string> = new Set();
-  modifiersPressed: Set<KeyModifiers> = new Set();
+  readonly graphEditor: GraphEditor;
+  readonly settings: Settings;
+  readonly keysPressed: Set<string> = new Set();
+  readonly modifiersPressed: Set<KeyModifiers> = new Set();
 
   #events: ShortcutEvent[] = [];
 

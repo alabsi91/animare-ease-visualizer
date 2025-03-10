@@ -384,10 +384,9 @@ main {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  @supports (scrollbar-width: 6px) {
+  @supports (scrollbar-color: #7a7a7a50 #7a7a7a50) {
     .custom-scrollbar {
-      scrollbar-width: 6px;
-      scrollbar-color: #7a7a7a50;
+      scrollbar-color: #7a7a7a50 #7a7a7a50;
     }
   }
 

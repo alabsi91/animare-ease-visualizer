@@ -51,9 +51,9 @@ The select option component is made to be used with `menu-component` but also it
 
 **CSS Properties**
 
-- `--background-color` The background color of the option element.
-- `--active-color` The background color of the option element when it is active.
-- `--hover-color` The background color of the option element when it is hovered.
+- `--clr-background` The background color of the option element.
+- `--clr-active` The background color of the option element when it is active.
+- `--clr-hover` The background color of the option element when it is hovered.
 
 **CSS Parts**
 

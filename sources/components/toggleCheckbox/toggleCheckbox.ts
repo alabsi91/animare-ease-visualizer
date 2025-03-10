@@ -1,6 +1,12 @@
-import type { IWebComponent } from "../wc";
+import type { IWebComponent, WComponent } from "../wc";
 
-type ObservedAttributes = (typeof ToggleCheckbox.observedAttributes)[number];
+type ExtraAttributes = {
+  onchange: (e: CustomEvent) => void;
+};
+
+type ComponentTypes = WComponent<typeof ToggleCheckbox, ExtraAttributes>;
+
+const COMPONENT_NAME = "toggle-checkbox";
 
 /**
  * Checkboxes provide users with a graphical representation of a binary choice (yes or no, on or off). They are most commonly
@@ -13,14 +19,27 @@ type ObservedAttributes = (typeof ToggleCheckbox.observedAttributes)[number];
  * ```
  */
 class ToggleCheckbox extends HTMLElement implements IWebComponent {
-  static formAssociated = true; // a form component
+  static readonly htmlFragment = (() => {
+    const template = document.createElement("template");
+    template.innerHTML = import_as_string("./toggleCheckbox-template.inline.html", { minify: true });
+    return template.content;
+  })();
 
-  #internals: ElementInternals;
-  #checkboxEl: HTMLButtonElement;
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./toggleCheckbox-style.inline.css", { minify: true }));
+    return sheet;
+  })();
+
+  static formAssociated = true;
+
+  readonly #internals: ElementInternals;
+  readonly #checkboxEl: HTMLButtonElement;
 
   /** Emitted when the checked value has changed. */
-  #changeEvent = new CustomEvent("change");
+  readonly #changeEvent = new CustomEvent("change");
 
+  //#region Public Props
   #checked: boolean = false;
   /** Checked. Defaults to `false`. */
   get checked(): boolean {
@@ -54,8 +73,9 @@ class ToggleCheckbox extends HTMLElement implements IWebComponent {
     }
     this.setAttribute("label", value);
   }
+  //#endregion
 
-  // Form association methods
+  //#region Form association methods
   get type() {
     return "checkbox";
   }
@@ -83,21 +103,17 @@ class ToggleCheckbox extends HTMLElement implements IWebComponent {
   get validationMessage() {
     return this.#internals.validationMessage;
   }
+  //#endregion
 
+  //#region HtmlElement Methods
   constructor() {
     super();
 
     this.#internals = this.attachInternals();
 
-    const style = import_as_string("@components/toggleCheckbox/toggleCheckbox-style.inline.css", { minify: true });
-    const template = import_as_string("@components/toggleCheckbox/toggleCheckbox-template.inline.html", { minify: true });
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-
     const shadow = this.attachShadow({ mode: "open" });
-    shadow.innerHTML = template;
-    shadow.appendChild(styleTag);
+    shadow.adoptedStyleSheets = [ToggleCheckbox.stylesheet];
+    shadow.appendChild(ToggleCheckbox.htmlFragment.cloneNode(true));
 
     const checkboxEl = shadow.querySelector<HTMLButtonElement>(".checkbox");
     if (!checkboxEl) {
@@ -120,7 +136,7 @@ class ToggleCheckbox extends HTMLElement implements IWebComponent {
     return ["checked", "disabled", "label", "aria-label"] as const;
   }
 
-  attributeChangedCallback(name: ObservedAttributes, _oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "checked") {
       const value = newValue === "true" || newValue === "";
       this.#updateValue(value);
@@ -174,12 +190,14 @@ class ToggleCheckbox extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "checked") return this.#checked.toString();
     if (qualifiedName === "disabled") return this.#disabled.toString();
     return super.getAttribute(qualifiedName);
   }
+  //#endregion
 
+  //#region Private methods
   #clickHandler = () => {
     if (this.#disabled) return;
     this.checked = !this.#checked;
@@ -193,6 +211,7 @@ class ToggleCheckbox extends HTMLElement implements IWebComponent {
     if (this.#checked) this.#internals.states.add("checked");
     if (!this.#checked) this.#internals.states.delete("checked");
   }
+  //#endregion
 
   /** Toggle the checked state. */
   toggle() {
@@ -200,16 +219,14 @@ class ToggleCheckbox extends HTMLElement implements IWebComponent {
   }
 }
 
-customElements.define("toggle-checkbox", ToggleCheckbox);
+customElements.define(COMPONENT_NAME, ToggleCheckbox);
 
 export type { ToggleCheckbox };
 
-type ToggleCheckboxLocal = ToggleCheckbox;
-
 declare global {
-  type ToggleCheckbox = ToggleCheckboxLocal;
+  type ToggleCheckbox = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    "toggle-checkbox": ToggleCheckbox;
+    [COMPONENT_NAME]: ToggleCheckbox;
   }
 }

@@ -1,6 +1,6 @@
 .export-dialog {
   code-editor {
-    --background-color: #222;
+    --clr-background: #222;
 
     flex: 1;
 

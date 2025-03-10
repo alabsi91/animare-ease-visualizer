@@ -1,6 +1,15 @@
-import type { IWebComponent } from "../wc";
+import type { IWebComponent, WComponent } from "../wc";
 
-type ObservedAttributes = (typeof SelectOption.observedAttributes)[number];
+type ExtraAttributes = {
+  "value-type": ValueTypes;
+  onchange: (e: CustomEvent) => void;
+  onclick: (e: CustomEvent) => void;
+  onkeydown: (e: CustomEvent) => void;
+};
+
+type ComponentTypes = WComponent<typeof SelectOption, ExtraAttributes>;
+
+const COMPONENT_NAME = "select-option";
 
 type SelectOptionData = {
   value: unknown | undefined;
@@ -32,12 +41,19 @@ type OptionType = "option" | "radio" | "checkbox";
  * @cssPart option The option element.
  */
 class SelectOption extends HTMLElement implements IWebComponent {
-  #internals: ElementInternals;
-  #optionsEl: HTMLDivElement;
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./selectOption-style.inline.css", { minify: true }));
+    return sheet;
+  })();
+
+  readonly #internals: ElementInternals;
+  readonly #optionsEl: HTMLDivElement;
 
   /** Fired when `value` or `selected` is changed. */
-  #changeEvent = new CustomEvent("change");
+  readonly #changeEvent = new CustomEvent("change");
 
+  //#region Public Props
   #type: OptionType = "option";
   /** The type for accessibility. Defaults to `option`. */
   get type(): OptionType {
@@ -167,35 +183,19 @@ class SelectOption extends HTMLElement implements IWebComponent {
       }
     }
   }
+  //#endregion
 
-  /**
-   * Focus the option element.
-   *
-   * @function {focus(options?: FocusOptions)}
-   */
-  focus = (options?: FocusOptions) => {
-    this.#optionsEl.focus(options);
-  };
-
-  /** Fire the option click event manually. */
-  click = () => {
-    this.#optionsEl.click();
-  };
-
+  //#region HTMLElement Methods
   constructor() {
     super();
 
     this.#internals = this.attachInternals();
 
-    const style = import_as_string("@components/selectOption/selectOption-style.inline.css", { minify: true });
     const template = `<div class="option" part="option" tabindex="-1" aria-disabled="false"><slot></slot></div>`;
 
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-
     const shadow = this.attachShadow({ mode: "open" });
+    shadow.adoptedStyleSheets = [SelectOption.stylesheet];
     shadow.innerHTML = template;
-    shadow.appendChild(styleTag);
 
     const optionEl = shadow.querySelector<HTMLDivElement>(".option");
     if (!optionEl) {
@@ -226,7 +226,7 @@ class SelectOption extends HTMLElement implements IWebComponent {
     return ["value", "value-type", "label", "selected", "disabled", "type"] as const;
   }
 
-  attributeChangedCallback(name: ObservedAttributes, _oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "value") {
       const prevValue = this.#valueAsType;
       this.value = newValue;
@@ -278,14 +278,16 @@ class SelectOption extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "value") return this.#value;
     if (qualifiedName === "type") return this.#type;
     if (qualifiedName === "value-type") return this.#valueType;
     if (qualifiedName === "selected") return this.#selected.toString();
     return super.getAttribute(qualifiedName);
   }
+  //#endregion
 
+  //#region Private Methods
   #updateValue(newValue: string | null) {
     if (newValue === null) {
       this.#valueAsType = undefined;
@@ -365,18 +367,33 @@ class SelectOption extends HTMLElement implements IWebComponent {
     if (this.#disabled) return;
     this.toggleSelected();
   };
+  //#endregion
+
+  //#region Public Methods
+  /**
+   * Focus the option element.
+   *
+   * @function {focus(options?: FocusOptions)}
+   */
+  focus = (options?: FocusOptions) => {
+    this.#optionsEl.focus(options);
+  };
+
+  /** Fire the option click event manually. */
+  click = () => {
+    this.#optionsEl.click();
+  };
+  //#endregion
 }
 
-customElements.define("select-option", SelectOption);
+customElements.define(COMPONENT_NAME, SelectOption);
 
 export type { SelectOption, SelectOptionData, ValueTypes };
 
-type SelectOptionLocal = SelectOption;
-
 declare global {
-  type SelectOption = SelectOptionLocal;
+  type SelectOption = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    "select-option": SelectOption;
+    [COMPONENT_NAME]: SelectOption;
   }
 }

@@ -6,12 +6,12 @@ import type { GraphEditor } from "../graphEditorComponent.js";
 import type { Points } from "./Points.js";
 
 export class Graph {
-  graphEditor: GraphEditor;
-  element: SVGSVGElement;
-  path: Path;
-  anchorsGroup: SVGGElement;
-  ctrlGroup: SVGGElement;
-  points: Points;
+  readonly graphEditor: GraphEditor;
+  readonly element: SVGSVGElement;
+  readonly path: Path;
+  readonly anchorsGroup: SVGGElement;
+  readonly ctrlGroup: SVGGElement;
+  readonly points: Points;
 
   /** Auto hide anchor points and control points when the graph path is not focused */
   set autoHidePoints(value: boolean) {

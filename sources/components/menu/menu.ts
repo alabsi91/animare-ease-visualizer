@@ -1,7 +1,24 @@
+import type { BooleanString, IWebComponent, WComponent } from "../wc";
 import type { SelectOption } from "../selectOption/selectOption";
-import type { IWebComponent } from "../wc";
 
-type ObservedAttributes = (typeof MenuComponent.observedAttributes)[number];
+type ExtraAttributes = {
+  "prefer-upwards": BooleanString;
+  "prefer-right": BooleanString;
+  "match-trigger-width": BooleanString;
+  "backdrop-close": BooleanString;
+  "escape-close": BooleanString;
+  "close-button": BooleanString;
+  "close-on-select": BooleanString;
+  "popover-role": string;
+  "popover-label": string;
+  onchange: (e: CustomEvent) => void;
+  onopen: (e: CustomEvent) => void;
+  onclose: (e: CustomEvent) => void;
+};
+
+type ComponentTypes = WComponent<typeof MenuComponent, ExtraAttributes>;
+
+const COMPONENT_NAME = "menu-component";
 
 type MenuType = "menu" | "select" | "dialog";
 
@@ -21,31 +38,61 @@ type MenuType = "menu" | "select" | "dialog";
  * ```
  */
 class MenuComponent extends HTMLElement implements IWebComponent {
-  // #region Private Properties
+  static readonly htmlFragment = (() => {
+    const template = document.createElement("template");
+    template.innerHTML = import_as_string("./menu-template.inline.html", { minify: true });
+    return template.content;
+  })();
 
-  #internals: ElementInternals;
-  #popoverEl: HTMLDivElement;
-  #triggerEl: HTMLButtonElement;
-  #defaultSlotEl: HTMLSlotElement;
-  #closeButtonEl: HTMLButtonElement;
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("./menu-style.inline.css", { minify: true }));
+    return sheet;
+  })();
+
+  static formAssociated = true;
+
+  readonly #internals: ElementInternals;
+  readonly #popoverEl: HTMLDivElement;
+  readonly #triggerEl: HTMLButtonElement;
+  readonly #defaultSlotEl: HTMLSlotElement;
+  readonly #closeButtonEl: HTMLButtonElement;
+  readonly #abortController = new AbortController();
   #openUpwards = false; // for animation
-  #abortController = new AbortController();
-
-  // #endregion
-
-  // #region Events
 
   /** Emitted when the menu is opened. */
-  #openEvent = new CustomEvent("open");
+  readonly #openEvent = new CustomEvent("open");
   /** Emitted when the menu is closed. */
-  #closeEvent = new CustomEvent("close");
+  readonly #closeEvent = new CustomEvent("close");
   /** Emitted when the value changes. */
-  #changeEvent = new CustomEvent("change");
+  readonly #changeEvent = new CustomEvent("change");
 
-  // #endregion
+  readonly #pullAndUpdatePos = {
+    interval: 1000 / 60, // 60fps
+    cb: () => this.#updateMenuPos(),
+    lastTime: 0,
+    rafId: null as number | null,
+    signal: this.#abortController.signal,
+    handler(time: number) {
+      if (this.signal.aborted) {
+        this.stop();
+        return;
+      }
+      if (time - this.lastTime >= this.interval) {
+        this.lastTime = time;
+        this.cb();
+      }
+      this.rafId = requestAnimationFrame(this.handler.bind(this));
+    },
+    start() {
+      this.rafId = requestAnimationFrame(this.handler.bind(this));
+    },
+    stop() {
+      if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+    },
+  };
 
-  // #region Properties and Attributes
-
+  //#region Public Props
   #type: MenuType = "menu";
   /** An easy way to setup the accessibility. Defaults to `menu`. */
   get type(): MenuType {
@@ -197,13 +244,9 @@ class MenuComponent extends HTMLElement implements IWebComponent {
   get trigger(): HTMLButtonElement {
     return this.#triggerEl;
   }
+  //#endregion
 
-  // #endregion
-
-  // #region Form association
-
-  static formAssociated = true;
-
+  //#region Form association
   get form() {
     return this.#internals.form;
   }
@@ -222,25 +265,17 @@ class MenuComponent extends HTMLElement implements IWebComponent {
   get validationMessage() {
     return this.#internals.validationMessage;
   }
+  //#endregion
 
-  // #endregion
-
-  // #region Component Methods
-
+  //#region HTMLElement Methods
   constructor() {
     super();
 
     this.#internals = this.attachInternals();
 
-    const style = import_as_string("@components/menu/menu-style.inline.css", { minify: true });
-    const template = import_as_string("@components/menu/menu-template.inline.html", { minify: true });
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-
     const shadow = this.attachShadow({ mode: "open", delegatesFocus: true });
-    shadow.innerHTML = template;
-    shadow.appendChild(styleTag);
+    shadow.adoptedStyleSheets = [MenuComponent.stylesheet];
+    shadow.appendChild(MenuComponent.htmlFragment.cloneNode(true));
 
     const popoverEl = shadow.querySelector<HTMLDivElement>("[popover]");
     if (!popoverEl) {
@@ -271,6 +306,8 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     this.#popoverEl = popoverEl!;
     this.#triggerEl = triggerEl!;
     this.#closeButtonEl = closeButton!;
+
+    // this.#pullAndUpdatePos = new MenuComponent.Pull(this.#updateMenuPos, this.#abortController.signal);
   }
 
   connectedCallback() {
@@ -312,7 +349,7 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     ] as const;
   }
 
-  attributeChangedCallback(name: ObservedAttributes, oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], oldValue: string | null, newValue: string | null) {
     if (name === "type") {
       if (newValue === null) {
         this.type = "menu";
@@ -441,7 +478,7 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "value") return this.#value;
     if (qualifiedName === "values") return Array.from(this.#values).join(";");
     if (qualifiedName === "type") return this.#type;
@@ -449,8 +486,7 @@ class MenuComponent extends HTMLElement implements IWebComponent {
   }
   //#endregion
 
-  // #region Private Methods
-
+  //#region Private Methods
   #updateValue(newValue: string) {
     const slotElements = this.#defaultSlotEl.assignedElements();
     const options = slotElements.flatMap(el => {
@@ -675,29 +711,29 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     }
   };
 
-  #string2Number = (str: string, defaultValue: number = 0) => {
-    const num = parseFloat(str);
-    if (isNaN(num) || !isFinite(num)) return defaultValue;
-    return num;
-  };
-
   #calcMenuBounding = () => {
     const menuEl = this.#popoverEl;
 
     const computedStyle = window.getComputedStyle(menuEl);
 
+    const string2Number = (str: string, defaultValue: number = 0) => {
+      const num = parseFloat(str);
+      if (isNaN(num) || !isFinite(num)) return defaultValue;
+      return num;
+    };
+
     const offset = {
-      top: this.#string2Number(computedStyle.marginTop),
-      bottom: this.#string2Number(computedStyle.marginBottom),
-      left: this.#string2Number(computedStyle.marginLeft),
-      right: this.#string2Number(computedStyle.marginRight),
+      top: string2Number(computedStyle.marginTop),
+      bottom: string2Number(computedStyle.marginBottom),
+      left: string2Number(computedStyle.marginLeft),
+      right: string2Number(computedStyle.marginRight),
     };
 
     const rect = this.#triggerEl.getBoundingClientRect();
 
     const menuWidth = this.#matchTriggerWidth ? rect.width : parseFloat(computedStyle.width);
     const menuHeight = parseFloat(computedStyle.height);
-    const menuMaxHeight = this.#string2Number(computedStyle.maxHeight, window.innerHeight);
+    const menuMaxHeight = string2Number(computedStyle.maxHeight, window.innerHeight);
 
     const upwardSpace = rect.top;
     const hasEnoughSpaceUp = upwardSpace >= menuHeight + offset.top + offset.bottom;
@@ -744,7 +780,6 @@ class MenuComponent extends HTMLElement implements IWebComponent {
 
     // clean style for re-calculation
     popoverEl.style.removeProperty("left");
-    popoverEl.style.removeProperty("right");
     popoverEl.style.removeProperty("top");
     popoverEl.style.removeProperty("width");
     popoverEl.style.removeProperty("max-height");
@@ -826,12 +861,9 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     const hasValue = this.#multiselect ? this.#values.size > 0 : Boolean(this.#value);
     this.#internals.setValidity({ valueMissing: this.#required && !hasValue }, "required", this.#triggerEl);
   }
+  //#endregion
 
-  #pullAndUpdatePos: ThrottledPuller = new ThrottledPuller(this.#updateMenuPos, 30, this.#abortController.signal);
-  // #endregion
-
-  // #region Public Methods
-
+  //#region Public Methods
   /** Force a refresh of the menu after adding/removing `select-option` elements. */
   refresh = this.#onDefaultSlotChange;
 
@@ -844,20 +876,18 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     this.#popoverEl.showPopover();
     this.#triggerEl.setAttribute("aria-expanded", "true");
 
-    window.addEventListener("resize", this.#setMenuPos, { signal: this.#abortController.signal });
-
     this.#focusFirstChild();
 
     const { height, hasScrollbar } = this.#setMenuPos();
-    const durationStr = getComputedStyle(this).getPropertyValue("--animation-duration") ?? "0.3s";
+    const computedStyle = getComputedStyle(this);
+    const durationStr = computedStyle.getPropertyValue("--dur-anim") ?? "0.3s";
     const duration = parseFloat(durationStr) * (durationStr.endsWith("ms") ? 1 : 1000);
-    const easing = getComputedStyle(this).getPropertyValue("--animation-easing") ?? "ease-out";
+    const easing = computedStyle.getPropertyValue("--ease-anim") ?? "ease-out";
     const overflow = hasScrollbar ? "hidden auto" : "hidden";
 
     // scroll to selected option
     if (hasScrollbar) {
-      const selectedOption = this.querySelector<HTMLDivElement>("select-option:state(checked)");
-      const selected = selectedOption?.shadowRoot?.firstChild as HTMLDivElement | undefined;
+      const selected = this.querySelector<SelectOption>("select-option:state(selected)");
       if (selected) selected.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" });
     }
 
@@ -871,8 +901,8 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     const to = { height, opacity: 1, transform: "translateY(0)", overflow };
     const animation = this.#popoverEl.animate([from, to], { duration, easing });
     animation.onfinish = () => {
-      this.#pullAndUpdatePos.start();
       document.addEventListener("pointerdown", this.#clickOutside, { signal: this.#abortController.signal });
+      this.#pullAndUpdatePos.start();
     };
   };
 
@@ -884,13 +914,13 @@ class MenuComponent extends HTMLElement implements IWebComponent {
 
     this.#pullAndUpdatePos.stop();
     document.removeEventListener("pointerdown", this.#clickOutside);
-    window.removeEventListener("resize", this.#setMenuPos);
 
     const height = this.#popoverEl.clientHeight;
     const hasScrollbar = this.#popoverEl.scrollHeight > height;
-    const durationStr = getComputedStyle(this).getPropertyValue("--animation-duration") ?? "0.3s";
+    const computedStyle = getComputedStyle(this);
+    const durationStr = computedStyle.getPropertyValue("--dur-anim") ?? "0.3s";
     const duration = parseFloat(durationStr) * (durationStr.endsWith("ms") ? 1 : 1000);
-    const easing = getComputedStyle(this).getPropertyValue("--animation-easing") ?? "ease-out";
+    const easing = computedStyle.getPropertyValue("--ease-anim") ?? "ease-out";
     const overflow = hasScrollbar ? "hidden auto" : "hidden";
 
     const from = { height: `${height}px`, opacity: 1, transform: "translateY(0)", overflow };
@@ -917,54 +947,17 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     }
     this.open();
   };
-  // #endregion
+  //#endregion
 }
 
-/** ThrottledPuller throttles callback execution using requestAnimationFrame. */
-class ThrottledPuller {
-  #fps: number;
-  #interval: number;
-  #cb: () => void;
-
-  #lastTime = 0;
-  #rafId: number | null = null;
-
-  constructor(cb: () => void, targetFps = 30, signal?: AbortSignal) {
-    this.#fps = targetFps;
-    this.#interval = 1000 / this.#fps;
-    this.#cb = cb;
-
-    if (signal) signal.addEventListener("abort", this.stop);
-  }
-
-  #handler = (time: number) => {
-    if (time - this.#lastTime >= this.#interval) {
-      this.#lastTime = time;
-      this.#cb();
-    }
-
-    this.#rafId = requestAnimationFrame(this.#handler);
-  };
-
-  start = () => {
-    this.#rafId = requestAnimationFrame(this.#handler);
-  };
-
-  stop = () => {
-    if (this.#rafId !== null) cancelAnimationFrame(this.#rafId);
-  };
-}
-
-customElements.define("menu-component", MenuComponent);
+customElements.define(COMPONENT_NAME, MenuComponent);
 
 export type { MenuComponent };
 
-type MenuComponentLocal = MenuComponent;
-
 declare global {
-  type MenuComponent = MenuComponentLocal;
+  type MenuComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    "menu-component": MenuComponent;
+    [COMPONENT_NAME]: MenuComponent;
   }
 }

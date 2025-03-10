@@ -63,12 +63,12 @@ editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).va
 
 - `--font-family` The default font family of the code editor.
 - `--font-weight` The default font size of the code editor.
-- `--font-size` The default font size of the code editor.
+- `--sz-font` The default font size of the code editor.
 - `--line-height` The default line height of the code editor.
-- `--background-color` The default background color of the code editor.
-- `--selection-color` The background color of the selected text.
-- `--scrollbar-color` The color of the scrollbar.
-- `--line-numbers-width` The width of the line numbers column.
+- `--clr-background` The default background color of the code editor.
+- `--clr-text-selection` The background color of the selected text.
+- `--clr-scrollbar` The color of the scrollbar.
+- `--sz-line-numbers-width` The width of the line numbers column.
 
 **CSS Parts**
 

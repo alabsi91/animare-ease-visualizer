@@ -1,23 +1,23 @@
 :host {
   /* The size of the close button svg icon. */
-  --close-icon-size: 24px;
+  --sz-close-icon: 24px;
 
   /* The color of the close button svg icon. */
-  --close-icon-color: currentcolor;
+  --clr-close-icon: currentcolor;
 
   /* The duration of the open/close animation. */
-  --animations-duration: 0.3s;
+  --dur-anim: 0.3s;
 
   /* The color of the dialog backdrop. */
-  --backdrop-color: rgb(0 0 0 / 55%);
+  --clr-backdrop: rgb(0 0 0 / 55%);
 
   /* The color of the dialog background. */
-  --background-color: #303030;
+  --clr-background: #303030;
 
   display: contents;
 
   @media (prefers-reduced-motion) {
-    --animations-duration: 0s;
+    --dur-anim: 0s;
   }
 }
 
@@ -29,7 +29,7 @@ dialog {
   max-height: unset;
   border: none;
   padding: 0;
-  background: var(--backdrop-color);
+  background: var(--clr-backdrop);
   backdrop-filter: blur(2px);
   overflow: clip;
 }
@@ -44,7 +44,7 @@ dialog {
   max-height: 80%;
   padding: 2em;
   border-radius: 10px;
-  background-color: var(--background-color);
+  background-color: var(--clr-background);
   box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
 }
 
@@ -53,7 +53,7 @@ dialog::backdrop {
 }
 
 dialog[open] .content {
-  animation: show var(--animations-duration) ease forwards;
+  animation: show var(--dur-anim) ease forwards;
 }
 
 @keyframes show {
@@ -69,7 +69,7 @@ dialog[open] .content {
 }
 
 dialog[open] {
-  animation: bg-show var(--animations-duration) ease forwards;
+  animation: bg-show var(--dur-anim) ease forwards;
 }
 
 @keyframes bg-show {
@@ -83,7 +83,7 @@ dialog[open] {
 }
 
 dialog.hide .content {
-  animation: hide var(--animations-duration) ease-in forwards;
+  animation: hide var(--dur-anim) ease-in forwards;
 }
 
 @keyframes hide {
@@ -94,7 +94,7 @@ dialog.hide .content {
 }
 
 dialog.hide {
-  animation: bg-hide var(--animations-duration) ease-in forwards;
+  animation: bg-hide var(--dur-anim) ease-in forwards;
 }
 
 @keyframes bg-hide {
@@ -122,42 +122,13 @@ dialog button.close-button {
 }
 
 dialog button.close-button svg {
-  width: var(--close-icon-size);
-  height: var(--close-icon-size);
-  fill: var(--close-icon-color);
+  width: var(--sz-close-icon);
+  height: var(--sz-close-icon);
+  fill: var(--clr-close-icon);
 }
 
 @media (hover: hover) and (pointer: fine) {
   dialog button.close-button:hover {
-    background-color: hsl(from var(--close-icon-color) h s l / 10%);
-  }
-
-  @supports (scrollbar-width: 6px) {
-    .custom-scrollbar {
-      scrollbar-width: 6px;
-      scrollbar-color: #7a7a7a50;
-    }
-  }
-
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    border-radius: 3px;
-    background-color: #7a7a7a00;
-  }
-
-  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-    background-color: #7a7a7a50;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-button {
-    display: none;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-corner {
-    background: transparent;
+    background-color: hsl(from var(--clr-close-icon) h s l / 10%);
   }
 }

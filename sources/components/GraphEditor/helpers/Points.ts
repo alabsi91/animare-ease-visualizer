@@ -1,7 +1,7 @@
 import type { C_CMD, M_CMD, PathCommands, PointAddress, X, Y } from "./types";
 
 export class Points {
-  #cmds: PathCommands = [
+  readonly #cmds: PathCommands = [
     [0, 1],
     [0.5, 0.5, 0.5, 0.5, 1, 0],
   ];

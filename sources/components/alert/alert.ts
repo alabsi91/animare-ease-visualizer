@@ -1,6 +1,10 @@
-import type { IWebComponent } from "../wc";
+import type { IWebComponent, WComponent } from "../wc";
 
-type ObservedAttributes = (typeof AlertComponent.observedAttributes)[number];
+type ExtraAttributes = {
+  "stack-style": StackStyle;
+};
+
+type ComponentTypes = WComponent<typeof AlertComponent, ExtraAttributes>;
 
 type AlertType = "error" | "info" | "success" | "warning";
 type StackStyle = "list" | "3d";
@@ -22,6 +26,8 @@ type AlertOptions = {
    */
   closeBtn?: boolean;
 };
+
+const COMPONENT_NAME = "alert-component";
 
 /**
  * Show a stackable alert on the top layer of the page.
@@ -47,9 +53,24 @@ type AlertOptions = {
  * ```
  */
 class AlertComponent extends HTMLElement implements IWebComponent {
-  #containerEl: HTMLDivElement;
-  #popoverEl: HTMLDivElement;
+  static readonly htmlFragment = (() => {
+    const template = document.createElement("template");
+    template.innerHTML = import_as_string("@components/alert/alert-template.inline.html", { minify: true });
+    return template.content;
+  })();
 
+  static readonly stylesheet = (() => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(import_as_string("@components/alert/alert-style.inline.css", { minify: true }));
+    return sheet;
+  })();
+
+  static readonly alertHtmlFragment = AlertComponent.htmlFragment.querySelector<HTMLTemplateElement>("#item-template")!.content;
+
+  readonly #containerEl: HTMLDivElement;
+  readonly #popoverEl: HTMLDivElement;
+
+  //#region Public Properties
   #duration = 5000;
   /** The time before dismissing the alert in milliseconds. use `-1` to disable auto dismiss. Default `5000`. */
   get duration(): number {
@@ -76,19 +97,15 @@ class AlertComponent extends HTMLElement implements IWebComponent {
       this.#containerEl.classList.add("stacked-3d");
     }
   }
+  //#endregion
 
+  //#region HTMLElement Methods
   constructor() {
     super();
 
-    const style = import_as_string("@components/alert/alert-style.inline.css", { minify: true });
-    const template = import_as_string("@components/alert/alert-template.inline.html", { minify: true });
-
-    const styleTag = document.createElement("style");
-    styleTag.textContent = style;
-
     const shadow = this.attachShadow({ mode: "open" });
-    shadow.innerHTML = template;
-    shadow.appendChild(styleTag);
+    shadow.adoptedStyleSheets = [AlertComponent.stylesheet];
+    shadow.appendChild(AlertComponent.htmlFragment.cloneNode(true));
 
     const alertContainer = shadow.querySelector<HTMLDivElement>(".alert-container");
     if (!alertContainer) console.error("[alert-component]: Could not find element with class `alert-container`");
@@ -104,7 +121,7 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     return ["duration", "stack-style"] as const;
   }
 
-  attributeChangedCallback(name: ObservedAttributes, _oldValue: string | null, newValue: string | null): void {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null): void {
     if (name === "duration") {
       const num = Number(newValue);
       const isNumber = !isNaN(num) && isFinite(num);
@@ -124,62 +141,43 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ObservedAttributes | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
     if (qualifiedName === "duration") return this.#duration.toString();
     if (qualifiedName === "stack-style") return this.#stackStyle;
     return super.getAttribute(qualifiedName);
   }
+  //#endregion
 
+  //#region Private Methods
   #createAlertItem(type: AlertType, message: string, closeBtn: boolean): HTMLDivElement | null {
     const shadow = this.shadowRoot;
-    if (!shadow) {
-      console.error("[alert-component]: Could not find shadow root");
-      return null;
-    }
+    if (!shadow) return null;
 
-    const alertItemTemplate = shadow.querySelector<HTMLTemplateElement>("#item-template");
-    if (!alertItemTemplate) {
-      console.error('[alert-component]: Could not find element with id "item-template"');
-      return null;
-    }
-
-    const alertItemContent = alertItemTemplate.content.cloneNode(true) as DocumentFragment;
+    const alertItemContent = AlertComponent.alertHtmlFragment.cloneNode(true) as DocumentFragment;
 
     const titleContainer = alertItemContent.querySelector(".item-title-container");
-    if (!titleContainer) {
-      console.error("[alert-component]: Could not find element with class `item-title-container`");
-      return null;
-    }
+    if (!titleContainer) return null;
 
     const iconTemplate = shadow.querySelector<HTMLTemplateElement>(`#${type}-icon`);
-    if (!iconTemplate) {
-      console.error(`[alert-component]: Could not find element with id "${type}-icon"`);
-      return null;
-    }
+    if (!iconTemplate) return null;
 
     const messageEl = alertItemContent.querySelector(".item-message");
-    if (!messageEl) {
-      console.error("[alert-component]: Could not find element with class `item-message`");
-      return null;
-    }
+    if (!messageEl) return null;
 
     titleContainer.replaceChildren(iconTemplate.content.cloneNode(true));
 
     messageEl.textContent = message;
 
     const item = alertItemContent.querySelector<HTMLDivElement>(".alert-item");
-    if (!item) {
-      console.error("[alert-component]: Could not find element with class `alert-item`");
-      return null;
-    }
+    if (!item) return null;
 
     const closeBtnEl = item.querySelector<HTMLButtonElement>(".close-btn");
-    if (closeBtnEl) {
-      if (closeBtn) {
-        closeBtnEl.addEventListener("click", () => this.#removeAlertItem(item), { once: true });
-      } else {
-        closeBtnEl.remove();
-      }
+    if (!closeBtnEl) return null;
+
+    if (closeBtn) {
+      closeBtnEl.addEventListener("click", () => this.#removeAlertItem(item), { once: true });
+    } else {
+      closeBtnEl.remove();
     }
 
     item.classList.add(type);
@@ -202,6 +200,7 @@ class AlertComponent extends HTMLElement implements IWebComponent {
       alertItem.onanimationend = null;
     };
   }
+  //#endregion
 
   /** @function {alert(options: AlertOptions)} - Show An alert. */
   alert(options: AlertOptions): () => void {
@@ -225,16 +224,14 @@ class AlertComponent extends HTMLElement implements IWebComponent {
   }
 }
 
-customElements.define("alert-component", AlertComponent);
+customElements.define(COMPONENT_NAME, AlertComponent);
 
 export type { AlertComponent, AlertOptions, AlertType };
 
-type AlertComponentLocal = AlertComponent;
-
 declare global {
-  type AlertComponent = AlertComponentLocal;
+  type AlertComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    "alert-component": AlertComponent;
+    [COMPONENT_NAME]: AlertComponent;
   }
 }
