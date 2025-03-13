@@ -1,5 +1,3 @@
-import type React from "react";
-
 type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
 type NumberString = `${number}`;
@@ -36,7 +34,6 @@ interface WComponent<T extends IWebComponentStatic, ExtendAttr extends Record<st
     > &
       ExtendAttr
   >;
-  JSX: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & this["Attributes"], this["Instance"]>;
 }
 
 export { NumberString, BooleanString, IWebComponent, WComponent };

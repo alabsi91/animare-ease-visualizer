@@ -12,7 +12,7 @@ type ComponentTypes = WComponent<typeof SelectOption, ExtraAttributes>;
 const COMPONENT_NAME = "select-option";
 
 type SelectOptionData = {
-  value: unknown | undefined;
+  value: unknown;
   valueType: ValueTypes;
   label: string | null;
   selected: boolean;
@@ -74,12 +74,12 @@ class SelectOption extends HTMLElement implements IWebComponent {
     this.#updateValue(val);
   }
 
-  #valueAsType: unknown | undefined;
+  #valueAsType: unknown;
   /** The parsed value from the `value` attribute string. */
   get valueAsType() {
     return this.#valueAsType;
   }
-  set valueAsType(val: unknown | undefined) {
+  set valueAsType(val: unknown) {
     if (val === undefined) {
       this.removeAttribute("value");
       return;
@@ -300,7 +300,7 @@ class SelectOption extends HTMLElement implements IWebComponent {
     }
 
     try {
-      const parsedValue = JSON.parse(newValue);
+      const parsedValue = JSON.parse(newValue) as unknown;
       this.#valueAsType = parsedValue;
     } catch (err) {
       console.error("[select-option]: Error while parsing the value:", newValue);

@@ -450,9 +450,9 @@ class CodeEditor extends HTMLElement implements IWebComponent {
   };
 
   /** Copy button click event handler */
-  #copyHandler = () => {
+  #copyHandler = async () => {
     const txt = this.#editorEl.value;
-    navigator.clipboard.writeText(txt);
+    await navigator.clipboard.writeText(txt);
     this.dispatchEvent(this.#copy);
   };
 

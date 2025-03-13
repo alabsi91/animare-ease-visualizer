@@ -192,6 +192,8 @@ class PointEvent<T extends (...args: any[]) => any = () => void> {
   };
 
   fire = (...args: Parameters<T>) => {
-    this.#events.forEach(cb => cb(...args));
+    this.#events.forEach(cb => {
+      cb(...args);
+    });
   };
 }

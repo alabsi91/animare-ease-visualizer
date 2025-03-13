@@ -214,9 +214,9 @@ class MenuComponent extends HTMLElement implements IWebComponent {
     this.#updateValues(val);
   }
 
-  #valueAsType: unknown | undefined;
+  #valueAsType: unknown;
   /** The parsed value from the `value` attribute string. */
-  get valueAsType(): unknown | undefined {
+  get valueAsType(): unknown {
     return this.#valueAsType;
   }
 
@@ -682,7 +682,7 @@ class MenuComponent extends HTMLElement implements IWebComponent {
 
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {
       e.preventDefault();
-      const children = this.#defaultSlotEl.assignedElements().filter(e => e instanceof HTMLElement) as HTMLElement[];
+      const children = this.#defaultSlotEl.assignedElements().filter(e => e instanceof HTMLElement);
 
       this.#focusIndex =
         e.key === "ArrowUp"

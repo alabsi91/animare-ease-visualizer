@@ -59,7 +59,7 @@ class ProjectStorage {
       window.localStorage.setItem(this.SAVED_GRAPHS_KEY, JSON.stringify(defaultSavedPreset));
       return defaultSavedPreset;
     }
-    return JSON.parse(str);
+    return JSON.parse(str) as SavedGraph[];
   }
 
   saveGraph(name: string, pathStr: string) {

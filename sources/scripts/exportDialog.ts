@@ -149,8 +149,14 @@ function generateCssKeyframesCode() {
 
 function copyCssKeyframesCodeHandler() {
   const code = exportElements.cssKeyframes.codePreview.value;
-  navigator.clipboard.writeText(code);
-  elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+  navigator.clipboard
+    .writeText(code)
+    .then(() => {
+      elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+    })
+    .catch(() => {
+      elements.alert.alert({ message: "Failed to copy to clipboard", type: "error", closeBtn: false });
+    });
 }
 //#endregion
 
@@ -207,8 +213,14 @@ function generateCssLinearCode() {
 
 function copyCssLinearCodeHandler() {
   const code = exportElements.cssLinear.codePreview.value;
-  navigator.clipboard.writeText(code);
-  elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+  navigator.clipboard
+    .writeText(code)
+    .then(() => {
+      elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+    })
+    .catch(() => {
+      elements.alert.alert({ message: "Failed to copy to clipboard", type: "error", closeBtn: false });
+    });
 }
 //#endregion
 
@@ -226,6 +238,7 @@ export function initJsFunctionExport() {
 function generateJsFunctionCode() {
   const name = exportElements.jsFunction.nameInput.value;
   try {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     new Function(name, `var ${name}`);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
@@ -265,8 +278,14 @@ function downloadJsFile() {
 
 function copyJsFunctionCodeHandler() {
   const code = exportElements.jsFunction.codePreview.value;
-  navigator.clipboard.writeText(code);
-  elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+  navigator.clipboard
+    .writeText(code)
+    .then(() => {
+      elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+    })
+    .catch(() => {
+      elements.alert.alert({ message: "Failed to copy to clipboard", type: "error", closeBtn: false });
+    });
 }
 //#endregion
 
@@ -307,7 +326,13 @@ function downloadSvg() {
 
 function copySvgCodeHandler() {
   const code = exportElements.svgCode.codePreview.value;
-  navigator.clipboard.writeText(code);
-  elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+  navigator.clipboard
+    .writeText(code)
+    .then(() => {
+      elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+    })
+    .catch(() => {
+      elements.alert.alert({ message: "Failed to copy to clipboard", type: "error", closeBtn: false });
+    });
 }
 //#endregion
