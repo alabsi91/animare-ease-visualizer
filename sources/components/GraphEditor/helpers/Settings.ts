@@ -36,11 +36,11 @@ export class Settings {
 
   /** Keyboard shortcuts */
   anchorDeleteKeys = new KeyboardAssignment({ keys: ["Delete"] });
-  anchorSmoothCornerModifiers = new KeyboardAssignment({ modifiers: ["Control"] });
+  anchorSmoothCornerModifiers = new KeyboardAssignment({ modifiers: ["Shift"] });
   anchorLockMovementModifiers = new KeyboardAssignment({ modifiers: ["Shift"] });
   ctrlLockMovementModifiers = new KeyboardAssignment({ modifiers: ["Shift"] });
   addAnchorModifiers = new KeyboardAssignment({ modifiers: ["Alt"] });
-  freeCtrlModifiers = new KeyboardAssignment({ modifiers: ["Control"] });
+  freeCtrlModifiers = new KeyboardAssignment({ modifiers: ["Alt"] });
   panKeys = new KeyboardAssignment({ keys: [" "] });
   undoKeys = new KeyboardAssignment({ modifiers: ["Control"], keys: ["z"] });
   redoKeys = new KeyboardAssignment({ modifiers: ["Control"], keys: ["y"] });

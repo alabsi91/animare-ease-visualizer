@@ -5,7 +5,7 @@
     <li>
       <p class="list-bullet-title">Toggle anchor point smooth corner</p>
       <p class="list-item-shortcut">
-        <kbd>Ctrl</kbd>
+        <kbd>Shift</kbd>
         +
         <kbd>Click</kbd>
         on the anchor point.
@@ -19,7 +19,7 @@
     <li>
       <p class="list-bullet-title">Add new anchor point</p>
       <p class="list-item-shortcut">
-        <kbd>Alt</kbd>
+        <kbd class="alt-key">Alt</kbd>
         +
         <kbd>Click</kbd>
         on the graph path.
@@ -38,7 +38,7 @@
     <li>
       <p class="list-bullet-title">Move control point independently</p>
       <p class="list-item-shortcut">
-        <kbd>Ctrl</kbd>
+        <kbd class="alt-key">Alt</kbd>
         +
         <kbd>Drag</kbd>
         the control point.
@@ -103,3 +103,14 @@
 </dialog-component>
 
 <link rel="stylesheet" href="./shourtcutsDialog.part.css" inline />
+
+<script type="module">
+  const isMac = /Mac|iPhone|iPod|iPad/.test(navigator.platform);
+
+  if (isMac) {
+    const altKeys = document.querySelectorAll(".alt-key");
+    altKeys.forEach(kbd => {
+      kbd.textContent = "Option";
+    });
+  }
+</script>
