@@ -122,15 +122,23 @@
   width: var(--sz-line-numbers-width);
 }
 
-ol {
+ul {
   display: flex;
   flex-direction: column;
   margin: 0;
   padding: 0;
-  padding-inline-start: var(--sz-line-numbers-width);
+  counter-reset: list-item;
+  list-style-type: none;
 
-  li::marker {
+  li {
+    counter-increment: list-item;
+  }
+
+  li::before {
+    display: inline-block;
     content: counter(list-item) "  ";
+    text-align: end;
+    width: var(--sz-line-numbers-width);
     font-family: var(--font-family);
     font-weight: var(--font-weight);
     font-size: var(--sz-font);
@@ -141,7 +149,7 @@ ol {
     transition-timing-function: linear;
   }
 
-  li.active::marker {
+  li.active::before {
     font-weight: bold;
     color: hsl(from var(--clr-background) h s max(35, l * 5));
   }

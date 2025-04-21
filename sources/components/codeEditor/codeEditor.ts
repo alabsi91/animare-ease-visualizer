@@ -486,7 +486,7 @@ class CodeEditor extends HTMLElement implements IWebComponent {
         .map(line => `<li>${line}</li>`)
         .join("\n");
 
-      this.#highlightedEl.innerHTML = `<ol>${withLineNumbers}</ol>` + trailingSpaces[0];
+      this.#highlightedEl.innerHTML = `<ul>${withLineNumbers}</ul>` + trailingSpaces[0];
       this.#activeLineNumber();
       return;
     }
