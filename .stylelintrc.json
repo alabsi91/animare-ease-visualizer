@@ -1,12 +1,24 @@
 {
-  "extends": ["stylelint-config-standard"],
-  "plugins": ["stylelint-no-unsupported-browser-features"],
-  "ignoreFiles": ["**/*.html", "dist/**/*"],
+  "extends": ["stylelint-config-standard", "stylelint-config-recess-order"],
+  "plugins": ["stylelint-no-unsupported-browser-features", "stylelint-use-logical"],
+  "ignoreFiles": ["dist/**/*"],
+  "overrides": [
+    {
+      "files": ["*.html", "**/*.html"],
+      "customSyntax": "postcss-html",
+      "rules": {
+        "custom-property-empty-line-before": null
+      }
+    }
+  ],
   "rules": {
+    "csstools/use-logical": "always",
     "plugin/no-unsupported-browser-features": [
       true,
       {
-        "severity": "warning"
+        "severity": "warning",
+        "ignore": ["css-display-contents"],
+        "ignorePartialSupport": false
       }
     ],
     "media-feature-range-notation": null
