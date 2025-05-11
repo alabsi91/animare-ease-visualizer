@@ -23,28 +23,28 @@
 
 dialog {
   inset: 0;
-  width: 100%;
-  height: 100%;
-  max-width: unset;
-  max-height: unset;
-  border: none;
+  inline-size: 100%;
+  max-inline-size: unset;
+  block-size: 100%;
+  max-block-size: unset;
   padding: 0;
-  background: var(--clr-backdrop);
-  backdrop-filter: blur(2px);
   overflow: clip;
+  background: var(--clr-backdrop);
+  border: none;
+  backdrop-filter: blur(2px);
 }
 
 .content {
   position: fixed;
   inset: 0;
-  margin: auto;
-  width: calc(90% - 80px);
-  height: fit-content;
-  max-width: 600px;
-  max-height: 80%;
+  inline-size: calc(90% - 80px);
+  max-inline-size: 600px;
+  block-size: fit-content;
+  max-block-size: 80%;
   padding: 2em;
-  border-radius: 10px;
+  margin: auto;
   background-color: var(--clr-background);
+  border-radius: 10px;
   box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
 }
 
@@ -58,13 +58,13 @@ dialog[open] .content {
 
 @keyframes show {
   from {
-    transform: translateY(70%);
     opacity: 0;
+    transform: translateY(70%);
   }
 
   to {
-    transform: translateY(0%);
     opacity: 1;
+    transform: translateY(0%);
   }
 }
 
@@ -88,8 +88,8 @@ dialog.hide .content {
 
 @keyframes hide {
   to {
-    transform: translateY(70%);
     opacity: 0;
+    transform: translateY(70%);
   }
 }
 
@@ -107,13 +107,13 @@ dialog button.close-button {
   float: inline-end;
   display: grid;
   place-items: center;
-  margin-top: -1em;
-  margin-inline-end: -1em;
   padding: 0.2rem;
+  margin-block-start: -1em;
+  margin-inline-end: -1em;
+  cursor: pointer;
   background-color: transparent;
   border: none;
   border-radius: 50%;
-  cursor: pointer;
   transition: background-color 200ms ease-in-out;
 
   @media (prefers-reduced-motion) {
@@ -122,8 +122,8 @@ dialog button.close-button {
 }
 
 dialog button.close-button svg {
-  width: var(--sz-close-icon);
-  height: var(--sz-close-icon);
+  inline-size: var(--sz-close-icon);
+  block-size: var(--sz-close-icon);
   fill: var(--clr-close-icon);
 }
 

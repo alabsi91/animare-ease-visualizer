@@ -1,9 +1,9 @@
 :host {
   display: block;
+  touch-action: pinch-zoom;
   background-color: var(--clr-grid-line);
   background-image: radial-gradient(var(--clr-panel-background) 1px, var(--clr-grid-line) 1px);
   background-size: 20px 20px;
-  touch-action: pinch-zoom;
 
   --dur-clr-transition: 150ms;
   --clr-panel-background: #303030;
@@ -38,7 +38,7 @@
 
 .main-svg {
   display: block;
-  width: 100%;
+  inline-size: 100%;
 }
 
 .graph-panel {
@@ -55,19 +55,19 @@
 }
 
 .graph-panel-fps-counter {
-  fill: var(--clr-graph-txt);
   font-family: monospace;
   font-size: clamp(8px, 1px * var(--grid-size) / 30, 18px) !important;
   font-weight: bold;
   user-select: none;
+  fill: var(--clr-graph-txt);
 }
 
 .graph-panel-grid-numbers text,
 .graph-panel-labels text {
-  fill: var(--clr-graph-txt);
   font-family: monospace;
   font-size: clamp(8px, 1px * var(--grid-size) / 50, 18px);
   user-select: none;
+  fill: var(--clr-graph-txt);
 }
 
 .svg-anim-representation {
@@ -88,10 +88,10 @@
 
   .target-vertical-line,
   .target-horizontal-line {
-    stroke: var(--clr-anchor-circle);
-    stroke-width: 1px;
     pointer-events: none;
     opacity: 1;
+    stroke: var(--clr-anchor-circle);
+    stroke-width: 1px;
     transition: opacity var(--dur-clr-transition) linear;
 
     &.hidden {
@@ -112,32 +112,32 @@
 .graph-svg.hide-points {
   .anchors-group,
   .ctrl-group {
-    opacity: 0 !important;
     pointer-events: none;
+    opacity: 0 !important;
   }
 }
 
 .graph-svg.auto-hide-points {
   .anchors-group,
   .ctrl-group {
-    opacity: 0;
     pointer-events: none;
+    opacity: 0;
   }
 
   &:has(*:focus) {
     .anchors-group,
     .ctrl-group {
-      opacity: 1;
       pointer-events: all;
+      opacity: 1;
     }
   }
 }
 
 .graph-path {
-  stroke: var(--clr-path);
-  stroke-width: var(--size-path-thickness);
   cursor: pointer;
   outline: none;
+  stroke: var(--clr-path);
+  stroke-width: var(--size-path-thickness);
   transition: stroke var(--dur-clr-transition) linear;
 }
 
@@ -156,15 +156,15 @@
 }
 
 .anchor-circle {
-  r: calc((var(--size-anchor-circle) / var(--grid-size)) * 100);
-  stroke-width: calc((var(--size-anchor-stroke) / var(--grid-size)) * 100);
-  fill: var(--clr-anchor-circle);
-  stroke: transparent;
   cursor: pointer;
   outline: none;
+  fill: var(--clr-anchor-circle);
+  stroke: transparent;
+  stroke-width: calc((var(--size-anchor-stroke) / var(--grid-size)) * 100);
   transition:
     fill var(--dur-clr-transition) linear,
     stroke var(--dur-clr-transition) linear;
+  r: calc((var(--size-anchor-circle) / var(--grid-size)) * 100);
 
   &:focus {
     stroke: var(--clr-focus-anchor-circle-stroke);
@@ -176,11 +176,11 @@
 }
 
 .ctrl-circle {
-  r: calc((var(--size-ctrl-circle) / var(--grid-size)) * 100);
-  fill: var(--clr-ctrl-circle);
   cursor: pointer;
   outline: none;
+  fill: var(--clr-ctrl-circle);
   transition: fill var(--dur-clr-transition) linear;
+  r: calc((var(--size-ctrl-circle) / var(--grid-size)) * 100);
 }
 
 .active-ctrl-circle {

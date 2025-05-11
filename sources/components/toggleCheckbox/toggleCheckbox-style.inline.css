@@ -19,9 +19,9 @@
 
   display: flex;
   flex-direction: row;
+  gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
 
   @media (prefers-reduced-motion) {
     --dur-anim: 0s;
@@ -29,21 +29,21 @@
 }
 
 .checkbox {
+  box-sizing: border-box;
   display: grid;
   place-items: stretch;
-  width: var(--sz-checkbox);
-  height: var(--sz-checkbox);
-  border: solid 2px #494949;
-  border-radius: 6px;
-  box-sizing: border-box;
-  background-color: var(--clr-inactive);
-  margin: 0;
+  inline-size: var(--sz-checkbox);
+  block-size: var(--sz-checkbox);
   padding: 0;
+  margin: 0;
   overflow: clip;
   cursor: pointer;
-  transition-property: border-color;
-  transition-duration: calc(var(--dur-anim) / 2);
+  background-color: var(--clr-inactive);
+  border: solid 2px #494949;
+  border-radius: 6px;
   transition-timing-function: var(--ease-anim);
+  transition-duration: calc(var(--dur-anim) / 2);
+  transition-property: border-color;
 
   > * {
     grid-area: 1 / 1;
@@ -52,29 +52,29 @@
 
 .background {
   background-color: transparent;
-  scale: 0;
   border-radius: 50%;
-  transition-property: background-color, border-radius, scale;
-  transition-duration: calc(var(--dur-anim) / 2);
+  scale: 0;
   transition-timing-function: var(--ease-anim);
+  transition-duration: calc(var(--dur-anim) / 2);
+  transition-property: background-color, border-radius, scale;
 }
 
 .checked-icon {
   visibility: hidden;
-  width: 100%;
-  height: 100%;
+  inline-size: 100%;
+  block-size: 100%;
   fill: var(--clr-checked-icon);
   scale: 0;
   translate: 0 100%;
+  transition-timing-function: var(--ease-anim);
+  transition-duration: var(--dur-anim);
   transition-property: scale, translate, visibility;
   transition-behavior: allow-discrete;
-  transition-duration: var(--dur-anim);
-  transition-timing-function: var(--ease-anim);
 }
 
 .checkbox[aria-checked="true"] {
-  border-width: 0;
   border-color: transparent;
+  border-width: 0;
 
   .background {
     background-color: var(--clr-active);
@@ -83,8 +83,8 @@
   }
 
   .checked-icon {
-    scale: 1;
     visibility: visible;
+    scale: 1;
     translate: 0;
   }
 }
@@ -96,6 +96,6 @@
 
 label {
   flex: 1;
-  user-select: none;
   cursor: pointer;
+  user-select: none;
 }

@@ -5,29 +5,29 @@ main {
 }
 
 .divider {
-  width: 100%;
-  height: 1px;
+  inline-size: 100%;
+  block-size: 1px;
   margin-block: 1em;
   background-color: var(--clr-border);
 }
 
 .menu-divider {
-  width: 100%;
-  height: 1px;
+  inline-size: 100%;
+  block-size: 1px;
   margin-block: 0.5em;
   background-color: var(--clr-border);
 }
 
 .side-panel {
-  height: 100dvh;
-  min-width: 300px;
-  max-width: 450px;
-  width: 24vw;
+  inline-size: 24vw;
+  min-inline-size: 300px;
+  max-inline-size: 450px;
+  block-size: 100dvh;
   overflow: auto;
   background-color: var(--clr-navigation-background);
-  backdrop-filter: blur(1px);
+  border-inline-end: solid 1px var(--clr-border);
   box-shadow: 2px 0 7px #00000024;
-  border-right: solid 1px var(--clr-border);
+  backdrop-filter: blur(1px);
   transform: translateY(0);
 }
 
@@ -37,31 +37,31 @@ main {
 
 .small-side-panel {
   display: none;
-  height: 100dvh;
-  width: 75px;
-  min-width: 0;
-  background-color: var(--clr-navigation-background);
-  backdrop-filter: blur(1px);
-  box-shadow: 2px 0 7px #00000024;
-  border-right: solid 1px var(--clr-border);
+  inline-size: 75px;
+  min-inline-size: 0;
+  block-size: 100dvh;
   overflow: hidden;
+  background-color: var(--clr-navigation-background);
+  border-inline-end: solid 1px var(--clr-border);
+  box-shadow: 2px 0 7px #00000024;
+  backdrop-filter: blur(1px);
 
   .panel-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     gap: 1em;
-    height: 100%;
+    justify-content: space-between;
+    block-size: 100%;
   }
 
   .small-panel-controls-btn {
     display: block;
+    padding: 0.5em;
+    font-size: 1rem;
+    cursor: pointer;
     background-color: var(--clr-accent);
     border: none;
     border-radius: 50%;
-    font-size: 1rem;
-    padding: 0.5em;
-    cursor: pointer;
     transition: scale 100ms ease;
 
     &:active {
@@ -70,24 +70,24 @@ main {
 
     .small-control-btn-icon {
       display: block;
-      width: 1.5em;
-      height: 1.5em;
+      inline-size: 1.5em;
+      block-size: 1.5em;
       fill: #fff;
     }
   }
 }
 
 .panel-title {
-  color: var(--clr-text);
-  font-weight: bold;
-  font-size: 1.6rem;
   margin: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--clr-text);
 }
 
 .panel-subtitle {
-  color: var(--clr-text-faded);
+  margin-block-start: 0;
   font-size: 1.2rem;
-  margin-top: 0;
+  color: var(--clr-text-faded);
 }
 
 .hide-panel-btn-container {
@@ -96,10 +96,10 @@ main {
 }
 
 .toggle-panel-btn {
-  background-color: unset;
-  border: unset;
   padding: 0;
   cursor: pointer;
+  background-color: unset;
+  border: unset;
   transition: scale 100ms ease;
 
   &:active {
@@ -108,8 +108,8 @@ main {
 
   svg {
     display: block;
-    width: 36px;
-    height: 36px;
+    inline-size: 36px;
+    block-size: 36px;
     fill: #fff;
   }
 }
@@ -121,23 +121,23 @@ main {
 .controls-container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
   gap: 1em;
+  justify-content: center;
   padding-inline: 10px;
   container-name: controls;
   container-type: inline-size;
 
   .control-btn {
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: row;
     align-items: center;
+    padding: 0.5em;
+    font-size: 1rem;
+    cursor: pointer;
     background-color: var(--clr-accent);
     border: none;
     border-radius: 4px;
-    font-size: 1rem;
-    padding: 0.5em;
-    cursor: pointer;
     transition: scale 100ms ease;
 
     &:active {
@@ -150,8 +150,8 @@ main {
     }
 
     .control-btn-icon {
-      width: 1.5em;
-      height: 1.5em;
+      inline-size: 1.5em;
+      block-size: 1.5em;
       fill: #fff;
     }
   }
@@ -168,10 +168,10 @@ main {
 }
 
 .icon-btn {
-  background-color: unset;
-  border: unset;
   padding: 0 0.2em;
   cursor: pointer;
+  background-color: unset;
+  border: unset;
   transition: scale 100ms ease;
 
   &:active {
@@ -180,8 +180,8 @@ main {
 
   svg {
     display: block;
-    width: 36px;
-    height: 36px;
+    inline-size: 36px;
+    block-size: 36px;
     fill: #fff;
   }
 }
@@ -189,18 +189,18 @@ main {
 .input-label-container {
   display: flex;
   flex-flow: row wrap;
-  align-items: center;
   gap: 1em;
+  align-items: center;
 
   input {
-    flex: 1;
     display: block;
-    width: 0;
+    flex: 1;
+    inline-size: 0;
   }
 
   label {
-    flex: 1;
     display: block;
+    flex: 1;
     white-space: nowrap;
   }
 }
@@ -210,13 +210,13 @@ main {
 
   svg {
     position: absolute;
-    top: 50%;
+    inset-block-start: 50%;
     inset-inline-start: 0;
-    transform: translateY(-50%);
     display: block;
-    width: 28px;
-    height: 28px;
+    inline-size: 28px;
+    block-size: 28px;
     fill: var(--clr-text);
+    transform: translateY(-50%);
   }
 }
 
@@ -234,18 +234,18 @@ main {
 
 .save-preset-name-input {
   flex: 1;
-  min-width: 0;
+  min-inline-size: 0;
 }
 
 .save-preset-btn {
-  flex: 0.5;
   display: block;
-  background-color: var(--clr-accent);
-  border: unset;
-  border-radius: 4px;
+  flex: 0.5;
   padding: 0.5em;
   color: #fff;
   cursor: pointer;
+  background-color: var(--clr-accent);
+  border: unset;
+  border-radius: 4px;
   transition: scale 100ms ease;
 
   &:active {
@@ -255,12 +255,12 @@ main {
 
 .export-menu {
   &::part(trigger) {
+    padding: 0.5em;
+    font-size: 1rem;
+    cursor: pointer;
     background-color: var(--clr-accent);
     border: none;
     border-radius: 4px;
-    font-size: 1rem;
-    padding: 0.5em;
-    cursor: pointer;
     transition: scale 100ms ease;
 
     &:active {
@@ -269,10 +269,10 @@ main {
   }
 
   .export-trigger-btn {
-    flex: 1;
     display: flex;
-    align-items: center;
+    flex: 1;
     flex-direction: row;
+    align-items: center;
 
     span {
       flex: 1;
@@ -280,21 +280,21 @@ main {
     }
 
     .export-trigger-btn-icon {
-      width: 1.5em;
-      height: 1.5em;
+      inline-size: 1.5em;
+      block-size: 1.5em;
       fill: #fff;
     }
   }
 
   .export-menu-btn {
     display: block;
+    inline-size: 100%;
     padding: 0.5em;
+    text-align: start;
+    cursor: pointer;
     background-color: unset;
     border: none;
     border-radius: 4px;
-    text-align: start;
-    cursor: pointer;
-    width: 100%;
     transition: background-color 100ms ease;
 
     @media (hover: hover) and (pointer: fine) {
@@ -306,26 +306,26 @@ main {
 }
 
 .presets-menu::part(trigger) {
-  flex: 1;
   display: block;
-  font-size: 1rem;
+  flex: 1;
   padding: 0.5em;
-  background-color: var(--clr-input);
+  font-size: 1rem;
   color: var(--clr-text);
+  background-color: var(--clr-input);
 }
 
 .presets-menu:state(open)::part(trigger) {
+  color: hsl(from var(--clr-text) h s calc(l * 1.2));
   background-color: var(--clr-input-active);
   border-color: var(--clr-accent);
-  color: hsl(from var(--clr-text) h s calc(l * 1.2));
 }
 
 .preset-delete-btn {
+  padding: 0.2em;
+  cursor: pointer;
   background-color: unset;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
-  padding: 0.2em;
 
   &:hover {
     background-color: #000;
@@ -333,34 +333,34 @@ main {
 
   svg {
     display: block;
-    width: 24px;
-    height: 24px;
+    inline-size: 24px;
+    block-size: 24px;
     fill: currentcolor;
   }
 }
 
 .contact-us-menu {
   &::part(trigger) {
+    padding: 0;
     background-color: transparent;
     border: none;
-    padding: 0;
   }
 
   .contact-us-custom-trigger svg {
     display: block;
-    width: 36px;
-    height: 36px;
+    inline-size: 36px;
+    block-size: 36px;
     fill: #fff;
   }
 
   .contact-us-link {
     display: flex;
     flex-direction: row;
-    align-items: center;
     gap: 1em;
+    align-items: center;
     padding: 0.5em;
-    border-radius: 4px;
     text-decoration: none;
+    border-radius: 4px;
     transition: background-color 100ms ease;
   }
 
@@ -378,8 +378,8 @@ main {
 
   .contact-us-link svg {
     display: block;
-    width: 24px;
-    height: 24px;
+    inline-size: 24px;
+    block-size: 24px;
     fill: var(--clr-text);
   }
 }
@@ -392,13 +392,13 @@ main {
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    inline-size: 6px;
+    block-size: 6px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    border-radius: 3px;
     background-color: #7a7a7a00;
+    border-radius: 3px;
   }
 
   .custom-scrollbar:hover::-webkit-scrollbar-thumb {

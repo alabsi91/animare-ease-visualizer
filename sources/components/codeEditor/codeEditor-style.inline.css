@@ -27,15 +27,15 @@
 }
 
 .wrapper {
-  border-radius: 4px;
   background-color: var(--clr-background);
   border: 1px solid #ffffff1a;
+  border-radius: 4px;
   box-shadow: 0 0.1rem 1rem -0.5rem #0006;
   transition: background-color 100ms linear;
 
   &:has(.textarea:focus:not(:read-only)) {
-    background-color: hsl(from var(--clr-background) h s max(10, l * 0.8));
     outline: solid 1px currentcolor;
+    background-color: hsl(from var(--clr-background) h s max(10, l * 0.8));
   }
 }
 
@@ -46,16 +46,16 @@
 }
 
 .copy-btn {
+  position: absolute;
+  inset-block-start: 0.4rem;
+  inset-inline-end: 0.4rem;
   display: none;
   place-items: center;
-  position: absolute;
-  inset-inline-end: 0.4rem;
-  inset-block-start: 0.4rem;
-  border: none;
   padding: 0.4rem;
-  border-radius: 8px;
-  background-color: hsl(from var(--clr-background) h s calc(l * 0.9));
   cursor: pointer;
+  background-color: hsl(from var(--clr-background) h s calc(l * 0.9));
+  border: none;
+  border-radius: 8px;
   opacity: 0.5;
   transition: opacity 200ms linear;
 
@@ -64,8 +64,8 @@
   }
 
   svg {
-    width: 20px;
-    height: 20px;
+    inline-size: 20px;
+    block-size: 20px;
     fill: currentcolor;
   }
 }
@@ -74,10 +74,10 @@
   flex: 1;
   padding: 0;
   margin: 0;
-  background-color: transparent;
   color: transparent;
   caret-color: #cacaca;
   resize: none;
+  background-color: transparent;
 
   &:focus {
     outline: none;
@@ -97,20 +97,20 @@
 
 .highlight {
   position: absolute;
-  top: 0;
+  inset-block-start: 0;
   overflow: hidden;
   pointer-events: none;
 }
 
 .box {
-  border: none;
-  white-space: pre;
+  font-family: var(--font-family);
+  font-size: var(--sz-font);
+  font-weight: var(--font-weight);
+  line-height: var(--line-height);
   word-break: break-all;
   overflow-wrap: break-word;
-  font-family: var(--font-family);
-  font-weight: var(--font-weight);
-  font-size: var(--sz-font);
-  line-height: var(--line-height);
+  white-space: pre;
+  border: none;
 }
 
 .wrap {
@@ -119,16 +119,16 @@
 
 .line-numbers-placeholder {
   display: none;
-  width: var(--sz-line-numbers-width);
+  inline-size: var(--sz-line-numbers-width);
 }
 
 ul {
   display: flex;
   flex-direction: column;
-  margin: 0;
   padding: 0;
-  counter-reset: list-item;
+  margin: 0;
   list-style-type: none;
+  counter-reset: list-item;
 
   li {
     counter-increment: list-item;
@@ -136,17 +136,17 @@ ul {
 
   li::before {
     display: inline-block;
-    content: counter(list-item) "  ";
-    text-align: end;
-    width: var(--sz-line-numbers-width);
+    inline-size: var(--sz-line-numbers-width);
     font-family: var(--font-family);
-    font-weight: var(--font-weight);
     font-size: var(--sz-font);
+    font-weight: var(--font-weight);
     line-height: var(--line-height);
     color: hsl(from var(--clr-background) h s max(25, l * 3));
-    transition-property: color;
-    transition-duration: 100ms;
+    text-align: end;
+    content: counter(list-item) "  ";
     transition-timing-function: linear;
+    transition-duration: 100ms;
+    transition-property: color;
   }
 
   li.active::before {
@@ -158,8 +158,8 @@ ul {
 @media (hover: hover) and (pointer: fine) {
   @supports (scrollbar-width: thin) {
     .textarea {
-      scrollbar-width: thin;
       scrollbar-color: var(--clr-scrollbar);
+      scrollbar-width: thin;
       scrollbar-base-color: #3a3a9e;
       scrollbar-track-color: #3a3a9e;
     }
@@ -170,8 +170,8 @@ ul {
   }
 
   .textarea::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    inline-size: 6px;
+    block-size: 6px;
   }
 
   .textarea::-webkit-scrollbar-track {
@@ -179,23 +179,23 @@ ul {
   }
 
   .textarea::-webkit-scrollbar-thumb {
-    background: var(--clr-scrollbar);
-    border-radius: 10px;
-    border: none;
     cursor: pointer;
+    background: var(--clr-scrollbar);
+    border: none;
+    border-radius: 10px;
   }
 }
 
 .hidden-scrollbar {
   &::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+    inline-size: 0;
+    block-size: 0;
   }
 
   &::-webkit-scrollbar-thumb {
+    pointer-events: none;
+    cursor: unset;
     background: transparent;
     border: none;
-    cursor: unset;
-    pointer-events: none;
   }
 }

@@ -25,25 +25,25 @@
 }
 
 .popover {
+  box-sizing: border-box;
   padding: 0;
   margin: 1rem 0;
-  border: solid 1px rgba(255 255 255 / 10%);
-  border-radius: 12px;
-  background-color: var(--clr-background);
   overflow: hidden auto;
   overscroll-behavior: contain;
-  box-sizing: border-box;
+  background-color: var(--clr-background);
+  border: solid 1px rgb(255 255 255 / 10%);
+  border-radius: 12px;
   box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
 }
 
 .popover::backdrop {
   display: none;
-  background: rgba(0 0 0 / 40%);
+  background: rgb(0 0 0 / 40%);
   opacity: 0;
   backdrop-filter: blur(0);
-  transition-property: opacity, backdrop-filter;
-  transition-duration: var(--dur-anim);
   transition-timing-function: ease;
+  transition-duration: var(--dur-anim);
+  transition-property: opacity, backdrop-filter;
 }
 
 /* stylelint-disable-next-line selector-type-no-unknown */
@@ -58,11 +58,11 @@
 }
 
 .trigger {
-  background-color: #3b3b3b;
-  border: solid 1px rgba(255 255 255 / 10%);
-  border-radius: 4px;
   padding: 0.5rem;
   cursor: pointer;
+  background-color: #3b3b3b;
+  border: solid 1px rgb(255 255 255 / 10%);
+  border-radius: 4px;
   transition: background-color 200ms linear;
 
   @media (prefers-reduced-motion) {
@@ -70,8 +70,8 @@
   }
 
   &[aria-disabled="true"] {
-    opacity: 0.5;
     cursor: unset;
+    opacity: 0.5;
   }
 
   &:not([aria-disabled="true"]):hover {
@@ -80,16 +80,16 @@
 }
 
 .popover .close-button {
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
   float: inline-end;
   display: grid;
   place-items: center;
-  top: 10px;
-  right: 10px;
   padding: 0.2rem;
+  cursor: pointer;
   background-color: transparent;
   border: none;
   border-radius: 50%;
-  cursor: pointer;
   transition: background-color 200ms ease-in-out;
 
   @media (prefers-reduced-motion) {
@@ -97,8 +97,8 @@
   }
 
   svg {
-    width: var(--sz-close-icon);
-    height: var(--sz-close-icon);
+    inline-size: var(--sz-close-icon);
+    block-size: var(--sz-close-icon);
     fill: var(--clr-close-icon);
   }
 }
@@ -110,23 +110,23 @@
 
   @supports (scrollbar-width: thin) {
     .popover {
-      scrollbar-width: thin;
       scrollbar-color: var(--clr-scrollbar);
+      scrollbar-width: thin;
     }
   }
 
   .popover::-webkit-scrollbar {
-    width: 6px;
+    inline-size: 6px;
   }
 
   .popover::-webkit-scrollbar-track {
-    background: transparent;
     margin: 10px;
+    background: transparent;
   }
 
   .popover::-webkit-scrollbar-thumb {
     background: var(--clr-scrollbar);
-    border-radius: 10px;
     border: none;
+    border-radius: 10px;
   }
 }

@@ -19,23 +19,23 @@
 }
 
 html {
-  font-size: 1rem;
   font-family: -apple-system, blinkmacsystemfont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
     "Helvetica Neue", sans-serif;
+  font-size: 1rem;
   color-scheme: dark;
 }
 
 body {
+  color: var(--clr-text);
   background-color: var(--clr-bg);
   background-image: radial-gradient(#303030 1px, var(--clr-bg) 1px);
   background-size: 20px 20px;
-  color: var(--clr-text);
 }
 
 body,
 html {
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
 button,
@@ -51,43 +51,43 @@ label {
 
 input {
   padding: 0.5em;
-  border: 1px solid #ffffff1a;
-  border-radius: 4px;
-  background-color: var(--clr-input);
   color: var(--clr-text);
   outline: none;
-  transition-property: border-color, background-color, color;
-  transition-duration: 200ms;
+  background-color: var(--clr-input);
+  border: 1px solid #ffffff1a;
+  border-radius: 4px;
   transition-timing-function: ease;
+  transition-duration: 200ms;
+  transition-property: border-color, background-color, color;
 }
 
 input:focus {
+  color: hsl(from var(--clr-text) h s calc(l * 1.2));
   background-color: var(--clr-input-active);
   border-color: var(--clr-accent);
-  color: hsl(from var(--clr-text) h s calc(l * 1.2));
 }
 
 input[type="number"] {
   font-family: monospace;
   text-align: center;
-  appearance: textfield;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
   margin: 0;
+  -webkit-appearance: none;
 }
 
 kbd {
   display: inline-block;
+  min-inline-size: 1.5em;
+  padding: 0 5px;
+  margin-inline-end: 0.15em;
   text-align: center;
   border: 2px solid var(--clr-accent);
   border-radius: 0.25em;
-  min-width: 1.5em;
-  margin-right: 0.15em;
-  padding: 0 5px;
   box-shadow: 2px 2px #252525;
 
   & > * {
@@ -96,10 +96,10 @@ kbd {
 }
 
 graph-editor {
+  block-size: 100dvh;
   background-color: unset;
   background-image: unset;
   background-size: unset;
-  height: 100dvh;
 }
 
 code-editor {
@@ -110,9 +110,9 @@ code-editor {
 
 code-editor::part(wrapper) {
   outline: none;
-  transition-property: border-color, background-color;
-  transition-duration: 200ms;
   transition-timing-function: ease;
+  transition-duration: 200ms;
+  transition-property: border-color, background-color;
 }
 
 code-editor:state(focus)::part(wrapper) {
@@ -121,8 +121,8 @@ code-editor:state(focus)::part(wrapper) {
 }
 
 code-editor::part(box) {
-  padding-bottom: 1em;
-  min-width: 0;
+  min-inline-size: 0;
+  padding-block-end: 1em;
 }
 
 toggle-checkbox {
@@ -145,9 +145,9 @@ select-option {
 }
 
 menu-component::part(container) {
+  padding: 0.5em;
   background-color: hsl(from var(--clr-input-active) h s l / 90%);
   backdrop-filter: blur(5px);
-  padding: 0.5em;
 }
 
 slider-component {

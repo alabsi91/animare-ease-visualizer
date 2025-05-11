@@ -43,9 +43,9 @@
 
 label {
   display: block;
-  text-align: left;
-  margin-left: 10px;
-  margin-bottom: 10px;
+  margin-block-end: 10px;
+  margin-inline-start: 10px;
+  text-align: start;
   transition: opacity var(--dur-anim-active) var(--ease-active-anim);
 }
 
@@ -68,133 +68,133 @@ label:has(+ .active) {
 
 .custom-slider-container {
   position: relative;
-  width: calc(100% - var(--sz-thumb));
-  height: var(--sz-thickness);
+  inline-size: calc(100% - var(--sz-thumb));
+  block-size: var(--sz-thickness);
   pointer-events: none;
 }
 
 .custom-slider-track {
-  width: 100%;
-  height: 100%;
-  border-radius: 1rem;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: clip;
   background: var(--clr-empty);
   background-repeat: no-repeat;
-  overflow: clip;
+  border-radius: 1rem;
   box-shadow: 0 0.1rem 1rem -0.5rem rgb(0 0 0 / 40%);
-  transition-property: transform, border-radius;
-  transition-duration: var(--dur-anim);
   transition-timing-function: var(--ease-anim);
+  transition-duration: var(--dur-anim);
+  transition-property: transform, border-radius;
 }
 
 .fill {
-  border-radius: inherit;
-  width: calc(var(--value) * 1%);
-  height: 100%;
+  inline-size: calc(var(--value) * 1%);
+  block-size: 100%;
   background: var(--clr-filled);
   background-repeat: no-repeat;
+  border-radius: inherit;
 }
 
 .custom-slider-thumb {
   position: absolute;
-  top: 50%;
+  inset-block-start: 50%;
   inset-inline-start: calc(var(--value) * 1%);
-  translate: calc(50% * var(--is-rtl)) -50%;
-  width: var(--sz-thumb);
-  height: var(--sz-thumb);
-  border-radius: calc(var(--sz-thumb) / 2);
+  inline-size: var(--sz-thumb);
+  block-size: var(--sz-thumb);
   background-color: var(--clr-thumb);
+  border-radius: calc(var(--sz-thumb) / 2);
   box-shadow: 0 0 7px 0 #0006;
-  transition-property: transform, border-radius, width, height, box-shadow;
-  transition-duration: var(--dur-anim);
+  translate: calc(50% * var(--is-rtl)) -50%;
   transition-timing-function: var(--ease-anim);
+  transition-duration: var(--dur-anim);
+  transition-property: transform, border-radius, width, height, box-shadow;
 }
 
 .active .custom-slider-container {
   .custom-slider-track {
-    transform: scaleY(var(--scale-by));
     border-radius: 0;
-    transition-duration: var(--dur-anim-active);
+    transform: scaleY(var(--scale-by));
     transition-timing-function: var(--ease-active-anim);
+    transition-duration: var(--dur-anim-active);
   }
 
   .custom-slider-thumb {
-    transform: scaleY(var(--scale-by));
+    inline-size: 1px;
+    block-size: 100%;
     border-radius: 0;
-    width: 1px;
-    height: 100%;
     box-shadow: none;
-    transition-duration: var(--dur-anim-active);
+    transform: scaleY(var(--scale-by));
     transition-timing-function: var(--ease-active-anim);
+    transition-duration: var(--dur-anim-active);
   }
 }
 
 .ticks {
   position: relative;
-  width: calc(100% - var(--sz-thumb));
-  height: calc(var(--sz-thickness) + 12px);
+  inline-size: calc(100% - var(--sz-thumb));
+  block-size: calc(var(--sz-thickness) + 12px);
   pointer-events: none;
   transition: transform var(--dur-anim) var(--ease-anim);
 
   div {
     position: absolute;
-    bottom: 0;
-    translate: -50% 0;
-    width: 1px;
-    height: 4px;
+    inset-block-end: 0;
+    inline-size: 1px;
+    block-size: 4px;
     background: var(--clr-thumb);
+    translate: -50% 0;
   }
 }
 
 .active .ticks {
   transform: translateY(calc((var(--sz-thickness) * (var(--scale-by) - 1)) / 2));
-  transition-duration: var(--dur-anim-active);
   transition-timing-function: var(--ease-active-anim);
+  transition-duration: var(--dur-anim-active);
 }
 
 .bubble-container {
   position: relative;
-  width: calc(100% - var(--sz-thumb));
-  height: var(--sz-thickness);
-  pointer-events: none;
   z-index: 1;
+  inline-size: calc(100% - var(--sz-thumb));
+  block-size: var(--sz-thickness);
+  pointer-events: none;
 }
 
 .bubble {
   position: absolute;
-  top: -5px;
+  inset-block-start: -5px;
   inset-inline-start: calc(var(--value) * 1%);
-  translate: calc(50% * var(--is-rtl)) -100%;
-  transform: scale(0);
-  opacity: 0;
-  font-weight: bold;
   font-family: monospace;
-  transition-property: transform, opacity;
-  transition-duration: var(--dur-anim);
+  font-weight: bold;
+  opacity: 0;
+  transform: scale(0);
+  translate: calc(50% * var(--is-rtl)) -100%;
   transition-timing-function: var(--ease-anim);
+  transition-duration: var(--dur-anim);
+  transition-property: transform, opacity;
 }
 
 .active .bubble-container {
   transform: translateY(calc((var(--sz-thickness) * (1 - var(--scale-by))) / 2));
-  transition-duration: var(--dur-anim-active);
   transition-timing-function: var(--ease-active-anim);
+  transition-duration: var(--dur-anim-active);
 
   .bubble {
-    transform: scale(1);
     opacity: 1;
-    transition-duration: var(--dur-anim-active);
+    transform: scale(1);
     transition-timing-function: var(--ease-active-anim);
+    transition-duration: var(--dur-anim-active);
   }
 }
 
 input[type="range"] {
-  background: transparent;
-  width: 100%;
+  inline-size: 100%;
   min-block-size: 22px;
   padding: 0;
   margin: 0;
+  cursor: pointer;
+  background: transparent;
   border: none;
   opacity: 0;
-  cursor: pointer;
 }
 
 .disabled input[type="range"] {
@@ -202,41 +202,41 @@ input[type="range"] {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: var(--sz-thickness);
+  block-size: var(--sz-thickness);
 }
 
 input[type="range"]::-moz-range-track {
-  height: var(--sz-thickness);
+  block-size: var(--sz-thickness);
   background: transparent;
   border: 0;
 }
 
 input[type="range"]::-ms-track {
-  height: var(--sz-thickness);
+  block-size: var(--sz-thickness);
 }
 
 input[type="range"]::-webkit-slider-thumb {
+  inline-size: var(--sz-thumb);
+  block-size: var(--sz-thumb);
+  margin-block-start: calc((var(--sz-thickness) - var(--sz-thumb) - 1px) / 2);
   appearance: none;
-  margin-top: calc((var(--sz-thickness) - var(--sz-thumb) - 1px) / 2);
-  width: var(--sz-thumb);
-  height: var(--sz-thumb);
   background: transparent;
   border: none;
 }
 
 input[type="range"]::-moz-range-thumb {
+  inline-size: var(--sz-thumb);
+  block-size: var(--sz-thumb);
   appearance: none;
-  width: var(--sz-thumb);
-  height: var(--sz-thumb);
   background: transparent;
   border: none;
 }
 
 input[type="range"]::-ms-thumb {
+  inline-size: var(--sz-thumb);
+  block-size: var(--sz-thumb);
+  margin-block-start: 0;
   appearance: none;
-  width: var(--sz-thumb);
-  height: var(--sz-thumb);
   background: transparent;
   border: none;
-  margin-top: 0;
 }

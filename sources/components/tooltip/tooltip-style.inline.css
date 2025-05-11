@@ -3,7 +3,7 @@
   --clr-background: #333;
 
   /* The border color of the tooltip. */
-  --clr-border: rgba(255 255 255 / 10%);
+  --clr-border: rgb(255 255 255 / 10%);
 
   /* The size of the arrow that points to the element that the tooltip is attached to. */
   --sz-arrow: 12px;
@@ -25,15 +25,15 @@
 }
 
 .popover {
+  box-sizing: border-box;
   padding: 0.5rem;
   margin: 0.8rem;
+  overflow: visible;
+  pointer-events: none;
+  background-color: var(--clr-background);
   border: solid 1px var(--clr-border);
   border-radius: 12px;
-  background-color: var(--clr-background);
-  overflow: visible;
-  box-sizing: border-box;
   box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
-  pointer-events: none;
 }
 
 .popover::backdrop {
@@ -42,38 +42,38 @@
 
 .arrow {
   position: absolute;
-  width: var(--sz-arrow);
-  height: var(--sz-arrow);
+  inline-size: var(--sz-arrow);
+  block-size: var(--sz-arrow);
   fill: var(--clr-arrow);
-  stroke-width: 1px;
   stroke: var(--clr-border);
+  stroke-width: 1px;
   stroke-dasharray: var(--sz-arrow);
   stroke-dashoffset: calc(var(--sz-arrow) / 3.4);
 }
 
 .popover.top .arrow {
-  left: 50%;
-  bottom: 0;
+  inset-block-end: 0;
+  inset-inline-start: 50%;
   translate: -50% 100%;
 }
 
 .popover.bottom .arrow {
-  left: 50%;
-  top: 0;
-  translate: -50% -100%;
+  inset-block-start: 0;
+  inset-inline-start: 50%;
   rotate: 180deg;
+  translate: -50% -100%;
 }
 
 .popover.left .arrow {
-  right: 0;
-  top: 50%;
-  translate: 100% -50%;
+  inset-block-start: 50%;
+  inset-inline-end: 0;
   rotate: -90deg;
+  translate: 100% -50%;
 }
 
 .popover.right .arrow {
-  left: 0;
-  top: 50%;
-  translate: -100% -50%;
+  inset-block-start: 50%;
+  inset-inline-start: 0;
   rotate: 90deg;
+  translate: -100% -50%;
 }

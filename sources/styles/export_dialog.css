@@ -10,28 +10,28 @@
   }
 
   #export-css-keyframe-property::part(box) {
-    padding-bottom: 0;
+    padding-block-end: 0;
   }
 
   .export-code-preview {
     &::part(textarea) {
-      max-height: 300px;
-      min-height: 100px;
+      min-block-size: 100px;
+      max-block-size: 300px;
     }
   }
 
   input {
-    min-width: 0;
-    text-align: start;
-    margin-inline: 1px;
+    min-inline-size: 0;
     padding-block: 0.7em;
+    margin-inline: 1px;
+    text-align: start;
     background-color: #222;
   }
 
   input:focus {
+    color: hsl(from var(--clr-text) h s calc(l * 1.2));
     background-color: var(--clr-input-active);
     border-color: var(--clr-accent);
-    color: hsl(from var(--clr-text) h s calc(l * 1.2));
   }
 
   .content {
@@ -47,19 +47,18 @@
   }
 
   .export-dialog-title {
-    text-align: center;
+    margin-block: 0 2rem;
     font-size: 1.5rem;
     font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 2rem;
+    text-align: center;
   }
 
   .label-input-container {
     display: grid;
-    grid-template-columns: 75px 1fr;
     flex-direction: row;
-    align-items: center;
+    grid-template-columns: 75px 1fr;
     gap: 1em;
+    align-items: center;
 
     label {
       cursor: unset;
@@ -74,13 +73,13 @@
 
   .export-btn {
     flex: 1;
+    padding: 0.5em;
+    margin-block-start: 1em;
+    font-size: 1rem;
+    cursor: pointer;
     background-color: var(--clr-accent);
     border: none;
     border-radius: 4px;
-    font-size: 1rem;
-    padding: 0.5em;
-    margin-top: 1em;
-    cursor: pointer;
     transition: scale 100ms ease;
 
     &:active {
@@ -90,11 +89,11 @@
 
   .warning {
     display: none;
-    background-color: #ffc40236;
-    color: #fff;
-    border-radius: 4px;
     padding: 0.5em 1em;
-    margin-bottom: 1em;
+    margin-block-end: 1em;
     font-size: 1rem;
+    color: #fff;
+    background-color: #ffc40236;
+    border-radius: 4px;
   }
 }
