@@ -238,7 +238,6 @@ export function initJsFunctionExport() {
 function generateJsFunctionCode() {
   const name = exportElements.jsFunction.nameInput.value;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     new Function(name, `var ${name}`);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {

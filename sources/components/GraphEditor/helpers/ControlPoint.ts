@@ -1,4 +1,4 @@
-import { arePointsCollinear, mirrorPoint } from "~/sources/components/GraphEditor/helpers/geometry";
+import { arePointsCollinear, mirrorPoint } from "@components/GraphEditor/helpers/geometry";
 
 import type { GraphEditor } from "../graphEditorComponent";
 import type { Points } from "./Points";
