@@ -16,7 +16,7 @@
     {
       "name": "script",
       "attributes": [
-        { "name": "server", "description": "Executes the script tag at build time only.", "valueSet": "v" },
+        { "name": "build-time", "description": "Executes the script tag at build time only.", "valueSet": "v" },
         {
           "name": "inline",
           "description": "Inline the referenced script file by the `src` attribute inside the script tag",

@@ -6,7 +6,7 @@
   "json.schemas": [
     {
       "fileMatch": [".static.json"],
-      "url": ".vscode/configSchema.json"
+      "url": "https://git.a-labs.space/alabsi91/static-bolt/raw/branch/main/src/config/config-json-schema.json"
     }
   ],
   "html.customData": [

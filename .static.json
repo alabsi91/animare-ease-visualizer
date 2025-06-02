@@ -1,29 +1,18 @@
 {
-  "root": ".",
-  "pagesDir": "pages",
-  "jsx": "none",
-  "ignorePatterns": ["dist/**", "**/*.part.html", "sources/components/**/*.{md,html-data.json}"],
-  "browserslist": [
-    "last 2 Chrome versions",
-    "last 2 Firefox versions",
-    "last 2 Safari versions",
-    "last 2 Edge versions",
-    "not op_mini all"
-  ],
-
-  "dev": {
-    "host": "0.0.0.0",
-    "port": "3000",
-    "entry": "/"
-  },
+  "ignore": ["dist/**"],
 
   "build": {
-    "outDir": "dist",
     "minify": true,
     "cleanOutDir": true,
-    "removeUnusedFiles": true,
-    "nodeModulesOutDir": "sources/packages",
-    "webP": {
+    "analyzeOutput": {
+      "enabled": true,
+      "deleteUnused": true,
+      "exclude": ["robots.txt", "manifest.json"]
+    },
+    "copyAssets": {
+      "exclude": ["manifest.json"]
+    },
+    "convertImages": {
       "enabled": true,
       "quality": 100,
       "preset": "default"
@@ -31,9 +20,6 @@
   },
 
   "generate": {
-    "serviceWorker": {
-      "enabled": false
-    },
     "robotsTxt": [
       {
         "userAgent": "*",
@@ -41,10 +27,5 @@
         "disallow": ["/nobot/"]
       }
     ]
-  },
-
-  "packages": {},
-
-  "babelPlugins": [],
-  "postcssPlugins": []
+  }
 }

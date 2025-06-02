@@ -5,10 +5,11 @@
     "highlight.js": "^11.11.1"
   },
   "scripts": {
-    "dev": "static serve",
-    "build": "static build",
-    "fix-lint": "eslint sources/** --fix",
-    "fix-style": "stylelint \"./sources/**/*.{css,html}\" \"./pages/**/*.html\" --fix"
+    "dev": "static-bolt serve",
+    "build": "static-bolt build",
+    "fix-eslint": "eslint \"sources/**/*.{js,jsx,ts,tsx}\" \"pages/**/*.html\" --fix",
+    "fix-stylelint": "stylelint \"sources/**/*.{css,html}\" \"pages/**/*.html\" --fix",
+    "fix-all": "npm run fix-eslint || npm run fix-stylelint"
   },
   "browserslist": [
     "last 2 Chrome versions",
@@ -19,7 +20,7 @@
   ],
   "devDependencies": {
     "@eslint/js": "^9.26.0",
-    "@html-eslint/eslint-plugin": "^0.40.2",
+    "@html-eslint/eslint-plugin": "^0.41.0",
     "@html-eslint/parser": "^0.40.0",
     "cssnano": "^7.0.7",
     "eslint": "^9.26.0",
