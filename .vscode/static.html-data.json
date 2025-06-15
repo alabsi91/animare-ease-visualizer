@@ -5,11 +5,6 @@
       "name": "markdown",
       "description": "Process the element content as markdown.",
       "valueSet": "v"
-    },
-    {
-      "name": "md",
-      "description": "Process the element content as markdown.",
-      "valueSet": "v"
     }
   ],
   "tags": [
@@ -25,7 +20,19 @@
         {
           "name": "bundle",
           "description": "Bundle the referenced script file by the `src` attribute inside the script tag",
-          "values": [{ "name": "true" }, { "name": "include-packages" }]
+          "valueSet": "v"
+        },
+        {
+          "name": "bundle-out",
+          "description": "The output path of the bundled script file."
+        },
+        {
+          "name": "bundle-externals",
+          "description": "A glob pattern separated by space to match external dependencies for the bundled script file. Default is the packages."
+        },
+        {
+          "name": "bundle-externals-ignore",
+          "description": "A glob pattern separated by space to ignore `bundle-externals`."
         },
         {
           "name": "minify",
@@ -57,6 +64,16 @@
       ]
     },
     {
+      "name": "svg",
+      "attributes": [
+        {
+          "name": "inline",
+          "description": "Inline the referenced svg file by the `src` attribute.",
+          "valueSet": "v"
+        }
+      ]
+    },
+    {
       "name": "layout",
       "description": {
         "kind": "markdown",
@@ -66,6 +83,19 @@
         {
           "name": "src",
           "description": "The path to the layout file."
+        }
+      ]
+    },
+    {
+      "name": "part",
+      "description": {
+        "kind": "markdown",
+        "value": "An HTML element to use a defined HTML part.\n\n**attributes:**\n- **src:** The path to the HTML part file. **Required**\n- **[props]:** specific for each layout."
+      },
+      "attributes": [
+        {
+          "name": "src",
+          "description": "The path to the HTML part file."
         }
       ]
     },
