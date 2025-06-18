@@ -1,0 +1,29 @@
+{
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "menu-trigger",
+      "description": {
+        "kind": "markdown",
+        "value": "# menu-trigger\n\nA trigger for `<menu-component />`.\n\n**Usage**\n\n```html\n<menu-trigger></menu-trigger>\n```\n\n**Methods**\n\n- `setTriggerLabel()` Sets the trigger text content only for a child with the id \"trigger-label\" . (Managed by the menu component)\n- `setRole(role: \"dialog\" | \"select\" | \"menu\", controls: string)` Sets the menu role. Managed by the menu component.\n\n**Props**\n\n- `trigger` (Get/Set) The trigger button element\n- `disabled` (Get/Set) Disable the menu trigger button.\n\n**Slots**\n\n- `trigger-content` The menu trigger button content.\n\n**Attributes**\n\n- `\"trigger-label\"`\n- `\"disabled\"` Disable the menu trigger button.\n\n**CSS Properties**\n\n- `--ui-clr-surface-1` The background color of the trigger.\n- `--ui-clr-surface-2` The background color of the hovered trigger.\n- `--ui-clr-border` The border color of the trigger.\n- `--ui-sz-border-thin` The border width of the trigger.\n- `--ui-rad-border-md` The border radius of the trigger.\n- `--ui-shadow` The shadow of the trigger.\n\n**CSS Parts**\n\n- `::part(trigger)` The menu trigger button element.\n"
+      },
+      "attributes": [
+        {
+          "name": "trigger-label"
+        },
+        {
+          "name": "disabled",
+          "description": "Disable the menu trigger button.",
+          "values": [
+            {
+              "name": "true"
+            },
+            {
+              "name": "false"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,13 +1,25 @@
 /* stylelint-disable property-no-vendor-prefix */
 :root {
-  --clr-accent: #a370f0;
-  --clr-text: #aaa;
-  --clr-text-faded: #808080;
-  --clr-navigation-background: #14141450;
-  --clr-border: #2b2b2b;
-  --clr-input: #303030;
-  --clr-input-active: #0e0e10;
-  --clr-bg: #222;
+  --clr-accent: var(--clr-accent1-450);
+  --clr-secondary: var(--clr-accent3-450);
+  --clr-pure: var(--clr-accent1-50);
+  --clr-text: var(--clr-neutral2-300);
+  --clr-text-faded: var(--clr-neutral2-400);
+  --clr-navigation-background: hsl(from var(--clr-neutral2-950) h s l / 50%);
+  --clr-border: var(--clr-neutral2-700);
+  --clr-divider: var(--clr-neutral2-800);
+  --clr-input: var(--clr-neutral2-800);
+  --clr-input-active: var(--clr-neutral2-950);
+  --clr-bg: var(--clr-neutral2-900);
+  --clr-bg-dot: var(--clr-neutral2-800);
+
+  /* Web-Components */
+  --ui-clr-accent: var(--clr-accent1-450);
+  --ui-clr-surface-1: var(--clr-neutral2-900);
+  --ui-clr-surface-2: var(--clr-neutral2-800);
+  --ui-clr-border: var(--clr-neutral2-700);
+  --ui-clr-backdrop: hsl(from var(--clr-neutral2-990) h s l / 90%);
+  --ui-rad-border-md: 6px;
 
   @media screen and (max-width: 800px) {
     --base-font-size: 12px;
@@ -19,8 +31,9 @@
 }
 
 html {
-  font-family: -apple-system, blinkmacsystemfont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
-    "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system, blinkmacsystemfont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   font-size: 1rem;
   color-scheme: dark;
 }
@@ -28,7 +41,7 @@ html {
 body {
   color: var(--clr-text);
   background-color: var(--clr-bg);
-  background-image: radial-gradient(#303030 1px, var(--clr-bg) 1px);
+  background-image: radial-gradient(var(--clr-bg-dot) 1px, var(--clr-bg) 1px);
   background-size: 20px 20px;
 }
 
@@ -54,7 +67,7 @@ input {
   color: var(--clr-text);
   outline: none;
   background-color: var(--clr-input);
-  border: 1px solid #ffffff1a;
+  border: 1px solid var(--clr-border);
   border-radius: 4px;
   transition-timing-function: ease;
   transition-duration: 200ms;
@@ -64,7 +77,7 @@ input {
 input:focus {
   color: hsl(from var(--clr-text) h s calc(l * 1.2));
   background-color: var(--clr-input-active);
-  border-color: var(--clr-accent);
+  border-color: var(--ui-clr-accent);
 }
 
 input[type="number"] {
@@ -86,12 +99,20 @@ kbd {
   padding: 0 5px;
   margin-inline-end: 0.15em;
   text-align: center;
-  border: 2px solid var(--clr-accent);
+  border: 2px solid var(--ui-clr-accent);
   border-radius: 0.25em;
   box-shadow: 2px 2px #252525;
 
   & > * {
     display: block;
+  }
+}
+
+code-editor {
+  --ui-clr-surface-1: var(--clr-input);
+
+  &::part(wrapper) {
+    box-shadow: none;
   }
 }
 
@@ -102,33 +123,7 @@ graph-editor {
   background-size: unset;
 }
 
-code-editor {
-  --clr-background: var(--clr-input);
-
-  border: solid 1px transparent;
-}
-
-code-editor::part(wrapper) {
-  outline: none;
-  transition-timing-function: ease;
-  transition-duration: 200ms;
-  transition-property: border-color, background-color;
-}
-
-code-editor:state(focus)::part(wrapper) {
-  background-color: var(--clr-input-active);
-  border-color: var(--clr-accent);
-}
-
-code-editor::part(box) {
-  min-inline-size: 0;
-  padding-block-end: 1em;
-}
-
 toggle-checkbox {
-  --clr-active: var(--clr-accent);
-  --clr-inactive: #00000021;
-
   margin-block: 1em;
 
   &::part(label) {
@@ -136,12 +131,8 @@ toggle-checkbox {
   }
 }
 
-select-option {
-  --clr-active: var(--clr-accent);
-
-  &::part(option) {
-    justify-content: space-between;
-  }
+select-option::part(option) {
+  justify-content: space-between;
 }
 
 menu-component::part(container) {
@@ -151,16 +142,19 @@ menu-component::part(container) {
 }
 
 slider-component {
-  --sz-thickness: 10px;
-  --clr-filled: var(--clr-accent);
+  --wcp-sz-thickness: 10px;
 
   &::part(bubble) {
     display: none;
   }
 }
 
-dialog-component {
-  &::part(content) {
-    overflow: auto;
+menu-trigger {
+  --ui-clr-surface-1: var(--clr-input);
+  --ui-clr-surface-2: var(--clr-input-active);
+
+  &::part(trigger) {
+    font-size: 1rem;
+    color: var(--clr-text);
   }
 }

@@ -5,7 +5,7 @@
       "name": "select-option",
       "description": {
         "kind": "markdown",
-        "value": "# select-option\n\nThe select option component is made to be used with `menu-component` but also it can be used stand alone.\n\n- The host of `<select-option />` can't be styled directly.\n\n**Usage**\n\n```html\n<menu-component values=\"0\" match-trigger-width=\"true\" type=\"select\">\n  <select-option value=\"0\">Option 1</select-option>\n  <select-option value=\"1\">Option 2</select-option>\n</menu-component>\n```\n\n**Methods**\n\n- `focus(options?: FocusOptions)` Focus the option element.\n- `toggleSelected()` Toggle the option selected state.\n- `click()` Fire the option click event manually.\n\n**Props**\n\n- `type` (Get/Set) The type for accessibility. Defaults to `option`.\n- `value` (Get/Set) The value of the option.\n- `valueAsType` (Get/Set) The parsed value from the `value` attribute string.\n- `valueType` (Get/Set) The type of the value. Defaults to `string`.\n- `selected` (Get/Set) Selected. Defaults to `false`.\n- `disabled` (Get/Set) Disabled. Defaults to `false`.\n- `label` (Get/Set) The label of the option.\n- `onclick` (Set) Set the click event handler.\n- `onkeydown` (Set) Set the keydown event handler.\n- `data` (Get/Set) The data of the option.\n\n**Events**\n\n- `change` Fired when `value` or `selected` is changed.\n\n**Slots**\n\n- `Default` the option contents.\n\n**Attributes**\n\n- `\"value\"` The value of the option.\n- `\"value-type\"` The type of the value. Defaults to `string`.\n- `\"label\"` The label of the option.\n- `\"selected\"` Selected. Defaults to `false`.\n- `\"disabled\"` Disabled. Defaults to `false`.\n- `\"type\"` The type for accessibility. Defaults to `option`.\n\n**CSS Properties**\n\n- `--clr-background` The background color of the option element.\n- `--clr-active` The background color of the option element when it is active.\n- `--clr-hover` The background color of the option element when it is hovered.\n\n**CSS Parts**\n\n- `::part(option)` The option element.\n\n**CSS States**\n\n- `:state(disabled)`\n- `:state(selected)`\n- `:state(checked)`\n"
+        "value": "# select-option\n\nThe select option component is made to be used with `menu-component` but also it can be used stand alone.\n\n- The host of `<select-option />` can't be styled directly.\n\n**Usage**\n\n```html\n<menu-component values=\"0\" match-trigger-width=\"true\" type=\"select\">\n  <select-option value=\"0\">Option 1</select-option>\n  <select-option value=\"1\">Option 2</select-option>\n</menu-component>\n```\n\n**Methods**\n\n- `toggleSelected()` Toggle the option selected state.\n- `focus(options?: FocusOptions)` Focus the option element.\n- `click()` Fire the option click event manually.\n\n**Props**\n\n- `value` (Get/Set) The value of the option.\n- `selected` (Get/Set) Whether the option is selected or not. (default: `false`)\n- `disabled` (Get/Set) Whether the option is disabled or not. (default: `false`)\n- `label` (Get/Set) The label of the option.\n- `onclick` (Set) Set the click event handler.\n- `onkeydown` (Set) Set the keydown event handler.\n\n**Events**\n\n- `valueChange` Fired when `value` or `selected` is changed.\n\n**Slots**\n\n- `Default` the option contents.\n\n**Attributes**\n\n- `\"value\"` The value of the option.\n- `\"label\"` The label of the option.\n- `\"selected\"` Whether the option is selected or not. (default: `false`)\n- `\"disabled\"` Whether the option is disabled or not. (default: `false`)\n- `\"type\"` The type for accessibility `\"option\" | \"radio\" | \"checkbox\"`. (default: `\"option\"`)\n\n**CSS Properties**\n\n- `--ui-clr-surface-1` The background color of the option element.\n- `--ui-clr-accent` The background color of the option element when it is active.\n- `--ui-clr-surface-2` The background color of the option element when it is hovered.\n\n**CSS Parts**\n\n- `::part(option)` The option element.\n\n**CSS States**\n\n- `:state(selected)` The option is selected.\n- `:state(checked)` The option is checked.\n- `:state(disabled)` The option is disabled.\n"
       },
       "attributes": [
         {
@@ -13,24 +13,12 @@
           "description": "The value of the option."
         },
         {
-          "name": "value-type",
-          "description": "The type of the value. Defaults to `string`.",
-          "values": [
-            {
-              "name": "string"
-            },
-            {
-              "name": "object"
-            }
-          ]
-        },
-        {
           "name": "label",
           "description": "The label of the option."
         },
         {
           "name": "selected",
-          "description": "Selected. Defaults to `false`.",
+          "description": "Whether the option is selected or not. (default: `false`)",
           "values": [
             {
               "name": "true"
@@ -42,7 +30,7 @@
         },
         {
           "name": "disabled",
-          "description": "Disabled. Defaults to `false`.",
+          "description": "Whether the option is disabled or not. (default: `false`)",
           "values": [
             {
               "name": "true"
@@ -54,7 +42,7 @@
         },
         {
           "name": "type",
-          "description": "The type for accessibility. Defaults to `option`.",
+          "description": "The type for accessibility `\"option\" | \"radio\" | \"checkbox\"`. (default: `\"option\"`)",
           "values": [
             {
               "name": "option"

@@ -1,20 +1,119 @@
+@import url("../wcp-default-styles.css");
+
 :host {
-  /* The background color of the alert items */
-  --clr-background: #333;
+  /* 
+    The background color of the alert items.
+    @name --ui-clr-surface-1
+  */
+  --wcp-clr-background: var(--ui-clr-surface-1, var(--def-clr-surface-1));
 
-  /* The text color of the alert items */
-  --clr-text: #fff;
+  /* 
+    The success color.
+    @name --ui-clr-success
+  */
+  --wcp-clr-success: var(--ui-clr-success, var(--def-clr-success));
 
-  /* The duration of the reveal/hide animation */
-  --dur-anim: 0.3s;
+  /* 
+    The error color.
+    @name --ui-clr-error
+  */
+  --wcp-clr-error: var(--ui-clr-error, var(--def-clr-error));
 
-  /* The gap between the alert items */
-  --sp-gap: 1rem;
+  /* 
+    The info color.
+    @name --ui-clr-info
+  */
+  --wcp-clr-info: var(--ui-clr-info, var(--def-clr-info));
+
+  /* 
+    The warning color.
+    @name --ui-clr-warning
+  */
+  --wcp-clr-warning: var(--ui-clr-warning, var(--def-clr-warning));
+
+  /*
+    The text color of the alert items.
+    @name --ui-clr-text-muted
+  */
+  --wcp-clr-text-muted: var(--ui-clr-text-muted, var(--def-clr-text-muted));
+
+  /*
+    The text color of the alert title.
+    @name --ui-clr-text
+  */
+  --wcp-clr-text: var(--ui-clr-text, var(--def-clr-text));
+
+  /*
+    The border color of the alert items.
+    @name --ui-clr-border
+  */
+  --wcp-clr-border: var(--ui-clr-border, var(--def-clr-border));
+
+  /*
+    The border radius of the alert items.
+    @name --ui-rad-border-md
+  */
+  --wcp-rad-border: var(--ui-rad-border-md, var(--def-rad-border-md));
+
+  /*
+    The border size of the alert items.
+    @name --ui-sz-border-thin
+  */
+  --wcp-sz-border: var(--ui-sz-border-thin, var(--def-sz-border-thin));
+
+  /*
+    The shadow of the alert items.
+    @name --ui-shadow
+  */
+  --wcp-shadow: var(--ui-shadow, var(--def-shadow));
+
+  /* 
+    The duration for the reveal animation.
+    @name --ui-dur-anim-forward
+  */
+  --wcp-dur-anim-reveal: var(--ui-dur-anim-forward, var(--def-dur-anim-forward));
+
+  /*
+    The duration for the dismiss animation.
+    @name --ui-dur-anim-backward
+  */
+  --wcp-dur-anim-dismiss: var(--ui-dur-anim-backward, var(--def-dur-anim-backward));
+
+  /*
+    The easing function for the reveal animation.
+    @name --ui-ease-anim-forward
+  */
+  --wcp-ease-anim-reveal: var(--ui-ease-anim-forward, var(--def-ease-anim-forward));
+
+  /*
+    The easing function for the dismiss animation.
+    @name --ui-ease-anim-backward
+  */
+  --wcp-ease-anim-dismiss: var(--ui-ease-anim-backward, var(--def-ease-anim-backward));
+
+  /* 
+    The gap between the alert items.
+    @name --ui-gap-md
+  */
+  --wcp-gap: var(--ui-gap-md, var(--def-gap-md));
+
+  /*
+    The size of the alert type icon.
+    @name --ui-sz-icon-lg
+  */
+  --wcp-sz-icon: var(--ui-sz-icon-lg, var(--def-sz-icon-lg));
+
+  /*
+    The size of the close button icon.
+    @name --ui-sz-icon-md
+  */
+  --wcp-sz-close-icon: var(--ui-sz-icon-md, var(--def-sz-icon-md));
 
   display: contents;
 
   @media (prefers-reduced-motion) {
-    --dur-anim: 0s;
+    --wcp-dur-anim-reveal: 0s;
+    --wcp-dur-anim-dismiss: 0s;
   }
 }
 
@@ -37,7 +136,7 @@
 .alert-container {
   display: flex;
   flex-direction: column-reverse;
-  margin: var(--sp-gap);
+  margin: var(--wcp-gap);
   overflow: hidden;
 
   &.stacked-3d {
@@ -57,19 +156,19 @@
   gap: 1rem;
   align-items: center;
   padding: 1rem;
-  background-color: var(--clr-background);
-  border: solid 1px rgb(255 255 255 / 10%);
-  border-radius: 12px;
-  box-shadow: 0 0.1rem 1rem -0.5rem rgb(0 0 0 / 40%);
-  animation: item-show var(--dur-anim) ease-out backwards;
+  background-color: var(--wcp-clr-background);
+  border: solid var(--wcp-sz-border) var(--wcp-clr-border);
+  border-radius: var(--wcp-rad-border);
+  box-shadow: var(--wcp-shadow);
+  animation: item-show var(--wcp-dur-anim-reveal) var(--wcp-ease-anim-reveal) backwards;
 
   &:not(:last-child) {
-    margin-block-start: var(--sp-gap);
+    margin-block-start: var(--wcp-gap);
   }
 
   &.hide {
     overflow: hidden;
-    animation: item-hide var(--dur-anim) ease-out forwards;
+    animation: item-hide var(--wcp-dur-anim-dismiss) var(--wcp-ease-anim-dismiss) forwards;
   }
 
   .close-btn {
@@ -88,40 +187,40 @@
 
     svg {
       display: block;
-      inline-size: 24px;
-      block-size: 24px;
-      fill: var(--clr-text);
+      inline-size: var(--wcp-sz-close-icon);
+      block-size: var(--wcp-sz-close-icon);
+      fill: currentcolor;
     }
   }
 
   .divider {
     align-self: stretch;
     inline-size: 1px;
-    background-color: var(--clr-text);
+    background-color: var(--wcp-clr-text-muted);
   }
 
   .item-message {
     flex: 1;
     margin: 0;
-    color: var(--clr-text);
+    color: var(--wcp-clr-text-muted);
     text-align: center;
     overflow-wrap: anywhere;
   }
 
   &.error {
-    --type-color: #f44336;
+    --type-color: var(--wcp-clr-error);
   }
 
   &.info {
-    --type-color: #2196f3;
+    --type-color: var(--wcp-clr-info);
   }
 
   &.success {
-    --type-color: #4caf50;
+    --type-color: var(--wcp-clr-success);
   }
 
   &.warning {
-    --type-color: #f90;
+    --type-color: var(--wcp-clr-warning);
   }
 }
 
@@ -134,9 +233,13 @@
   opacity: calc((10 - var(--order)) / 5);
   filter: blur(calc(0.2px * var(--order)));
   transform: translateZ(calc(-20px * var(--order)));
-  transition-duration: var(--dur-anim);
-  transition-property: transform, opacity, margin-bottom, filter;
+  transition-duration: var(--wcp-dur-anim-reveal);
+  transition-property: transform, opacity, margin-block-end, filter;
   transform-style: preserve-3d;
+
+  &.hide {
+    transition-duration: var(--wcp-dur-anim-dismiss);
+  }
 
   &:nth-last-child(1) {
     --order: 0;
@@ -216,12 +319,12 @@
   p {
     margin: 0;
     font-weight: bold;
-    color: var(--clr-text);
+    color: var(--wcp-clr-text);
   }
 }
 
 .alert-icon {
-  inline-size: 24px;
-  block-size: 24px;
+  inline-size: var(--wcp-sz-icon);
+  block-size: var(--wcp-sz-icon);
   fill: var(--type-color);
 }

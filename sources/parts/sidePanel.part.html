@@ -2,15 +2,15 @@
   <div class="panel-container">
     <div class="hide-panel-btn-container">
       <div style="display: flex; gap: 1em">
-        <layout src="./contactUs.part.html"></layout>
-        <tooltip-component for=".side-panel .contact-us-custom-trigger" prefer-direction="right">
+        <part src="./contactUs.part.html"></part>
+        <tooltip-component for=".side-panel .contact-us-menu .contact-us-custom-trigger" preferred-sequence="right">
           <span>Contact Us</span>
         </tooltip-component>
 
         <button class="icon-btn open-shortcuts-dialog" dialog-open="shortcuts-dialog" aria-label="Open keyboard shortcuts dialog">
           <svg src="@assets/keyboard.svg" aria-hidden="true" inline></svg>
         </button>
-        <tooltip-component for=".side-panel .open-shortcuts-dialog" prefer-direction="left">
+        <tooltip-component for=".side-panel .open-shortcuts-dialog" preferred-sequence="left">
           <span>Keyboard Shortcuts</span>
         </tooltip-component>
       </div>
@@ -18,7 +18,7 @@
       <button class="toggle-panel-btn hide-panel-btn" aria-label="Hide side panel">
         <svg src="@assets/hide-panle.svg" aria-hidden="true" inline></svg>
       </button>
-      <tooltip-component for=".hide-panel-btn">
+      <tooltip-component for=".hide-panel-btn" preferred-sequence="right">
         <span>Hide side panel</span>
       </tooltip-component>
     </div>
@@ -59,12 +59,7 @@
 
     <div class="presets-menu-container">
       <menu-component class="presets-menu" match-trigger-width="true">
-        <div class="menu-custom-trigger" slot="trigger">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
-            <path d="M480-360 280-560h400L480-360Z" />
-          </svg>
-          <span id="trigger-label"></span>
-        </div>
+        <menu-trigger slot="trigger" trigger-label="Presets"></menu-trigger>
       </menu-component>
 
       <div class="save-preset-container">
@@ -72,7 +67,7 @@
         <button class="save-preset-btn">Save</button>
       </div>
 
-      <tooltip-component for=".save-preset-btn" prefer-direction="bottom">
+      <tooltip-component for=".save-preset-btn" preferred-sequence="bottom">
         <span>Save to local storage</span>
       </tooltip-component>
     </div>
@@ -81,14 +76,16 @@
 
     <div class="export-container" style="display: flex; flex-direction: column">
       <menu-component class="export-menu" match-trigger-width="true">
-        <div class="export-trigger-btn" slot="trigger">
-          <svg class="export-trigger-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
-            <path
-              d="M320-160q-17 0-28.5-11.5T280-200q0-17 11.5-28.5T320-240h320q17 0 28.5 11.5T680-200q0 17-11.5 28.5T640-160H320Zm160-160q-17 0-28.5-11.5T440-360v-287l-76 75q-11 11-27.5 11.5T308-572q-11-11-11-28t11-28l144-144q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q11 11 11.5 27.5T652-572q-11 11-28 11t-28-11l-76-75v287q0 17-11.5 28.5T480-320Z"
-            />
-          </svg>
-          <span>Export</span>
-        </div>
+        <menu-trigger slot="trigger" trigger-label="Export">
+          <div class="export-trigger-btn" slot="trigger-content">
+            <span>Export</span>
+            <svg class="export-trigger-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+              <path
+                d="M320-160q-17 0-28.5-11.5T280-200q0-17 11.5-28.5T320-240h320q17 0 28.5 11.5T680-200q0 17-11.5 28.5T640-160H320Zm160-160q-17 0-28.5-11.5T440-360v-287l-76 75q-11 11-27.5 11.5T308-572q-11-11-11-28t11-28l144-144q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q11 11 11.5 27.5T652-572q-11 11-28 11t-28-11l-76-75v287q0 17-11.5 28.5T480-320Z"
+              />
+            </svg>
+          </div>
+        </menu-trigger>
 
         <button class="export-menu-btn" dialog-open="export-css-keyframe-dialog">CSS Keyframe</button>
         <button class="export-menu-btn" dialog-open="export-css-linear-dialog">CSS Linear</button>
@@ -102,17 +99,17 @@
     <p class="panel-title">Settings</p>
 
     <toggle-checkbox id="auto-hide-toggle" label="Auto hide anchor points"></toggle-checkbox>
-    <tooltip-component for="#auto-hide-toggle" prefer-direction="right">
+    <tooltip-component for="#auto-hide-toggle" preferred-sequence="right">
       <span>Auto hide anchor points when the graph path is not focused</span>
     </tooltip-component>
 
     <toggle-checkbox id="snap-to-grid-toggle" label="Enable snapping to grid" checked="true"></toggle-checkbox>
-    <tooltip-component for="#snap-to-grid-toggle" prefer-direction="right">
+    <tooltip-component for="#snap-to-grid-toggle" preferred-sequence="right">
       <span>Enable snapping to the grid visible lines</span>
     </tooltip-component>
 
     <toggle-checkbox id="snap-to-points-toggle" label="Enable snapping to points" checked="true"></toggle-checkbox>
-    <tooltip-component for="#snap-to-points-toggle" prefer-direction="right">
+    <tooltip-component for="#snap-to-points-toggle" preferred-sequence="right">
       <span>Enable snapping to points and their horizontal/vertical guide lines</span>
     </tooltip-component>
 

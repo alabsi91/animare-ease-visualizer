@@ -1,20 +1,10 @@
-<!-- @part - The menu trigger button element. -->
-<button type="button" class="trigger" part="trigger" aria-expanded="false" aria-owns="popover" aria-label="Open menu">
-  <!-- @slot - The menu trigger button content. -->
-  <slot name="trigger">
-    <span id="trigger-label">Menu</span>
-  </slot>
-</button>
+<!-- @part - The menu-trigger custom element slot. -->
+<slot name="trigger"></slot>
 
-<!-- @part - The menu popover element. -->
-<div id="popover" class="popover" part="container" popover="manual" role="menu">
-  <!-- @part - The close button element. -->
-  <button part="close-button" class="close-button" aria-label="Close menu" style="display: none">
-    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 -960 960 960">
-      <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224z"></path>
-    </svg>
-  </button>
-
-  <!-- @slot - The content of the menu. -->
-  <slot></slot>
-</div>
+<anchor-component style="display: contents">
+  <!-- @part - The menu popover element. -->
+  <div id="popover" class="popover" part="container" popover="manual" role="menu">
+    <!-- @slot - The content of the menu. -->
+    <slot></slot>
+  </div>
+</anchor-component>

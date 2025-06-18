@@ -1,14 +1,4 @@
 .export-dialog {
-  code-editor {
-    --clr-background: #222;
-
-    flex: 1;
-
-    &::part(wrapper) {
-      box-shadow: none;
-    }
-  }
-
   #export-css-keyframe-property::part(box) {
     padding-block-end: 0;
   }
@@ -25,7 +15,6 @@
     padding-block: 0.7em;
     margin-inline: 1px;
     text-align: start;
-    background-color: #222;
   }
 
   input:focus {

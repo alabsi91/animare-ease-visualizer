@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "static-bolt serve",
     "build": "static-bolt build",
+    "generate-doc": "static-bolt wc-docs --include './sources/components/**/*' --markdown-out README.md",
     "fix-eslint": "eslint \"sources/**/*.{js,jsx,ts,tsx}\" \"pages/**/*.html\" --fix",
     "fix-stylelint": "stylelint \"sources/**/*.{css,html}\" \"pages/**/*.html\" --fix",
     "fix-all": "npm run fix-eslint || npm run fix-stylelint"
@@ -31,6 +32,7 @@
     "globals": "^16.1.0",
     "postcss": "^8.5.3",
     "postcss-html": "^1.8.0",
+    "postcss-import": "^16.1.0",
     "postcss-preset-env": "^10.1.6",
     "postcss-svgo": "^7.0.2",
     "prettier": "3.5.3",

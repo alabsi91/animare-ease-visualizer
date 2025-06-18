@@ -1,39 +1,105 @@
-:host {
-  /* The background color of the tooltip. */
-  --clr-background: #333;
+@import url("../wcp-default-styles.css");
 
-  /* The border color of the tooltip. */
-  --clr-border: rgb(255 255 255 / 10%);
+:host {
+  /*
+    The background color of the tooltip.
+    @name --ui-clr-surface-1
+  */
+  --wcp-clr-background: var(--ui-clr-surface-1, var(--def-clr-surface-1));
+
+  /*
+    The text color of the tooltip container.
+    @name --ui-clr-text-muted
+  */
+  --wcp-clr-text: var(--ui-clr-text-muted, var(--def-clr-text-muted));
+
+  /*
+    The border color of the tooltip.
+    @name --ui-clr-border
+  */
+  --wcp-clr-border: var(--ui-clr-border, var(--def-clr-border));
+
+  /*
+    The border radius of the tooltip.
+    @name --ui-rad-border-lg
+  */
+  --wcp-rad-border: var(--ui-rad-border-md, var(--def-rad-border-md));
+
+  /*
+    The border width of the tooltip.
+    @name --ui-sz-border-thin
+  */
+  --wcp-sz-border: var(--ui-sz-border-thin, var(--def-sz-border-thin));
+
+  /*
+    The shadow of the tooltip.
+    @name --ui-shadow
+  */
+  --wcp-shadow: var(--ui-shadow, var(--def-shadow));
 
   /* The size of the arrow that points to the element that the tooltip is attached to. */
-  --sz-arrow: 12px;
+  --wcp-sz-arrow: 12px;
 
-  /* The color of the arrow that points to the element that the tooltip is attached to. */
-  --clr-arrow: var(--clr-background);
+  /* The tooltip offset, use `margin` like values. Ex: `1em 2em`. Overridden by `offset` prop/attribute. */
+  --wcp-sp-offset: 1em;
 
-  /* The easing function of the show/hide animation. */
-  --dur-anim: 0.2s;
+  /*
+    The easing function of the show/hide animation.
+    @name --ui-ease-anim-forward
+  */
+  --wcp-dur-anim: var(--ui-dur-anim-forward, var(--def-dur-anim-forward));
 
-  /* The easing function of the show/hide animation. */
-  --ease-anim: linear;
+  /* 
+    The easing function of the show/hide animation.
+    @name --ui-ease-anim-forward
+  */
+  --wcp-ease-anim: var(--ui-ease-anim-forward, var(--def-ease-anim-forward));
 
   display: contents;
 
   @media (prefers-reduced-motion) {
-    --dur-anim: 0s;
+    --wcp-dur-anim: 5ms; /* We are relaying on animations events so we can't use `0s` */
   }
 }
 
 .popover {
-  box-sizing: border-box;
-  padding: 0.5rem;
-  margin: 0.8rem;
+  padding: 0.5em;
+  margin: var(--wcp-sp-offset);
   overflow: visible;
+  color: var(--wcp-clr-text);
   pointer-events: none;
-  background-color: var(--clr-background);
-  border: solid 1px var(--clr-border);
-  border-radius: 12px;
-  box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
+  background-color: var(--wcp-clr-background);
+  border: solid var(--wcp-sz-border) var(--wcp-clr-border);
+  border-radius: var(--wcp-rad-border);
+  box-shadow: var(--wcp-shadow);
+}
+
+.show {
+  animation: fade-in var(--wcp-dur-anim) var(--wcp-ease-anim);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.hide {
+  animation: fade-out var(--wcp-dur-anim) var(--wcp-ease-anim);
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 .popover::backdrop {
@@ -42,36 +108,36 @@
 
 .arrow {
   position: absolute;
-  inline-size: var(--sz-arrow);
-  block-size: var(--sz-arrow);
-  fill: var(--clr-arrow);
-  stroke: var(--clr-border);
+  inline-size: var(--wcp-sz-arrow);
+  block-size: var(--wcp-sz-arrow);
+  fill: var(--wcp-clr-background);
+  stroke: var(--wcp-clr-border);
   stroke-width: 1px;
-  stroke-dasharray: var(--sz-arrow);
-  stroke-dashoffset: calc(var(--sz-arrow) / 3.4);
+  stroke-dasharray: var(--wcp-sz-arrow);
+  stroke-dashoffset: calc(var(--wcp-sz-arrow) / 3.4);
 }
 
-.popover.top .arrow {
+anchor-component:state(top) .arrow {
   inset-block-end: 0;
   inset-inline-start: 50%;
   translate: -50% 100%;
 }
 
-.popover.bottom .arrow {
+anchor-component:state(bottom) .arrow {
   inset-block-start: 0;
   inset-inline-start: 50%;
   rotate: 180deg;
   translate: -50% -100%;
 }
 
-.popover.left .arrow {
+anchor-component:state(left) .arrow {
   inset-block-start: 50%;
   inset-inline-end: 0;
   rotate: -90deg;
   translate: 100% -50%;
 }
 
-.popover.right .arrow {
+anchor-component:state(right) .arrow {
   inset-block-start: 50%;
   inset-inline-start: 0;
   rotate: 90deg;

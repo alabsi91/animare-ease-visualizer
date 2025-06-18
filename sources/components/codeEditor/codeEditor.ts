@@ -1,13 +1,19 @@
-import type { BooleanString, IWebComponent, WComponent } from "../wc";
+import type * as WCP from "../wcp";
 
-type ExtraAttributes = {
-  "copy-button"?: BooleanString;
-  "one-line"?: BooleanString;
-  onchange?: (e: CustomEvent) => void;
-  oncopy?: (e: CustomEvent) => void;
+const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+
+type ExtendedAttributes = {
+  "copy-button"?: WCP.BooleanString;
+  "wrap-button"?: WCP.BooleanString;
+  "one-line"?: WCP.BooleanString;
 };
 
-type ComponentTypes = WComponent<typeof CodeEditor, ExtraAttributes>;
+type ComponentEvents = WCP.WEvent<{
+  copyClick: CustomEvent;
+  update: CustomEvent;
+}>;
+
+type ComponentTypes = WCP.WComponent<typeof CodeEditor, ExtendedAttributes, ComponentEvents>;
 
 type Highlighter = (code: string) => string | Promise<string>;
 
@@ -35,7 +41,9 @@ const COMPONENT_NAME = "code-editor";
  * editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).value;
  * ```
  */
-class CodeEditor extends HTMLElement implements IWebComponent {
+class CodeEditor extends HTMLElement implements WCP.IWebComponent {
+  addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
+
   static readonly htmlFragment = (() => {
     const template = document.createElement("template");
     template.innerHTML = import_as_string("./codeEditor-template.inline.html", { minify: true });
@@ -44,9 +52,12 @@ class CodeEditor extends HTMLElement implements IWebComponent {
 
   static readonly stylesheet = (() => {
     const sheet = new CSSStyleSheet();
-    sheet.replaceSync(import_as_string("./codeEditor-style.inline.css", { minify: true }));
+    sheet.replace(import_as_string("./codeEditor-style.inline.css", { minify: true }));
     return sheet;
   })();
+
+  readonly #abortController = new AbortController();
+  #resizeObserver: ResizeObserver | null = null;
 
   static readonly #wrappers = [
     { open: "'", close: "'" },
@@ -57,30 +68,33 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     { open: "[", close: "]" },
   ];
 
-  readonly #internals: ElementInternals;
-  readonly #editorEl: HTMLTextAreaElement;
-  readonly #highlightedEl: HTMLDivElement;
-  readonly #lineNumbersPlaceholderEl: HTMLDivElement;
-  readonly #copyButtonEl: HTMLButtonElement;
-  readonly #abortController = new AbortController();
-  #resizeObserver: ResizeObserver | null = null;
+  readonly #elements = {
+    internals: null! as ElementInternals,
+    wrapper: null! as HTMLDivElement,
+    editor: null! as HTMLTextAreaElement,
+    highlighted: null! as HTMLDivElement,
+    linesContainer: null! as HTMLDivElement,
+    copyButton: null! as HTMLButtonElement,
+    wrapButton: null! as HTMLButtonElement,
+  };
 
-  /** Emitted when the value changes. */
-  readonly #change = new CustomEvent("change");
-  /** Emitted when the copy button is clicked. */
-  readonly #copy = new CustomEvent("copy");
+  readonly #events: ComponentEvents = {
+    /** Emitted when the copy button is clicked. */
+    copyClick: new CustomEvent("copyClick"),
+    /** Emitted when the value changes. */
+    update: new CustomEvent("update"),
+  };
 
   //#region Public Props
   /** The code string. */
   get value(): string {
-    return this.#editorEl.value;
+    return this.#elements.editor.value;
   }
   set value(val: string) {
-    this.#editorEl.value = val;
+    this.#elements.editor.value = val;
     this.#update();
   }
 
-  #highlighter: Highlighter = (code: string) => code;
   /** - The highlighter function, takes the current code string and returns the highlighted code as html string. */
   get highlighter() {
     return this.#highlighter;
@@ -90,69 +104,68 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     this.#highlighter = fn;
     this.#update();
   }
+  #highlighter: Highlighter = (code: string) => code;
 
-  #tabsize = 2;
   /** The empty space counted as one tab. */
-  get tabsize(): number {
-    return this.#tabsize;
-  }
-  set tabsize(val: number) {
-    this.#tabsize = val;
-  }
+  tabsize = 2;
 
-  #readonly = false;
   /** Disable user input. */
   get readonly(): boolean {
     return this.#readonly;
   }
   set readonly(val: boolean) {
     this.#readonly = val;
-    this.#editorEl.readOnly = val;
+    this.#elements.editor.readOnly = val;
   }
+  #readonly = false;
 
-  #linenumbers = false;
   /** Show line numbers. */
   get linenumbers(): boolean {
     return this.#linenumbers;
   }
   set linenumbers(val: boolean) {
     this.#linenumbers = val;
-    this.#lineNumbersPlaceholderEl.style.display = val ? "block" : "none";
+    this.#elements.wrapper.classList.toggle("linenumbers", val);
     this.#update();
   }
+  #linenumbers = false;
 
-  #expand: boolean = true;
   /** Expand the text area to fit the content, only for newlines wont work for warping text. */
-  get expand(): boolean {
-    return this.#expand;
-  }
-  set expand(val: boolean) {
-    this.#expand = val;
-  }
+  expand: boolean = true;
 
-  #wrap: boolean = false;
   /** Wrap the text area to fit the content. */
   get wrap(): boolean {
     return this.#wrap;
   }
   set wrap(val: boolean) {
     this.#wrap = val;
-    this.#editorEl.classList.toggle("wrap", val);
-    this.#highlightedEl.classList.toggle("wrap", val);
+    this.#elements.editor.classList.toggle("wrap", val);
+    this.#elements.highlighted.classList.toggle("wrap", val);
     this.#update();
+    this.#elements.linesContainer.style.width = `calc(${this.#elements.editor.scrollWidth}px - var(--sz-padding))`;
   }
+  #wrap: boolean = false;
 
-  #copyButton = false;
   /** Show copy button. */
   get copyButton(): boolean {
     return this.#copyButton;
   }
   set copyButton(val: boolean) {
     this.#copyButton = val;
-    this.#copyButtonEl.style.display = val ? "grid" : "none";
+    this.#elements.copyButton.style.display = val ? "grid" : "none";
   }
+  #copyButton = false;
 
-  #stylesheet: string | null = null;
+  /** Show wrap button. */
+  get wrapButton(): boolean {
+    return this.#wrapButton;
+  }
+  set wrapButton(val: boolean) {
+    this.#wrapButton = val;
+    this.#elements.wrapButton.style.display = val ? "grid" : "none";
+  }
+  #wrapButton = false;
+
   /** The CSS style sheet selector for code styling, it can be a `link[rel="stylesheet"]` or a `style` element. */
   get stylesheet(): string | null {
     return this.#stylesheet;
@@ -192,27 +205,29 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     if (newStyleEl instanceof HTMLLinkElement) {
       shadow.appendChild(newStyleEl.cloneNode(true));
       currentStyleTag.textContent = "";
+      styleLinkTags.forEach(link => link.remove());
       return;
     }
   }
+  #stylesheet: string | null = null;
 
-  #oneLine = false;
   /** Mimic regular input element by forcing one line. */
   get oneLine(): boolean {
     return this.#oneLine;
   }
   set oneLine(val: boolean) {
     this.#oneLine = val;
-    this.#editorEl.classList.toggle("hidden-scrollbar", val);
+    this.#elements.editor.classList.toggle("hidden-scrollbar", val);
     this.#update();
   }
+  #oneLine = false;
   //#endregion
 
   //#region HTMLElement Methods
   constructor() {
     super();
 
-    this.#internals = this.attachInternals();
+    this.#elements.internals = this.attachInternals();
 
     const shadow = this.attachShadow({ mode: "open" });
     shadow.adoptedStyleSheets = [CodeEditor.stylesheet];
@@ -222,52 +237,60 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     codeStyleTag.classList.add("code-style");
     shadow.appendChild(codeStyleTag);
 
-    const editorEl = shadow.querySelector<HTMLTextAreaElement>(".textarea");
-    if (!editorEl) console.error("[code-editor]: Could not find element with class `textarea`");
+    const editorEl = shadow.querySelector<HTMLTextAreaElement>(".textarea")!;
+    if (!editorEl) console.error(`[${COMPONENT_NAME}]: Could not find element with class "textarea"`);
+    this.#elements.editor = editorEl;
 
-    const highlightedEl = shadow.querySelector<HTMLDivElement>(".highlight");
-    if (!highlightedEl) console.error("[code-editor]: Could not find element with class `highlight`");
+    const highlightedEl = shadow.querySelector<HTMLDivElement>(".highlight")!;
+    if (!highlightedEl) console.error(`[${COMPONENT_NAME}]: Could not find element with class "highlight"`);
+    this.#elements.highlighted = highlightedEl;
 
-    const lineNumbersPlaceholderEl = shadow.querySelector<HTMLDivElement>(".line-numbers-placeholder");
-    if (!lineNumbersPlaceholderEl) console.error("[code-editor]: Could not find element with class `line-numbers`");
+    const wrapperEl = shadow.querySelector<HTMLDivElement>(".wrapper")!;
+    if (!wrapperEl) console.error(`[${COMPONENT_NAME}]: Could not find element with class "wrapper"`);
+    this.#elements.wrapper = wrapperEl;
 
-    const copyButton = shadow.querySelector<HTMLButtonElement>(".copy-btn");
-    if (!copyButton) console.error("[code-editor]: Could not find element with class `copy-btn`");
+    const linesContainer = shadow.querySelector<HTMLDivElement>(".lines")!;
+    if (!linesContainer) console.error(`[${COMPONENT_NAME}]: Could not find element with class "lines"`);
+    this.#elements.linesContainer = linesContainer;
 
-    this.#editorEl = editorEl!;
-    this.#highlightedEl = highlightedEl!;
-    this.#lineNumbersPlaceholderEl = lineNumbersPlaceholderEl!;
-    this.#copyButtonEl = copyButton!;
+    const copyButton = shadow.querySelector<HTMLButtonElement>(".copy-btn")!;
+    if (!copyButton) console.error(`[${COMPONENT_NAME}]: Could not find element with class "copy-btn"`);
+    this.#elements.copyButton = copyButton;
+
+    const wrapButton = shadow.querySelector<HTMLButtonElement>(".wrap-btn")!;
+    if (!wrapButton) console.error(`[${COMPONENT_NAME}]: Could not find element with class "wrap-btn"`);
+    this.#elements.wrapButton = wrapButton;
   }
 
   connectedCallback(): void {
     const signal = this.#abortController.signal;
+    const editor = this.#elements.editor;
 
-    this.#editorEl.addEventListener("input", this.#inputHandler, { signal });
-    this.#editorEl.addEventListener("beforeinput", this.#beforeInputHandler, { signal });
-    this.#editorEl.addEventListener("keydown", this.#keyboardHandler, { signal });
-    this.#editorEl.addEventListener("dblclick", this.#doubleClickHandler, { signal });
-    this.#editorEl.addEventListener("click", this.#clickHandler, { signal });
-    this.#editorEl.addEventListener("scroll", this.#onScrollHandler, { signal });
-    this.#editorEl.addEventListener("focus", this.#onFocus, { signal });
-    this.#editorEl.addEventListener("blur", this.#onBlur, { signal });
-    this.#copyButtonEl.addEventListener("click", this.#copyHandler, { signal });
+    editor.addEventListener("input", this.#inputHandler, { signal });
+    editor.addEventListener("beforeinput", this.#beforeInputHandler, { signal });
+    editor.addEventListener("keydown", this.#keyboardHandler, { signal });
+    editor.addEventListener("dblclick", this.#doubleClickHandler, { signal });
+    editor.addEventListener("click", this.#clickHandler, { signal });
+    editor.addEventListener("scroll", this.#onScrollHandler, { signal });
+    editor.addEventListener("focus", this.#onFocus, { signal });
+    editor.addEventListener("blur", this.#onBlur, { signal });
+    this.#elements.copyButton.addEventListener("click", this.#copyHandler, { signal });
+    this.#elements.wrapButton.addEventListener("click", () => (this.wrap = !this.#wrap), { signal });
 
     this.#resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
       const entry = entries[0];
       if (!entry) return;
 
-      this.#highlightedEl.style.width = this.#linenumbers
+      this.#elements.highlighted.style.width = this.#linenumbers
         ? `calc(${entry.contentRect.width}px + var(--sz-line-numbers-width))`
         : `${entry.contentRect.width}px`;
-      this.#highlightedEl.style.height = `${entry.contentRect.height}px`;
+      this.#elements.highlighted.style.height = `${entry.contentRect.height}px`;
 
-      this.#highlightedEl.style.top = `${this.#editorEl.offsetTop}px`;
-
-      this.#lineNumbersPlaceholderEl.style.height = `${entry.contentRect.height}px`;
+      this.#elements.highlighted.style.top = `${editor.offsetTop}px`;
+      this.#elements.linesContainer.style.width = `calc(${editor.scrollWidth}px - var(--sz-padding))`;
     });
 
-    this.#resizeObserver.observe(this.#editorEl);
+    this.#resizeObserver.observe(editor);
 
     const defaultSlot = this.shadowRoot?.querySelector<HTMLSlotElement>("slot:not([name])");
     if (defaultSlot) defaultSlot.addEventListener("slotchange", this.#onSlotChange, { signal });
@@ -279,13 +302,24 @@ class CodeEditor extends HTMLElement implements IWebComponent {
   }
 
   static get observedAttributes() {
-    return ["value", "readonly", "tabsize", "stylesheet", "expand", "wrap", "linenumbers", "copy-button", "one-line"] as const;
+    return [
+      "value",
+      "readonly",
+      "tabsize",
+      "stylesheet",
+      "expand",
+      "wrap",
+      "linenumbers",
+      "copy-button",
+      "wrap-button",
+      "one-line",
+    ] as const;
   }
 
   attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "value") {
       this.value = newValue ?? "";
-      this.dispatchEvent(this.#change);
+      this.dispatchEvent(this.#events.update);
       return;
     }
 
@@ -333,6 +367,11 @@ class CodeEditor extends HTMLElement implements IWebComponent {
       return;
     }
 
+    if (name === "wrap-button") {
+      this.wrapButton = newValue === "true" || newValue === "";
+      return;
+    }
+
     if (name === "one-line") {
       this.oneLine = newValue === "true" || newValue === "";
       return;
@@ -342,7 +381,8 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"]): string | null {
     if (qualifiedName === "value") return this.value;
     if (qualifiedName === "readonly") return this.readonly.toString();
     if (qualifiedName === "tabsize") return this.tabsize.toString();
@@ -367,56 +407,78 @@ class CodeEditor extends HTMLElement implements IWebComponent {
 
   /** Match the scroll position of the editor, the highlighted code and the line numbers. */
   #onScrollHandler = () => {
-    this.#highlightedEl.scrollTop = this.#editorEl.scrollTop;
-    this.#highlightedEl.scrollLeft = this.#editorEl.scrollLeft;
-    this.#lineNumbersPlaceholderEl.scrollTop = this.#editorEl.scrollTop;
+    this.#elements.highlighted.scrollTop = this.#elements.editor.scrollTop;
+    this.#elements.highlighted.scrollLeft = this.#elements.editor.scrollLeft;
   };
 
   /** Select a word without the trailing spaces when double clicked */
   #doubleClickHandler = () => {
     if (this.#readonly) return;
 
-    const txt = this.#editorEl.value;
-    const start = this.#editorEl.selectionStart;
-    const end = this.#editorEl.selectionEnd;
+    const txt = this.#elements.editor.value;
+    const start = this.#elements.editor.selectionStart;
+    const end = this.#elements.editor.selectionEnd;
 
     const selected = txt.slice(start, end);
     if (selected.trim() === "") return; // empty spaces
     const trailingSpaces = selected.match(/\s*$/g)!;
 
-    this.#editorEl.setSelectionRange(start, end - trailingSpaces[0].length);
+    this.#elements.editor.setSelectionRange(start, end - trailingSpaces[0].length);
   };
 
   /** Set the active line number */
   #clickHandler = () => {
-    setTimeout(() => {
-      this.#activeLineNumber();
-    }, 0);
+    setTimeout(() => this.#activeLineNumber(), 0);
   };
 
   #activeLineNumber = () => {
-    if (!this.#linenumbers || this.#readonly) return;
+    if (this.#readonly) return;
 
-    const crateEnd = this.#editorEl.selectionEnd;
+    const crateStart = this.#elements.editor.selectionStart;
+    const crateEnd = this.#elements.editor.selectionEnd;
 
-    const matchNewlineBeforeCrate = this.value.substring(0, crateEnd).match(/\n/g);
-    const activeLineNumber = matchNewlineBeforeCrate ? matchNewlineBeforeCrate.length : 0;
+    const newLnStartMatch = this.value.substring(0, crateStart).match(/\n/g);
+    const newLnEndMatch = this.value.substring(0, crateEnd).match(/\n/g);
+    const activeLineNumberEnd = newLnEndMatch ? newLnEndMatch.length : 0;
+    const activeLineNumberStart = newLnStartMatch ? newLnStartMatch.length : 0;
 
-    this.#highlightedEl.querySelector("li.active")?.classList.remove("active");
-    this.#highlightedEl.querySelector(`li:nth-child(${activeLineNumber + 1})`)?.classList.add("active");
+    const lines = this.#elements.highlighted.querySelectorAll(".line");
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (i <= activeLineNumberEnd && i >= activeLineNumberStart) {
+        line.classList.add("active");
+        continue;
+      }
+      if (line.classList.contains("active")) {
+        line.classList.remove("active");
+      }
+    }
   };
 
   /** On keydown event handler. */
   #keyboardHandler = (e: KeyboardEvent) => {
-    const txt = this.#editorEl.value;
-    const start = this.#editorEl.selectionStart;
-    const end = this.#editorEl.selectionEnd;
+    const txt = this.#elements.editor.value;
+    const start = this.#elements.editor.selectionStart;
+    const end = this.#elements.editor.selectionEnd;
 
     if (e.key === "Tab") {
       e.preventDefault();
       const space = " ".repeat(this.tabsize);
-      this.#editorEl.value = txt.substring(0, start) + space + txt.substring(end, txt.length);
-      this.#editorEl.setSelectionRange(start + this.tabsize, end + this.tabsize);
+      this.#elements.editor.value = txt.substring(0, start) + space + txt.substring(end, txt.length);
+      this.#elements.editor.setSelectionRange(start + this.tabsize, end + this.tabsize);
+      this.#update();
+      return;
+    }
+
+    // Preserve the indent when adding a new line
+    if (e.key === "Enter") {
+      const currentLn = txt.substring(0, start).match(/\n.*/g)?.at(-1);
+      if (!currentLn) return;
+      const leadingSpaces = currentLn.match(/^\s*/g)?.[0];
+      if (!leadingSpaces) return;
+      e.preventDefault();
+      this.#elements.editor.value = txt.substring(0, start) + leadingSpaces + txt.substring(end, txt.length);
+      this.#elements.editor.setSelectionRange(start + leadingSpaces.length, end + leadingSpaces.length);
       this.#update();
       return;
     }
@@ -434,11 +496,11 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     const wrapper = CodeEditor.#wrappers.find(wrapper => wrapper.open === key);
     if (!wrapper) return;
 
-    const el = this.#editorEl;
+    const el = this.#elements.editor;
     const start = el.selectionStart;
     const end = el.selectionEnd;
 
-    if (start === end) return;
+    // if (start === end) return;
 
     e.preventDefault();
 
@@ -450,21 +512,21 @@ class CodeEditor extends HTMLElement implements IWebComponent {
   };
 
   /** Copy button click event handler */
-  #copyHandler = async () => {
-    const txt = this.#editorEl.value;
-    await navigator.clipboard.writeText(txt);
-    this.dispatchEvent(this.#copy);
+  #copyHandler = () => {
+    const txt = this.#elements.editor.value;
+    navigator.clipboard.writeText(txt);
+    this.dispatchEvent(this.#events.copyClick);
   };
 
   /** Textarea input event handler. */
   #inputHandler = () => {
     this.#update();
-    this.dispatchEvent(this.#change);
+    this.dispatchEvent(this.#events.update);
   };
 
   /** Update the highlighted code and line numbers from the textarea value. */
   #update = async () => {
-    const el = this.#editorEl;
+    const el = this.#elements.editor;
 
     // one liner
     if (this.#oneLine && el.value.match(/\n/g)) {
@@ -475,35 +537,31 @@ class CodeEditor extends HTMLElement implements IWebComponent {
     }
 
     const rowsCount = el.value.split(/\n/g).length;
-    this.#editorEl.rows = rowsCount;
+    // this.#editorEl.rows = rowsCount;
+    this.#elements.editor.setAttribute("rows", this.expand ? rowsCount.toString() : "auto");
 
     const highlighted = await this.#highlighter(el.value);
     const trailingSpaces = el.value.match(/\s*$/g)!;
 
-    if (this.#linenumbers) {
-      const withLineNumbers = highlighted
-        .split(/\n/g)
-        .map(line => `<li>${line}</li>`)
-        .join("\n");
+    const withLineNumbers = highlighted
+      .split(/\n/g)
+      .map((line, i) => `<span class="line"><span class="ln-num">${this.#linenumbers ? i + 1 : ""}</span>${line}</span>`)
+      .join("\n");
 
-      this.#highlightedEl.innerHTML = `<ul>${withLineNumbers}</ul>` + trailingSpaces[0];
-      this.#activeLineNumber();
-      return;
-    }
-
-    this.#highlightedEl.innerHTML = highlighted + trailingSpaces[0];
+    this.#elements.linesContainer.innerHTML = withLineNumbers + trailingSpaces[0];
+    this.#activeLineNumber();
   };
 
   /** Textarea focus event handler. */
   #onFocus = () => {
     if (this.#readonly) return;
-    this.#internals.states.add("focus");
+    this.#elements.internals.states.add("focus");
   };
 
   /** Textarea blur event handler. */
   #onBlur = () => {
-    this.#internals.states.delete("focus");
-    this.#highlightedEl.querySelector("li.active")?.classList.remove("active");
+    this.#elements.internals.states.delete("focus");
+    this.#elements.highlighted.querySelector("li.active")?.classList.remove("active");
   };
   //#endregion
 }

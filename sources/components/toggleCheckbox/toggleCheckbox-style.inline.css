@@ -1,21 +1,53 @@
+@import url("../wcp-default-styles.css");
+
 :host {
-  /* The easing function of the toggle animation. */
-  --ease-anim: ease;
+  /* 
+    The easing function for the toggle animation.
+    @name --ui-ease-anim-forward
+  */
+  --wcp-ease-anim: var(--ui-ease-anim-forward, var(--def-ease-anim-forward));
 
-  /* The duration of the toggle animation. */
-  --dur-anim: 0.3s;
+  /*
+    The duration of the toggle animation.
+    @name --ui-dur-anim-forward
+  */
+  --wcp-dur-anim: var(--ui-dur-anim-forward, var(--def-dur-anim-forward));
 
-  /* The color of the toggle checkbox when it's checked. */
-  --clr-active: #2196f3;
+  /*
+    The color of the toggle checkbox when it's checked.
+    @name --ui-clr-accent
+  */
+  --wcp-clr-active: var(--ui-clr-accent, var(--def-clr-accent));
 
-  /* The color of the toggle checkbox when it's not checked. */
-  --clr-inactive: transparent;
+  /*
+    The color of the toggle checkbox when it's not checked.
+    @name --ui-clr-neutral
+  */
+  --wcp-clr-inactive: var(--ui-clr-neutral, transparent);
 
-  /* The color of the checked icon. */
-  --clr-checked-icon: #fff;
+  /*
+    The color of the toggle checkbox border.
+    @name --ui-clr-border
+  */
+  --wcp-clr-border: var(--ui-clr-border, var(--def-clr-border));
 
-  /* The size of the toggle checkbox. */
-  --sz-checkbox: 24px;
+  /*
+    The size of the toggle checkbox border.
+    @name --ui-sz-border-thick
+  */
+  --wcp-sz-border: var(--ui-sz-border-thick, var(--def-sz-border-thick));
+
+  /*
+    The color of the checked icon.
+    @name --ui-clr-text-on-accent
+  */
+  --wcp-clr-checked-icon: var(--ui-clr-text-on-accent, var(--def-clr-text-on-accent));
+
+  /*
+    The size of the toggle checkbox.
+    @name --ui-clr-sz-checkbox
+  */
+  --wcp-sz-checkbox: var(--ui-clr-sz-checkbox, 24px);
 
   display: flex;
   flex-direction: row;
@@ -24,7 +56,7 @@
   justify-content: space-between;
 
   @media (prefers-reduced-motion) {
-    --dur-anim: 0s;
+    --wcp-dur-anim: 0s;
   }
 }
 
@@ -32,17 +64,17 @@
   box-sizing: border-box;
   display: grid;
   place-items: stretch;
-  inline-size: var(--sz-checkbox);
-  block-size: var(--sz-checkbox);
+  inline-size: var(--wcp-sz-checkbox);
+  block-size: var(--wcp-sz-checkbox);
   padding: 0;
   margin: 0;
   overflow: clip;
   cursor: pointer;
-  background-color: var(--clr-inactive);
-  border: solid 2px #494949;
+  background-color: var(--wcp-clr-inactive);
+  border: solid var(--wcp-sz-border) var(--wcp-clr-border);
   border-radius: 6px;
-  transition-timing-function: var(--ease-anim);
-  transition-duration: calc(var(--dur-anim) / 2);
+  transition-timing-function: var(--wcp-ease-anim);
+  transition-duration: calc(var(--wcp-dur-anim) / 2);
   transition-property: border-color;
 
   > * {
@@ -54,8 +86,8 @@
   background-color: transparent;
   border-radius: 50%;
   scale: 0;
-  transition-timing-function: var(--ease-anim);
-  transition-duration: calc(var(--dur-anim) / 2);
+  transition-timing-function: var(--wcp-ease-anim);
+  transition-duration: calc(var(--wcp-dur-anim) / 2);
   transition-property: background-color, border-radius, scale;
 }
 
@@ -63,11 +95,11 @@
   visibility: hidden;
   inline-size: 100%;
   block-size: 100%;
-  fill: var(--clr-checked-icon);
+  fill: var(--wcp-clr-checked-icon);
   scale: 0;
   translate: 0 100%;
-  transition-timing-function: var(--ease-anim);
-  transition-duration: var(--dur-anim);
+  transition-timing-function: var(--wcp-ease-anim);
+  transition-duration: var(--wcp-dur-anim);
   transition-property: scale, translate, visibility;
   transition-behavior: allow-discrete;
 }
@@ -77,7 +109,7 @@
   border-width: 0;
 
   .background {
-    background-color: var(--clr-active);
+    background-color: var(--wcp-clr-active);
     border-radius: inherit;
     scale: 1;
   }

@@ -1,23 +1,71 @@
+@import url("../wcp-default-styles.css");
+
 :host {
-  /* The size of the close button svg icon. */
-  --sz-close-icon: 24px;
+  /* 
+    The color of the dialog background.
+    @name --ui-clr-surface-1
+  */
+  --wcp-clr-background: var(--ui-clr-surface-1, var(--def-clr-surface-1));
 
-  /* The color of the close button svg icon. */
-  --clr-close-icon: currentcolor;
+  /* 
+    The color of the dialog backdrop.
+    @name --ui-clr-backdrop
+  */
+  --wcp-clr-backdrop: var(--ui-clr-backdrop, var(--def-clr-backdrop));
 
-  /* The duration of the open/close animation. */
-  --dur-anim: 0.3s;
+  /*
+    The shadow of the dialog.
+    @name --ui-shadow
+  */
+  --wcp-shadow: var(--ui-shadow, var(--def-shadow));
 
-  /* The color of the dialog backdrop. */
-  --clr-backdrop: rgb(0 0 0 / 55%);
+  /*
+    The border radius of the dialog.
+    @name --ui-rad-border-lg
+  */
+  --wcp-rad-border: var(--ui-rad-border-lg, var(--def-rad-border-lg));
 
-  /* The color of the dialog background. */
-  --clr-background: #303030;
+  /* 
+    The size of the close button svg icon.
+    @name --ui-sz-icon-md
+  */
+  --wcp-sz-close-icon: var(--ui-sz-icon-md, var(--def-sz-icon-md));
+
+  /* 
+    The color of the close button svg icon.
+    @name --ui-clr-text
+  */
+  --wcp-clr-close-icon: var(--ui-clr-text, var(--def-clr-text));
+
+  /* 
+    The duration for the reveal animation.
+    @name --ui-dur-anim-forward
+  */
+  --wcp-dur-anim-reveal: var(--ui-dur-anim-forward, var(--def-dur-anim-forward));
+
+  /*
+    The duration for the dismiss animation.
+    @name --ui-dur-anim-backward
+  */
+  --wcp-dur-anim-dismiss: var(--ui-dur-anim-backward, var(--def-dur-anim-backward));
+
+  /*
+    The easing function for the reveal animation.
+    @name --ui-ease-anim-forward
+  */
+  --wcp-ease-anim-reveal: var(--ui-ease-anim-forward, var(--def-ease-anim-forward));
+
+  /*
+    The easing function for the dismiss animation.
+    @name --ui-ease-anim-backward
+  */
+  --wcp-ease-anim-dismiss: var(--ui-ease-anim-backward, var(--def-ease-anim-backward));
 
   display: contents;
 
   @media (prefers-reduced-motion) {
-    --dur-anim: 0s;
+    --wcp-dur-anim-reveal: 0s;
+    --wcp-dur-anim-dismiss: 0s;
   }
 }
 
@@ -29,9 +77,8 @@ dialog {
   max-block-size: unset;
   padding: 0;
   overflow: clip;
-  background: var(--clr-backdrop);
+  background: var(--wcp-clr-backdrop);
   border: none;
-  backdrop-filter: blur(2px);
 }
 
 .content {
@@ -43,9 +90,10 @@ dialog {
   max-block-size: 80%;
   padding: 2em;
   margin: auto;
-  background-color: var(--clr-background);
-  border-radius: 10px;
-  box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
+  overflow: auto;
+  background-color: var(--wcp-clr-background);
+  border-radius: var(--wcp-rad-border);
+  box-shadow: var(--wcp-shadow);
 }
 
 dialog::backdrop {
@@ -53,7 +101,7 @@ dialog::backdrop {
 }
 
 dialog[open] .content {
-  animation: show var(--dur-anim) ease forwards;
+  animation: show var(--wcp-dur-anim-reveal) var(--wcp-ease-anim-reveal) forwards;
 }
 
 @keyframes show {
@@ -69,7 +117,7 @@ dialog[open] .content {
 }
 
 dialog[open] {
-  animation: bg-show var(--dur-anim) ease forwards;
+  animation: bg-show var(--wcp-dur-anim-reveal) var(--wcp-ease-anim-reveal) forwards;
 }
 
 @keyframes bg-show {
@@ -83,7 +131,7 @@ dialog[open] {
 }
 
 dialog.hide .content {
-  animation: hide var(--dur-anim) ease-in forwards;
+  animation: hide var(--wcp-dur-anim-dismiss) var(--wcp-ease-anim-dismiss) forwards;
 }
 
 @keyframes hide {
@@ -94,7 +142,7 @@ dialog.hide .content {
 }
 
 dialog.hide {
-  animation: bg-hide var(--dur-anim) ease-in forwards;
+  animation: bg-hide var(--wcp-dur-anim-dismiss) var(--wcp-ease-anim-dismiss) forwards;
 }
 
 @keyframes bg-hide {
@@ -104,6 +152,8 @@ dialog.hide {
 }
 
 dialog button.close-button {
+  position: sticky;
+  inset-block-start: 0;
   float: inline-end;
   display: grid;
   place-items: center;
@@ -111,7 +161,7 @@ dialog button.close-button {
   margin-block-start: -1em;
   margin-inline-end: -1em;
   cursor: pointer;
-  background-color: transparent;
+  background-color: var(--wcp-clr-background);
   border: none;
   border-radius: 50%;
   transition: background-color 200ms ease-in-out;
@@ -122,13 +172,20 @@ dialog button.close-button {
 }
 
 dialog button.close-button svg {
-  inline-size: var(--sz-close-icon);
-  block-size: var(--sz-close-icon);
-  fill: var(--clr-close-icon);
+  inline-size: var(--wcp-sz-close-icon);
+  block-size: var(--wcp-sz-close-icon);
+  fill: var(--wcp-clr-close-icon);
 }
 
 @media (hover: hover) and (pointer: fine) {
   dialog button.close-button:hover {
-    background-color: hsl(from var(--clr-close-icon) h s l / 10%);
+    background-color: hsl(from var(--wcp-clr-background) h s calc(l * 0.9));
+  }
+}
+
+@media (max-width: 600px) {
+  dialog .content {
+      inline-size: calc(100% - 80px);
+      max-block-size: 90%;
   }
 }

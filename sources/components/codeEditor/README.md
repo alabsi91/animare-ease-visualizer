@@ -27,19 +27,20 @@ editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).va
 
 - `value` (Get/Set) The code string.
 - `highlighter` (Get/Set) - The highlighter function, takes the current code string and returns the highlighted code as html string.
-- `tabsize` (Get/Set) The empty space counted as one tab.
-- `readonly` (Get/Set) Disable user input.
-- `linenumbers` (Get/Set) Show line numbers.
-- `expand` (Get/Set) Expand the text area to fit the content, only for newlines wont work for warping text.
-- `wrap` (Get/Set) Wrap the text area to fit the content.
-- `copyButton` (Get/Set) Show copy button.
+- `tabsize` (Get/Set) The empty space counted as one tab. (default: `2`)
+- `readonly` (Get/Set) Disable user input. (default: `false`)
+- `linenumbers` (Get/Set) Show line numbers. (default: `false`)
+- `expand` (Get/Set) Expand the text area to fit the content, only for newlines wont work for warping text. (default: `true`)
+- `wrap` (Get/Set) Wrap the text area to fit the content. (default: `false`)
+- `copyButton` (Get/Set) Show copy button. (default: `false`)
+- `wrapButton` (Get/Set) Show wrap button. (default: `false`)
 - `stylesheet` (Get/Set) The CSS style sheet selector for code styling, it can be a `link[rel="stylesheet"]` or a `style` element.
-- `oneLine` (Get/Set) Mimic regular input element by forcing one line.
+- `oneLine` (Get/Set) Mimic regular input element by forcing one line. (default: `false`)
 
 **Events**
 
-- `change` Emitted when the value changes.
-- `copy` Emitted when the copy button is clicked.
+- `copyClick` Emitted when the copy button is clicked.
+- `update` Emitted when the value changes.
 
 **Slots**
 
@@ -50,14 +51,15 @@ editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).va
 **Attributes**
 
 - `"value"` The code string.
-- `"readonly"` Disable user input.
-- `"tabsize"` The empty space counted as one tab.
+- `"readonly"` Disable user input. (default: `false`)
+- `"tabsize"` The empty space counted as one tab. (default: `2`)
 - `"stylesheet"` The CSS style sheet selector for code styling, it can be a `link[rel="stylesheet"]` or a `style` element.
-- `"expand"` Expand the text area to fit the content, only for newlines wont work for warping text.
-- `"wrap"` Wrap the text area to fit the content.
-- `"linenumbers"` Show line numbers.
-- `"copy-button"` Show copy button.
-- `"one-line"` Mimic regular input element by forcing one line.
+- `"expand"` Expand the text area to fit the content, only for newlines wont work for warping text. (default: `true`)
+- `"wrap"` Wrap the text area to fit the content. (default: `false`)
+- `"linenumbers"` Show line numbers. (default: `false`)
+- `"copy-button"` Show copy button. (default: `false`)
+- `"wrap-button"` Show wrap button. (default: `false`)
+- `"one-line"` Mimic regular input element by forcing one line. (default: `false`)
 
 **CSS Properties**
 
@@ -65,10 +67,18 @@ editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).va
 - `--font-weight` The default font size of the code editor.
 - `--sz-font` The default font size of the code editor.
 - `--line-height` The default line height of the code editor.
-- `--clr-background` The default background color of the code editor.
-- `--clr-text-selection` The background color of the selected text.
+- `--wcp-clr-background` The default background color of the code editor.
+- `--wcp-clr-accent` The background color of the selected text.
 - `--clr-scrollbar` The color of the scrollbar.
+- `--wcp-clr-border` The color of the border.
 - `--sz-line-numbers-width` The width of the line numbers column.
+- `--clr-line-numbers-background` The background color of the line numbers.
+- `--clr-line-numbers-txt` The text color of the line numbers.
+- `--clr-line-numbers-active-txt` The background color of the active line number.
+- `--sz-padding` The padding of the code editor.
+- `--wcp-rad-border` The border radius of the code editor.
+- `--wcp-sz-border` The border width of the code editor.
+- `--wcp-shadow` The shadow of the code editor.
 
 **CSS Parts**
 
@@ -77,6 +87,7 @@ editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).va
 - `::part(box)` The code editor box element (textarea and highlight elements).
 - `::part(textarea)` The code editor textarea element.
 - `::part(highlight)` The code editor highlight container element.
+- `::part(wrap-button)` The wrap button.
 - `::part(copy-button)` The copy button.
 
 **CSS States**

@@ -1,18 +1,21 @@
-import type { IWebComponent, WComponent } from "../wc";
+import type * as WCP from "../wcp";
 
-type ExtraAttributes = {
+const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+
+type ExtendedAttributes = {
   "value-type": ValueTypes;
-  onchange: (e: CustomEvent) => void;
-  onclick: (e: CustomEvent) => void;
-  onkeydown: (e: CustomEvent) => void;
 };
 
-type ComponentTypes = WComponent<typeof SelectOption, ExtraAttributes>;
+type ComponentEvents = WCP.WEvent<{
+  valueChange: CustomEvent;
+}>;
+
+type ComponentTypes = WCP.WComponent<typeof SelectOption, ExtendedAttributes, ComponentEvents>;
 
 const COMPONENT_NAME = "select-option";
 
 type SelectOptionData = {
-  value: unknown;
+  value: unknown | undefined;
   valueType: ValueTypes;
   label: string | null;
   selected: boolean;
@@ -39,91 +42,57 @@ type OptionType = "option" | "radio" | "checkbox";
  *
  * @slot Default the option contents.
  * @cssPart option The option element.
+ * @cssState selected The option is selected.
+ * @cssState checked The option is checked.
+ * @cssState disabled The option is disabled.
  */
-class SelectOption extends HTMLElement implements IWebComponent {
+class SelectOption extends HTMLElement implements WCP.IWebComponent {
+  addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
+
   static readonly stylesheet = (() => {
     const sheet = new CSSStyleSheet();
-    sheet.replaceSync(import_as_string("./selectOption-style.inline.css", { minify: true }));
+    sheet.replace(import_as_string("./selectOption-style.inline.css", { minify: true }));
     return sheet;
   })();
 
-  readonly #internals: ElementInternals;
-  readonly #optionsEl: HTMLDivElement;
+  readonly #elements = {
+    internals: null! as ElementInternals,
+    option: null! as HTMLDivElement,
+  };
 
-  /** Fired when `value` or `selected` is changed. */
-  readonly #changeEvent = new CustomEvent("change");
+  readonly #events: ComponentEvents = {
+    /** Fired when `value` or `selected` is changed. */
+    valueChange: new CustomEvent("valueChange"),
+  };
 
   //#region Public Props
-  #type: OptionType = "option";
-  /** The type for accessibility. Defaults to `option`. */
-  get type(): OptionType {
-    return this.#type;
-  }
+  /** The type for accessibility `"option" | "radio" | "checkbox"`. */
+  get type(): OptionType { return this.#type; }
   set type(val: OptionType) {
     this.#type = val;
     this.#setupType();
   }
+  #type: OptionType = "option";
 
-  #value: string | null = null;
   /** The value of the option. */
-  get value(): string | null {
-    return this.#value;
-  }
-  set value(val: string | null) {
-    this.#value = val;
-    this.#updateValue(val);
-  }
+  value: string = "";
 
-  #valueAsType: unknown;
-  /** The parsed value from the `value` attribute string. */
-  get valueAsType() {
-    return this.#valueAsType;
-  }
-  set valueAsType(val: unknown) {
-    if (val === undefined) {
-      this.removeAttribute("value");
-      return;
-    }
-    this.setAttribute("value", JSON.stringify(val));
-  }
-
-  #valueType: ValueTypes = "string";
-  /** The type of the value. Defaults to `string`. */
-  get valueType(): ValueTypes {
-    return this.#valueType;
-  }
-  set valueType(val: ValueTypes) {
-    this.#valueType = val;
-    this.#updateValue(this.#value);
-    this.#updateSelected(this.#selected);
-  }
-
-  #selected: boolean = false;
-  /** Selected. Defaults to `false`. */
-  get selected(): boolean {
-    return this.#selected;
-  }
+  /** Whether the option is selected or not. */
+  get selected(): boolean { return this.#selected; }
   set selected(val: boolean) {
     this.#selected = val;
     this.#updateSelected(val);
   }
+  #selected: boolean = false;
 
-  /** Toggle the option selected state. */
-  toggleSelected = () => {
-    this.selected = !this.selected;
-    this.dispatchEvent(this.#changeEvent);
-  };
-
+  /** Whether the option is disabled or not. */
+  get disabled(): boolean { return this.#disabled; }
+  set disabled(val: boolean) { this.setAttribute("disabled", val.toString()); }
   #disabled: boolean = false;
-  /** Disabled. Defaults to `false`. */
-  get disabled(): boolean {
-    return this.#disabled;
-  }
-  set disabled(val: boolean) {
-    this.setAttribute("disabled", val.toString());
-  }
 
-  #label: string | null = null;
+  /** @ignore */
+  get tabIndex(): number { return 0; }
+
   /** The label of the option. */
   get label(): string | null {
     if (typeof this.#label === "string") return this.#label;
@@ -138,58 +107,22 @@ class SelectOption extends HTMLElement implements IWebComponent {
     }
     this.removeAttribute("label");
   }
+  #label: string | null = null;
 
-  #onClick: (e: MouseEvent) => void;
   /** Set the click event handler. */
-  set onclick(fn: (e: MouseEvent) => void) {
-    this.#onClick = fn;
-  }
+  set onclick(fn: (e: MouseEvent) => void) { this.#onClick = fn; }
+  #onClick: (e: MouseEvent) => void;
 
-  #onKeyDown: (e: KeyboardEvent) => void;
   /** Set the keydown event handler. */
-  set onkeydown(fn: (e: KeyboardEvent) => void) {
-    this.#onKeyDown = fn;
-  }
-
-  /** The data of the option. */
-  get data(): SelectOptionData {
-    return {
-      value: this.#valueAsType,
-      valueType: this.#valueType,
-      label: this.#label,
-      selected: this.#selected,
-      disabled: this.#disabled,
-    };
-  }
-  set data(val: Partial<SelectOptionData>) {
-    for (const k in val) {
-      const key = k as keyof typeof val;
-
-      switch (key) {
-        case "value":
-          this.valueAsType = val[key];
-          continue;
-        case "valueType":
-          if (val[key]) this.valueType = val[key];
-          continue;
-        case "label":
-          this.label = val[key];
-          continue;
-        case "selected":
-          if (typeof val[key] === "boolean") this.selected = val[key];
-          continue;
-        case "disabled":
-          if (typeof val[key] === "boolean") this.disabled = val[key];
-      }
-    }
-  }
+  set onkeydown(fn: (e: KeyboardEvent) => void) { this.#onKeyDown = fn; }
+  #onKeyDown: (e: KeyboardEvent) => void;
   //#endregion
 
   //#region HTMLElement Methods
   constructor() {
     super();
 
-    this.#internals = this.attachInternals();
+    this.#elements.internals = this.attachInternals();
 
     const template = `<div class="option" part="option" tabindex="-1" aria-disabled="false"><slot></slot></div>`;
 
@@ -197,12 +130,10 @@ class SelectOption extends HTMLElement implements IWebComponent {
     shadow.adoptedStyleSheets = [SelectOption.stylesheet];
     shadow.innerHTML = template;
 
-    const optionEl = shadow.querySelector<HTMLDivElement>(".option");
-    if (!optionEl) {
-      console.error("[select-option]: Couldn't find the options element.");
-    }
+    const optionEl = shadow.querySelector<HTMLDivElement>(".option")!;
+    if (!optionEl) console.error(`[${COMPONENT_NAME}]: Couldn't find the options element.`);
+    this.#elements.option = optionEl;
 
-    this.#optionsEl = optionEl!;
     this.#onClick = undefined!;
     this.#onKeyDown = undefined!;
 
@@ -213,36 +144,32 @@ class SelectOption extends HTMLElement implements IWebComponent {
   }
 
   connectedCallback() {
-    this.#optionsEl.addEventListener("click", this.#onClickHandler);
-    this.#optionsEl.addEventListener("keydown", this.#keyDownHandler);
+    this.#elements.option.addEventListener("click", this.#onClickHandler);
+    this.#elements.option.addEventListener("keydown", this.#keyDownHandler);
   }
 
   disconnectedCallback() {
-    this.#optionsEl.removeEventListener("click", this.#onClickHandler);
-    this.#optionsEl.removeEventListener("keydown", this.#keyDownHandler);
+    this.#elements.option.removeEventListener("click", this.#onClickHandler);
+    this.#elements.option.removeEventListener("keydown", this.#keyDownHandler);
   }
 
   static get observedAttributes() {
-    return ["value", "value-type", "label", "selected", "disabled", "type"] as const;
+    return ["value", "label", "selected", "disabled", "type"] as const;
   }
 
   attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "value") {
-      const prevValue = this.#valueAsType;
-      this.value = newValue;
-      if (prevValue !== this.#valueAsType) this.dispatchEvent(this.#changeEvent);
+      const prevValue = this.value;
+      this.value = newValue ?? "";
+      if (prevValue !== this.value) this.dispatchEvent(this.#events.valueChange);
       return;
     }
 
     if (name === "disabled") {
       const isDisabled = newValue === "true" || newValue === "";
       this.#disabled = isDisabled;
-      this.#optionsEl.setAttribute("aria-disabled", isDisabled.toString());
-      if (isDisabled) {
-        this.#internals.states.add("disabled");
-        return;
-      }
-      this.#internals.states.delete("disabled");
+      this.#elements.option.setAttribute("aria-disabled", isDisabled.toString());
+      this.#elements.internals.states[isDisabled ? "add" : "delete"]("disabled");
       return;
     }
 
@@ -250,22 +177,17 @@ class SelectOption extends HTMLElement implements IWebComponent {
       const isSelected = newValue === "true" || newValue === "";
       const prevSelected = this.#selected;
       this.#updateSelected(isSelected);
-      if (prevSelected !== isSelected) this.dispatchEvent(this.#changeEvent);
-      return;
-    }
-
-    if (name === "value-type") {
-      this.valueType = newValue === null ? "string" : (newValue as ValueTypes);
+      if (prevSelected !== isSelected) this.dispatchEvent(this.#events.valueChange);
       return;
     }
 
     if (name === "label") {
       this.#label = newValue;
       if (newValue === null) {
-        this.#optionsEl.removeAttribute("aria-label");
+        this.#elements.option.removeAttribute("aria-label");
         return;
       }
-      this.#optionsEl.setAttribute("aria-label", newValue);
+      this.#elements.option.setAttribute("aria-label", newValue);
       return;
     }
 
@@ -278,110 +200,80 @@ class SelectOption extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
-    if (qualifiedName === "value") return this.#value;
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"]): string | null {
+    if (qualifiedName === "value") return this.value;
     if (qualifiedName === "type") return this.#type;
-    if (qualifiedName === "value-type") return this.#valueType;
     if (qualifiedName === "selected") return this.#selected.toString();
     return super.getAttribute(qualifiedName);
   }
   //#endregion
 
   //#region Private Methods
-  #updateValue(newValue: string | null) {
-    if (newValue === null) {
-      this.#valueAsType = undefined;
-      return;
-    }
-
-    if (this.#valueType === "string") {
-      this.#valueAsType = newValue;
-      return;
-    }
-
-    try {
-      const parsedValue = JSON.parse(newValue) as unknown;
-      this.#valueAsType = parsedValue;
-    } catch (err) {
-      console.error("[select-option]: Error while parsing the value:", newValue);
-      console.error(err);
-    }
-  }
-
   #updateSelected(selected: boolean) {
-    this.#optionsEl.setAttribute(this.#type === "option" ? "aria-selected" : "aria-checked", selected.toString());
+    const attr = this.#type === "option" ? "aria-selected" : "aria-checked";
+    this.#elements.option.setAttribute(attr, selected.toString());
 
-    // css state
-    if (selected) {
-      this.#internals.states.add("selected");
-      this.#internals.states.add("checked");
-      return;
-    }
-
-    this.#internals.states.delete("selected");
-    this.#internals.states.delete("checked");
+    const addOrDelete = selected ? "add" : "delete";
+    this.#elements.internals.states[addOrDelete]("selected");
+    this.#elements.internals.states[addOrDelete]("checked");
   }
 
   #setupType() {
     if (this.#type === "option") {
-      this.#optionsEl.setAttribute("role", "option");
-      this.#optionsEl.setAttribute("tabindex", "-1");
-      this.#optionsEl.setAttribute("aria-selected", this.#selected.toString());
+      this.#elements.option.setAttribute("role", "option");
+      this.#elements.option.setAttribute("tabindex", "-1");
+      this.#elements.option.setAttribute("aria-selected", this.#selected.toString());
       return;
     }
 
     if (this.#type === "checkbox") {
-      this.#optionsEl.setAttribute("role", "menuitemcheckbox");
-      this.#optionsEl.setAttribute("aria-checked", this.#selected.toString());
+      this.#elements.option.setAttribute("role", "menuitemcheckbox");
+      this.#elements.option.setAttribute("aria-checked", this.#selected.toString());
       return;
     }
 
     if (this.#type === "radio") {
-      this.#optionsEl.setAttribute("role", "menuitemradio");
-      this.#optionsEl.setAttribute("aria-checked", this.#selected.toString());
+      this.#elements.option.setAttribute("role", "menuitemradio");
+      this.#elements.option.setAttribute("aria-checked", this.#selected.toString());
       return;
     }
   }
 
   #keyDownHandler = (e: KeyboardEvent) => {
-    const keyDownHandler = this.#onKeyDown as ((e: KeyboardEvent) => void) | undefined;
-    if (keyDownHandler) {
-      keyDownHandler(e);
-      return;
-    }
-
+    const keyDownHandler = this.#onKeyDown;
+    if (keyDownHandler) return keyDownHandler(e);
     if (this.#disabled) return;
-
-    if (e.code === "Enter" || e.code === "Space") {
-      this.toggleSelected();
-    }
+    if (e.code === "Enter" || e.code === "Space") this.toggleSelected();
   };
 
   #onClickHandler = (e: MouseEvent) => {
-    const clickHandler = this.#onClick as ((e: MouseEvent) => void) | undefined;
-    if (clickHandler) {
-      clickHandler(e);
-      return;
-    }
-
+    const clickHandler = this.#onClick;
+    if (clickHandler) return clickHandler(e);
     if (this.#disabled) return;
     this.toggleSelected();
   };
   //#endregion
 
   //#region Public Methods
+  /** Toggle the option selected state. */
+  toggleSelected = () => {
+    this.selected = !this.selected;
+    this.dispatchEvent(this.#events.valueChange);
+  };
+
   /**
    * Focus the option element.
    *
    * @function {focus(options?: FocusOptions)}
    */
   focus = (options?: FocusOptions) => {
-    this.#optionsEl.focus(options);
+    this.#elements.option.focus(options);
   };
 
   /** Fire the option click event manually. */
   click = () => {
-    this.#optionsEl.click();
+    this.#elements.option.click();
   };
   //#endregion
 }
@@ -395,5 +287,12 @@ declare global {
 
   interface HTMLElementTagNameMap {
     [COMPONENT_NAME]: SelectOption;
+  }
+
+  namespace React.JSX {
+    interface IntrinsicElements {
+      /** @markdown {./README.md} */
+      [COMPONENT_NAME]: WCP.ReactWComponent<ComponentTypes["JsxProps"], CodeEditor>;
+    }
   }
 }

@@ -1,12 +1,20 @@
-import type { IWebComponent, NumberString, WComponent } from "../wc";
+import * as WCP from "../wcp";
 
-type ExtraAttributes = {
-  "prefer-direction": PreferDirection;
-  "reveal-delay": NumberString;
-  onchange: (e: CustomEvent) => void;
+const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+
+type ExtendedAttributes = {
+  "preferred-sequence": PreferDirection;
+  "reveal-delay": WCP.NumberString;
+  offset: WCP.NumberString;
 };
 
-type ComponentTypes = WComponent<typeof TooltipComponent, ExtraAttributes>;
+type ComponentEvents = WCP.WEvent<{
+  reveal: CustomEvent<HTMLElement | null>;
+  dismiss: CustomEvent<HTMLElement | null>;
+  stateChange: CustomEvent<HTMLElement | null>;
+}>;
+
+type ComponentTypes = WCP.WComponent<typeof TooltipComponent, ExtendedAttributes, ComponentEvents>;
 
 const COMPONENT_NAME = "tooltip-component";
 
@@ -15,22 +23,24 @@ type PreferDirection = "top" | "bottom" | "left" | "right";
 /**
  * A tooltip component that displays a message when hovered over.
  *
+ * - Depends on `<anchor-component />`.
  * - Works only for fine input devices by design.
  * - Not selectable and hidden from screen readers.
  * - Pointer events are disabled.
- * - To offset the tooltip, use `margin` on the `::part(container)` element.
  *
  * @usage
  *
  * ```html
  * <button id="tooltip-button">Show Alert</button>
  *
- * <tooltip-component for="tooltip-button" prefer-direction="right">
+ * <tooltip-component for="tooltip-button" preferred-sequence="right left bottom top">
  *   <p>A button to show alert</p>
  * </tooltip-component>
  * ```
  */
-class TooltipComponent extends HTMLElement implements IWebComponent {
+class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
+  addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
+
   static readonly htmlFragment = (() => {
     const template = document.createElement("template");
     template.innerHTML = import_as_string("./tooltip-template.inline.html", { minify: true });
@@ -39,27 +49,32 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
 
   static readonly stylesheet = (() => {
     const sheet = new CSSStyleSheet();
-    sheet.replaceSync(import_as_string("./tooltip-style.inline.css", { minify: true }));
+    sheet.replace(import_as_string("./tooltip-style.inline.css", { minify: true }));
     return sheet;
   })();
 
   readonly #internals: ElementInternals;
   readonly #popoverEl: HTMLDivElement;
+  readonly #anchorCP: Anchor;
+
   readonly #abortController = new AbortController();
+
   #revealDelayTimeoutId: number | null = null;
   #currentHoveredElement: HTMLElement | null = null;
 
-  /** Emitted when the tooltip is opened. */
-  readonly #openEvent = new CustomEvent("open");
-  /** Emitted when the tooltip is closed. */
-  readonly #closeEvent = new CustomEvent("close");
+  readonly #events: WCP.WithDispatch<ComponentEvents> = {
+    /** Emitted when the tooltip is opened. `detail` is the hovered element. */
+    reveal: new CustomEvent("reveal", { detail: null }),
+    /** Emitted when the tooltip is closed. `detail` is the hovered element. */
+    dismiss: new CustomEvent("dismiss", { detail: null }),
+    /** Emitted when the tooltip is opened or closed. `detail` is the hovered element. */
+    stateChange: new CustomEvent("stateChange", { detail: null }),
+    dispatch: (type, val) => this.dispatchEvent(new CustomEvent(type, { detail: val })),
+  };
 
   //#region Public Props
-  #attachTo: HTMLElement[] = [];
-  /** The element to attach the tooltip to. */
-  get for() {
-    return this.#attachTo;
-  }
+  /** The element to attach the tooltip to, can be a string selector, a single or an array of elements. */
+  get for() { return this.#attachTo; }
   set for(value: HTMLElement | HTMLElement[] | string | null) {
     setTimeout(() => {
       if (this.#attachTo) {
@@ -78,35 +93,36 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
         this.#attachTo = [value];
       }
 
-      if (!this.#attachTo) return;
       const signal = this.#abortController.signal;
       this.#attachTo.forEach(el => el.addEventListener("pointerenter", this.#hoverEnterHandler, { signal }));
       this.#attachTo.forEach(el => el.addEventListener("pointerleave", this.#hoverLeaveHandler, { signal }));
     }, 0);
   }
+  #attachTo: HTMLElement[] = [];
 
-  #preferDirection: PreferDirection = "top";
-  /** Open the tooltip in the preferred direction if possible. Defaults to `top`. */
-  get preferDirection(): PreferDirection {
-    return this.#preferDirection;
-  }
-  set preferDirection(value: PreferDirection) {
-    this.#preferDirection = value;
+  /**
+   * The preferred directions to open the tooltip. An array of 1 to 4 directions: `top`, `bottom`, `left`, `right` in order of
+   * preference. When using the class property, an array is expected. When using as an HTML attribute, a string of space-separated
+   * directions might be expected.
+   */
+  get preferredSequence() { return this.#anchorCP.preferredPositionOrder.map(val => val[0]); }
+  set preferredSequence(value: PreferDirection[]) {
+    this.#anchorCP.preferredPositionOrder = value.map(val => [val, "center", "center"]);
   }
 
-  #revealDelay: number = 500;
   /** The delay before the tooltip is revealed. */
-  get revealDelay(): number {
-    return this.#revealDelay;
+  revealDelay: number = 500;
+
+  /** The tooltip offset, use `margin` like values. Ex: `1em 2em` */
+  get offset(): string { return this.#offset; }
+  set offset(value: string) {
+    this.#offset = value;
+    this.#popoverEl.style.margin = value;
   }
-  set revealDelay(value: number) {
-    this.#revealDelay = value;
-  }
+  #offset: string = "1em";
 
   /** Returns `true` if the tooltip is open. */
-  get isOpen(): boolean {
-    return this.#internals.states.has("open");
-  }
+  get isOpen(): boolean { return this.#internals.states.has("open"); }
   //#endregion
 
   //#region HtmlElement Methods
@@ -119,12 +135,14 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
     shadow.adoptedStyleSheets = [TooltipComponent.stylesheet];
     shadow.appendChild(TooltipComponent.htmlFragment.cloneNode(true));
 
-    const popoverEl = shadow.querySelector<HTMLDivElement>(".popover");
-    if (!popoverEl) {
-      console.error("[tooltip-component]: Could not find element with class `popover`");
-    }
+    const popoverEl = shadow.querySelector<HTMLDivElement>(".popover")!;
+    if (!popoverEl) console.error(`[${COMPONENT_NAME}]: Could not find element with selector ".popover"`);
+    this.#popoverEl = popoverEl;
 
-    this.#popoverEl = popoverEl!;
+    const anchorCP = shadow.querySelector("anchor-component")!;
+    if (!anchorCP) console.error(`[${COMPONENT_NAME}]: Could not find element with selector ".anchor"`);
+    if (!customElements.get("anchor-component")) console.error(`[${COMPONENT_NAME}]: Please import "anchor-component" first`);
+    this.#anchorCP = anchorCP;
   }
 
   disconnectedCallback(): void {
@@ -132,7 +150,7 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
   }
 
   static get observedAttributes() {
-    return ["for", "prefer-direction", "reveal-delay"] as const;
+    return ["for", "preferred-sequence", "reveal-delay", "offset"] as const;
   }
 
   attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null): void {
@@ -141,21 +159,14 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
       return;
     }
 
-    if (name === "prefer-direction") {
+    if (name === "preferred-sequence") {
       if (newValue === null) {
-        this.preferDirection = "top";
+        this.preferredSequence = ["top", "bottom", "left", "right"];
         return;
       }
 
-      if (newValue === "top" || newValue === "bottom" || newValue === "left" || newValue === "right") {
-        this.preferDirection = newValue;
-        return;
-      }
-
-      console.error(
-        `[tooltip-component]: Invalid value for attribute "prefer-direction": ${newValue}. Valid values are "top", "bottom", "left" and "right".`
-      );
-
+      const arr = newValue.trim().split(" ").filter(Boolean);
+      this.preferredSequence = arr as PreferDirection[];
       return;
     }
 
@@ -167,135 +178,25 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
       return;
     }
 
+    if (name === "offset") {
+      this.offset = newValue || "1em";
+      return;
+    }
+
     const _exhaustiveCheck: never = name;
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
-    if (qualifiedName === "prefer-direction") return this.#preferDirection;
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"]): string | null {
+    if (qualifiedName === "preferred-sequence") return this.preferredSequence.join(" ");
+    if (qualifiedName === "reveal-delay") return this.revealDelay.toString();
+    if (qualifiedName === "offset") return this.#offset;
     return super.getAttribute(qualifiedName);
   }
   //#endregion
 
   //#region Private Methods
-  #string2Number = (str: string, defaultValue: number = 0) => {
-    const num = parseFloat(str);
-    if (isNaN(num) || !isFinite(num)) return defaultValue;
-    return num;
-  };
-
-  #calcTooltipPos = () => {
-    const tooltipEl = this.#popoverEl;
-
-    const hoveredEl = this.#currentHoveredElement;
-    if (!hoveredEl) return { top: 0, left: 0 };
-
-    const tooltipStyle = window.getComputedStyle(tooltipEl);
-
-    const tooltipWidth = this.#string2Number(tooltipStyle.width);
-    const tooltipHeight = this.#string2Number(tooltipStyle.height);
-    if (!tooltipWidth || !tooltipHeight) return { top: 0, left: 0 };
-
-    const tooltipOffset = {
-      top: this.#string2Number(tooltipStyle.marginTop),
-      bottom: this.#string2Number(tooltipStyle.marginBottom),
-      left: this.#string2Number(tooltipStyle.marginLeft),
-      right: this.#string2Number(tooltipStyle.marginRight),
-    };
-
-    const hoveredElRect = hoveredEl.getBoundingClientRect();
-
-    const upwardSpace = hoveredElRect.top;
-    const hasEnoughSpaceUp = upwardSpace > tooltipHeight + tooltipOffset.top + tooltipOffset.bottom;
-
-    const downwardSpace = document.documentElement.clientHeight - hoveredElRect.bottom;
-    const hasEnoughSpaceDown = downwardSpace > tooltipHeight + tooltipOffset.top + tooltipOffset.bottom;
-
-    const onLeftSpace = hoveredElRect.left;
-    const hasEnoughSpaceLeft = onLeftSpace >= tooltipWidth + tooltipOffset.left + tooltipOffset.right;
-
-    const onRightSpace = document.documentElement.clientWidth - hoveredElRect.right;
-    const hasEnoughSpaceRight = onRightSpace >= tooltipWidth + tooltipOffset.left + tooltipOffset.right;
-
-    const getPosForDirection = (dir: PreferDirection) => {
-      tooltipEl.classList.remove("top", "bottom", "left", "right");
-      tooltipEl.classList.add(dir);
-
-      if (dir === "top")
-        return {
-          top: hoveredElRect.top - tooltipOffset.top * 2 - tooltipHeight,
-          left: hoveredElRect.left + hoveredElRect.width / 2 - tooltipWidth / 2 - tooltipOffset.left,
-        };
-
-      if (dir === "bottom")
-        return {
-          top: hoveredElRect.bottom,
-          left: hoveredElRect.left + hoveredElRect.width / 2 - tooltipWidth / 2 - tooltipOffset.left,
-        };
-
-      if (dir === "left")
-        return {
-          top: hoveredElRect.top + hoveredElRect.height / 2 - tooltipHeight / 2 - tooltipOffset.top,
-          left: hoveredElRect.left - (tooltipWidth + tooltipOffset.left + tooltipOffset.right),
-        };
-
-      if (dir === "right")
-        return {
-          top: hoveredElRect.top + hoveredElRect.height / 2 - tooltipHeight / 2 - tooltipOffset.top,
-          left: hoveredElRect.right,
-        };
-
-      return { top: 0, left: 0 };
-    };
-
-    if (this.#preferDirection === "top") {
-      if (hasEnoughSpaceUp) return getPosForDirection("top");
-      if (hasEnoughSpaceDown) return getPosForDirection("bottom");
-      if (hasEnoughSpaceLeft) return getPosForDirection("left");
-      if (hasEnoughSpaceRight) return getPosForDirection("right");
-      return getPosForDirection("top");
-    }
-
-    if (this.#preferDirection === "bottom") {
-      if (hasEnoughSpaceDown) return getPosForDirection("bottom");
-      if (hasEnoughSpaceUp) return getPosForDirection("top");
-      if (hasEnoughSpaceLeft) return getPosForDirection("left");
-      if (hasEnoughSpaceRight) return getPosForDirection("right");
-      return getPosForDirection("bottom");
-    }
-
-    if (this.#preferDirection === "left") {
-      if (hasEnoughSpaceLeft) return getPosForDirection("left");
-      if (hasEnoughSpaceRight) return getPosForDirection("right");
-      if (hasEnoughSpaceUp) return getPosForDirection("top");
-      if (hasEnoughSpaceDown) return getPosForDirection("bottom");
-      return getPosForDirection("left");
-    }
-
-    if (this.#preferDirection === "right") {
-      if (hasEnoughSpaceRight) return getPosForDirection("right");
-      if (hasEnoughSpaceLeft) return getPosForDirection("left");
-      if (hasEnoughSpaceUp) return getPosForDirection("top");
-      if (hasEnoughSpaceDown) return getPosForDirection("bottom");
-      return getPosForDirection("right");
-    }
-
-    return { top: 0, left: 0 };
-  };
-
-  #setTooltipPos = () => {
-    const tooltipEl = this.#popoverEl;
-
-    // clean style for re-calculation
-    tooltipEl.style.removeProperty("left");
-    tooltipEl.style.removeProperty("top");
-
-    const { top, left } = this.#calcTooltipPos();
-
-    tooltipEl.style.left = `${left}px`;
-    tooltipEl.style.top = `${top}px`;
-  };
-
   #hoverEnterHandler = (e: PointerEvent) => {
     const isFineInput = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     if (!isFineInput) return;
@@ -303,61 +204,65 @@ class TooltipComponent extends HTMLElement implements IWebComponent {
     if (this.isOpen) return;
     this.#currentHoveredElement = e.target as HTMLElement;
     if (this.#revealDelayTimeoutId) clearTimeout(this.#revealDelayTimeoutId);
-    this.#revealDelayTimeoutId = setTimeout(() => this.open(), this.#revealDelay);
+    this.#revealDelayTimeoutId = setTimeout(() => this.open(), this.revealDelay);
   };
 
   #hoverLeaveHandler = () => {
     if (this.#revealDelayTimeoutId) clearTimeout(this.#revealDelayTimeoutId);
-    this.#currentHoveredElement = null;
     this.close();
+    this.#events.dispatch("dismiss", this.#currentHoveredElement);
+    this.#events.dispatch("stateChange", this.#currentHoveredElement);
+    this.#currentHoveredElement = null;
   };
   //#endregion
 
   //#region Public Methods
   /** Open the tooltip. */
   open = () => {
-    this.dispatchEvent(this.#openEvent);
+    this.#events.dispatch("reveal", this.#currentHoveredElement);
+    this.#events.dispatch("stateChange", this.#currentHoveredElement);
+
     this.#internals.states.add("open");
     this.#popoverEl.showPopover();
 
-    const signal = this.#abortController.signal;
-    window.addEventListener("scroll", this.#setTooltipPos, { signal });
-    window.addEventListener("resize", this.#setTooltipPos, { signal });
+    this.#popoverEl.classList.remove("hide");
+    this.#popoverEl.classList.add("show");
 
-    this.#setTooltipPos();
-    const computedStyle = getComputedStyle(this);
-    const durationStr = computedStyle.getPropertyValue("--dur-anim") ?? "0.3s";
-    const duration = parseFloat(durationStr) * (durationStr.endsWith("ms") ? 1 : 1000);
-    const easing = computedStyle.getPropertyValue("--ease-anim") ?? "ease-out";
+    this.#anchorCP.anchorElement = this.#currentHoveredElement!;
+    this.#anchorCP.startAutoUpdate();
 
-    this.#popoverEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration, easing });
+    const animation = this.#popoverEl.getAnimations()[0];
+    if (!animation) return;
+
+    animation.onfinish = animation.oncancel = () => {
+      animation.onfinish = animation.oncancel = null;
+      this.#popoverEl.classList.remove("show");
+    };
   };
 
   /** Close the tooltip. */
   close = () => {
     this.#internals.states.delete("open");
 
-    window.removeEventListener("scroll", this.#setTooltipPos);
-    window.removeEventListener("resize", this.#setTooltipPos);
+    this.#popoverEl.classList.remove("show");
+    this.#popoverEl.classList.add("hide");
 
-    const computedStyle = getComputedStyle(this);
-    const durationStr = computedStyle.getPropertyValue("--dur-anim") ?? "0.3s";
-    const duration = parseFloat(durationStr) * (durationStr.endsWith("ms") ? 1 : 1000);
-    const easing = computedStyle.getPropertyValue("--ease-anim") ?? "ease-out";
+    const animation = this.#popoverEl.getAnimations()[0];
+    if (!animation) return this.#anchorCP.stopAutoUpdate();
 
-    const animation = this.#popoverEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing, fill: "backwards" });
-    animation.onfinish = () => {
+    animation.onfinish = animation.oncancel = () => {
+      animation.onfinish = animation.oncancel = null;
+      this.#anchorCP.stopAutoUpdate();
       this.#popoverEl.hidePopover();
-      this.dispatchEvent(this.#closeEvent);
+      this.#popoverEl.classList.remove("hide");
     };
   };
 
   /** Toggle the tooltip between open and closed. */
   toggle = () => {
-    if (this.isOpen) {
-      this.close();
-      return;
-    }
+    const isAnimating = this.#popoverEl.classList.contains("show") || this.#popoverEl.classList.contains("hide");
+    if (isAnimating) return;
+    if (this.isOpen) return this.close();
     this.open();
   };
   //#endregion

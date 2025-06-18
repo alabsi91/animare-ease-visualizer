@@ -1,6 +1,10 @@
 /* eslint-disable no-undef */
 module.exports = ctx => ({
   plugins: {
+    "./scripts/postcss-inline-vars.mjs": { rootSelector: ":host", variableRegexp: ["^--def"] },
+
+    "postcss-import": {},
+
     "postcss-preset-env": {
       browsers: ctx.browserslist,
     },

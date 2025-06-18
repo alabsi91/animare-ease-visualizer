@@ -30,6 +30,7 @@
     "./sources/components/dialog/dialog.html-data.json",
     "./sources/components/accordion/accordion.html-data.json",
     "./sources/components/slider/slider.html-data.json",
-    "./sources/components/colorPicker/colorPicker.html-data.json"
+    "./sources/components/colorPicker/colorPicker.html-data.json",
+    "./sources/components/menuTrigger/menuTrigger.html-data.json"
   ]
 }

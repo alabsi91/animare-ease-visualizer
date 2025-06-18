@@ -1,0 +1,38 @@
+{
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "anchor-component",
+      "description": {
+        "kind": "markdown",
+        "value": "# anchor-component\n\nAnchors an element to another element.\n\n- Use margins alongside CSS states on the anchored element to offset it from the anchor element.\n\n**Usage**\n\n```html\n<div class=\"anchored-element\"></div>\n\n<anchor-component anchor-element=\".anchor-element\" preferred-position-order=\"top start start, right\" autoupdate>\n  <div class=\"anchored-element\"></div>\n</anchor-component>\n\n<style>\n  anchor-component:state(top) .anchored-element {\n    margin-block-end: 2em;\n    background-color: #ff5733;\n  }\n\n  anchor-component:state(bottom) .anchored-element {\n    margin-block-start: 2em;\n    background-color: #33ff57;\n  }\n\n  anchor-component:state(left) .anchored-element {\n    margin-inline-end: 2em;\n    background-color: #3357ff;\n  }\n\n  anchor-component:state(right) .anchored-element {\n    margin-inline-start: 2em;\n    background-color: #ff33a8;\n  }\n\n  anchor-component:state(misaligned) .anchored-element {\n    display: none;\n  }\n</style>\n```\n\n**Methods**\n\n- `getAnchoredRect()` Calculates the bounding rect of the anchored element using the preferred position order.\n- `updatePosition()` Updates the anchored element position.\n- `startAutoUpdate()` Starts the automatic update of the anchored element position.\n- `stopAutoUpdate()` Stops the automatic update of the anchored element position.\n- `getAnchorPosition()` Gets the current anchor position: \"top\", \"bottom\", \"left\", \"right\", \"misaligned\" or undefined.\n- `onUpdate()` Invoked when the component is updated\n\n**Props**\n\n- `autoupdate` (Get/Set) Uses `requestAnimationFrame` to always update the position. (default: `false`)\n- `anchorElement` (Get/Set) The anchor element (reference element), can be a string selector or an element.\n- `anchoredElement` (Get/Set) The anchored element (positioned element), can be a string selector or an element. Or the direct children of\n  `anchor-component`.\n- `anchorToRect` (Set)\n- `anchorElementRect` (Get)\n- `preferredPositionOrder` (Get/Set) The preferred position area sequence. In which order to try to position the anchored element.\n\n**Attributes**\n\n- `\"anchor-element\"` The anchor element (reference element), can be a string selector or an element.\n- `\"anchored-element\"` The anchored element (positioned element), can be a string selector or an element. Or the direct children of\n  `anchor-component`.\n- `\"preferred-position-order\"` The preferred position area sequence. In which order to try to position the anchored element.\n- `\"autoupdate\"` Uses `requestAnimationFrame` to always update the position. (default: `false`)\n\n**CSS States**\n\n- `:state(top)` - When the anchored element is above the anchor element.\n- `:state(bottom)` - When the anchored element is below the anchor element.\n- `:state(left)` - When the anchored element is to the left of the anchor element.\n- `:state(right)` - When the anchored element is to the right of the anchor element.\n- `:state(misaligned)` - If the anchored element anchors incorrectly due to lack of space or invalid measurements.\n"
+      },
+      "attributes": [
+        {
+          "name": "anchor-element",
+          "description": "The anchor element (reference element), can be a string selector or an element."
+        },
+        {
+          "name": "anchored-element",
+          "description": "The anchored element (positioned element), can be a string selector or an element. Or the direct children of\n`anchor-component`."
+        },
+        {
+          "name": "preferred-position-order",
+          "description": "The preferred position area sequence. In which order to try to position the anchored element."
+        },
+        {
+          "name": "autoupdate",
+          "description": "Uses `requestAnimationFrame` to always update the position. (default: `false`)",
+          "values": [
+            {
+              "name": "true"
+            },
+            {
+              "name": "false"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

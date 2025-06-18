@@ -5,76 +5,12 @@
       "name": "menu-component",
       "description": {
         "kind": "markdown",
-        "value": "# menu-component\n\nThe menu web component is a versatile dropdown like that can be use in different ways.\n\n- The host of `<menu-component />` can't be styled directly.\n- To offset the menu, use `margin` on the `::part(container)` element.\n\n**Usage**\n\n```html\n<menu-component values=\"0\" match-trigger-width=\"true\" type=\"select\">\n  <select-option value=\"0\">Option 1</select-option>\n  <select-option value=\"1\">Option 2</select-option>\n</menu-component>\n```\n\n**Methods**\n\n- `refresh()` Force a refresh of the menu after adding/removing `select-option` elements.\n- `open()` Open and expand the menu\n- `close()` Close and collapse the menu\n- `toggle()` Toggle the menu between open and closed\n\n**Props**\n\n- `type` (Get/Set) An easy way to setup the accessibility. Defaults to `menu`.\n- `preferUpwards` (Get/Set) Prefer to open the menu above the trigger button when possible. Defaults to `false`.\n- `preferRight` (Get/Set) Prefer to open the menu to the right of the trigger button when possible. Defaults to `false`.\n- `matchTriggerWidth` (Get/Set) Match the width of the trigger button. Defaults to `false`.\n- `disabled` (Get/Set) Disable the menu trigger button. Defaults to `false`.\n- `required` (Get/Set) When used with forms.\n- `backdropClose` (Get/Set) Dismiss the menu when clicking outside the menu. Defaults to `true`.\n- `escapeClose` (Get/Set) Dismiss the menu when pressing the escape key. Defaults to `true`.\n- `closeButton` (Get/Set) Show a close button. Defaults to `false`.\n- `multiselect` (Get/Set) Enable multiselect. Defaults to `false`.\n- `value` (Get/Set) The selected value.\n- `values` (Get/Set) The selected values. when `multiselect` is `true`.\n- `valueAsType` (Get) The parsed value from the `value` attribute string.\n- `valuesAsTypes` (Get) The parsed values from the `values` attribute string.\n- `closeOnSelect` (Get/Set) Close the menu when an option is selected. Defaults to `false`.\n- `isOpen` (Get) Whether the menu is open\n- `trigger` (Get) Get the trigger button element\n\n**Events**\n\n- `open` Emitted when the menu is opened.\n- `close` Emitted when the menu is closed.\n- `change` Emitted when the value changes.\n\n**Slots**\n\n- `trigger` The menu trigger button content.\n- `Default` The content of the menu.\n\n**Attributes**\n\n- `\"values\"` The selected values separated by `;`. when `multiselect` is `true`\n- `\"prefer-upwards\"` Prefer to open the menu above the trigger button when possible. Defaults to `false`.\n- `\"prefer-right\"` Prefer to open the menu to the right of the trigger button when possible. Defaults to `false`.\n- `\"match-trigger-width\"` Match the width of the trigger button. Defaults to `false`.\n- `\"disabled\"` Disable the menu trigger button. Defaults to `false`.\n- `\"required\"` When used with forms.\n- `\"backdrop-close\"` Dismiss the menu when clicking outside the menu. Defaults to `true`.\n- `\"escape-close\"` Dismiss the menu when pressing the escape key. Defaults to `true`.\n- `\"close-button\"` Show a close button. Defaults to `false`.\n- `\"popover-role\"`\n- `\"popover-label\"`\n- `\"trigger-label\"`\n- `\"close-on-select\"` Close the menu when an option is selected. Defaults to `false`.\n- `\"style\"`\n- `\"multiselect\"` Enable multiselect. Defaults to `false`.\n- `\"value\"` The selected value.\n- `\"type\"` An easy way to setup the accessibility. Defaults to `menu`.\n\n**CSS Properties**\n\n- `--clr-background` The background color of the menu.\n- `--ease-anim` The easing function of the open/close animation.\n- `--dur-anim` The duration of the open/close animation.\n- `--clr-scrollbar` The color of the menu scrollbar.\n- `--sz-close-icon` The size of the close button svg icon.\n- `--clr-close-icon` The color of the close button svg icon.\n\n**CSS Parts**\n\n- `::part(trigger)` The menu trigger button element.\n- `::part(container)` The menu popover element.\n- `::part(close-button)` The close button element.\n\n**CSS States**\n\n- `:state(open)`\n"
+        "value": "# menu-component\n\nThe menu web component is a versatile dropdown like that can be use in different ways.\n\n- **Form associated**\n- Depends on `<anchor-component />`.\n- Optionally depends on `<menu-trigger />`.\n- The host of `<menu-component />` can't be styled directly.\n- To offset the menu, use `margin` on the `::part(container)` element.\n\n**Usage**\n\n```html\n<menu-component values=\"0\" match-trigger-width=\"true\" type=\"select\">\n  <menu-trigger slot=\"trigger\"></menu-trigger>\n  <select-option value=\"0\">Option 1</select-option>\n  <select-option value=\"1\">Option 2</select-option>\n</menu-component>\n```\n\n**Methods**\n\n- `refresh()` Force a refresh of the menu after adding/removing `select-option` elements.\n- `open(pos?: [number, number], animateUpwards?: boolean)` Open and expand the menu, optionally at a specific position.\n- `close()` Close and collapse the menu\n- `toggle(pos?: [number, number], animateUpwards?: boolean)` Toggle the menu between open and closed\n\n**Props**\n\n- `required` (Get/Set) When used with forms. (default: `false`)\n- `escapeClose` (Get/Set) Dismiss the menu when pressing the escape key. (default: `true`)\n- `closeOnSelect` (Get/Set) Close the menu when an option is selected. (default: `true`)\n- `matchTriggerWidth` (Get/Set) Menu always matches the trigger width. (default: `false`)\n- `multiselect` (Get/Set) Enable multiselect. (default: `false`)\n- `value` (Get/Set) The selected value.\n- `values` (Get/Set) The selected values. when `multiselect` is `true`.\n- `isOpen` (Get) Whether the menu is open\n- `trigger` (Get) Get the trigger button element\n\n**Events**\n\n- `valueChange` Emitted when the value changes.\n- `menuOpen` Emitted when the menu is opened.\n- `menuClose` Emitted when the menu is closed.\n\n**Slots**\n\n- `trigger`\n- `Default` The content of the menu.\n\n**Attributes**\n\n- `\"required\"` When used with forms. (default: `false`)\n- `\"escape-close\"` Dismiss the menu when pressing the escape key. (default: `true`)\n- `\"popover-role\"`\n- `\"popover-label\"`\n- `\"close-on-select\"` Close the menu when an option is selected. (default: `true`)\n- `\"match-trigger-width\"` Menu always matches the trigger width. (default: `false`)\n- `\"multiselect\"` Enable multiselect. (default: `false`)\n- `\"value\"` The selected value.\n- `\"values\"` The selected values separated by `;`. when `multiselect` is `true`\n- `\"type\"` An easy way to setup the accessibility `\"select\" | \"menu\" | \"dialog\"`. (default: `\"menu\"`)\n\n**CSS Properties**\n\n- `--ui-clr-surface-1` The background color of the menu.\n- `--ui-clr-border` The border color of the menu.\n- `--ui-sz-border-thin` The border width of the menu.\n- `--ui-rad-border-md` The border radius of the menu.\n- `--ui-shadow` The shadow of the menu.\n- `--ui-ease-anim-forward` The easing function of the open animation.\n- `--ui-ease-anim-backward` The easing function of the close animation.\n- `--ui-dur-anim-forward` The duration of the open animation.\n- `--ui-dur-anim-backward` The duration of the close animation.\n\n**CSS Parts**\n\n- `::part(container)` The menu popover element.\n- `::part(trigger)` The menu-trigger custom element slot.\n\n**CSS States**\n\n- `:state(open)`\n"
       },
       "attributes": [
         {
-          "name": "values",
-          "description": "The selected values separated by `;`. when `multiselect` is `true`"
-        },
-        {
-          "name": "prefer-upwards",
-          "description": "Prefer to open the menu above the trigger button when possible. Defaults to `false`.",
-          "values": [
-            {
-              "name": "true"
-            },
-            {
-              "name": "false"
-            }
-          ]
-        },
-        {
-          "name": "prefer-right",
-          "description": "Prefer to open the menu to the right of the trigger button when possible. Defaults to `false`.",
-          "values": [
-            {
-              "name": "true"
-            },
-            {
-              "name": "false"
-            }
-          ]
-        },
-        {
-          "name": "match-trigger-width",
-          "description": "Match the width of the trigger button. Defaults to `false`.",
-          "values": [
-            {
-              "name": "true"
-            },
-            {
-              "name": "false"
-            }
-          ]
-        },
-        {
-          "name": "disabled",
-          "description": "Disable the menu trigger button. Defaults to `false`.",
-          "values": [
-            {
-              "name": "true"
-            },
-            {
-              "name": "false"
-            }
-          ]
-        },
-        {
           "name": "required",
-          "description": "When used with forms.",
-          "values": [
-            {
-              "name": "true"
-            },
-            {
-              "name": "false"
-            }
-          ]
-        },
-        {
-          "name": "backdrop-close",
-          "description": "Dismiss the menu when clicking outside the menu. Defaults to `true`.",
+          "description": "When used with forms. (default: `false`)",
           "values": [
             {
               "name": "true"
@@ -86,19 +22,7 @@
         },
         {
           "name": "escape-close",
-          "description": "Dismiss the menu when pressing the escape key. Defaults to `true`.",
-          "values": [
-            {
-              "name": "true"
-            },
-            {
-              "name": "false"
-            }
-          ]
-        },
-        {
-          "name": "close-button",
-          "description": "Show a close button. Defaults to `false`.",
+          "description": "Dismiss the menu when pressing the escape key. (default: `true`)",
           "values": [
             {
               "name": "true"
@@ -115,11 +39,8 @@
           "name": "popover-label"
         },
         {
-          "name": "trigger-label"
-        },
-        {
           "name": "close-on-select",
-          "description": "Close the menu when an option is selected. Defaults to `false`.",
+          "description": "Close the menu when an option is selected. (default: `true`)",
           "values": [
             {
               "name": "true"
@@ -130,11 +51,20 @@
           ]
         },
         {
-          "name": "style"
+          "name": "match-trigger-width",
+          "description": "Menu always matches the trigger width. (default: `false`)",
+          "values": [
+            {
+              "name": "true"
+            },
+            {
+              "name": "false"
+            }
+          ]
         },
         {
           "name": "multiselect",
-          "description": "Enable multiselect. Defaults to `false`.",
+          "description": "Enable multiselect. (default: `false`)",
           "values": [
             {
               "name": "true"
@@ -149,8 +79,12 @@
           "description": "The selected value."
         },
         {
+          "name": "values",
+          "description": "The selected values separated by `;`. when `multiselect` is `true`"
+        },
+        {
           "name": "type",
-          "description": "An easy way to setup the accessibility. Defaults to `menu`.",
+          "description": "An easy way to setup the accessibility `\"select\" | \"menu\" | \"dialog\"`. (default: `\"menu\"`)",
           "values": [
             {
               "name": "menu"

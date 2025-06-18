@@ -1,12 +1,23 @@
+@import url("../wcp-default-styles.css");
+
 :host {
-  /* The background color of the option element. */
-  --clr-background: #333;
+  /*
+    The background color of the option element.
+    @name --ui-clr-surface-1
+  */
+  --wcp-clr-background: var(--ui-clr-surface-1, var(--def-clr-surface-1));
 
-  /* The background color of the option element when it is active. */
-  --clr-active: #2196f3;
+  /*
+    The background color of the option element when it is active.
+    @name --ui-clr-accent
+  */
+  --wcp-clr-active: var(--ui-clr-accent, var(--def-clr-accent));
 
-  /* The background color of the option element when it is hovered. */
-  --clr-hover: #3b3b3b;
+  /*
+    The background color of the option element when it is hovered.
+    @name --ui-clr-surface-2
+  */
+  --wcp-clr-hover: var(--ui-clr-surface-2, var(--def-clr-surface-2));
 
   display: block;
 }
@@ -33,12 +44,12 @@
 
 .option[aria-selected="true"],
 .option[aria-checked="true"] {
-  background-color: var(--clr-active);
+  background-color: var(--wcp-clr-active);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .option:not([aria-selected="true"], [aria-checked="true"]):hover {
-    background-color: var(--clr-hover);
+    background-color: var(--wcp-clr-hover);
   }
 }
 

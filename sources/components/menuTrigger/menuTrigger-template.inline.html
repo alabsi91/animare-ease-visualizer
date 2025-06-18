@@ -1,0 +1,10 @@
+<!-- @part - The menu trigger button element. -->
+<button type="button" class="trigger" part="trigger" aria-expanded="false" aria-owns="popover" aria-label="Open menu">
+  <!-- @slot - The menu trigger button content. -->
+  <slot name="trigger-content">
+    <span id="trigger-label">Menu</span>
+    <svg class="trigger-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+      <path d="M480-360 280-560h400L480-360Z" />
+    </svg>
+  </slot>
+</button>

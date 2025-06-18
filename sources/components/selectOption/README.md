@@ -15,26 +15,22 @@ The select option component is made to be used with `menu-component` but also it
 
 **Methods**
 
-- `focus(options?: FocusOptions)` Focus the option element.
 - `toggleSelected()` Toggle the option selected state.
+- `focus(options?: FocusOptions)` Focus the option element.
 - `click()` Fire the option click event manually.
 
 **Props**
 
-- `type` (Get/Set) The type for accessibility. Defaults to `option`.
 - `value` (Get/Set) The value of the option.
-- `valueAsType` (Get/Set) The parsed value from the `value` attribute string.
-- `valueType` (Get/Set) The type of the value. Defaults to `string`.
-- `selected` (Get/Set) Selected. Defaults to `false`.
-- `disabled` (Get/Set) Disabled. Defaults to `false`.
+- `selected` (Get/Set) Whether the option is selected or not. (default: `false`)
+- `disabled` (Get/Set) Whether the option is disabled or not. (default: `false`)
 - `label` (Get/Set) The label of the option.
 - `onclick` (Set) Set the click event handler.
 - `onkeydown` (Set) Set the keydown event handler.
-- `data` (Get/Set) The data of the option.
 
 **Events**
 
-- `change` Fired when `value` or `selected` is changed.
+- `valueChange` Fired when `value` or `selected` is changed.
 
 **Slots**
 
@@ -43,17 +39,16 @@ The select option component is made to be used with `menu-component` but also it
 **Attributes**
 
 - `"value"` The value of the option.
-- `"value-type"` The type of the value. Defaults to `string`.
 - `"label"` The label of the option.
-- `"selected"` Selected. Defaults to `false`.
-- `"disabled"` Disabled. Defaults to `false`.
-- `"type"` The type for accessibility. Defaults to `option`.
+- `"selected"` Whether the option is selected or not. (default: `false`)
+- `"disabled"` Whether the option is disabled or not. (default: `false`)
+- `"type"` The type for accessibility `"option" | "radio" | "checkbox"`. (default: `"option"`)
 
 **CSS Properties**
 
-- `--clr-background` The background color of the option element.
-- `--clr-active` The background color of the option element when it is active.
-- `--clr-hover` The background color of the option element when it is hovered.
+- `--ui-clr-surface-1` The background color of the option element.
+- `--ui-clr-accent` The background color of the option element when it is active.
+- `--ui-clr-surface-2` The background color of the option element when it is hovered.
 
 **CSS Parts**
 
@@ -61,6 +56,6 @@ The select option component is made to be used with `menu-component` but also it
 
 **CSS States**
 
-- `:state(disabled)`
-- `:state(selected)`
-- `:state(checked)`
+- `:state(selected)` The option is selected.
+- `:state(checked)` The option is checked.
+- `:state(disabled)` The option is disabled.

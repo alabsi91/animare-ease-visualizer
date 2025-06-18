@@ -10,6 +10,17 @@ A dialog web component.
 - Use the `"dialog-close"` attribute and give it the id of the dialog on a button element to automatically attach an event
   listener to close the dialog.
 
+**Usage**
+
+```html
+<button class="button" dialog-toggle="dialog">Open Dialog</button>
+
+<dialog-component id="dialog" aria-label="Example Dialog">
+  <p class="dialog-title">Dialog Title</p>
+  <p class="dialog-content">Dialog Content</p>
+</dialog-component>
+```
+
 **Methods**
 
 - `open()` Open the dialog
@@ -18,16 +29,17 @@ A dialog web component.
 
 **Props**
 
-- `backdropClose` (Get/Set) Dismiss the dialog when clicking outside the dialog. Defaults to `true`.
-- `escapeClose` (Get/Set) Dismiss the dialog when pressing the escape key. Defaults to `true`.
-- `closeButton` (Get/Set) Show a close button. Defaults to `true`.
+- `backdropClose` (Get/Set) Dismiss the dialog when clicking outside the dialog. (default: `false`)
+- `escapeClose` (Get/Set) Dismiss the dialog when pressing the escape key. (default: `true`)
+- `closeButton` (Get/Set) Show a close button. (default: `true`)
 - `isOpen` (Get) True when the dialog is open.
 - `dialog` (Get) The underlying dialog element.
 
 **Events**
 
-- `open` Event fired when the dialog is opened.
-- `close` Event fired when the dialog is closed.
+- `opened` Event fired when the dialog is opened.
+- `dismissed` Event fired when the dialog is closed.
+- `stateChanged` Event fired when the dialog is opened or closed.
 
 **Slots**
 
@@ -36,17 +48,22 @@ A dialog web component.
 
 **Attributes**
 
-- `"backdrop-close"` Dismiss the dialog when clicking outside the dialog. Defaults to `true`.
-- `"escape-close"` Dismiss the dialog when pressing the escape key. Defaults to `true`.
-- `"close-button"` Show a close button. Defaults to `true`.
+- `"backdrop-close"` Dismiss the dialog when clicking outside the dialog. (default: `false`)
+- `"escape-close"` Dismiss the dialog when pressing the escape key. (default: `true`)
+- `"close-button"` Show a close button. (default: `true`)
 
 **CSS Properties**
 
-- `--sz-close-icon` The size of the close button svg icon.
-- `--clr-close-icon` The color of the close button svg icon.
-- `--dur-anim` The duration of the open/close animation.
-- `--clr-backdrop` The color of the dialog backdrop.
-- `--clr-background` The color of the dialog background.
+- `--ui-clr-surface-1` The color of the dialog background.
+- `--ui-clr-backdrop` The color of the dialog backdrop.
+- `--ui-shadow` The shadow of the dialog.
+- `--ui-rad-border-lg` The border radius of the dialog.
+- `--ui-sz-icon-md` The size of the close button svg icon.
+- `--ui-clr-text` The color of the close button svg icon.
+- `--ui-dur-anim-forward` The duration for the reveal animation.
+- `--ui-dur-anim-backward` The duration for the dismiss animation.
+- `--ui-ease-anim-forward` The easing function for the reveal animation.
+- `--ui-ease-anim-backward` The easing function for the dismiss animation.
 
 **CSS Parts**
 

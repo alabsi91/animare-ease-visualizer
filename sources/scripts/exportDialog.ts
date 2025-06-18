@@ -30,7 +30,7 @@ function getElement<T extends HTMLElement>(selector: string): T {
 
 const exportElements = {
   cssKeyframes: {
-    dialog: getElement<HTMLDialogElement>("#export-css-keyframe-dialog"),
+    dialog: getElement<DialogComponent>("#export-css-keyframe-dialog"),
     inputsContainer: getElement<HTMLDivElement>("#export-css-keyframe-inputs-container"),
     propertyInput: getElement<CodeEditor>("#export-css-keyframe-property"),
     samplesInput: getElement<HTMLInputElement>("#export-css-keyframe-samples"),
@@ -41,7 +41,7 @@ const exportElements = {
     copyBtn: getElement<HTMLButtonElement>("#export-css-keyframe-copy-btn"),
   },
   cssLinear: {
-    exportCssLinearDialog: getElement<HTMLDialogElement>("#export-css-linear-dialog"),
+    exportCssLinearDialog: getElement<DialogComponent>("#export-css-linear-dialog"),
     samplesInput: getElement<HTMLInputElement>("#export-css-linear-samples"),
     nameInput: getElement<HTMLInputElement>("#export-css-linear-name"),
     codePreview: getElement<CodeEditor>("#export-css-linear-code-preview"),
@@ -49,7 +49,7 @@ const exportElements = {
     copyBtn: getElement<HTMLButtonElement>("#export-css-linear-copy-btn"),
   },
   jsFunction: {
-    exportJsFunctionDialog: getElement<HTMLDialogElement>("#export-js-function-dialog"),
+    exportJsFunctionDialog: getElement<DialogComponent>("#export-js-function-dialog"),
     samplesInput: getElement<HTMLInputElement>("#export-js-function-samples"),
     nameInput: getElement<HTMLInputElement>("#export-js-function-name"),
     codePreview: getElement<CodeEditor>("#export-js-function-code-preview"),
@@ -57,7 +57,7 @@ const exportElements = {
     downloadBtn: getElement<HTMLButtonElement>("#export-js-function-download-btn"),
   },
   svgCode: {
-    exportSvgDialog: getElement<HTMLDialogElement>("#export-svg-dialog"),
+    exportSvgDialog: getElement<DialogComponent>("#export-svg-dialog"),
     scaleInput: getElement<HTMLInputElement>("#export-svg-scale"),
     codePreview: getElement<CodeEditor>("#export-svg-code-preview"),
     copyBtn: getElement<HTMLButtonElement>("#export-svg-copy-btn"),
@@ -70,8 +70,8 @@ export function initCssKeyframeExport() {
   exportElements.cssKeyframes.propertyInput.highlighter = cssHighlighter;
   exportElements.cssKeyframes.codePreview.highlighter = cssHighlighter;
 
-  exportElements.cssKeyframes.dialog.addEventListener("open", generateCssKeyframesCode);
-  exportElements.cssKeyframes.propertyInput.addEventListener("input", generateCssKeyframesCode);
+  exportElements.cssKeyframes.dialog.addEventListener("opened", generateCssKeyframesCode);
+  exportElements.cssKeyframes.propertyInput.addEventListener("update", generateCssKeyframesCode);
   exportElements.cssKeyframes.samplesInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.cssKeyframes.fromInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.cssKeyframes.toInput.addEventListener("input", generateCssKeyframesCode);
@@ -164,7 +164,7 @@ function copyCssKeyframesCodeHandler() {
 export function initCssLinearExport() {
   exportElements.cssLinear.codePreview.highlighter = cssHighlighter;
 
-  exportElements.cssLinear.exportCssLinearDialog.addEventListener("open", generateCssLinearCode);
+  exportElements.cssLinear.exportCssLinearDialog.addEventListener("opened", generateCssLinearCode);
   exportElements.cssLinear.samplesInput.addEventListener("input", generateCssLinearCode);
   exportElements.cssLinear.nameInput.addEventListener("input", generateCssLinearCode);
   exportElements.cssLinear.copyBtn.addEventListener("click", copyCssLinearCodeHandler);
@@ -228,7 +228,7 @@ function copyCssLinearCodeHandler() {
 export function initJsFunctionExport() {
   exportElements.jsFunction.codePreview.highlighter = jsHighlighter;
 
-  exportElements.jsFunction.exportJsFunctionDialog.addEventListener("open", generateJsFunctionCode);
+  exportElements.jsFunction.exportJsFunctionDialog.addEventListener("opened", generateJsFunctionCode);
   exportElements.jsFunction.samplesInput.addEventListener("input", generateJsFunctionCode);
   exportElements.jsFunction.nameInput.addEventListener("input", generateJsFunctionCode);
   exportElements.jsFunction.copyBtn.addEventListener("click", copyJsFunctionCodeHandler);
@@ -292,7 +292,7 @@ function copyJsFunctionCodeHandler() {
 export function initSvgCodeExport() {
   exportElements.svgCode.codePreview.highlighter = htmlHighlighter;
 
-  exportElements.svgCode.exportSvgDialog.addEventListener("open", generateSvgCode);
+  exportElements.svgCode.exportSvgDialog.addEventListener("opened", generateSvgCode);
   exportElements.svgCode.scaleInput.addEventListener("input", generateSvgCode);
   exportElements.svgCode.copyBtn.addEventListener("click", copySvgCodeHandler);
   exportElements.svgCode.downloadBtn.addEventListener("click", downloadSvg);

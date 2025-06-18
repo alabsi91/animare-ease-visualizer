@@ -1,132 +1,117 @@
+@import url("../wcp-default-styles.css");
+
 :host {
-  /* The background color of the menu. */
-  --clr-background: #333;
+  /*
+    The background color of the menu.
+    @name --ui-clr-surface-1
+  */
+  --wcp-clr-background: var(--ui-clr-surface-1, var(--def-clr-surface-1));
 
-  /* The easing function of the open/close animation. */
-  --ease-anim: ease-out;
+  /*
+    The border color of the menu.
+    @name --ui-clr-border
+  */
+  --wcp-clr-border: var(--ui-clr-border, var(--def-clr-border));
 
-  /* The duration of the open/close animation. */
-  --dur-anim: 0.2s;
+  /*
+    The border width of the menu.
+    @name --ui-sz-border-thin
+  */
+  --wcp-sz-border: var(--ui-sz-border-thin, var(--def-sz-border-thin));
 
-  /* The color of the menu scrollbar. */
-  --clr-scrollbar: #292929;
+  /*
+    The border radius of the menu.
+    @name --ui-rad-border-md
+  */
+  --wcp-rad-border: var(--ui-rad-border-md, var(--def-rad-border-md));
 
-  /* The size of the close button svg icon. */
-  --sz-close-icon: 24px;
+  /*
+    The shadow of the menu.
+    @name --ui-shadow
+  */
+  --wcp-shadow: var(--ui-shadow, var(--def-shadow));
 
-  /* The color of the close button svg icon. */
-  --clr-close-icon: currentcolor;
+  /*
+    The easing function of the open animation.
+    @name --ui-ease-anim-forward
+  */
+  --wcp-ease-anim-open: var(--ui-ease-anim-forward, var(--def-ease-anim-forward));
+
+  /*
+    The easing function of the close animation.
+    @name --ui-ease-anim-backward
+  */
+  --wcp-ease-anim-close: var(--ui-ease-anim-backward, var(--def-ease-anim-backward));
+
+  /*
+    The duration of the open animation.
+    @name --ui-dur-anim-forward
+  */
+  --wcp-dur-anim-open: var(--ui-dur-anim-forward, var(--def-dur-anim-forward));
+
+  /*
+    The duration of the close animation.
+    @name --ui-dur-anim-backward
+  */
+  --wcp-dur-anim-close: var(--ui-dur-anim-backward, var(--def-dur-anim-backward));
 
   display: contents;
 
   @media (prefers-reduced-motion) {
-    --dur-anim: 0s;
+    --wcp-dur-anim-open: 0s;
   }
 }
 
 .popover {
+  --anim-to-block-size: 0px;
+  --anim-from-translate-y: 0px;
+
   box-sizing: border-box;
-  padding: 0;
+  padding: 0.5em;
   margin: 1rem 0;
   overflow: hidden auto;
   overscroll-behavior: contain;
-  background-color: var(--clr-background);
-  border: solid 1px rgb(255 255 255 / 10%);
-  border-radius: 12px;
-  box-shadow: 5px 5px 7px -6px rgb(0 0 0 / 55%);
+  background-color: var(--wcp-clr-background);
+  border: solid var(--wcp-sz-border) var(--wcp-clr-border);
+  border-radius: var(--wcp-rad-border);
+  box-shadow: var(--wcp-shadow);
+}
+
+.show {
+  animation: show var(--wcp-dur-anim-open) var(--wcp-ease-anim-open) backwards;
+}
+
+.hide {
+  animation: show var(--wcp-dur-anim-close) var(--wcp-ease-anim-close) reverse backwards;
+}
+
+anchor-component:state(misaligned) .popover {
+  background-color: red;
+}
+
+@keyframes show {
+  from {
+    block-size: 0;
+    opacity: 0;
+    transform: translateY(var(--anim-from-translate-y));
+  }
+
+  to {
+    block-size: var(--anim-to-block-size);
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .popover::backdrop {
   display: none;
-  background: rgb(0 0 0 / 40%);
   opacity: 0;
-  backdrop-filter: blur(0);
-  transition-timing-function: ease;
-  transition-duration: var(--dur-anim);
-  transition-property: opacity, backdrop-filter;
-}
-
-/* stylelint-disable-next-line selector-type-no-unknown */
-:host(:state(open)) {
-  .popover::backdrop {
-    opacity: 1;
-
-    @starting-style {
-      opacity: 0;
-    }
-  }
-}
-
-.trigger {
-  padding: 0.5rem;
-  cursor: pointer;
-  background-color: #3b3b3b;
-  border: solid 1px rgb(255 255 255 / 10%);
-  border-radius: 4px;
-  transition: background-color 200ms linear;
-
-  @media (prefers-reduced-motion) {
-    transition: none;
-  }
-
-  &[aria-disabled="true"] {
-    cursor: unset;
-    opacity: 0.5;
-  }
-
-  &:not([aria-disabled="true"]):hover {
-    background-color: #333;
-  }
-}
-
-.popover .close-button {
-  inset-block-start: 10px;
-  inset-inline-end: 10px;
-  float: inline-end;
-  display: grid;
-  place-items: center;
-  padding: 0.2rem;
-  cursor: pointer;
-  background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  transition: background-color 200ms ease-in-out;
-
-  @media (prefers-reduced-motion) {
-    transition: none;
-  }
-
-  svg {
-    inline-size: var(--sz-close-icon);
-    block-size: var(--sz-close-icon);
-    fill: var(--clr-close-icon);
-  }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .popover .close-button:hover {
-    background-color: hsl(from var(--clr-close-icon) h s l / 10%);
-  }
-
   @supports (scrollbar-width: thin) {
     .popover {
-      scrollbar-color: var(--clr-scrollbar);
       scrollbar-width: thin;
     }
-  }
-
-  .popover::-webkit-scrollbar {
-    inline-size: 6px;
-  }
-
-  .popover::-webkit-scrollbar-track {
-    margin: 10px;
-    background: transparent;
-  }
-
-  .popover::-webkit-scrollbar-thumb {
-    background: var(--clr-scrollbar);
-    border: none;
-    border-radius: 10px;
   }
 }

@@ -1,0 +1,52 @@
+/* 
+  - The default values for the web components.
+  - These values will be inlined during the build process.
+*/
+
+:host {
+  --def-clr-accent: #2196f3;
+  --def-clr-neutral: #aaa;
+  --def-clr-surface-1: #333;
+  --def-clr-surface-2: #282828;
+  --def-clr-backdrop: #0000008c;
+  --def-clr-thumb: #fff;
+
+  /* - */
+  --def-clr-text: #f0f0f0;
+  --def-clr-text-muted: #d0d0d0;
+  --def-clr-text-on-accent: #f0f0f0;
+
+  /* - */
+  --def-clr-error: #f44336;
+  --def-clr-info: #2196f3;
+  --def-clr-success: #4caf50;
+  --def-clr-warning: #f90;
+
+  /* - */
+  --def-clr-border: #3c3c3c;
+  --def-rad-border-sm: 0.2em;
+  --def-rad-border-md: 0.5em;
+  --def-rad-border-lg: 0.8em;
+  --def-rad-border-circle: 9999px;
+  --def-sz-border-thin: 1px;
+  --def-sz-border-thick: 2px;
+
+  /* - */
+  --def-gap-sm: 0.5em;
+  --def-gap-md: 1em;
+  --def-gap-lg: 1.5em;
+
+  /* - */
+  --def-sz-icon-sm: 1em;
+  --def-sz-icon-md: 1.5em;
+  --def-sz-icon-lg: 2em;
+
+  /* - */
+  --def-dur-anim-forward: 0.3s;
+  --def-dur-anim-backward: 0.3s;
+  --def-ease-anim-forward: ease-in-out;
+  --def-ease-anim-backward: ease-in-out;
+
+  /* - */
+  --def-shadow: 0 0.1rem 1rem -0.5rem #0006;
+}

@@ -5,7 +5,7 @@
       "name": "slider-component",
       "description": {
         "kind": "markdown",
-        "value": "# slider-component\n\nA wrapper around `<input type=\"range\" />` that allow custom styling.\n\n**Props**\n\n- `input` (Get) Get the underlying `<input type=\"range\" />` element\n- `value` (Get/Set) The current value. Defaults to `50`.\n- `min` (Get/Set) The minimum value. Defaults to `0`.\n- `max` (Get/Set) The maximum value. Defaults to `100`.\n- `step` (Get/Set) Step per value update. Defaults to `1`.\n- `percentage` (Get/Set) The current value as a percentage `(0-100)`.\n- `disabled` (Get/Set) Disabled. Defaults to `false`.\n\n**Events**\n\n- `change` Fired when the value is changed.\n\n**Slots**\n\n- `Default` For the `<datalist>` element.\n\n**Attributes**\n\n- `\"label\"` The label of the slider.\n- `\"aria-label\"` Forwarded to the `<input>` element.\n- `\"list\"` The id of the `<datalist>` element.\n- `\"min\"` The minimum value. Defaults to `0`.\n- `\"max\"` The maximum value. Defaults to `100`.\n- `\"value\"` The current value. Defaults to `50`.\n- `\"step\"` Step per value update. Defaults to `1`.\n- `\"disabled\"` Disabled. Defaults to `false`.\n\n**CSS Properties**\n\n- `--ease-anim`\n- `--ease-active-anim` The easing function of the slider animation when it's active.\n- `--dur-anim` The duration of the slider animation when it's not active.\n- `--dur-anim-active` The duration of the slider animation when it is active.\n- `--sz-thickness` The thickness of the slider.\n- `--sz-thumb` The size of the slider thumb.\n- `--clr-thumb` The background color of the slider thumb.\n- `--clr-filled` The background color of filled part of the slider track.\n- `--clr-empty` The color of the empty part of the slider track.\n- `--scale-by` The scale of the slider when it is active.\n- `--is-rtl` Whether to use the RTL direction. Use `-1` for `false` and `1` for `true`. The component will detect the direction automatically.\n\n**CSS Parts**\n\n- `::part(container)` The slider container element\n- `::part(track)` The slider track element\n- `::part(fill)` The slider fill element\n- `::part(thumb)` The slider thumb element\n- `::part(input)` The underlying range input element\n- `::part(bubble)` The bubble element\n\n**CSS States**\n\n- `:state(active)`\n"
+        "value": "# slider-component\n\nA wrapper around `<input type=\"range\" />` that allow custom styling.\n\n**Usage**\n\n```html\n<slider-component label=\"Slider Label:\" list=\"values\" step=\"1\">\n  <datalist id=\"values\">\n    <option value=\"0\" label=\"0\"></option>\n    <option value=\"25\" label=\"25\"></option>\n    <option value=\"50\" label=\"50\"></option>\n    <option value=\"75\" label=\"75\"></option>\n    <option value=\"100\" label=\"100\"></option>\n  </datalist>\n</slider-component>\n```\n\n**Props**\n\n- `input` (Get) Get the underlying `<input type=\"range\" />` element\n- `value` (Get/Set) The current value. (defaults: `50`).\n- `min` (Get/Set) The minimum value. (defaults: `0`).\n- `max` (Get/Set) The maximum value. (defaults: `100`).\n- `step` (Get/Set) Step per value update. (defaults: `1`).\n- `percentage` (Get/Set) The current value as a percentage `(0-100)`.\n- `disabled` (Get/Set) Whether the slider is disabled. (default: `false`)\n\n**Events**\n\n- `valueChange` Fired when the value is changed.\n\n**Slots**\n\n- `Default` For the `<datalist>` element.\n\n**Attributes**\n\n- `\"label\"` The label of the slider.\n- `\"aria-label\"` Forwarded to the `<input>` element.\n- `\"min\"` The minimum value. (defaults: `0`).\n- `\"max\"` The maximum value. (defaults: `100`).\n- `\"value\"` The current value. (defaults: `50`).\n- `\"step\"` Step per value update. (defaults: `1`).\n- `\"list\"` The id of the `<datalist>` element.\n- `\"disabled\"` Whether the slider is disabled. (default: `false`)\n\n**CSS Properties**\n\n- `--ui-ease-anim-forward` he easing function of the slider animation when it's active.\n- `--ui-ease-anim-backward` The easing function of the slider animation when it's not active.\n- `--ui-dur-anim-backward` The duration of the slider animation when it's not active.\n- `--ui-dur-anim-forward` The duration of the slider animation when it is active.\n- `--ui-clr-thumb` The background color of the slider thumb.\n- `--ui-clr-text` The color of the slider text.\n- `--ui-clr-accent` The background color of filled part of the slider track.\n- `--ui-clr-neutral` The color of the empty part of the slider track.\n- `--ui-shadow` The shadow of the slider and the thumb.\n- `--wcp-sz-thickness` The thickness of the slider.\n- `--wcp-sz-thumb` The size of the slider thumb.\n- `--wcp-scale-by` The scale of the slider when it is active.\n- `--wcp-is-rtl` Whether to use the RTL direction. Use `-1` for `false` and `1` for `true`. The component will detect the direction automatically.\n\n**CSS Parts**\n\n- `::part(container)` The slider container element\n- `::part(track)` The slider track element\n- `::part(fill)` The slider fill element\n- `::part(thumb)` The slider thumb element\n- `::part(input)` The underlying range input element\n- `::part(bubble)` The bubble element\n\n**CSS States**\n\n- `:state(active)`\n"
       },
       "attributes": [
         {
@@ -17,28 +17,28 @@
           "description": "Forwarded to the `<input>` element."
         },
         {
+          "name": "min",
+          "description": "The minimum value. (defaults: `0`)."
+        },
+        {
+          "name": "max",
+          "description": "The maximum value. (defaults: `100`)."
+        },
+        {
+          "name": "value",
+          "description": "The current value. (defaults: `50`)."
+        },
+        {
+          "name": "step",
+          "description": "Step per value update. (defaults: `1`)."
+        },
+        {
           "name": "list",
           "description": "The id of the `<datalist>` element."
         },
         {
-          "name": "min",
-          "description": "The minimum value. Defaults to `0`."
-        },
-        {
-          "name": "max",
-          "description": "The maximum value. Defaults to `100`."
-        },
-        {
-          "name": "value",
-          "description": "The current value. Defaults to `50`."
-        },
-        {
-          "name": "step",
-          "description": "Step per value update. Defaults to `1`."
-        },
-        {
           "name": "disabled",
-          "description": "Disabled. Defaults to `false`.",
+          "description": "Whether the slider is disabled. (default: `false`)",
           "values": [
             {
               "name": "true"

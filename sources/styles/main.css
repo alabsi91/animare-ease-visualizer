@@ -8,14 +8,14 @@ main {
   inline-size: 100%;
   block-size: 1px;
   margin-block: 1em;
-  background-color: var(--clr-border);
+  background-color: var(--clr-divider);
 }
 
 .menu-divider {
   inline-size: 100%;
   block-size: 1px;
   margin-block: 0.5em;
-  background-color: var(--clr-border);
+  background-color: var(--clr-divider);
 }
 
 .side-panel {
@@ -25,7 +25,7 @@ main {
   block-size: 100dvh;
   overflow: auto;
   background-color: var(--clr-navigation-background);
-  border-inline-end: solid 1px var(--clr-border);
+  border-inline-end: solid 1px var(--clr-divider);
   box-shadow: 2px 0 7px #00000024;
   backdrop-filter: blur(1px);
   transform: translateY(0);
@@ -42,7 +42,7 @@ main {
   block-size: 100dvh;
   overflow: hidden;
   background-color: var(--clr-navigation-background);
-  border-inline-end: solid 1px var(--clr-border);
+  border-inline-end: solid 1px var(--clr-divider);
   box-shadow: 2px 0 7px #00000024;
   backdrop-filter: blur(1px);
 
@@ -72,7 +72,7 @@ main {
       display: block;
       inline-size: 1.5em;
       block-size: 1.5em;
-      fill: #fff;
+      fill: var(--clr-pure);
     }
   }
 }
@@ -110,7 +110,7 @@ main {
     display: block;
     inline-size: 36px;
     block-size: 36px;
-    fill: #fff;
+    fill: var(--clr-pure);
   }
 }
 
@@ -152,7 +152,7 @@ main {
     .control-btn-icon {
       inline-size: 1.5em;
       block-size: 1.5em;
-      fill: #fff;
+      fill: var(--clr-pure);
     }
   }
 }
@@ -182,7 +182,7 @@ main {
     display: block;
     inline-size: 36px;
     block-size: 36px;
-    fill: #fff;
+    fill: var(--clr-pure);
   }
 }
 
@@ -202,21 +202,6 @@ main {
     display: block;
     flex: 1;
     white-space: nowrap;
-  }
-}
-
-.menu-custom-trigger {
-  position: relative;
-
-  svg {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 0;
-    display: block;
-    inline-size: 28px;
-    block-size: 28px;
-    fill: var(--clr-text);
-    transform: translateY(-50%);
   }
 }
 
@@ -241,7 +226,7 @@ main {
   display: block;
   flex: 0.5;
   padding: 0.5em;
-  color: #fff;
+  color: var(--clr-pure);
   cursor: pointer;
   background-color: var(--clr-accent);
   border: unset;
@@ -253,8 +238,53 @@ main {
   }
 }
 
+.contact-us-menu {
+  menu-trigger::part(trigger) {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+  }
+
+  .contact-us-custom-trigger svg {
+    display: block;
+    inline-size: 36px;
+    block-size: 36px;
+    fill: var(--clr-pure);
+  }
+
+  .contact-us-link {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+    padding: 0.5em;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 100ms ease;
+  }
+
+  a:visited {
+    color: var(--clr-pure);
+  }
+
+  .contact-us-link:hover {
+    background-color: #3b3b3b;
+  }
+
+  .contact-us-link span {
+    flex: 1;
+  }
+
+  .contact-us-link svg {
+    display: block;
+    inline-size: 24px;
+    block-size: 24px;
+    fill: var(--clr-text);
+  }
+}
+
 .export-menu {
-  &::part(trigger) {
+  menu-trigger::part(trigger) {
     padding: 0.5em;
     font-size: 1rem;
     cursor: pointer;
@@ -273,16 +303,17 @@ main {
     flex: 1;
     flex-direction: row;
     align-items: center;
+    color: var(--clr-pure);
+    border: solid 1px transparent;
 
     span {
       flex: 1;
-      padding: 0 0.5em;
     }
 
     .export-trigger-btn-icon {
-      inline-size: 1.5em;
-      block-size: 1.5em;
-      fill: #fff;
+      inline-size: 1em;
+      block-size: 1em;
+      fill: currentcolor;
     }
   }
 
@@ -299,25 +330,10 @@ main {
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: #3b3b3b;
+        background-color: var(--clr-input);
       }
     }
   }
-}
-
-.presets-menu::part(trigger) {
-  display: block;
-  flex: 1;
-  padding: 0.5em;
-  font-size: 1rem;
-  color: var(--clr-text);
-  background-color: var(--clr-input);
-}
-
-.presets-menu:state(open)::part(trigger) {
-  color: hsl(from var(--clr-text) h s calc(l * 1.2));
-  background-color: var(--clr-input-active);
-  border-color: var(--clr-accent);
 }
 
 .preset-delete-btn {
@@ -331,56 +347,11 @@ main {
     background-color: #000;
   }
 
-  svg {
+  .preset-delete-icon {
     display: block;
     inline-size: 24px;
     block-size: 24px;
-    fill: currentcolor;
-  }
-}
-
-.contact-us-menu {
-  &::part(trigger) {
-    padding: 0;
-    background-color: transparent;
-    border: none;
-  }
-
-  .contact-us-custom-trigger svg {
-    display: block;
-    inline-size: 36px;
-    block-size: 36px;
-    fill: #fff;
-  }
-
-  .contact-us-link {
-    display: flex;
-    flex-direction: row;
-    gap: 1em;
-    align-items: center;
-    padding: 0.5em;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 100ms ease;
-  }
-
-  a:visited {
-    color: #fff;
-  }
-
-  .contact-us-link:hover {
-    background-color: #3b3b3b;
-  }
-
-  .contact-us-link span {
-    flex: 1;
-  }
-
-  .contact-us-link svg {
-    display: block;
-    inline-size: 24px;
-    block-size: 24px;
-    fill: var(--clr-text);
+    fill: var(--clr-pure);
   }
 }
 

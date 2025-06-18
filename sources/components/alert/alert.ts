@@ -1,10 +1,10 @@
-import type { IWebComponent, WComponent } from "../wc";
+import * as WCP from "../wcp";
 
-type ExtraAttributes = {
+type ExtendedAttributes = {
   "stack-style": StackStyle;
 };
 
-type ComponentTypes = WComponent<typeof AlertComponent, ExtraAttributes>;
+type ComponentTypes = WCP.WComponent<typeof AlertComponent, ExtendedAttributes>;
 
 type AlertType = "error" | "info" | "success" | "warning";
 type StackStyle = "list" | "3d";
@@ -35,9 +35,7 @@ const COMPONENT_NAME = "alert-component";
  * - The host of `<alert-component />` can't be styled directly.
  *
  * @example
- *   await customElements.whenDefined("alert-component");
- *
- *   const alertComponent = document.querySelector<AlertComponent>("alert-component");
+ *   const alertComponent = document.querySelector("alert-component");
  *   if (!alertComponent) return;
  *
  *   const closeFn = alertComponent.alert({
@@ -52,7 +50,7 @@ const COMPONENT_NAME = "alert-component";
  *   <alert-component stack-style="3d"></alert-component>
  * ```
  */
-class AlertComponent extends HTMLElement implements IWebComponent {
+class AlertComponent extends HTMLElement implements WCP.IWebComponent {
   static readonly htmlFragment = (() => {
     const template = document.createElement("template");
     template.innerHTML = import_as_string("@components/alert/alert-template.inline.html", { minify: true });
@@ -61,45 +59,32 @@ class AlertComponent extends HTMLElement implements IWebComponent {
 
   static readonly stylesheet = (() => {
     const sheet = new CSSStyleSheet();
-    sheet.replaceSync(import_as_string("@components/alert/alert-style.inline.css", { minify: true }));
+    sheet.replace(import_as_string("@components/alert/alert-style.inline.css", { minify: true }));
     return sheet;
   })();
 
   static readonly alertHtmlFragment = AlertComponent.htmlFragment.querySelector<HTMLTemplateElement>("#item-template")!.content;
 
-  readonly #containerEl: HTMLDivElement;
-  readonly #popoverEl: HTMLDivElement;
+  readonly #elements = {
+    container: null! as HTMLDivElement,
+    popover: null! as HTMLDivElement,
+  };
 
-  //#region Public Properties
-  #duration = 5000;
-  /** The time before dismissing the alert in milliseconds. use `-1` to disable auto dismiss. Default `5000`. */
-  get duration(): number {
-    return this.#duration;
-  }
-  set duration(value: number) {
-    this.#duration = value;
-  }
+  /** The time before dismissing the alert in milliseconds. use `-1` to disable auto dismiss. */
+  duration = 5000;
 
-  #stackStyle: StackStyle = "3d";
-  /** The style of stacking alerts: `list` or `3d`. Defaults to `3d`. */
-  get stackStyle(): StackStyle {
-    return this.#stackStyle;
-  }
+  /**
+   * The style of stacking alerts: `"list"` or `"3d"`.
+   *
+   * @attr stack-style
+   */
+  get stackStyle(): StackStyle { return this.#stackStyle; }
   set stackStyle(value: StackStyle) {
     this.#stackStyle = value;
-
-    if (value === "list") {
-      this.#containerEl.classList.remove("stacked-3d");
-      return;
-    }
-
-    if (value === "3d") {
-      this.#containerEl.classList.add("stacked-3d");
-    }
+    this.#elements.container.classList.toggle("stacked-3d", value === "3d");
   }
-  //#endregion
+  #stackStyle: StackStyle = "3d";
 
-  //#region HTMLElement Methods
   constructor() {
     super();
 
@@ -107,14 +92,13 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     shadow.adoptedStyleSheets = [AlertComponent.stylesheet];
     shadow.appendChild(AlertComponent.htmlFragment.cloneNode(true));
 
-    const alertContainer = shadow.querySelector<HTMLDivElement>(".alert-container");
-    if (!alertContainer) console.error("[alert-component]: Could not find element with class `alert-container`");
+    const alertContainer = shadow.querySelector<HTMLDivElement>(".alert-container")!;
+    if (!alertContainer) console.error(`[${COMPONENT_NAME}]: Could not find element with the selector ".alert-container"`);
+    this.#elements.container = alertContainer;
 
-    const popover = shadow.querySelector<HTMLDivElement>(".popover");
-    if (!popover) console.error("[alert-component]: Could not find element with class `popover`");
-
-    this.#containerEl = alertContainer!;
-    this.#popoverEl = popover!;
+    const popover = shadow.querySelector<HTMLDivElement>(".popover")!;
+    if (!popover) console.error(`[${COMPONENT_NAME}]: Could not find element with the selector ".popover"`);
+    this.#elements.popover = popover;
   }
 
   static get observedAttributes() {
@@ -125,8 +109,7 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     if (name === "duration") {
       const num = Number(newValue);
       const isNumber = !isNaN(num) && isFinite(num);
-      if (!isNumber) return;
-      this.#duration = Number(newValue);
+      if (isNumber) this.duration = Number(newValue);
       return;
     }
 
@@ -141,14 +124,13 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     return _exhaustiveCheck;
   }
 
-  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null {
-    if (qualifiedName === "duration") return this.#duration.toString();
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
+  getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"]): string | null {
+    if (qualifiedName === "duration") return this.duration.toString();
     if (qualifiedName === "stack-style") return this.#stackStyle;
     return super.getAttribute(qualifiedName);
   }
-  //#endregion
 
-  //#region Private Methods
   #createAlertItem(type: AlertType, message: string, closeBtn: boolean): HTMLDivElement | null {
     const shadow = this.shadowRoot;
     if (!shadow) return null;
@@ -158,13 +140,16 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     const titleContainer = alertItemContent.querySelector(".item-title-container");
     if (!titleContainer) return null;
 
-    const iconTemplate = shadow.querySelector<HTMLTemplateElement>(`#${type}-icon`);
+    const iconTemplate = shadow.querySelector<HTMLSlotElement>(`slot[name="${type}-icon"]`);
     if (!iconTemplate) return null;
 
     const messageEl = alertItemContent.querySelector(".item-message");
     if (!messageEl) return null;
 
-    titleContainer.replaceChildren(iconTemplate.content.cloneNode(true));
+    let iconEls = iconTemplate.assignedNodes();
+    if (!iconEls.length) iconEls = [...iconTemplate.children];
+
+    titleContainer.replaceChildren(...iconEls.map(e => e.cloneNode(true)));
 
     messageEl.textContent = message;
 
@@ -194,13 +179,12 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     alertItem.onanimationend = () => {
       alertItem.remove();
 
-      const isStackEmpty = !this.#containerEl.children.length;
-      if (isStackEmpty) this.#popoverEl.hidePopover();
+      const isStackEmpty = !this.#elements.container.children.length;
+      if (isStackEmpty) this.#elements.popover.hidePopover();
 
       alertItem.onanimationend = null;
     };
   }
-  //#endregion
 
   /** @function {alert(options: AlertOptions)} - Show An alert. */
   alert(options: AlertOptions): () => void {
@@ -209,13 +193,13 @@ class AlertComponent extends HTMLElement implements IWebComponent {
     const alertItem = this.#createAlertItem(options.type, options.message, options.closeBtn);
     if (!alertItem) return () => {};
 
-    this.#containerEl.insertAdjacentElement("beforeend", alertItem);
+    this.#elements.container.insertAdjacentElement("beforeend", alertItem);
 
-    this.#popoverEl.showPopover();
+    this.#elements.popover.showPopover();
 
-    const duration = options.duration ?? this.#duration;
+    const duration = options.duration ?? this.duration;
     if (duration > 0) {
-      setTimeout(() => this.#removeAlertItem(alertItem), options.duration ?? this.#duration);
+      setTimeout(() => this.#removeAlertItem(alertItem), options.duration ?? this.duration);
     }
 
     return () => {
@@ -233,5 +217,12 @@ declare global {
 
   interface HTMLElementTagNameMap {
     [COMPONENT_NAME]: AlertComponent;
+  }
+
+  namespace React.JSX {
+    interface IntrinsicElements {
+      /** @markdown {./README.md} */
+      [COMPONENT_NAME]: WCP.ReactWComponent<ComponentTypes["JsxProps"], AlertComponent>;
+    }
   }
 }

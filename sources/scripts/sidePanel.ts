@@ -13,7 +13,7 @@ export function initializeSidePanel() {
   elements.playBtns.forEach(e => e.addEventListener("click", playBtnHandler));
   elements.pauseBtns.forEach(e => e.addEventListener("click", pauseBtnHandler));
   elements.stopBtns.forEach(e => e.addEventListener("click", stopBtnHandler));
-  elements.progressSlider.addEventListener("change", () => {
+  elements.progressSlider.addEventListener("valueChange", () => {
     const value = elements.progressSlider.value;
     graphAnimation.seek(value);
   });
@@ -23,7 +23,7 @@ export function initializeSidePanel() {
 
   // presets menu
   setupPresetsMenu();
-  elements.presetsMenu.addEventListener("change", onPresetChange);
+  elements.presetsMenu.addEventListener("valueChange", onPresetChange);
 
   // save preset
   elements.savePresetBtn.addEventListener("click", savePresetHandler);
@@ -32,14 +32,14 @@ export function initializeSidePanel() {
   const isAutoHidePointsEnabled = storage.autoHidePoints ?? false;
   elements.autoHidePointsToggle.checked = isAutoHidePointsEnabled;
   elements.graphEditor.settings.autoHidePoints = isAutoHidePointsEnabled;
-  elements.autoHidePointsToggle.addEventListener("change", autoHidePointsToggleHandler);
+  elements.autoHidePointsToggle.addEventListener("stateChange", autoHidePointsToggleHandler);
 
   // grid snap toggle
   const isSnapToGridEnabled = storage.snapToGrid ?? true;
   elements.snapToGridToggle.checked = isSnapToGridEnabled;
   elements.graphEditor.settings.anchorSnapToGrid = isSnapToGridEnabled;
   elements.graphEditor.settings.ctrlSnapToGrid = isSnapToGridEnabled;
-  elements.snapToGridToggle.addEventListener("change", snapToGridToggleHandler);
+  elements.snapToGridToggle.addEventListener("stateChange", snapToGridToggleHandler);
 
   // points snap toggle
   const isSnapToPointsEnabled = storage.snapToPoints ?? true;
@@ -48,7 +48,7 @@ export function initializeSidePanel() {
   elements.graphEditor.settings.anchorSnapToOtherCtrl = isSnapToPointsEnabled;
   elements.graphEditor.settings.ctrlSnapToOtherCtrl = isSnapToPointsEnabled;
   elements.graphEditor.settings.ctrlSnapToOtherAnchors = isSnapToPointsEnabled;
-  elements.snapToPointsToggle.addEventListener("change", snapToPointsToggleHandler);
+  elements.snapToPointsToggle.addEventListener("stateChange", snapToPointsToggleHandler);
 
   // duration input
   elements.durationInput.addEventListener("blur", durationInputHandler);
@@ -58,7 +58,7 @@ export function initializeSidePanel() {
   updatePathCode();
   elements.pathCodeEditor.highlighter = pathCodeHighlighter;
   elements.graphEditor.points.events.onUpdate.add(updatePathCode);
-  elements.pathCodeEditor.addEventListener("copy", onPathCodeCopy);
+  elements.pathCodeEditor.addEventListener("copyClick", onPathCodeCopy);
   elements.pathCodeEditor.addEventListener("blur", onPathCodeChange);
   elements.pathCodeEditor.addEventListener("keydown", pathCodeOnEnter);
 }
@@ -256,7 +256,7 @@ function setupPresetsMenu() {
     const option = document.createElement("select-option");
     option.label = name;
     option.textContent = name;
-    option.value = path;
+    option.value = path || "none";
     presetOptions.push(option);
   }
 
@@ -279,7 +279,7 @@ function addCustomPresetToMenu(name: string, pathStr: string) {
   option.textContent = name;
 
   const svgIcon = /*html*/ `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+  <svg class="preset-delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
     <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/>
   </svg>`;
 
