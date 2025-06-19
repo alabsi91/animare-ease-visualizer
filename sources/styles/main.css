@@ -359,6 +359,7 @@ main {
   @supports (scrollbar-color: #7a7a7a50 #7a7a7a50) {
     .custom-scrollbar {
       scrollbar-color: #7a7a7a50 #7a7a7a50;
+      scrollbar-width: thin;
     }
   }
 

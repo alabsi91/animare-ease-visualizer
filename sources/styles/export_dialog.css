@@ -26,13 +26,13 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.8em;
   }
 
   .export-inputs-container {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.8em;
   }
 
   .export-dialog-title {

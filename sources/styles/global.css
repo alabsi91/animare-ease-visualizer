@@ -137,8 +137,8 @@ select-option::part(option) {
 
 menu-component::part(container) {
   padding: 0.5em;
-  background-color: hsl(from var(--clr-input-active) h s l / 90%);
-  backdrop-filter: blur(5px);
+  background-color: hsl(from var(--clr-input-active) h s l / 95%);
+  backdrop-filter: blur(4px);
 }
 
 slider-component {
@@ -151,7 +151,7 @@ slider-component {
 
 menu-trigger {
   --ui-clr-surface-1: var(--clr-input);
-  --ui-clr-surface-2: var(--clr-input-active);
+  --ui-clr-surface-2: var(--clr-input);
 
   &::part(trigger) {
     font-size: 1rem;

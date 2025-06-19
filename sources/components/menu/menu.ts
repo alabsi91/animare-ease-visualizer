@@ -482,12 +482,6 @@ class MenuComponent extends HTMLElement implements WCP.IWebComponent {
     const focusableElements = this.#getFocusableElements();
     if (focusableElements.length > 0) focusableElements[0].focus();
 
-    const triggerPos = this.trigger?.getBoundingClientRect();
-    if (triggerPos) {
-      const blockSize = Math.max(triggerPos.top, window.innerHeight - triggerPos.bottom);
-      menu.style.maxHeight = `${blockSize - 40}px`;
-    }
-
     if (pos) {
       anchorCP.anchorToRect = { left: pos[0], top: pos[1] };
       anchorCP.updatePosition();
@@ -501,6 +495,12 @@ class MenuComponent extends HTMLElement implements WCP.IWebComponent {
     menu.style.setProperty("--anim-to-block-size", blockSize);
     menu.style.setProperty("--anim-from-translate-y", openUpwards ? blockSize : "0px");
     menu.classList.add("show");
+
+    // scroll to the selected element
+    if (!this.#multiselect && this.#value) {
+      const selectedOption = Array.from(this.querySelectorAll("select-option")).find(el => el.value === this.#value);
+      if (selectedOption) requestAnimationFrame(() => selectedOption.scrollIntoView({ block: "nearest" }));
+    }
 
     menu.onanimationend = menu.onanimationcancel = () => {
       menu.onanimationend = menu.onanimationcancel = null;

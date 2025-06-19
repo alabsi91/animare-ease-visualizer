@@ -83,7 +83,7 @@
 .floating-container {
   position: absolute;
   inset-block-start: 0.4rem;
-  inset-inline-end: 1rem;
+  inset-inline-end: 0.4rem;
   display: flex;
   flex-direction: row;
   gap: 0.5em;
@@ -95,7 +95,7 @@
   cursor: pointer;
   background-color: hsl(from var(--wcp-clr-background) h s calc(l * 0.9));
   border: solid 1px var(--wcp-clr-border);
-  border-radius: 8px;
+  border-radius: var(--wcp-rad-border);
   opacity: 0.5;
   transition: opacity 200ms linear;
 

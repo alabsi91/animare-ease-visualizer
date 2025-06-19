@@ -1,6 +1,10 @@
 import * as WCP from "../wcp";
 
-type ComponentTypes = WCP.WComponent<typeof Anchor>;
+type ExtendedAttributes = {
+  "set-max-size": WCP.BooleanString;
+};
+
+type ComponentTypes = WCP.WComponent<typeof Anchor, ExtendedAttributes>;
 
 /** The position relative to the anchor element. */
 type AnchorPosition = "top" | "bottom" | "left" | "right";
@@ -88,6 +92,9 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     this.#pullAndUpdatePos[value ? "start" : "stop"]();
   }
   #autoupdate = false;
+
+  /** Sets the max height and max width of the anchored element to fit inside between the anchor element and the viewport. */
+  setMaxSize: boolean = true;
 
   /** The anchor element (reference element), can be a string selector or an element. */
   get anchorElement(): HTMLElement | null { return this.#anchorElement; }
@@ -184,7 +191,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
   }
 
   static get observedAttributes() {
-    return ["anchor-element", "anchored-element", "preferred-position-order", "autoupdate"] as const;
+    return ["anchor-element", "anchored-element", "preferred-position-order", "autoupdate", "set-max-size"] as const;
   }
 
   attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
@@ -220,6 +227,11 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
 
     if (name === "autoupdate") {
       this.autoupdate = newValue === null ? false : newValue === "true" || newValue === "";
+      return;
+    }
+
+    if (name === "set-max-size") {
+      this.setMaxSize = newValue === null ? true : newValue === "true" || newValue === "";
       return;
     }
 
@@ -288,11 +300,17 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
 
     const anchorRect = this.anchorElementRect!;
 
-    const anchoredStyle = getComputedStyle(this.#anchoredElement!);
+    const anchoredEl = this.#anchoredElement!;
+    const anchoredStyle = getComputedStyle(anchoredEl);
     anchoredRect.offsetTop = str2Num(anchoredStyle.marginBlockStart);
     anchoredRect.offsetBottom = str2Num(anchoredStyle.marginBlockEnd);
     anchoredRect.offsetLeft = str2Num(anchoredStyle.marginInlineStart);
     anchoredRect.offsetRight = str2Num(anchoredStyle.marginInlineEnd);
+
+    const maxBlockSpace = Math.max(anchorRect.top, window.innerHeight - anchorRect.bottom);
+    const maxInlineSpace = Math.max(anchorRect.left, window.innerWidth - anchorRect.right);
+    anchoredEl.style.maxBlockSize = `${maxBlockSpace - anchoredRect.offsetTop - anchoredRect.offsetBottom}px`;
+    anchoredEl.style.maxInlineSize = `${maxInlineSpace - anchoredRect.offsetLeft - anchoredRect.offsetRight}px`;
 
     anchoredRect.width = str2Num(anchoredStyle.inlineSize);
     anchoredRect.height = str2Num(anchoredStyle.blockSize);
@@ -403,13 +421,6 @@ declare global {
 
   interface HTMLElementTagNameMap {
     [COMPONENT_NAME]: Anchor;
-  }
-
-  namespace React.JSX {
-    interface IntrinsicElements {
-      /** @markdown {./README.md} */
-      [COMPONENT_NAME]: WCP.ReactWComponent<ComponentTypes["JsxProps"], Anchor>;
-    }
   }
 }
 

@@ -52,6 +52,7 @@ Anchors an element to another element.
 **Props**
 
 - `autoupdate` (Get/Set) Uses `requestAnimationFrame` to always update the position. (default: `false`)
+- `setMaxSize` (Get/Set) Sets the max height and max width of the anchored element to fit inside between the anchor element and the viewport. (default: `true`)
 - `anchorElement` (Get/Set) The anchor element (reference element), can be a string selector or an element.
 - `anchoredElement` (Get/Set) The anchored element (positioned element), can be a string selector or an element. Or the direct children of
   `anchor-component`.
@@ -66,6 +67,7 @@ Anchors an element to another element.
   `anchor-component`.
 - `"preferred-position-order"` The preferred position area sequence. In which order to try to position the anchored element.
 - `"autoupdate"` Uses `requestAnimationFrame` to always update the position. (default: `false`)
+- `"set-max-size"` Sets the max height and max width of the anchored element to fit inside between the anchor element and the viewport. (default: `true`)
 
 **CSS States**
 
