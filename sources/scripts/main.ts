@@ -1,15 +1,9 @@
-import { initCssKeyframeExport, initCssLinearExport, initJsFunctionExport, initSvgCodeExport } from "./exportDialog";
+import { initExportDialogs } from "./export-dialogs/export-dialogs";
 import { initGraph } from "./graph";
-import { initializeSidePanel } from "./sidePanel";
+import { initializeSidePanel } from "./side-panel";
 
 initializeSidePanel();
 
 initGraph();
 
-initCssKeyframeExport();
-
-initCssLinearExport();
-
-initJsFunctionExport();
-
-initSvgCodeExport();
+initExportDialogs();

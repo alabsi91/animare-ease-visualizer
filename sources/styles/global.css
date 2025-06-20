@@ -1,4 +1,3 @@
-/* stylelint-disable property-no-vendor-prefix */
 :root {
   --clr-accent: var(--clr-accent1-450);
   --clr-secondary: var(--clr-accent3-450);
@@ -83,6 +82,7 @@ input:focus {
 input[type="number"] {
   font-family: monospace;
   text-align: center;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -90,6 +90,7 @@ input[type="number"] {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   margin: 0;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-appearance: none;
 }
 
@@ -109,7 +110,7 @@ kbd {
 }
 
 code-editor {
-  --ui-clr-surface-1: var(--clr-input);
+  --ui-clr-surface-1: var(--clr-neutral2-750);
 
   &::part(wrapper) {
     box-shadow: none;

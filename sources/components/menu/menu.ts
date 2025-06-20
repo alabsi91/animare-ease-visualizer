@@ -1,4 +1,4 @@
-import type { SelectOption } from "../selectOption/selectOption";
+import type { SelectOption } from "../select-option/select-option";
 import type * as WCP from "../wcp";
 
 const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;

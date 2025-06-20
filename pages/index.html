@@ -1,30 +1,30 @@
 <layout src="@layouts/main.layout.html" title="Animare Ease Visualizer" description="Animare Ease Visualizer">
   <body>
     <main>
-      <layout src="@parts/sidePanel.part.html"></layout>
-      <layout src="@parts/smallSidePanel.part.html"></layout>
+      <part src="@parts/side-panel.part.html"></part>
+      <part src="@parts/small-side-panel.part.html"></part>
       <graph-editor></graph-editor>
     </main>
 
     <alert-component></alert-component>
 
-    <layout src="@parts/shortuctsDialog/shortcutsDialog.part.html"></layout>
-    <layout src="@parts/exportDialog/cssKeyframe.part.html"></layout>
-    <layout src="@parts/exportDialog/cssLinear.part.html"></layout>
-    <layout src="@parts/exportDialog/svgPath.part.html"></layout>
-    <layout src="@parts/exportDialog/jsFunction.part.html"></layout>
+    <part src="@parts/shortucts-dialog/shortcuts-dialog.part.html"></part>
+    <part src="@parts/export-dialogs/css-keyframe.part.html"></part>
+    <part src="@parts/export-dialogs/css-linear.part.html"></part>
+    <part src="@parts/export-dialogs/svg-path.part.html"></part>
+    <part src="@parts/export-dialogs/js-function.part.html"></part>
 
     <div class="theme-layer"></div>
 
     <script type="module" bundle bundle-externals="" preload>
       import "@components/anchor/anchor.ts";
-      import "@components/GraphEditor/graphEditorComponent.ts";
-      import "@components/codeEditor/codeEditor.ts";
+      import "@components/graph-editor/graph-editor-component.ts";
+      import "@components/code-editor/code-editor.ts";
       import "@components/alert/alert.ts";
-      import "@components/toggleCheckbox/toggleCheckbox.ts";
-      import "@components/menuTrigger/menuTrigger.ts";
+      import "@components/toggle-checkbox/toggle-checkbox.ts";
+      import "@components/menu-trigger/menu-trigger.ts";
       import "@components/menu/menu.ts";
-      import "@components/selectOption/selectOption.ts";
+      import "@components/select-option/select-option.ts";
       import "@components/tooltip/tooltip.ts";
       import "@components/dialog/dialog.ts";
       import "@components/slider/slider.ts";
@@ -34,12 +34,12 @@
 </layout>
 
 <insert selector="head">
-  <link class="svg-highlight" rel="stylesheet" href="@styles/svg_path_highlight.css" inline />
+  <link class="svg-highlight" rel="stylesheet" href="@styles/svg-path-highlight.css" inline />
   <link
     class="atom-one-dark"
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
     inline
   />
-  <link rel="stylesheet" href="@styles/export_dialog.css" inline />
+  <link rel="stylesheet" href="@styles/export-dialogs.css" inline />
 </insert>

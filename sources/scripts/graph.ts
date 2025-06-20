@@ -1,5 +1,5 @@
 import { elements } from "./elements";
-import { graphAnimation } from "./graphAnimation";
+import { graphAnimation } from "./graph-animation";
 import { checkOverlap } from "./helpers";
 import { storage } from "./storage";
 
