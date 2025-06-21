@@ -307,10 +307,12 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     anchoredRect.offsetLeft = str2Num(anchoredStyle.marginInlineStart);
     anchoredRect.offsetRight = str2Num(anchoredStyle.marginInlineEnd);
 
-    const maxBlockSpace = Math.max(anchorRect.top, window.innerHeight - anchorRect.bottom);
-    const maxInlineSpace = Math.max(anchorRect.left, window.innerWidth - anchorRect.right);
-    anchoredEl.style.maxBlockSize = `${maxBlockSpace - anchoredRect.offsetTop - anchoredRect.offsetBottom}px`;
-    anchoredEl.style.maxInlineSize = `${maxInlineSpace - anchoredRect.offsetLeft - anchoredRect.offsetRight}px`;
+    if (this.setMaxSize) {
+      const maxBlockSpace = Math.max(anchorRect.top, innerHeight - anchorRect.bottom);
+      anchoredEl.style.maxBlockSize = `${maxBlockSpace - anchoredRect.offsetTop - anchoredRect.offsetBottom}px`;
+      // const maxInlineSpace = Math.max(anchorRect.left, innerWidth - anchorRect.right);
+      // anchoredEl.style.maxInlineSize = `${maxInlineSpace - anchoredRect.offsetLeft - anchoredRect.offsetRight}px`;
+    }
 
     anchoredRect.width = str2Num(anchoredStyle.inlineSize);
     anchoredRect.height = str2Num(anchoredStyle.blockSize);
