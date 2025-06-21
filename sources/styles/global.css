@@ -26,7 +26,18 @@
 }
 
 * {
+  --clr-selection: var(--clr-accent1-700);
+
   box-sizing: border-box;
+
+  &::selection {
+    background-color: var(--clr-selection);
+  }
+
+  /* stylelint-disable-next-line selector-no-vendor-prefix */
+  &::-moz-selection {
+    background-color: var(--clr-selection);
+  }
 }
 
 html {
