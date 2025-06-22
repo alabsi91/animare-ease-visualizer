@@ -1,9 +1,17 @@
-/* eslint-disable no-undef */
+/* eslint-disable */
+const path = require("path");
+
 module.exports = ctx => ({
   plugins: {
     "./scripts/postcss-inline-vars.mjs": { rootSelector: ":host", variableRegexp: ["^--def"] },
 
-    "postcss-import": {},
+    "postcss-import": {
+      filter(url) {
+        const fileName = path.basename(url);
+        const filesToInline = new Set(["wcp-default-styles.css"]);
+        return filesToInline.has(fileName);
+      },
+    },
 
     "postcss-preset-env": {
       browsers: ctx.browserslist,
