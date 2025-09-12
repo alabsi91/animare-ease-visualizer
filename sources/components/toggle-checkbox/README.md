@@ -5,34 +5,81 @@ presented in a series, giving the user multiple choices to make.
 
 - **Form associated**
 
-**Usage**
+## Usage
 
 ```html
 <toggle-checkbox label="Label"></toggle-checkbox>
 ```
 
-**Methods**
+## Methods
 
-- `toggle()` Toggle the checked state.
+### `toggle()`
 
-**Props**
+Toggle the checked state.
 
-- `checked` (Get/Set) Whether the checkbox is checked. (default: `false`)
-- `disabled` (Get/Set) Whether the checkbox is disabled. (default: `false`)
-- `label` (Get/Set) Add a label to the toggle switch.
+## Properties
 
-**Events**
+### `checked`
 
-- `stateChange` Emitted when the checked value has changed.
+Whether the checkbox is checked.
 
-**Attributes**
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
 
-- `"checked"` Whether the checkbox is checked. (default: `false`)
-- `"disabled"` Whether the checkbox is disabled. (default: `false`)
-- `"label"` Add a label to the toggle switch.
-- `"aria-label"` Forwarded to the `<button>` element.
+### `disabled`
 
-**CSS Properties**
+Whether the checkbox is disabled.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `label`
+
+Add a label to the toggle switch.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `string | null`  
+**Default:** `null`
+
+### `type`
+
+**Accessors:** `Get`  
+**Type:** `string`  
+**Default:** `"checkbox"`
+
+## Events
+
+### `stateChange`
+
+Emitted when the checked value has changed.
+
+## Attributes
+
+### `"aria-label"`
+
+Forwarded to the `<button>` element.
+
+### `"checked"`
+
+Whether the checkbox is checked.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"disabled"`
+
+Whether the checkbox is disabled.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"label"`
+
+Add a label to the toggle switch.
+
+## CSS Properties
 
 - `--ui-ease-anim-forward` The easing function for the toggle animation.
 - `--ui-dur-anim-forward` The duration of the toggle animation.
@@ -43,14 +90,14 @@ presented in a series, giving the user multiple choices to make.
 - `--ui-clr-text-on-accent` The color of the checked icon.
 - `--ui-clr-sz-checkbox` The size of the toggle checkbox.
 
-**CSS Parts**
+## CSS Parts
 
 - `::part(checkbox)` The toggle checkbox button element.
 - `::part(background)` The toggle checkbox background span element.
 - `::part(checked-icon)` The toggle checkbox checked icon element.
 - `::part(label)` The toggle checkbox label element.
 
-**CSS States**
+## CSS States
 
 - `:state(disabled)`
 - `:state(checked)`

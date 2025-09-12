@@ -2,32 +2,69 @@
 
 A trigger for `<menu-component />`.
 
-**Usage**
+## Usage
 
 ```html
 <menu-trigger></menu-trigger>
 ```
 
-**Methods**
+## Methods
 
-- `setTriggerLabel()` Sets the trigger text content only for a child with the id "trigger-label" . (Managed by the menu component)
-- `setRole(role: "dialog" | "select" | "menu", controls: string)` Sets the menu role. Managed by the menu component.
+### `setTriggerLabel()`
 
-**Props**
+Sets the trigger text content only for a child with the id "trigger-label" . (Managed by the menu component)
 
-- `trigger` (Get/Set) The trigger button element
-- `disabled` (Get/Set) Disable the menu trigger button.
+### `setRole()`
 
-**Slots**
+Sets the menu role. Managed by the menu component.
+
+**Type:** `setRole(role: "dialog" | "select" | "menu", controls: string)`
+
+## Properties
+
+### `trigger`
+
+The trigger button element
+
+**Accessors:** `Get`, `Set`  
+**Type:** `HTMLButtonElement`
+
+### `noValueLabel`
+
+The trigger text content when no value is set.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `string`  
+**Default:** `"..."`
+
+### `disabled`
+
+Disable the menu trigger button.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`
+
+## Attributes
+
+### `"trigger-label"`
+
+### `"disabled"`
+
+Disable the menu trigger button.
+
+**Values:** `"true"`, `"false"`
+
+### `"no-value-label"`
+
+The trigger text content when no value is set.
+
+**Default:** `"..."`
+
+## Slots
 
 - `trigger-content` The menu trigger button content.
 
-**Attributes**
-
-- `"trigger-label"`
-- `"disabled"` Disable the menu trigger button.
-
-**CSS Properties**
+## CSS Properties
 
 - `--ui-clr-surface-1` The background color of the trigger.
 - `--ui-clr-surface-2` The background color of the hovered trigger.
@@ -36,6 +73,6 @@ A trigger for `<menu-component />`.
 - `--ui-rad-border-md` The border radius of the trigger.
 - `--ui-shadow` The shadow of the trigger.
 
-**CSS Parts**
+## CSS Parts
 
 - `::part(trigger)` The menu trigger button element.

@@ -43,7 +43,7 @@ export interface IWebComponent extends HTMLElement {
    * Called when attributes are changed, added, removed, or replaced. See Responding to attribute changes for more details about
    * this callback.
    */
-  attributeChangedCallback?(name: string, oldValue: string | null, newValue: string | null): void;
+  attributeChangedCallback?(name: string, oldValue: string | null, newValue: string | null): undefined;
   /** Returns whether the element is valid. */
   checkValidity?(): boolean;
   /** Returns whether the element is valid and reports its validity to its form owner. */
@@ -108,7 +108,7 @@ type MapEvents<T> = { [K in keyof T as K extends string ? `on${K}` : K]: (e: T[K
 
 export interface WComponent<
   T extends IWebComponentStatic,
-  ExtendAttr extends Record<string, unknown> = {},
+  ExtendAttr extends Record<string, string> = {},
   WEvents extends Record<string, Event> = {},
 > {
   Instance: InstanceType<T>;
@@ -160,11 +160,20 @@ export type PreactWComponent<P extends Record<string, unknown>> = preact.JSX.HTM
 
 interface CustomEventI<T, N extends string> extends Event {
   readonly detail: T;
-  _typeError?: N;
   initCustomEvent(type: N, bubbles?: boolean, cancelable?: boolean, detail?: T): void;
 }
 
-export declare const CustomEventT: {
+export interface CustomEventT {
   prototype: CustomEvent;
-  new <T, N extends string>(type: N, eventInitDict?: CustomEventInit<T>): CustomEventI<T, N> & { _typeError: T };
-};
+  new <T, N extends string>(type: N, eventInitDict?: CustomEventInit<T>): CustomEventI<T, N>;
+}
+
+interface ElementInternalsT<States extends string> extends ElementInternals {
+  states: Set<States>;
+}
+
+declare global {
+  interface HTMLElement {
+    attachInternals<States extends string = string>(): ElementInternalsT<States>;
+  }
+}

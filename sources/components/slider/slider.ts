@@ -1,6 +1,6 @@
 import type * as WCP from "../wcp";
 
-const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+declare const CustomEvent: WCP.CustomEventT;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type ExtendedAttributes = {};
@@ -9,9 +9,9 @@ type ComponentEvents = WCP.WEvent<{
   valueChange: CustomEvent;
 }>;
 
-type ComponentTypes = WCP.WComponent<typeof SliderComponent, ExtendedAttributes, ComponentEvents>;
+type CssState = "active";
 
-const COMPONENT_NAME = "slider-component";
+type ComponentTypes = WCP.WComponent<typeof SliderComponent, ExtendedAttributes, ComponentEvents>;
 
 /**
  * A wrapper around `<input type="range" />` that allow custom styling.
@@ -28,9 +28,17 @@ const COMPONENT_NAME = "slider-component";
  *     </datalist>
  *   </slider-component>
  * ```
+ *
+ * @attr label The label of the slider.
+ * @attr aria-label Forwarded to the `<input>` element.
+ * @attr list The id of the `<datalist>` element.
  */
 class SliderComponent extends HTMLElement implements WCP.IWebComponent {
   addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
+
+  #propsToUpgrade = Object.entries(this) as [keyof this, this[keyof this]][] | undefined;
+
+  static readonly componentName = "slider-component";
 
   static readonly htmlFragment = (() => {
     const template = document.createElement("template");
@@ -44,49 +52,69 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
     return sheet;
   })();
 
-  readonly #abortController = new AbortController();
-
-  readonly #elements = {
-    internals: null! as ElementInternals,
-    input: null! as HTMLInputElement,
-    bubble: null! as HTMLDivElement,
-  };
+  readonly #shadow = (() => {
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.adoptedStyleSheets = [SliderComponent.stylesheet];
+    shadow.appendChild(SliderComponent.htmlFragment.cloneNode(true));
+    return shadow;
+  })();
 
   readonly #events: ComponentEvents = {
     /** Fired when the value is changed. */
     valueChange: new CustomEvent("valueChange"),
   };
 
+  readonly #abortController = new AbortController();
+  readonly #internals = this.attachInternals<CssState>();
+  readonly #bubbleEl: HTMLDivElement = this.#shadow.querySelector(".bubble")!;
+  readonly #inputEl: HTMLInputElement = this.#shadow.querySelector('input[type="range"]')!;
+
   //#region Public Props
   /** Get the underlying `<input type="range" />` element */
-  get input(): HTMLInputElement { return this.#elements.input; }
+  get input(): HTMLInputElement { return this.#inputEl; }
 
-  /** The current value. (defaults: `50`). */
-  get value(): number { return this.#elements.input.valueAsNumber; }
+  /**
+   * The current value.
+   *
+   * @default 50
+   */
+  get value(): number { return this.#inputEl.valueAsNumber; }
   set value(val: number) {
-    this.#elements.input.valueAsNumber = val;
-    this.#elements.internals.setFormValue(val.toString());
+    this.#inputEl.valueAsNumber = val;
+    this.#internals.setFormValue(val.toString());
     this.#updateCustomSlider();
   }
 
-  /** The minimum value. (defaults: `0`). */
-  get min(): number { return Number(this.#elements.input.min); }
+  /**
+   * The minimum value.
+   *
+   * @default 0
+   */
+  get min(): number { return Number(this.#inputEl.min); }
   set min(val: number) {
-    this.#elements.input.min = val.toString();
+    this.#inputEl.min = val.toString();
     this.#updateCustomSlider();
   }
 
-  /** The maximum value. (defaults: `100`). */
-  get max(): number { return Number(this.#elements.input.max); }
+  /**
+   * The maximum value.
+   *
+   * @default 100
+   */
+  get max(): number { return Number(this.#inputEl.max); }
   set max(val: number) {
-    this.#elements.input.max = val.toString();
+    this.#inputEl.max = val.toString();
     this.#updateCustomSlider();
   }
 
-  /** Step per value update. (defaults: `1`). */
-  get step(): number { return Number(this.#elements.input.step); }
+  /**
+   * Step per value update.
+   *
+   * @default 1
+   */
+  get step(): number { return Number(this.#inputEl.step); }
   set step(val: number) {
-    this.#elements.input.step = val.toString();
+    this.#inputEl.step = val.toString();
     this.#updateCustomSlider();
   }
 
@@ -102,42 +130,24 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
 
   //#region Form association
   static formAssociated = true;
-  get form() { return this.#elements.internals.form; }
-  get name() { return this.#elements.input.name; }
-  get validity() { return this.#elements.input.validity; }
-  get validationMessage() { return this.#elements.input.validationMessage; }
-  checkValidity = () => this.#elements.input.checkValidity();
-  reportValidity = () => this.#elements.input.reportValidity();
+  get form() { return this.#internals.form; }
+  get name() { return this.#inputEl.name; }
+  get validity() { return this.#inputEl.validity; }
+  get validationMessage() { return this.#inputEl.validationMessage; }
+  checkValidity = () => this.#inputEl.checkValidity();
+  reportValidity = () => this.#inputEl.reportValidity();
   //#endregion
 
   //#region HtmlElement Methods
-  constructor() {
-    super();
-
-    this.#elements.internals = this.attachInternals();
-
-    const shadow = this.attachShadow({ mode: "open" });
-    shadow.adoptedStyleSheets = [SliderComponent.stylesheet];
-    shadow.appendChild(SliderComponent.htmlFragment.cloneNode(true));
-
-    const inputEl = shadow.querySelector<HTMLInputElement>('input[type="range"]')!;
-    if (!inputEl) console.error(`[${COMPONENT_NAME}]: Could not find element with the selector 'input[type="range"]'`);
-    this.#elements.input = inputEl;
-
-    const bubble = shadow.querySelector<HTMLDivElement>(".bubble");
-    if (!bubble) console.error(`[${COMPONENT_NAME}]: Could not find element with the selector ".bubble"`);
-    this.#elements.bubble = bubble!;
-
+  connectedCallback(): void {
     const isRtl = getComputedStyle(this).direction === "rtl";
     if (isRtl) this.style.setProperty("--is-rtl", "1");
-  }
 
-  connectedCallback(): void {
     this.#updateCustomSlider(); // initial
 
     const signal = this.#abortController.signal;
 
-    this.#elements.input.addEventListener(
+    this.#inputEl.addEventListener(
       "input",
       () => {
         this.dispatchEvent(this.#events.valueChange);
@@ -146,24 +156,18 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
       { signal }
     );
 
-    const shadowRoot = this.shadowRoot;
-    if (!shadowRoot) {
-      console.error("[slider-component]: Could not find shadow root");
-      return;
-    }
-
-    const container = shadowRoot.querySelector(".container");
+    const container = this.#shadow.querySelector(".container");
     if (!container) {
-      console.error("[slider-component]: Could not find element with class `container`");
+      console.error(`[${this.localName}]: Could not find element with class 'container'`);
       return;
     }
 
-    this.#elements.input.addEventListener(
+    this.#inputEl.addEventListener(
       "pointerdown",
       () => {
-        if (this.#elements.input.disabled) return;
+        if (this.#inputEl.disabled) return;
         container.classList.add("active");
-        this.#elements.internals.states.add("active");
+        this.#internals.states.add("active");
       },
       { signal }
     );
@@ -172,7 +176,7 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
       "pointerup",
       () => {
         container.classList.remove("active");
-        this.#elements.internals.states.delete("active");
+        this.#internals.states.delete("active");
       },
       { signal }
     );
@@ -181,28 +185,31 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
       "touchend",
       () => {
         container.classList.remove("active");
-        this.#elements.internals.states.delete("active");
+        this.#internals.states.delete("active");
       },
       { signal }
     );
 
-    const slot = shadowRoot.querySelector("slot");
+    const slot = this.#shadow.querySelector("slot");
     if (!slot) return;
 
     const slotContents = slot.assignedNodes().map(node => node.cloneNode(true));
-    this.shadowRoot.append(...slotContents);
+    this.#shadow.append(...slotContents);
     slot.remove();
+
+    if (this.#propsToUpgrade) {
+      for (const [prop, value] of this.#propsToUpgrade) {
+        delete this[prop];
+        this[prop] = value;
+      }
+      this.#propsToUpgrade = undefined;
+    }
   }
 
   disconnectedCallback(): void {
     this.#abortController.abort();
   }
 
-  /**
-   * @attr label The label of the slider.
-   * @attr aria-label Forwarded to the `<input>` element.
-   * @attr list The id of the `<datalist>` element.
-   */
   static get observedAttributes() {
     return ["label", "aria-label", "min", "max", "value", "step", "list", "disabled"] as const;
   }
@@ -210,15 +217,13 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
   attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "label") {
       if (!newValue) return;
-      const shadow = this.shadowRoot;
-      if (!shadow) return;
 
       const label = document.createElement("label");
-      label.setAttribute("for", this.#elements.input.id);
+      label.setAttribute("for", this.#inputEl.id);
       label.setAttribute("part", "label");
       label.textContent = newValue;
 
-      shadow.insertBefore(label, shadow.firstElementChild);
+      this.#shadow.insertBefore(label, this.#shadow.firstElementChild);
 
       return;
     }
@@ -227,13 +232,13 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
       const dataSet = window[newValue as keyof Window] as HTMLDataListElement | null;
       if (!dataSet) return;
 
-      const ticksEl = this.shadowRoot?.querySelector(".ticks");
+      const ticksEl = this.#shadow.querySelector(".ticks");
       if (!ticksEl) {
-        console.error("[slider-component]: Could not find element with class `ticks`");
+        console.error(`[${this.localName}]: Could not find element with class 'ticks'`);
         return;
       }
 
-      const inputEl = this.#elements.input;
+      const inputEl = this.#inputEl;
       const min = parseInt(inputEl.min) || 0;
       const max = parseInt(inputEl.max) || 100;
       for (let i = 0; i < dataSet.options.length; i++) {
@@ -250,9 +255,9 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
 
     if (name === "disabled") {
       this.#disabled = newValue === "true" || newValue === "";
-      this.#elements.input.disabled = this.#disabled;
+      this.#inputEl.disabled = this.#disabled;
 
-      const container = this.shadowRoot?.querySelector(".container");
+      const container = this.#shadow.querySelector(".container");
       if (!container) return;
       container.classList.toggle("disabled", this.#disabled);
       return;
@@ -278,10 +283,10 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
 
     if (name === "aria-label") {
       if (newValue === null) {
-        this.#elements.input.removeAttribute(name);
+        this.#inputEl.removeAttribute(name);
         return;
       }
-      this.#elements.input.setAttribute(name, newValue);
+      this.#inputEl.setAttribute(name, newValue);
       this.#updateCustomSlider();
       return;
     }
@@ -291,8 +296,7 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
       return;
     }
 
-    const _exhaustiveCheck: never = name;
-    return _exhaustiveCheck;
+    return name;
   }
 
   getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
@@ -306,23 +310,28 @@ class SliderComponent extends HTMLElement implements WCP.IWebComponent {
   //#endregion
 
   #updateCustomSlider = () => {
-    const inputEl = this.#elements.input;
+    const inputEl = this.#inputEl;
     const min = parseInt(inputEl.min) || 0;
     const max = parseInt(inputEl.max) || 100;
     const percent = ((inputEl.valueAsNumber - min) / (max - min)) * 100;
     this.style.setProperty("--value", percent.toString());
-    this.#elements.bubble.textContent = inputEl.value;
+    this.#bubbleEl.textContent = inputEl.value;
   };
 }
 
-customElements.define(COMPONENT_NAME, SliderComponent);
-
-export type { SliderComponent };
+customElements.define(SliderComponent.componentName, SliderComponent);
 
 declare global {
   type SliderComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    [COMPONENT_NAME]: SliderComponent;
+    [SliderComponent.componentName]: SliderComponent;
+  }
+
+  namespace React.JSX {
+    interface IntrinsicElements {
+      /** @markdown {./README.md} */
+      [SliderComponent.componentName]: WCP.ReactWComponent<ComponentTypes["JsxProps"], SliderComponent>;
+    }
   }
 }

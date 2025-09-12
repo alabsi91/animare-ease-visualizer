@@ -85,10 +85,6 @@
   animation: show var(--wcp-dur-anim-close) var(--wcp-ease-anim-close) reverse backwards;
 }
 
-anchor-component:state(misaligned) .popover {
-  background-color: red;
-}
-
 @keyframes show {
   from {
     block-size: 0;

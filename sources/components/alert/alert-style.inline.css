@@ -233,9 +233,9 @@
   opacity: calc((10 - var(--order)) / 5);
   filter: blur(calc(0.2px * var(--order)));
   transform: translateZ(calc(-20px * var(--order)));
+  transform-style: preserve-3d;
   transition-duration: var(--wcp-dur-anim-reveal);
   transition-property: transform, opacity, margin-block-end, filter;
-  transform-style: preserve-3d;
 
   &.hide {
     transition-duration: var(--wcp-dur-anim-dismiss);

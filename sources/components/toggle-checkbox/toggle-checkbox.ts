@@ -1,6 +1,6 @@
-import * as WCP from "../wcp";
+import type * as WCP from "../wcp";
 
-const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+declare const CustomEvent: WCP.CustomEventT;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type ExtendedAttributes = {};
@@ -9,9 +9,9 @@ type ComponentEvents = WCP.WEvent<{
   stateChange: CustomEvent;
 }>;
 
-type ComponentTypes = WCP.WComponent<typeof ToggleCheckbox, ExtendedAttributes, ComponentEvents>;
+type CssState = "checked" | "disabled";
 
-const COMPONENT_NAME = "toggle-checkbox";
+type ComponentTypes = WCP.WComponent<typeof ToggleCheckbox, ExtendedAttributes, ComponentEvents>;
 
 /**
  * Checkboxes provide users with a graphical representation of a binary choice (yes or no, on or off). They are most commonly
@@ -24,9 +24,14 @@ const COMPONENT_NAME = "toggle-checkbox";
  * ```html
  * <toggle-checkbox label="Label"></toggle-checkbox>
  * ```
+ * @attr aria-label Forwarded to the `<button>` element.
  */
 class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
   addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
+
+  #propsToUpgrade = Object.entries(this) as [keyof this, this[keyof this]][] | undefined;
+
+  static readonly componentName = "toggle-checkbox";
 
   static readonly htmlFragment = (() => {
     const template = document.createElement("template");
@@ -40,13 +45,20 @@ class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
     return sheet;
   })();
 
-  readonly #internals: ElementInternals;
-  readonly #checkboxEl: HTMLButtonElement;
+  readonly #shadow = (() => {
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.adoptedStyleSheets = [ToggleCheckbox.stylesheet];
+    shadow.appendChild(ToggleCheckbox.htmlFragment.cloneNode(true));
+    return shadow;
+  })();
 
   readonly #events: ComponentEvents = {
     /** Emitted when the checked value has changed. */
     stateChange: new CustomEvent("stateChange"),
   };
+
+  readonly #internals = this.attachInternals<CssState>();
+  readonly #checkboxEl: HTMLButtonElement = this.#shadow.querySelector(".checkbox")!;
 
   //#region Public Props
   /** Whether the checkbox is checked. */
@@ -94,20 +106,6 @@ class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
   //#endregion
 
   //#region HtmlElement Methods
-  constructor() {
-    super();
-
-    this.#internals = this.attachInternals();
-
-    const shadow = this.attachShadow({ mode: "open" });
-    shadow.adoptedStyleSheets = [ToggleCheckbox.stylesheet];
-    shadow.appendChild(ToggleCheckbox.htmlFragment.cloneNode(true));
-
-    const checkboxEl = shadow.querySelector<HTMLButtonElement>(".checkbox")!;
-    if (!checkboxEl) console.error(`[${COMPONENT_NAME}]: Could not find element with the selector ".checkbox"`);
-    this.#checkboxEl = checkboxEl;
-  }
-
   connectedCallback(): void {
     this.#checkboxEl.addEventListener("click", this.#clickHandler);
     this.#internals.setFormValue(this.#checked.toString());
@@ -119,13 +117,20 @@ class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
     labelEl.addEventListener("click", () => {
       this.checked = !this.checked;
     });
+
+    if (this.#propsToUpgrade) {
+      for (const [prop, value] of this.#propsToUpgrade) {
+        delete this[prop];
+        this[prop] = value;
+      }
+      this.#propsToUpgrade = undefined;
+    }
   }
 
   disconnectedCallback(): void {
     this.#checkboxEl.removeEventListener("click", this.#clickHandler);
   }
 
-  /** @attr aria-label Forwarded to the `<button>` element. */
   static get observedAttributes() {
     return ["checked", "disabled", "label", "aria-label"] as const;
   }
@@ -144,12 +149,9 @@ class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
     }
 
     if (name === "label") {
-      const shadow = this.shadowRoot;
-      if (!shadow) return;
-
       this.#label = newValue;
 
-      const currentLabel = shadow.querySelector<HTMLLabelElement>("label");
+      const currentLabel = this.#shadow.querySelector<HTMLLabelElement>("label");
 
       if (newValue === null) {
         if (currentLabel) currentLabel.remove();
@@ -171,7 +173,7 @@ class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
       label.setAttribute("for", this.#checkboxEl.id);
       label.setAttribute("part", "label");
       label.textContent = newValue;
-      shadow.insertBefore(label, shadow.firstElementChild);
+      this.#shadow.insertBefore(label, this.#shadow.firstElementChild);
       return;
     }
 
@@ -180,8 +182,7 @@ class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
       return;
     }
 
-    const _exhaustiveCheck: never = name;
-    return _exhaustiveCheck;
+    return name;
   }
 
   getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
@@ -214,14 +215,19 @@ class ToggleCheckbox extends HTMLElement implements WCP.IWebComponent {
   }
 }
 
-customElements.define(COMPONENT_NAME, ToggleCheckbox);
-
-export type { ToggleCheckbox };
+customElements.define(ToggleCheckbox.componentName, ToggleCheckbox);
 
 declare global {
   type ToggleCheckbox = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    [COMPONENT_NAME]: ToggleCheckbox;
+    [ToggleCheckbox.componentName]: ToggleCheckbox;
+  }
+
+  namespace React.JSX {
+    interface IntrinsicElements {
+      /** @markdown {./README.md} */
+      [ToggleCheckbox.componentName]: WCP.ReactWComponent<ComponentTypes["JsxProps"], ToggleCheckbox>;
+    }
   }
 }

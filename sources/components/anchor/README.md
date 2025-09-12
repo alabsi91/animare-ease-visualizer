@@ -4,7 +4,7 @@ Anchors an element to another element.
 
 - Use margins alongside CSS states on the anchored element to offset it from the anchor element.
 
-**Usage**
+## Usage
 
 ```html
 <div class="anchored-element"></div>
@@ -40,36 +40,122 @@ Anchors an element to another element.
 </style>
 ```
 
-**Methods**
+## Methods
 
-- `getAnchoredRect()` Calculates the bounding rect of the anchored element using the preferred position order.
-- `updatePosition()` Updates the anchored element position.
-- `startAutoUpdate()` Starts the automatic update of the anchored element position.
-- `stopAutoUpdate()` Stops the automatic update of the anchored element position.
-- `getAnchorPosition()` Gets the current anchor position: "top", "bottom", "left", "right", "misaligned" or undefined.
-- `onUpdate()` Invoked when the component is updated
+### `getAnchoredRect()`
 
-**Props**
+Calculates the bounding rect of the anchored element using the preferred position order.
 
-- `autoupdate` (Get/Set) Uses `requestAnimationFrame` to always update the position. (default: `false`)
-- `setMaxSize` (Get/Set) Sets the max height and max width of the anchored element to fit inside between the anchor element and the viewport. (default: `true`)
-- `anchorElement` (Get/Set) The anchor element (reference element), can be a string selector or an element.
-- `anchoredElement` (Get/Set) The anchored element (positioned element), can be a string selector or an element. Or the direct children of
-  `anchor-component`.
-- `anchorToRect` (Set)
-- `anchorElementRect` (Get)
-- `preferredPositionOrder` (Get/Set) The preferred position area sequence. In which order to try to position the anchored element.
+### `updatePosition()`
 
-**Attributes**
+Updates the anchored element position.
 
-- `"anchor-element"` The anchor element (reference element), can be a string selector or an element.
-- `"anchored-element"` The anchored element (positioned element), can be a string selector or an element. Or the direct children of
-  `anchor-component`.
-- `"preferred-position-order"` The preferred position area sequence. In which order to try to position the anchored element.
-- `"autoupdate"` Uses `requestAnimationFrame` to always update the position. (default: `false`)
-- `"set-max-size"` Sets the max height and max width of the anchored element to fit inside between the anchor element and the viewport. (default: `true`)
+### `startAutoUpdate()`
 
-**CSS States**
+Starts the automatic update of the anchored element position.
+
+### `stopAutoUpdate()`
+
+Stops the automatic update of the anchored element position.
+
+### `getAnchorPosition()`
+
+Gets the current anchor position: "top", "bottom", "left", "right", "misaligned" or undefined.
+
+### `onUpdate()`
+
+Invoked when the component is updated
+
+**Type:** `(anchoredRect: Exclude<ReturnType<Anchor["getAnchoredRect"]>, undefined>) => void`
+
+## Properties
+
+### `autoupdate`
+
+Uses `requestAnimationFrame` to always update the position.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `setMaxSize`
+
+Sets the max height and max width of the anchored element to fit inside between the anchor element and the viewport.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `true`
+
+### `anchorElement`
+
+The anchor element (reference element), can be a string selector or an element.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `HTMLElement | null`  
+**Default:** `null`
+
+### `anchoredElement`
+
+The anchored element (positioned element), can be a string selector or an element. Or the direct children of
+`anchor-component`.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `HTMLElement | null`  
+**Default:** `null`
+
+### `anchorToRect`
+
+Sets the rect of the anchor element.
+
+**Accessors:** `Set`  
+**Type:** `Partial<DOMRectLike> | null`
+
+### `anchorElementRect`
+
+Gets the rect of the anchor element.
+
+**Accessors:** `Get`  
+**Type:** `{ bottom: number; height: number; left: number; right: number; top: number; width: number; } | null`  
+**Default:** `null`
+
+### `preferredPositionOrder`
+
+The preferred position area sequence. In which order to try to position the anchored element.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `["top" | "bottom" | "left" | "right", "center" | "start" | "end", "center" | "start" | "end"][]`  
+**Default:** `[]`
+
+## Attributes
+
+### `"anchor-element"`
+
+The anchor element (reference element), can be a string selector or an element.
+
+### `"anchored-element"`
+
+The anchored element (positioned element), can be a string selector or an element. Or the direct children of
+`anchor-component`.
+
+### `"preferred-position-order"`
+
+The preferred position area sequence. In which order to try to position the anchored element.
+
+### `"autoupdate"`
+
+Uses `requestAnimationFrame` to always update the position.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"set-max-size"`
+
+Sets the max height and max width of the anchored element to fit inside between the anchor element and the viewport.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `true`
+
+## CSS States
 
 - `:state(top)` - When the anchored element is above the anchor element.
 - `:state(bottom)` - When the anchored element is below the anchor element.

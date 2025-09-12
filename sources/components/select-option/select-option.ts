@@ -1,6 +1,6 @@
 import type * as WCP from "../wcp";
 
-const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+declare const CustomEvent: WCP.CustomEventT;
 
 type ExtendedAttributes = {
   "value-type": ValueTypes;
@@ -11,16 +11,6 @@ type ComponentEvents = WCP.WEvent<{
 }>;
 
 type ComponentTypes = WCP.WComponent<typeof SelectOption, ExtendedAttributes, ComponentEvents>;
-
-const COMPONENT_NAME = "select-option";
-
-type SelectOptionData = {
-  value: unknown | undefined;
-  valueType: ValueTypes;
-  label: string | null;
-  selected: boolean;
-  disabled: boolean;
-};
 
 type ValueTypes = "string" | "object";
 
@@ -49,21 +39,23 @@ type OptionType = "option" | "radio" | "checkbox";
 class SelectOption extends HTMLElement implements WCP.IWebComponent {
   addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
 
+  #propsToUpgrade = Object.entries(this) as [keyof this, this[keyof this]][] | undefined;
+
+  static readonly componentName = "select-option";
+
   static readonly stylesheet = (() => {
     const sheet = new CSSStyleSheet();
     sheet.replace(import_as_string("./select-option-style.inline.css", { minify: true }));
     return sheet;
   })();
 
-  readonly #elements = {
-    internals: null! as ElementInternals,
-    option: null! as HTMLDivElement,
-  };
-
   readonly #events: ComponentEvents = {
     /** Fired when `value` or `selected` is changed. */
     valueChange: new CustomEvent("valueChange"),
   };
+
+  readonly #internals = this.attachInternals();
+  readonly #optionEl: HTMLDivElement;
 
   //#region Public Props
   /** The type for accessibility `"option" | "radio" | "checkbox"`. */
@@ -122,17 +114,13 @@ class SelectOption extends HTMLElement implements WCP.IWebComponent {
   constructor() {
     super();
 
-    this.#elements.internals = this.attachInternals();
-
     const template = `<div class="option" part="option" tabindex="-1" aria-disabled="false"><slot></slot></div>`;
 
     const shadow = this.attachShadow({ mode: "open" });
     shadow.adoptedStyleSheets = [SelectOption.stylesheet];
     shadow.innerHTML = template;
 
-    const optionEl = shadow.querySelector<HTMLDivElement>(".option")!;
-    if (!optionEl) console.error(`[${COMPONENT_NAME}]: Couldn't find the options element.`);
-    this.#elements.option = optionEl;
+    this.#optionEl = shadow.querySelector(".option")!;
 
     this.#onClick = undefined!;
     this.#onKeyDown = undefined!;
@@ -144,13 +132,21 @@ class SelectOption extends HTMLElement implements WCP.IWebComponent {
   }
 
   connectedCallback() {
-    this.#elements.option.addEventListener("click", this.#onClickHandler);
-    this.#elements.option.addEventListener("keydown", this.#keyDownHandler);
+    this.#optionEl.addEventListener("click", this.#onClickHandler);
+    this.#optionEl.addEventListener("keydown", this.#keyDownHandler);
+
+    if (this.#propsToUpgrade) {
+      for (const [prop, value] of this.#propsToUpgrade) {
+        delete this[prop];
+        this[prop] = value;
+      }
+      this.#propsToUpgrade = undefined;
+    }
   }
 
   disconnectedCallback() {
-    this.#elements.option.removeEventListener("click", this.#onClickHandler);
-    this.#elements.option.removeEventListener("keydown", this.#keyDownHandler);
+    this.#optionEl.removeEventListener("click", this.#onClickHandler);
+    this.#optionEl.removeEventListener("keydown", this.#keyDownHandler);
   }
 
   static get observedAttributes() {
@@ -168,8 +164,8 @@ class SelectOption extends HTMLElement implements WCP.IWebComponent {
     if (name === "disabled") {
       const isDisabled = newValue === "true" || newValue === "";
       this.#disabled = isDisabled;
-      this.#elements.option.setAttribute("aria-disabled", isDisabled.toString());
-      this.#elements.internals.states[isDisabled ? "add" : "delete"]("disabled");
+      this.#optionEl.setAttribute("aria-disabled", isDisabled.toString());
+      this.#internals.states[isDisabled ? "add" : "delete"]("disabled");
       return;
     }
 
@@ -184,10 +180,10 @@ class SelectOption extends HTMLElement implements WCP.IWebComponent {
     if (name === "label") {
       this.#label = newValue;
       if (newValue === null) {
-        this.#elements.option.removeAttribute("aria-label");
+        this.#optionEl.removeAttribute("aria-label");
         return;
       }
-      this.#elements.option.setAttribute("aria-label", newValue);
+      this.#optionEl.setAttribute("aria-label", newValue);
       return;
     }
 
@@ -196,8 +192,7 @@ class SelectOption extends HTMLElement implements WCP.IWebComponent {
       return;
     }
 
-    const _exhaustiveCheck: never = name;
-    return _exhaustiveCheck;
+    return name;
   }
 
   getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
@@ -212,30 +207,30 @@ class SelectOption extends HTMLElement implements WCP.IWebComponent {
   //#region Private Methods
   #updateSelected(selected: boolean) {
     const attr = this.#type === "option" ? "aria-selected" : "aria-checked";
-    this.#elements.option.setAttribute(attr, selected.toString());
+    this.#optionEl.setAttribute(attr, selected.toString());
 
     const addOrDelete = selected ? "add" : "delete";
-    this.#elements.internals.states[addOrDelete]("selected");
-    this.#elements.internals.states[addOrDelete]("checked");
+    this.#internals.states[addOrDelete]("selected");
+    this.#internals.states[addOrDelete]("checked");
   }
 
   #setupType() {
     if (this.#type === "option") {
-      this.#elements.option.setAttribute("role", "option");
-      this.#elements.option.setAttribute("tabindex", "-1");
-      this.#elements.option.setAttribute("aria-selected", this.#selected.toString());
+      this.#optionEl.setAttribute("role", "option");
+      this.#optionEl.setAttribute("tabindex", "-1");
+      this.#optionEl.setAttribute("aria-selected", this.#selected.toString());
       return;
     }
 
     if (this.#type === "checkbox") {
-      this.#elements.option.setAttribute("role", "menuitemcheckbox");
-      this.#elements.option.setAttribute("aria-checked", this.#selected.toString());
+      this.#optionEl.setAttribute("role", "menuitemcheckbox");
+      this.#optionEl.setAttribute("aria-checked", this.#selected.toString());
       return;
     }
 
     if (this.#type === "radio") {
-      this.#elements.option.setAttribute("role", "menuitemradio");
-      this.#elements.option.setAttribute("aria-checked", this.#selected.toString());
+      this.#optionEl.setAttribute("role", "menuitemradio");
+      this.#optionEl.setAttribute("aria-checked", this.#selected.toString());
       return;
     }
   }
@@ -268,31 +263,29 @@ class SelectOption extends HTMLElement implements WCP.IWebComponent {
    * @function {focus(options?: FocusOptions)}
    */
   focus = (options?: FocusOptions) => {
-    this.#elements.option.focus(options);
+    this.#optionEl.focus(options);
   };
 
   /** Fire the option click event manually. */
   click = () => {
-    this.#elements.option.click();
+    this.#optionEl.click();
   };
   //#endregion
 }
 
-customElements.define(COMPONENT_NAME, SelectOption);
-
-export type { SelectOption, SelectOptionData, ValueTypes };
+customElements.define(SelectOption.componentName, SelectOption);
 
 declare global {
   type SelectOption = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    [COMPONENT_NAME]: SelectOption;
+    [SelectOption.componentName]: SelectOption;
   }
 
   namespace React.JSX {
     interface IntrinsicElements {
       /** @markdown {./README.md} */
-      [COMPONENT_NAME]: WCP.ReactWComponent<ComponentTypes["JsxProps"], CodeEditor>;
+      [SelectOption.componentName]: WCP.ReactWComponent<ComponentTypes["JsxProps"], SelectOption>;
     }
   }
 }

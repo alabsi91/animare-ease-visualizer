@@ -1,6 +1,6 @@
-import * as WCP from "../wcp";
+import type * as WCP from "../wcp";
 
-const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+declare const CustomEvent: WCP.CustomEventT;
 
 type ExtendedAttributes = {
   "preferred-sequence": PreferDirection;
@@ -14,9 +14,9 @@ type ComponentEvents = WCP.WEvent<{
   stateChange: CustomEvent<HTMLElement | null>;
 }>;
 
-type ComponentTypes = WCP.WComponent<typeof TooltipComponent, ExtendedAttributes, ComponentEvents>;
+type CssState = "open";
 
-const COMPONENT_NAME = "tooltip-component";
+type ComponentTypes = WCP.WComponent<typeof TooltipComponent, ExtendedAttributes, ComponentEvents>;
 
 type PreferDirection = "top" | "bottom" | "left" | "right";
 
@@ -41,6 +41,10 @@ type PreferDirection = "top" | "bottom" | "left" | "right";
 class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
   addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
 
+  #propsToUpgrade = Object.entries(this) as [keyof this, this[keyof this]][] | undefined;
+
+  static readonly componentName = "tooltip-component";
+
   static readonly htmlFragment = (() => {
     const template = document.createElement("template");
     template.innerHTML = import_as_string("./tooltip-template.inline.html", { minify: true });
@@ -53,14 +57,12 @@ class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
     return sheet;
   })();
 
-  readonly #internals: ElementInternals;
-  readonly #popoverEl: HTMLDivElement;
-  readonly #anchorCP: Anchor;
-
-  readonly #abortController = new AbortController();
-
-  #revealDelayTimeoutId: number | null = null;
-  #currentHoveredElement: HTMLElement | null = null;
+  readonly #shadow = (() => {
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.adoptedStyleSheets = [TooltipComponent.stylesheet];
+    shadow.appendChild(TooltipComponent.htmlFragment.cloneNode(true));
+    return shadow;
+  })();
 
   readonly #events: WCP.WithDispatch<ComponentEvents> = {
     /** Emitted when the tooltip is opened. `detail` is the hovered element. */
@@ -71,6 +73,14 @@ class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
     stateChange: new CustomEvent("stateChange", { detail: null }),
     dispatch: (type, val) => this.dispatchEvent(new CustomEvent(type, { detail: val })),
   };
+
+  readonly #abortController = new AbortController();
+  readonly #internals = this.attachInternals<CssState>();
+  readonly #popoverEl: HTMLDivElement = this.#shadow.querySelector(".popover")!;
+  readonly #anchorCP: Anchor = this.#shadow.querySelector("anchor-component")!;
+
+  #revealDelayTimeoutId: number | null = null;
+  #currentHoveredElement: HTMLElement | null = null;
 
   //#region Public Props
   /** The element to attach the tooltip to, can be a string selector, a single or an array of elements. */
@@ -101,9 +111,9 @@ class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
   #attachTo: HTMLElement[] = [];
 
   /**
-   * The preferred directions to open the tooltip. An array of 1 to 4 directions: `top`, `bottom`, `left`, `right` in order of
-   * preference. When using the class property, an array is expected. When using as an HTML attribute, a string of space-separated
-   * directions might be expected.
+   * The preferred directions to open the tooltip.
+   *
+   * @attr preferred-sequence The preferred directions to open the tooltip. Pass `"top" | "bottom" | "left" | "right"` of space-separated directions.
    */
   get preferredSequence() { return this.#anchorCP.preferredPositionOrder.map(val => val[0]); }
   set preferredSequence(value: PreferDirection[]) {
@@ -126,23 +136,18 @@ class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
   //#endregion
 
   //#region HtmlElement Methods
-  constructor() {
-    super();
+  connectedCallback() {
+    if (!customElements.get("anchor-component")) {
+      console.error(`[${this.localName}]: Please import "anchor-component" first`);
+    }
 
-    this.#internals = this.attachInternals();
-
-    const shadow = this.attachShadow({ mode: "open" });
-    shadow.adoptedStyleSheets = [TooltipComponent.stylesheet];
-    shadow.appendChild(TooltipComponent.htmlFragment.cloneNode(true));
-
-    const popoverEl = shadow.querySelector<HTMLDivElement>(".popover")!;
-    if (!popoverEl) console.error(`[${COMPONENT_NAME}]: Could not find element with selector ".popover"`);
-    this.#popoverEl = popoverEl;
-
-    const anchorCP = shadow.querySelector("anchor-component")!;
-    if (!anchorCP) console.error(`[${COMPONENT_NAME}]: Could not find element with selector ".anchor"`);
-    if (!customElements.get("anchor-component")) console.error(`[${COMPONENT_NAME}]: Please import "anchor-component" first`);
-    this.#anchorCP = anchorCP;
+    if (this.#propsToUpgrade) {
+      for (const [prop, value] of this.#propsToUpgrade) {
+        delete this[prop];
+        this[prop] = value;
+      }
+      this.#propsToUpgrade = undefined;
+    }
   }
 
   disconnectedCallback(): void {
@@ -153,7 +158,7 @@ class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
     return ["for", "preferred-sequence", "reveal-delay", "offset"] as const;
   }
 
-  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null): void {
+  attributeChangedCallback(name: ComponentTypes["ObservedAttributes"], _oldValue: string | null, newValue: string | null) {
     if (name === "for") {
       this.for = newValue;
       return;
@@ -183,8 +188,7 @@ class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
       return;
     }
 
-    const _exhaustiveCheck: never = name;
-    return _exhaustiveCheck;
+    return name;
   }
 
   getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
@@ -268,14 +272,19 @@ class TooltipComponent extends HTMLElement implements WCP.IWebComponent {
   //#endregion
 }
 
-customElements.define(COMPONENT_NAME, TooltipComponent);
-
-export type { TooltipComponent };
+customElements.define(TooltipComponent.componentName, TooltipComponent);
 
 declare global {
   type TooltipComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    [COMPONENT_NAME]: TooltipComponent;
+    [TooltipComponent.componentName]: TooltipComponent;
+  }
+
+  namespace React.JSX {
+    interface IntrinsicElements {
+      /** @markdown {./README.md} */
+      [TooltipComponent.componentName]: WCP.ReactWComponent<ComponentTypes["JsxProps"], TooltipComponent>;
+    }
   }
 }

@@ -2,7 +2,7 @@
 
 A simple code editor component that can highlight code.
 
-**Usage**
+## Usage
 
 ```html
 <link
@@ -23,45 +23,176 @@ const editor = document.querySelector("code-editor");
 editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).value;
 ```
 
-**Props**
+## Properties
 
-- `value` (Get/Set) The code string.
-- `highlighter` (Get/Set) - The highlighter function, takes the current code string and returns the highlighted code as html string.
-- `tabsize` (Get/Set) The empty space counted as one tab. (default: `2`)
-- `readonly` (Get/Set) Disable user input. (default: `false`)
-- `linenumbers` (Get/Set) Show line numbers. (default: `false`)
-- `expand` (Get/Set) Expand the text area to fit the content, only for newlines wont work for warping text. (default: `true`)
-- `wrap` (Get/Set) Wrap the text area to fit the content. (default: `false`)
-- `copyButton` (Get/Set) Show copy button. (default: `false`)
-- `wrapButton` (Get/Set) Show wrap button. (default: `false`)
-- `stylesheet` (Get/Set) The CSS style sheet selector for code styling, it can be a `link[rel="stylesheet"]` or a `style` element.
-- `oneLine` (Get/Set) Mimic regular input element by forcing one line. (default: `false`)
+### `value`
 
-**Events**
+The code string.
 
-- `copyClick` Emitted when the copy button is clicked.
-- `update` Emitted when the value changes.
+**Accessors:** `Get`, `Set`  
+**Type:** `string`
 
-**Slots**
+### `highlighter`
+
+The highlighter function, takes the current code string and returns the highlighted code as html string.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `(code: string) => string | Promise<string>`
+
+### `tabsize`
+
+The empty space counted as one tab.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `number`  
+**Default:** `2`
+
+### `readonly`
+
+Disable user input.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `linenumbers`
+
+Show line numbers.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `expand`
+
+Expand the text area to fit the content, only for newlines wont work for warping text.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `true`
+
+### `wrap`
+
+Wrap the text area to fit the content.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `copyButton`
+
+Show copy button.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `wrapButton`
+
+Show wrap button.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `stylesheet`
+
+The CSS style sheet selector for code styling, it can be a `link[rel="stylesheet"]` or a `style` element.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `string | null`  
+**Default:** `null`
+
+### `oneLine`
+
+Mimic regular input element by forcing one line.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+## Events
+
+### `copyClick`
+
+Emitted when the copy button is clicked.
+
+### `update`
+
+Emitted when the value changes.
+
+## Attributes
+
+### `"value"`
+
+The code string.
+
+### `"readonly"`
+
+Disable user input.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"tabsize"`
+
+The empty space counted as one tab.
+
+**Default:** `2`
+
+### `"stylesheet"`
+
+The CSS style sheet selector for code styling, it can be a `link[rel="stylesheet"]` or a `style` element.
+
+### `"expand"`
+
+Expand the text area to fit the content, only for newlines wont work for warping text.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `true`
+
+### `"wrap"`
+
+Wrap the text area to fit the content.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"linenumbers"`
+
+Show line numbers.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"copy-button"`
+
+Show copy button.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"wrap-button"`
+
+Show wrap button.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"one-line"`
+
+Mimic regular input element by forcing one line.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+## Slots
 
 - `Default` The text content of the this slot children will be extracted and used as the initial code.
 - `header` Element to render in the header.
 - `footer` Element to render in the footer.
 
-**Attributes**
-
-- `"value"` The code string.
-- `"readonly"` Disable user input. (default: `false`)
-- `"tabsize"` The empty space counted as one tab. (default: `2`)
-- `"stylesheet"` The CSS style sheet selector for code styling, it can be a `link[rel="stylesheet"]` or a `style` element.
-- `"expand"` Expand the text area to fit the content, only for newlines wont work for warping text. (default: `true`)
-- `"wrap"` Wrap the text area to fit the content. (default: `false`)
-- `"linenumbers"` Show line numbers. (default: `false`)
-- `"copy-button"` Show copy button. (default: `false`)
-- `"wrap-button"` Show wrap button. (default: `false`)
-- `"one-line"` Mimic regular input element by forcing one line. (default: `false`)
-
-**CSS Properties**
+## CSS Properties
 
 - `--font-family` The default font family of the code editor.
 - `--font-weight` The default font size of the code editor.
@@ -80,7 +211,7 @@ editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).va
 - `--wcp-sz-border` The border width of the code editor.
 - `--wcp-shadow` The shadow of the code editor.
 
-**CSS Parts**
+## CSS Parts
 
 - `::part(wrapper)` The element that wrap [Header | Editor | Footer].
 - `::part(container)` The element that container [LineNumbers | Textarea/Highlight | CopyButton].
@@ -90,6 +221,6 @@ editor.highlighter = code => hljs.highlight(code, { language: "typescript" }).va
 - `::part(wrap-button)` The wrap button.
 - `::part(copy-button)` The copy button.
 
-**CSS States**
+## CSS States
 
 - `:state(focus)`

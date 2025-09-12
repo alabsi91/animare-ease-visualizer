@@ -4,7 +4,7 @@ The select option component is made to be used with `menu-component` but also it
 
 - The host of `<select-option />` can't be styled directly.
 
-**Usage**
+## Usage
 
 ```html
 <menu-component values="0" match-trigger-width="true" type="select">
@@ -13,48 +13,129 @@ The select option component is made to be used with `menu-component` but also it
 </menu-component>
 ```
 
-**Methods**
+## Methods
 
-- `toggleSelected()` Toggle the option selected state.
-- `focus(options?: FocusOptions)` Focus the option element.
-- `click()` Fire the option click event manually.
+### `toggleSelected()`
 
-**Props**
+Toggle the option selected state.
 
-- `value` (Get/Set) The value of the option.
-- `selected` (Get/Set) Whether the option is selected or not. (default: `false`)
-- `disabled` (Get/Set) Whether the option is disabled or not. (default: `false`)
-- `label` (Get/Set) The label of the option.
-- `onclick` (Set) Set the click event handler.
-- `onkeydown` (Set) Set the keydown event handler.
+### `focus()`
 
-**Events**
+Focus the option element.
 
-- `valueChange` Fired when `value` or `selected` is changed.
+**Type:** `focus(options?: FocusOptions)`
 
-**Slots**
+### `click()`
+
+Fire the option click event manually.
+
+## Properties
+
+### `type`
+
+The type for accessibility `"option" | "radio" | "checkbox"`.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `"option" | "radio" | "checkbox"`  
+**Default:** `"option"`
+
+### `value`
+
+The value of the option.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `string`
+
+### `selected`
+
+Whether the option is selected or not.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `disabled`
+
+Whether the option is disabled or not.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `label`
+
+The label of the option.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `string | null`  
+**Default:** `null`
+
+### `onclick`
+
+Set the click event handler.
+
+**Accessors:** `Set`  
+**Type:** `(e: MouseEvent) => void`
+
+### `onkeydown`
+
+Set the keydown event handler.
+
+**Accessors:** `Set`  
+**Type:** `(e: KeyboardEvent) => void`
+
+## Events
+
+### `valueChange`
+
+Fired when `value` or `selected` is changed.
+
+## Attributes
+
+### `"value"`
+
+The value of the option.
+
+### `"label"`
+
+The label of the option.
+
+### `"selected"`
+
+Whether the option is selected or not.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"disabled"`
+
+Whether the option is disabled or not.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"type"`
+
+The type for accessibility `"option" | "radio" | "checkbox"`.
+
+**Values:** `"option"`, `"radio"`, `"checkbox"`  
+**Default:** `"option"`
+
+## Slots
 
 - `Default` the option contents.
 
-**Attributes**
-
-- `"value"` The value of the option.
-- `"label"` The label of the option.
-- `"selected"` Whether the option is selected or not. (default: `false`)
-- `"disabled"` Whether the option is disabled or not. (default: `false`)
-- `"type"` The type for accessibility `"option" | "radio" | "checkbox"`. (default: `"option"`)
-
-**CSS Properties**
+## CSS Properties
 
 - `--ui-clr-surface-1` The background color of the option element.
 - `--ui-clr-accent` The background color of the option element when it is active.
 - `--ui-clr-surface-2` The background color of the option element when it is hovered.
 
-**CSS Parts**
+## CSS Parts
 
 - `::part(option)` The option element.
 
-**CSS States**
+## CSS States
 
 - `:state(selected)` The option is selected.
 - `:state(checked)` The option is checked.

@@ -10,7 +10,7 @@ A dialog web component.
 - Use the `"dialog-close"` attribute and give it the id of the dialog on a button element to automatically attach an event
   listener to close the dialog.
 
-**Usage**
+## Usage
 
 ```html
 <button class="button" dialog-toggle="dialog">Open Dialog</button>
@@ -21,38 +21,103 @@ A dialog web component.
 </dialog-component>
 ```
 
-**Methods**
+## Methods
 
-- `open()` Open the dialog
-- `close()` Close the dialog
-- `toggle()` Toggle the dialog between open and closed
+### `open()`
 
-**Props**
+Open the dialog
 
-- `backdropClose` (Get/Set) Dismiss the dialog when clicking outside the dialog. (default: `false`)
-- `escapeClose` (Get/Set) Dismiss the dialog when pressing the escape key. (default: `true`)
-- `closeButton` (Get/Set) Show a close button. (default: `true`)
-- `isOpen` (Get) True when the dialog is open.
-- `dialog` (Get) The underlying dialog element.
+### `close()`
 
-**Events**
+Close the dialog
 
-- `opened` Event fired when the dialog is opened.
-- `dismissed` Event fired when the dialog is closed.
-- `stateChanged` Event fired when the dialog is opened or closed.
+### `toggle()`
 
-**Slots**
+Toggle the dialog between open and closed
+
+## Properties
+
+### `backdropClose`
+
+Dismiss the dialog when clicking outside the dialog.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `false`
+
+### `escapeClose`
+
+Dismiss the dialog when pressing the escape key.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `true`
+
+### `closeButton`
+
+Show a close button.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `boolean`  
+**Default:** `true`
+
+### `isOpen`
+
+True when the dialog is open.
+
+**Accessors:** `Get`  
+**Type:** `boolean`
+
+### `dialog`
+
+The underlying dialog element.
+
+**Accessors:** `Get`  
+**Type:** `HTMLDialogElement`
+
+## Events
+
+### `opened`
+
+Event fired when the dialog is opened.
+
+### `dismissed`
+
+Event fired when the dialog is closed.
+
+### `stateChanged`
+
+Event fired when the dialog is opened or closed.
+
+## Attributes
+
+### `"backdrop-close"`
+
+Dismiss the dialog when clicking outside the dialog.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `false`
+
+### `"escape-close"`
+
+Dismiss the dialog when pressing the escape key.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `true`
+
+### `"close-button"`
+
+Show a close button.
+
+**Values:** `"true"`, `"false"`  
+**Default:** `true`
+
+## Slots
 
 - `close-icon` The icon to use for the close button.
 - `Default` The content of the dialog.
 
-**Attributes**
-
-- `"backdrop-close"` Dismiss the dialog when clicking outside the dialog. (default: `false`)
-- `"escape-close"` Dismiss the dialog when pressing the escape key. (default: `true`)
-- `"close-button"` Show a close button. (default: `true`)
-
-**CSS Properties**
+## CSS Properties
 
 - `--ui-clr-surface-1` The color of the dialog background.
 - `--ui-clr-backdrop` The color of the dialog backdrop.
@@ -65,7 +130,7 @@ A dialog web component.
 - `--ui-ease-anim-forward` The easing function for the reveal animation.
 - `--ui-ease-anim-backward` The easing function for the dismiss animation.
 
-**CSS Parts**
+## CSS Parts
 
 - `::part(dialog)` The dialog element.
 - `::part(content)` The dialog content container element.

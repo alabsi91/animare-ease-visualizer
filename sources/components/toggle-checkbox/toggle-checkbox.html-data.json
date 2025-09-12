@@ -5,9 +5,13 @@
       "name": "toggle-checkbox",
       "description": {
         "kind": "markdown",
-        "value": "# toggle-checkbox\n\nCheckboxes provide users with a graphical representation of a binary choice (yes or no, on or off). They are most commonly\npresented in a series, giving the user multiple choices to make.\n\n- **Form associated**\n\n**Usage**\n\n```html\n<toggle-checkbox label=\"Label\"></toggle-checkbox>\n```\n\n**Methods**\n\n- `toggle()` Toggle the checked state.\n\n**Props**\n\n- `checked` (Get/Set) Whether the checkbox is checked. (default: `false`)\n- `disabled` (Get/Set) Whether the checkbox is disabled. (default: `false`)\n- `label` (Get/Set) Add a label to the toggle switch.\n\n**Events**\n\n- `stateChange` Emitted when the checked value has changed.\n\n**Attributes**\n\n- `\"checked\"` Whether the checkbox is checked. (default: `false`)\n- `\"disabled\"` Whether the checkbox is disabled. (default: `false`)\n- `\"label\"` Add a label to the toggle switch.\n- `\"aria-label\"` Forwarded to the `<button>` element.\n\n**CSS Properties**\n\n- `--ui-ease-anim-forward` The easing function for the toggle animation.\n- `--ui-dur-anim-forward` The duration of the toggle animation.\n- `--ui-clr-accent` The color of the toggle checkbox when it's checked.\n- `--ui-clr-neutral` The color of the toggle checkbox when it's not checked.\n- `--ui-clr-border` The color of the toggle checkbox border.\n- `--ui-sz-border-thick` The size of the toggle checkbox border.\n- `--ui-clr-text-on-accent` The color of the checked icon.\n- `--ui-clr-sz-checkbox` The size of the toggle checkbox.\n\n**CSS Parts**\n\n- `::part(checkbox)` The toggle checkbox button element.\n- `::part(background)` The toggle checkbox background span element.\n- `::part(checked-icon)` The toggle checkbox checked icon element.\n- `::part(label)` The toggle checkbox label element.\n\n**CSS States**\n\n- `:state(disabled)`\n- `:state(checked)`\n"
+        "value": "# toggle-checkbox\n\nCheckboxes provide users with a graphical representation of a binary choice (yes or no, on or off). They are most commonly\npresented in a series, giving the user multiple choices to make.\n\n- **Form associated**\n\n## Usage\n\n```html\n<toggle-checkbox label=\"Label\"></toggle-checkbox>\n```\n\n## Methods\n\n### `toggle()`\n\nToggle the checked state.\n\n## Properties\n\n### `checked`\n\nWhether the checkbox is checked.\n\n**Accessors:** `Get`, `Set`  \n**Type:** `boolean`  \n**Default:** `false`\n\n### `disabled`\n\nWhether the checkbox is disabled.\n\n**Accessors:** `Get`, `Set`  \n**Type:** `boolean`  \n**Default:** `false`\n\n### `label`\n\nAdd a label to the toggle switch.\n\n**Accessors:** `Get`, `Set`  \n**Type:** `string | null`  \n**Default:** `null`\n\n### `type`\n\n**Accessors:** `Get`  \n**Type:** `string`  \n**Default:** `\"checkbox\"`\n\n## Events\n\n### `stateChange`\n\nEmitted when the checked value has changed.\n\n## Attributes\n\n### `\"aria-label\"`\n\nForwarded to the `<button>` element.\n\n### `\"checked\"`\n\nWhether the checkbox is checked.\n\n**Values:** `\"true\"`, `\"false\"`  \n**Default:** `false`\n\n### `\"disabled\"`\n\nWhether the checkbox is disabled.\n\n**Values:** `\"true\"`, `\"false\"`  \n**Default:** `false`\n\n### `\"label\"`\n\nAdd a label to the toggle switch.\n\n## CSS Properties\n\n- `--ui-ease-anim-forward` The easing function for the toggle animation.\n- `--ui-dur-anim-forward` The duration of the toggle animation.\n- `--ui-clr-accent` The color of the toggle checkbox when it's checked.\n- `--ui-clr-neutral` The color of the toggle checkbox when it's not checked.\n- `--ui-clr-border` The color of the toggle checkbox border.\n- `--ui-sz-border-thick` The size of the toggle checkbox border.\n- `--ui-clr-text-on-accent` The color of the checked icon.\n- `--ui-clr-sz-checkbox` The size of the toggle checkbox.\n\n## CSS Parts\n\n- `::part(checkbox)` The toggle checkbox button element.\n- `::part(background)` The toggle checkbox background span element.\n- `::part(checked-icon)` The toggle checkbox checked icon element.\n- `::part(label)` The toggle checkbox label element.\n\n## CSS States\n\n- `:state(disabled)`\n- `:state(checked)`\n"
       },
       "attributes": [
+        {
+          "name": "aria-label",
+          "description": "Forwarded to the `<button>` element."
+        },
         {
           "name": "checked",
           "description": "Whether the checkbox is checked. (default: `false`)",
@@ -35,10 +39,6 @@
         {
           "name": "label",
           "description": "Add a label to the toggle switch."
-        },
-        {
-          "name": "aria-label",
-          "description": "Forwarded to the `<button>` element."
         }
       ]
     }

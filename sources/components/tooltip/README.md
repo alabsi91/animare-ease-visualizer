@@ -7,7 +7,7 @@ A tooltip component that displays a message when hovered over.
 - Not selectable and hidden from screen readers.
 - Pointer events are disabled.
 
-**Usage**
+## Usage
 
 ```html
 <button id="tooltip-button">Show Alert</button>
@@ -17,42 +17,101 @@ A tooltip component that displays a message when hovered over.
 </tooltip-component>
 ```
 
-**Methods**
+## Methods
 
-- `open()` Open the tooltip.
-- `close()` Close the tooltip.
-- `toggle()` Toggle the tooltip between open and closed.
+### `open()`
 
-**Props**
+Open the tooltip.
 
-- `for` (Get/Set) The element to attach the tooltip to, can be a string selector, a single or an array of elements.
-- `preferredSequence` (Get/Set) The preferred directions to open the tooltip. An array of 1 to 4 directions: `top`, `bottom`, `left`, `right` in order of
-  preference. When using the class property, an array is expected. When using as an HTML attribute, a string of space-separated
-  directions might be expected.
-- `revealDelay` (Get/Set) The delay before the tooltip is revealed. (default: `500`)
-- `offset` (Get/Set) The tooltip offset, use `margin` like values. Ex: `1em 2em` (default: `"1em"`)
-- `isOpen` (Get) Returns `true` if the tooltip is open.
+### `close()`
 
-**Events**
+Close the tooltip.
 
-- `reveal` Emitted when the tooltip is opened. `detail` is the hovered element.
-- `dismiss` Emitted when the tooltip is closed. `detail` is the hovered element.
-- `stateChange` Emitted when the tooltip is opened or closed. `detail` is the hovered element.
+### `toggle()`
 
-**Slots**
+Toggle the tooltip between open and closed.
+
+## Properties
+
+### `for`
+
+The element to attach the tooltip to, can be a string selector, a single or an array of elements.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `HTMLElement[]`  
+**Default:** `[]`
+
+### `preferredSequence`
+
+The preferred directions to open the tooltip.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `("top" | "bottom" | "left" | "right")[]`
+
+### `revealDelay`
+
+The delay before the tooltip is revealed.
+
+**Accessors:** `Get`, `Set`  
+**Type:** `number`  
+**Default:** `500`
+
+### `offset`
+
+The tooltip offset, use `margin` like values. Ex: `1em 2em`
+
+**Accessors:** `Get`, `Set`  
+**Type:** `string`  
+**Default:** `"1em"`
+
+### `isOpen`
+
+Returns `true` if the tooltip is open.
+
+**Accessors:** `Get`  
+**Type:** `boolean`
+
+## Events
+
+### `reveal`
+
+Emitted when the tooltip is opened. `detail` is the hovered element.
+
+### `dismiss`
+
+Emitted when the tooltip is closed. `detail` is the hovered element.
+
+### `stateChange`
+
+Emitted when the tooltip is opened or closed. `detail` is the hovered element.
+
+## Attributes
+
+### `"preferred-sequence"`
+
+The preferred directions to open the tooltip. Pass `"top" | "bottom" | "left" | "right"` of space-separated directions.
+
+### `"for"`
+
+The element to attach the tooltip to, can be a string selector, a single or an array of elements.
+
+### `"reveal-delay"`
+
+The delay before the tooltip is revealed.
+
+**Default:** `500`
+
+### `"offset"`
+
+The tooltip offset, use `margin` like values. Ex: `1em 2em`
+
+**Default:** `"1em"`
+
+## Slots
 
 - `Default` The content of the tooltip.
 
-**Attributes**
-
-- `"for"` The element to attach the tooltip to, can be a string selector, a single or an array of elements.
-- `"preferred-sequence"` The preferred directions to open the tooltip. An array of 1 to 4 directions: `top`, `bottom`, `left`, `right` in order of
-  preference. When using the class property, an array is expected. When using as an HTML attribute, a string of space-separated
-  directions might be expected.
-- `"reveal-delay"` The delay before the tooltip is revealed. (default: `500`)
-- `"offset"` The tooltip offset, use `margin` like values. Ex: `1em 2em` (default: `"1em"`)
-
-**CSS Properties**
+## CSS Properties
 
 - `--ui-clr-surface-1` The background color of the tooltip.
 - `--ui-clr-text-muted` The text color of the tooltip container.
@@ -64,11 +123,11 @@ A tooltip component that displays a message when hovered over.
 - `--wcp-sp-offset` The tooltip offset, use `margin` like values. Ex: `1em 2em`. Overridden by `offset` prop/attribute.
 - `--ui-ease-anim-forward` The easing function of the show/hide animation.
 
-**CSS Parts**
+## CSS Parts
 
 - `::part(container)` The tooltip container element.
 - `::part(arrow)` The arrow element.
 
-**CSS States**
+## CSS States
 
 - `:state(open)`

@@ -1,6 +1,6 @@
 import * as WCP from "../wcp";
 
-const CustomEvent = globalThis.CustomEvent as typeof WCP.CustomEventT;
+declare const CustomEvent: WCP.CustomEventT;
 
 type ExtendedAttributes = {
   "backdrop-close": WCP.BooleanString;
@@ -15,8 +15,6 @@ type ComponentEvents = WCP.WEvent<{
 }>;
 
 type ComponentTypes = WCP.WComponent<typeof DialogComponent, ExtendedAttributes, ComponentEvents>;
-
-const COMPONENT_NAME = "dialog-component";
 
 /**
  * A dialog web component.
@@ -42,6 +40,10 @@ const COMPONENT_NAME = "dialog-component";
 class DialogComponent extends HTMLElement implements WCP.IWebComponent {
   addEventListener!: WCP.AddEventListener<ComponentEvents, this>;
 
+  #propsToUpgrade = Object.entries(this) as [keyof this, this[keyof this]][] | undefined;
+
+  static readonly componentName = "dialog-component";
+
   static readonly htmlFragment = (() => {
     const template = document.createElement("template");
     template.innerHTML = import_as_string("./dialog-template.inline.html", { minify: true });
@@ -54,9 +56,12 @@ class DialogComponent extends HTMLElement implements WCP.IWebComponent {
     return sheet;
   })();
 
-  readonly #dialogEl: HTMLDialogElement;
-  readonly #closeButtonEl: HTMLButtonElement;
-  readonly #abortController = new AbortController();
+  readonly #shadow = (() => {
+    const shadow = this.attachShadow({ mode: "open" });
+    shadow.adoptedStyleSheets = [DialogComponent.stylesheet];
+    shadow.appendChild(DialogComponent.htmlFragment.cloneNode(true));
+    return shadow;
+  })();
 
   readonly #events: ComponentEvents = {
     /** Event fired when the dialog is opened. */
@@ -66,6 +71,10 @@ class DialogComponent extends HTMLElement implements WCP.IWebComponent {
     /** Event fired when the dialog is opened or closed. */
     stateChanged: new CustomEvent("stateChanged"),
   };
+
+  readonly #abortController = new AbortController();
+  readonly #dialogEl: HTMLDialogElement = this.#shadow.querySelector("dialog")!;
+  readonly #closeButtonEl: HTMLButtonElement = this.#shadow.querySelector(".close-button")!;
 
   //#region Public Props
   /** Dismiss the dialog when clicking outside the dialog. */
@@ -90,20 +99,6 @@ class DialogComponent extends HTMLElement implements WCP.IWebComponent {
   //#endregion
 
   //#region HTMLElement Methods
-  constructor() {
-    super();
-
-    const shadow = this.attachShadow({ mode: "open" });
-    shadow.adoptedStyleSheets = [DialogComponent.stylesheet];
-    shadow.appendChild(DialogComponent.htmlFragment.cloneNode(true));
-
-    this.#dialogEl = shadow.querySelector("dialog")!;
-
-    const closeButton = shadow.querySelector<HTMLButtonElement>(".close-button")!;
-    if (!closeButton) console.error(`[${COMPONENT_NAME}]: Could not find element with the selector 'close-button'`);
-    this.#closeButtonEl = closeButton;
-  }
-
   connectedCallback() {
     // forward aria attributes to dialog
     const attributes = this.attributes;
@@ -148,6 +143,14 @@ class DialogComponent extends HTMLElement implements WCP.IWebComponent {
       if (this.id) trigger.setAttribute("aria-controls", this.id);
       trigger.addEventListener("click", this.toggle, { signal });
     }
+
+    if (this.#propsToUpgrade) {
+      for (const [prop, value] of this.#propsToUpgrade) {
+        delete this[prop];
+        this[prop] = value;
+      }
+      this.#propsToUpgrade = undefined;
+    }
   }
 
   disconnectedCallback(): void {
@@ -174,8 +177,7 @@ class DialogComponent extends HTMLElement implements WCP.IWebComponent {
       return;
     }
 
-    const _exhaustiveCheck: never = name;
-    return _exhaustiveCheck;
+    return name;
   }
 
   getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
@@ -190,7 +192,7 @@ class DialogComponent extends HTMLElement implements WCP.IWebComponent {
   #clickOutside = (e: MouseEvent) => {
     const content = this.#dialogEl.querySelector(".content");
     if (!content) {
-      console.error(`[${COMPONENT_NAME}]: Could not find element with the selector ".content"`);
+      console.error(`[${this.localName}]: Could not find element with the selector ".content"`);
       return;
     }
 
@@ -238,14 +240,27 @@ class DialogComponent extends HTMLElement implements WCP.IWebComponent {
   //#endregion
 }
 
-customElements.define(COMPONENT_NAME, DialogComponent);
-
-export type { DialogComponent };
+customElements.define(DialogComponent.componentName, DialogComponent);
 
 declare global {
   type DialogComponent = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    [COMPONENT_NAME]: DialogComponent;
+    [DialogComponent.componentName]: DialogComponent;
+  }
+
+  namespace React.JSX {
+    interface IntrinsicElements {
+      /** @markdown {./README.md} */
+      [DialogComponent.componentName]: WCP.ReactWComponent<ComponentTypes["JsxProps"], DialogComponent>;
+    }
+  }
+
+  namespace React {
+    interface ButtonHTMLAttributes<T> extends HTMLAttributes<T> {
+      "dialog-toggle"?: string;
+      "dialog-open"?: string;
+      "dialog-close"?: string;
+    }
   }
 }

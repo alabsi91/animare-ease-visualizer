@@ -1,8 +1,10 @@
-import * as WCP from "../wcp";
+import type * as WCP from "../wcp";
 
 type ExtendedAttributes = {
   "set-max-size": WCP.BooleanString;
 };
+
+type CssState = "misaligned" | AnchorPosition;
 
 type ComponentTypes = WCP.WComponent<typeof Anchor, ExtendedAttributes>;
 
@@ -26,8 +28,6 @@ type AnchoredRect = {
   offsetLeft: number;
   offsetRight: number;
 };
-
-const COMPONENT_NAME = "anchor-component";
 
 /**
  * Anchors an element to another element.
@@ -76,13 +76,17 @@ const COMPONENT_NAME = "anchor-component";
  * @cssState misaligned - If the anchored element anchors incorrectly due to lack of space or invalid measurements.
  */
 class Anchor extends HTMLElement implements WCP.IWebComponent {
+  #propsToUpgrade = Object.entries(this) as [keyof this, this[keyof this]][] | undefined;
+
+  static readonly componentName = "anchor-component";
+
   static readonly #validPositions = new Set<AnchorPosition>(["top", "bottom", "left", "right"]);
   static readonly #validAlignments = new Set<AnchorAlignment>(["center", "start", "end"]);
   static readonly #everyPositionArea: PositionArea[] = [];
 
+  readonly #internals = this.attachInternals<CssState>();
   readonly #abortController = new AbortController();
-  readonly #defaultSlot = null! as HTMLSlotElement;
-  readonly #internals: ElementInternals = this.attachInternals();
+  readonly #defaultSlot: HTMLSlotElement;
 
   //#region Public Props
   /** Uses `requestAnimationFrame` to always update the position. */
@@ -102,7 +106,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     const element = typeof elOrSelector === "string" ? document.querySelector(elOrSelector) : elOrSelector;
     if (element === this.#anchorElement) return;
     if (!element) {
-      console.error(`[${COMPONENT_NAME}]: Invalid anchor element "${elOrSelector}"`);
+      console.error(`[${this.localName}]: Invalid anchor element "${elOrSelector}"`);
       return;
     }
     this.#anchorElement = element as HTMLElement;
@@ -119,7 +123,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     const element = typeof elOrSelector === "string" ? document.querySelector(elOrSelector) : elOrSelector;
     if (element === this.#anchoredElement) return;
     if (!element) {
-      console.error(`[${COMPONENT_NAME}]: Invalid anchored element "${elOrSelector}"`);
+      console.error(`[${this.localName}]: Invalid anchored element "${elOrSelector}"`);
       return;
     }
     this.#anchoredElement = element as HTMLElement;
@@ -128,6 +132,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
   }
   #anchoredElement: HTMLElement | null = null;
 
+  /** Sets the rect of the anchor element. */
   set anchorToRect(rect: Partial<DOMRectLike> | null) {
     if (!rect) {
       this.#anchorToRect = null;
@@ -141,12 +146,15 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
       right = rect.right ?? (width || left);
     this.#anchorToRect = { left, top, width, height, bottom, right };
   }
+
+  /** Gets the rect of the anchor element. */
   get anchorElementRect(): DOMRectLike | null {
     if (this.#anchorToRect) return this.#anchorToRect;
     if (this.#anchorElement) return this.#anchorElement.getBoundingClientRect();
     return null;
   }
   #anchorToRect: DOMRectLike | null = null;
+
   /** The preferred position area sequence. In which order to try to position the anchored element. */
   get preferredPositionOrder(): PositionArea[] { return this.#preferredPositionOrder; }
   set preferredPositionOrder(val: PositionArea[]) {
@@ -168,7 +176,6 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     this.#defaultSlot = document.createElement("slot");
     const shadow = this.attachShadow({ mode: "open" });
     shadow.appendChild(this.#defaultSlot);
-    this.style.display = "contents";
 
     // every possible position area (36)
     if (Anchor.#everyPositionArea.length) return;
@@ -179,11 +186,22 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
         }
       }
     }
-    this.#preferredPositionOrder = Anchor.#everyPositionArea;
   }
 
   connectedCallback(): void {
+    this.style.display = "contents";
+
+    this.#preferredPositionOrder = Anchor.#everyPositionArea;
+
     this.#defaultSlot.addEventListener("slotchange", this.#onSlotChange);
+
+    if (this.#propsToUpgrade) {
+      for (const [prop, value] of this.#propsToUpgrade) {
+        delete this[prop];
+        this[prop] = value;
+      }
+      this.#propsToUpgrade = undefined;
+    }
   }
 
   disconnectedCallback(): void {
@@ -235,8 +253,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
       return;
     }
 
-    const _exhaustiveCheck: never = name;
-    return _exhaustiveCheck;
+    return name;
   }
 
   getAttribute(qualifiedName: ComponentTypes["ObservedAttributes"] | (string & {})): string | null;
@@ -278,7 +295,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     const firstElement = slotElements[0];
     if (this.anchoredElement === firstElement) return;
     if (!(firstElement instanceof HTMLElement)) {
-      console.error(`[${COMPONENT_NAME}]: The first element in the default slot should be an HTMLElement`);
+      console.error(`[${this.localName}]: The first element in the default slot should be an HTMLElement`);
       return;
     }
     this.anchoredElement = firstElement;
@@ -302,10 +319,10 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
 
     const anchoredEl = this.#anchoredElement!;
     const anchoredStyle = getComputedStyle(anchoredEl);
-    anchoredRect.offsetTop = str2Num(anchoredStyle.marginBlockStart);
-    anchoredRect.offsetBottom = str2Num(anchoredStyle.marginBlockEnd);
-    anchoredRect.offsetLeft = str2Num(anchoredStyle.marginInlineStart);
-    anchoredRect.offsetRight = str2Num(anchoredStyle.marginInlineEnd);
+    anchoredRect.offsetTop = this.#str2Num(anchoredStyle.marginBlockStart);
+    anchoredRect.offsetBottom = this.#str2Num(anchoredStyle.marginBlockEnd);
+    anchoredRect.offsetLeft = this.#str2Num(anchoredStyle.marginInlineStart);
+    anchoredRect.offsetRight = this.#str2Num(anchoredStyle.marginInlineEnd);
 
     if (this.setMaxSize) {
       const maxBlockSpace = Math.max(anchorRect.top, innerHeight - anchorRect.bottom, anchorRect.height);
@@ -314,13 +331,13 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
       anchoredEl.style.maxInlineSize = `${maxInlineSpace - anchoredRect.offsetLeft - anchoredRect.offsetRight}px`;
     }
 
-    anchoredRect.width = str2Num(anchoredStyle.inlineSize);
-    anchoredRect.height = str2Num(anchoredStyle.blockSize);
+    anchoredRect.width = this.#str2Num(anchoredStyle.inlineSize);
+    anchoredRect.height = this.#str2Num(anchoredStyle.blockSize);
     const anchoredTotalW = anchoredRect.width + anchoredRect.offsetLeft + anchoredRect.offsetRight;
     const anchoredTotalH = anchoredRect.height + anchoredRect.offsetTop + anchoredRect.offsetBottom;
 
     if (!anchoredRect.width || !anchoredRect.height) {
-      console.warn(`[${COMPONENT_NAME}]: Cannot get width or height of the anchored element`);
+      console.warn(`[${Anchor.componentName}]: Cannot get width or height of the anchored element`);
     }
 
     // inline anchor pos
@@ -350,7 +367,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
 
   #calcAnchoredPos = () => {
     if (!this.#anchoredElement || this.anchorElementRect === null) {
-      console.error(`[${COMPONENT_NAME}]: Invalid anchored element, anchor element or anchor element rect`);
+      console.error(`[${this.localName}]: Invalid anchored element, anchor element or anchor element rect`);
       return;
     }
 
@@ -381,6 +398,12 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     return true;
   };
 
+  #str2Num(str: string, defaultValue: number = 0) {
+    const num = parseFloat(str);
+    if (isNaN(num) || !isFinite(num)) return defaultValue;
+    return num;
+  }
+
   //#endregion
 
   //#region Public Methods
@@ -394,6 +417,7 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
     this.#anchoredElement!.style.inset = `${anchoredRect.top}px auto auto ${anchoredRect.left}px`;
     if (typeof this.onUpdate === "function") this.onUpdate(anchoredRect);
   };
+
   /** Starts the automatic update of the anchored element position. */
   startAutoUpdate = () => {
     this.#pullAndUpdatePos.start();
@@ -414,20 +438,19 @@ class Anchor extends HTMLElement implements WCP.IWebComponent {
   //#endregion
 }
 
-customElements.define(COMPONENT_NAME, Anchor);
-
-export type { Anchor };
+customElements.define(Anchor.componentName, Anchor);
 
 declare global {
   type Anchor = ComponentTypes["Instance"];
 
   interface HTMLElementTagNameMap {
-    [COMPONENT_NAME]: Anchor;
+    [Anchor.componentName]: Anchor;
   }
-}
 
-function str2Num(str: string, defaultValue: number = 0) {
-  const num = parseFloat(str);
-  if (isNaN(num) || !isFinite(num)) return defaultValue;
-  return num;
+  namespace React.JSX {
+    interface IntrinsicElements {
+      /** @markdown {./README.md} */
+      [Anchor.componentName]: WCP.ReactWComponent<ComponentTypes["JsxProps"], Anchor>;
+    }
+  }
 }

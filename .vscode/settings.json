@@ -1,7 +1,7 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.enable": true,
-  "eslint.validate": ["javascript", "html"],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html"],
   "vsicons.associations.files": [
     {
       "icon": "bolt",
