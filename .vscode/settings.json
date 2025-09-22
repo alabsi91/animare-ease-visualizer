@@ -2,25 +2,7 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.enable": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html"],
-  "vsicons.associations.files": [
-    {
-      "icon": "bolt",
-      "extensions": [".static.json"],
-      "format": "svg",
-      "overrides": "json"
-    }
-  ],
-  "json.schemas": [
-    {
-      "fileMatch": [".static.json"],
-      "url": "https://git.a-labs.space/alabsi91/static-bolt/raw/branch/main/src/config/config-json-schema.json"
-    }
-  ],
-  "files.associations": {
-    "*.static.json": "jsonc"
-  },
   "html.customData": [
-    ".vscode/static.html-data.json",
     "./sources/components/codeEditor/codeEditor.html-data.json",
     "./sources/components/alert/alert.html-data.json",
     "./sources/components/toggleCheckbox/toggleCheckbox.html-data.json",
