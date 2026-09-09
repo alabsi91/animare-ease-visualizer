@@ -26,6 +26,7 @@ export function initializeSidePanel() {
   elements.presetsMenu.addEventListener("valuechange", onPresetChange);
 
   // save and delete preset
+  elements.savePresetNameInput.addEventListener("input", syncSavePresetButton);
   elements.savePresetBtn.addEventListener("click", savePresetHandler);
   elements.deletePresetBtn.addEventListener("click", deletePresetHandler);
 
@@ -267,6 +268,10 @@ function addCustomPresetToMenu(name: string, pathStr: string) {
   const option = createPresetOption(name, pathStr);
   option.dataset.customPreset = name;
   elements.presetsFlyout.append(option);
+}
+
+function syncSavePresetButton() {
+  elements.savePresetBtn.disabled = elements.savePresetNameInput.value.trim() === "";
 }
 
 function syncDeletePresetButton() {

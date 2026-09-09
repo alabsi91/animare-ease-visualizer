@@ -191,8 +191,8 @@
   }
 }
 
-.save-preset-name-input:placeholder-shown + .save-preset-btn {
-  pointer-events: none;
+.save-preset-btn:disabled {
+  cursor: not-allowed;
   opacity: 0.5;
 }
 

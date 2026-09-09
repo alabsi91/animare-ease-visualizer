@@ -59,7 +59,7 @@
 
     <div class="divider"></div>
 
-    <p class="panel-title">Presets</p>
+    <h2 class="panel-title">Presets</h2>
 
     <br />
 
@@ -69,7 +69,12 @@
           <sv-flyout></sv-flyout>
         </sv-combobox>
 
-        <button class="preset-delete-btn" aria-label="Delete the selected preset" data-sv-tooltip="delete-preset-tooltip">
+        <button
+          class="preset-delete-btn"
+          aria-label="Delete the selected preset"
+          data-sv-tooltip="delete-preset-tooltip"
+          aria-describedby="delete-preset-tooltip"
+        >
           <svg class="preset-delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
           </svg>
@@ -83,6 +88,7 @@
         <button
           class="save-preset-btn"
           aria-label="Save preset"
+          disabled
           data-sv-tooltip="save-preset-tooltip"
           aria-describedby="save-preset-tooltip"
         >
@@ -123,7 +129,7 @@
 
     <div class="divider"></div>
 
-    <p class="panel-title">Settings</p>
+    <h2 class="panel-title">Settings</h2>
 
     <div class="checkbox-label-container" data-sv-tooltip="auto-hide-tooltip">
       <label for="auto-hide-toggle">Auto hide anchor points</label>
@@ -151,7 +157,7 @@
     </div>
 
     <div class="divider"></div>
-    <p class="panel-title">SVG Path</p>
+    <h2 class="panel-title">SVG Path</h2>
     <br />
     <sv-code-editor class="svg-path-code-editor" code-stylesheet=".svg-highlight" copy-button expand></sv-code-editor>
     <div class="divider"></div>
