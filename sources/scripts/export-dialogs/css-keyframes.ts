@@ -2,6 +2,7 @@ import { ease } from "animare/plugins";
 import hljs from "highlight.js/lib/core";
 
 import { elements, getElement } from "../elements";
+import { showAlert } from "../alert";
 
 const exportElements = {
   dialog: getElement<Dialog>("#export-css-keyframe-dialog"),
@@ -52,19 +53,19 @@ function generateCssKeyframesCode() {
 
   const samples = exportElements.samplesInput.valueAsNumber;
   if (!isValidNum(samples) || samples < 2 || samples > 500) {
-    elements.alert.alert({ message: "Invalid samples", type: "error", closeBtn: false });
+    showAlert("error", "Invalid samples");
     return;
   }
 
   const from = exportElements.fromInput.valueAsNumber;
   if (!isValidNum(from)) {
-    elements.alert.alert({ message: "Invalid from value", type: "error", closeBtn: false });
+    showAlert("error", "Invalid from value");
     return;
   }
 
   const to = exportElements.toInput.valueAsNumber;
   if (!isValidNum(to)) {
-    elements.alert.alert({ message: "Invalid to value", type: "error", closeBtn: false });
+    showAlert("error", "Invalid to value");
     return;
   }
 
@@ -101,9 +102,9 @@ function copyCssKeyframesCodeHandler() {
   navigator.clipboard
     .writeText(code)
     .then(() => {
-      elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false });
+      showAlert("success", "Copied to clipboard");
     })
     .catch(() => {
-      elements.alert.alert({ message: "Failed to copy to clipboard", type: "error", closeBtn: false });
+      showAlert("error", "Failed to copy to clipboard");
     });
 }

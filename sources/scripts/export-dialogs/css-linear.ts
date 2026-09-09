@@ -2,6 +2,7 @@ import { ease } from "animare/plugins";
 import hljs from "highlight.js/lib/core";
 
 import { elements, getElement } from "../elements";
+import { showAlert } from "../alert";
 
 const exportElements = {
   exportCssLinearDialog: getElement<Dialog>("#export-css-linear-dialog"),
@@ -24,7 +25,7 @@ export function initCssLinearExport() {
 function generateCssLinearCode() {
   const cssVarName = exportElements.nameInput.value;
   if (!cssVarName) {
-    elements.alert.alert({ message: "Invalid name", type: "error", closeBtn: false });
+    showAlert("error", "Invalid name");
     return;
   }
 
@@ -47,7 +48,7 @@ function generateCssLinearCode() {
 
   const samples = exportElements.samplesInput.valueAsNumber;
   if (isNaN(samples) || !isFinite(samples) || samples <= 0 || samples > 500) {
-    elements.alert.alert({ message: "Invalid samples", type: "error", closeBtn: false });
+    showAlert("error", "Invalid samples");
     return;
   }
 
@@ -66,6 +67,6 @@ function copyCssLinearCodeHandler() {
   const code = exportElements.codePreview.value;
   navigator.clipboard
     .writeText(code)
-    .then(() => elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false }))
-    .catch(() => elements.alert.alert({ message: "Failed to copy to clipboard", type: "error", closeBtn: false }));
+    .then(() => showAlert("success", "Copied to clipboard"))
+    .catch(() => showAlert("error", "Failed to copy to clipboard"));
 }

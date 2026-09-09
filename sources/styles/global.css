@@ -23,10 +23,15 @@
   /* Staticview */
   --sv-accent: var(--clr-accent);
   --sv-accent-content: var(--clr-pure);
+  --sv-gray-2: var(--clr-neutral2-10);
   --sv-gray-3: var(--clr-text-faded);
   --sv-gray-5: var(--clr-neutral2-700);
   --sv-gray-6: var(--ui-clr-surface-1);
   --sv-overlay: var(--ui-clr-backdrop);
+  --sv-error: #f44336;
+  --sv-info: #2196f3;
+  --sv-success: #4caf50;
+  --sv-warning: #f90;
   --sv-bdr-sz-md: 2px;
   --sv-bdr-rad-sm: 6px;
   --sv-bdr-rad-md: var(--ui-rad-border-md);
@@ -179,7 +184,6 @@ menu-component::part(container) {
 
 sv-slider {
   --sv-thickness: 10px;
-  --sv-gray-2: var(--clr-neutral2-10);
   --sv-gray-6: var(--clr-neutral2-300);
 
   display: block;

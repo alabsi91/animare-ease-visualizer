@@ -13,7 +13,7 @@ function getAllElements<T extends HTMLElement>(selector: string): T[] {
 export const elements = {
   main: getElement<HTMLElement>("main"),
   graphEditor: getElement<GraphEditor>("graph-editor"),
-  alert: getElement<AlertComponent>("alert-component"),
+  alertStack: getElement<AlertStack>("sv-alert-stack"),
   sidePanel: getElement<HTMLDivElement>(".side-panel"),
   smallSidePanel: getElement<HTMLDivElement>(".small-side-panel"),
   hideSidePanelBtn: getElement<HTMLButtonElement>(".hide-panel-btn"),

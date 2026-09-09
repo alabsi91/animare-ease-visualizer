@@ -3,6 +3,7 @@ import { checkGraphOverlap, onGraphPathChange } from "./graph";
 import { graphAnimation } from "./graph-animation";
 import { presets } from "./presets";
 import { storage } from "./storage";
+import { showAlert } from "./alert";
 
 export function initializeSidePanel() {
   // show/hide side panel
@@ -185,13 +186,13 @@ function durationInputHandler() {
 
   if (!val) {
     elements.durationInput.value = graphAnimation.duration.toString();
-    elements.alert.alert({ message: "Invalid duration", type: "error", closeBtn: false });
+    showAlert("error", "Invalid duration");
     return;
   }
 
   if (val < 0) {
     elements.durationInput.value = graphAnimation.duration.toString();
-    elements.alert.alert({ message: "Duration cannot be negative", type: "error", closeBtn: false });
+    showAlert("error", "Duration cannot be negative");
     return;
   }
 
@@ -210,7 +211,7 @@ function pathCodeHighlighter(code: string) {
 }
 
 function onPathCodeCopy() {
-  elements.alert.alert({ message: "SVG path copied to clipboard", type: "info", closeBtn: false });
+  showAlert("info", "SVG path copied to clipboard");
 }
 
 function onPathCodeChange() {
@@ -222,11 +223,12 @@ function onPathCodeChange() {
   }
 
   updatePathCode(); // revert
-  elements.alert.alert({
-    type: "error",
-    message:
-      "Invalid path: Must follow schema 'M x y C cx1 cy1 cx2 cy2 x y' with proper spacing, uppercase commands, and no extra or missing spaces",
-  });
+  showAlert(
+    "error",
+    "Invalid path",
+    "Must follow schema 'M x y C cx1 cy1 cx2 cy2 x y' with proper spacing, uppercase commands, and no extra or missing spaces",
+    true
+  );
 }
 
 function pathCodeOnEnter(event: KeyboardEvent) {
@@ -292,7 +294,7 @@ function addCustomPresetToMenu(name: string, pathStr: string) {
     storage.deleteGraph(name);
     option.remove();
     elements.presetsMenu.refresh();
-    elements.alert.alert({ type: "info", message: `Preset "${name}" was deleted`, closeBtn: false });
+    showAlert("info", `Preset "${name}" was deleted`);
   });
 
   option.appendChild(deleteBtn);
@@ -312,18 +314,18 @@ function savePresetHandler() {
   const presetName = elements.savePresetNameInput.value;
 
   if (!presetName) {
-    elements.alert.alert({ type: "error", message: "Please enter the preset name first", closeBtn: false });
+    showAlert("error", "Please enter the preset name first");
     return;
   }
 
   if (presetName.length > 15) {
-    elements.alert.alert({ type: "error", message: "The preset name is too long", closeBtn: false });
+    showAlert("error", "The preset name is too long");
     return;
   }
 
   const exists = storage.savedGraphs.find(e => e.name === presetName);
   if (exists) {
-    elements.alert.alert({ type: "error", message: "A preset with this name already exists", closeBtn: false });
+    showAlert("error", "A preset with this name already exists");
     return;
   }
 
@@ -334,7 +336,7 @@ function savePresetHandler() {
   elements.presetsMenu.refresh();
   elements.presetsMenu.value = pathStr;
 
-  elements.alert.alert({ type: "success", message: "Preset saved to the local storage", closeBtn: false });
+  showAlert("success", "Preset saved to the local storage");
 }
 
 function autoHidePointsToggleHandler() {

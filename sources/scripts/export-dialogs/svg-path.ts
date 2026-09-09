@@ -2,6 +2,7 @@ import hljs from "highlight.js/lib/core";
 
 import { Points } from "@components/graph-editor/helpers/points";
 import { elements, getElement } from "../elements";
+import { showAlert } from "../alert";
 
 const exportElements = {
   exportSvgDialog: getElement<Dialog>("#export-svg-dialog"),
@@ -23,7 +24,7 @@ export function initSvgCodeExport() {
 function generateSvgCode() {
   const scale = exportElements.scaleInput.valueAsNumber;
   if (isNaN(scale) || !isFinite(scale) || scale <= 0) {
-    elements.alert.alert({ message: "Invalid scale", type: "error", closeBtn: false });
+    showAlert("error", "Invalid scale");
     return;
   }
 
@@ -49,6 +50,6 @@ function copySvgCodeHandler() {
   const code = exportElements.codePreview.value;
   navigator.clipboard
     .writeText(code)
-    .then(() => elements.alert.alert({ message: "Copied to clipboard", type: "success", closeBtn: false }))
-    .catch(() => elements.alert.alert({ message: "Failed to copy to clipboard", type: "error", closeBtn: false }));
+    .then(() => showAlert("success", "Copied to clipboard"))
+    .catch(() => showAlert("error", "Failed to copy to clipboard"));
 }

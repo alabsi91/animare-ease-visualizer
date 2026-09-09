@@ -2,6 +2,7 @@ import { elements } from "./elements";
 import { graphAnimation } from "./graph-animation";
 import { checkOverlap } from "./helpers";
 import { storage } from "./storage";
+import { showAlert } from "./alert";
 
 export function initGraph() {
   const size = Math.max(Math.min(elements.graphEditor.offsetWidth, elements.graphEditor.offsetHeight) - 200, 200);
@@ -23,11 +24,7 @@ export function checkGraphOverlap() {
   if (isOverlapping) {
     elements.graphEditor.style.setProperty("--clr-path", "red");
     elements.graphEditor.style.setProperty("--clr-active-path", "red");
-    elements.alert.alert({
-      type: "warning",
-      message: "Invalid graph: Easing function cannot move backward in time",
-      closeBtn: false,
-    });
+    showAlert("warning", "Invalid graph", "Easing function cannot move backward in time");
     return;
   }
 

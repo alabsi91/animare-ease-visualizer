@@ -4,7 +4,6 @@
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html", "css"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "html.customData": [
-    "./sources/components/alert/alert.html-data.json",
     "./sources/components/anchor/anchor.html-data.json",
     "./sources/components/code-editor/code-editor.html-data.json",
     "./sources/components/graph-editor/graph-editor-component.html-data.json",
