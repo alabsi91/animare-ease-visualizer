@@ -31,8 +31,8 @@
     }
 
     &::part(textarea)::selection {
-      color: var(--clr-selection);
-      background-color: var(--clr-selection);
+      color: transparent;
+      background-color: color-mix(in oklab, var(--clr-accent) 40%, transparent);
     }
   }
 
