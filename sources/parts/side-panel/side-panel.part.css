@@ -1,0 +1,255 @@
+.side-panel {
+  inline-size: 24vw;
+  min-inline-size: 300px;
+  max-inline-size: 450px;
+  block-size: 100dvh;
+  overflow: auto;
+  background-color: var(--clr-navigation-background);
+  border-inline-end: solid 1px var(--clr-divider);
+  box-shadow: 2px 0 7px #00000024;
+  backdrop-filter: blur(1px);
+  transform: translateY(0);
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--clr-text);
+}
+
+.hide-panel-btn-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.hide-panel-btn {
+  translate: 35% 0;
+}
+
+.controls-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  justify-content: center;
+  padding-inline: 10px;
+  container-name: controls;
+  container-type: inline-size;
+
+  .control-btn {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5em;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: var(--clr-accent);
+    border: none;
+    border-radius: 4px;
+    transition: scale 100ms ease;
+
+    &:active {
+      scale: 0.95;
+    }
+
+    span {
+      flex: 1;
+      padding: 0 0.5em;
+    }
+
+    .control-btn-icon {
+      inline-size: 1.5em;
+      block-size: 1.5em;
+      fill: var(--clr-pure);
+    }
+  }
+}
+
+@container controls (max-width: 320px) {
+  .control-btn {
+    justify-content: center;
+  }
+
+  span {
+    display: none;
+  }
+}
+
+.presets-menu-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.presets-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  align-items: center;
+
+  .presets-menu::part(trigger) {
+    flex: 1;
+    min-inline-size: 0;
+  }
+}
+
+.presets-menu {
+  [role="option"] {
+    inline-size: 100%;
+    padding: 0.5em;
+    text-align: start;
+    cursor: pointer;
+    background-color: unset;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 100ms ease;
+  }
+
+  [role="option"][data-active-option] {
+    background-color: var(--clr-input);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [role="option"]:not([aria-selected="true"]):hover {
+      background-color: var(--clr-input);
+    }
+  }
+
+  [role="option"][aria-selected="true"] {
+    background-color: var(--clr-accent);
+  }
+}
+
+.preset-delete-btn {
+  padding: 0.2em;
+  cursor: pointer;
+  background-color: unset;
+  border: none;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #000;
+  }
+
+  .preset-delete-icon {
+    display: block;
+    inline-size: 24px;
+    block-size: 24px;
+    fill: var(--clr-pure);
+  }
+}
+
+.save-preset-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+}
+
+.save-preset-name-input {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.save-preset-btn {
+  display: block;
+  flex: 0.5;
+  padding: 0.5em;
+  color: var(--clr-pure);
+  cursor: pointer;
+  background-color: var(--clr-accent);
+  border: unset;
+  border-radius: 4px;
+  transition: scale 100ms ease;
+
+  &:active {
+    scale: 0.9;
+  }
+}
+
+.export-menu {
+  sv-flyout::part(content) {
+    inline-size: var(--sv-anchor-width);
+  }
+
+  .export-trigger-btn {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5em;
+    font-size: 1rem;
+    color: var(--clr-pure);
+    cursor: pointer;
+    background-color: var(--clr-accent);
+    border: none;
+    border-radius: 4px;
+    transition: scale 100ms ease;
+
+    &:active {
+      scale: 0.95;
+    }
+
+    span {
+      flex: 1;
+    }
+
+    .export-trigger-btn-icon {
+      inline-size: 1em;
+      block-size: 1em;
+      fill: currentcolor;
+    }
+  }
+
+  .export-menu-btn {
+    display: block;
+    inline-size: 100%;
+    padding: 0.5em;
+    text-align: start;
+    cursor: pointer;
+    background-color: unset;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 100ms ease;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: var(--clr-input);
+      }
+    }
+  }
+}
+
+.checkbox-label-container {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 1em;
+
+  label {
+    flex: 1;
+    text-align: start;
+    cursor: pointer;
+    user-select: none;
+  }
+}
+
+.input-label-container {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1em;
+  align-items: center;
+
+  input {
+    display: block;
+    flex: 1;
+    inline-size: 0;
+  }
+
+  label {
+    display: block;
+    flex: 1;
+    white-space: nowrap;
+  }
+}

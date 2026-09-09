@@ -1,8 +1,8 @@
 <layout src="@layouts/main.layout.html" title="Animare Ease Visualizer" description="Animare Ease Visualizer">
   <body>
     <main>
-      <part src="@parts/side-panel.part.html"></part>
-      <part src="@parts/small-side-panel.part.html"></part>
+      <part src="@parts/side-panel/side-panel.part.html"></part>
+      <part src="@parts/small-side-panel/small-side-panel.part.html"></part>
       <graph-editor></graph-editor>
     </main>
 
@@ -10,7 +10,7 @@
 
     <sv-tooltip id="contact-us-tooltip" side="inline-end">Contact Us</sv-tooltip>
 
-    <part src="@parts/shortucts-dialog/shortcuts-dialog.part.html"></part>
+    <part src="@parts/shortcuts-dialog/shortcuts-dialog.part.html"></part>
     <part src="@parts/export-dialogs/css-keyframe.part.html"></part>
     <part src="@parts/export-dialogs/css-linear.part.html"></part>
     <part src="@parts/export-dialogs/svg-path.part.html"></part>
@@ -43,5 +43,4 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
     inline
   />
-  <link rel="stylesheet" href="@styles/export-dialogs.css" inline />
 </insert>

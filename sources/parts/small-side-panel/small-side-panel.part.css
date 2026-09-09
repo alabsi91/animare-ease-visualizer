@@ -1,0 +1,41 @@
+.small-side-panel {
+  display: none;
+  inline-size: 75px;
+  min-inline-size: 0;
+  block-size: 100dvh;
+  overflow: hidden;
+  background-color: var(--clr-navigation-background);
+  border-inline-end: solid 1px var(--clr-divider);
+  box-shadow: 2px 0 7px #00000024;
+  backdrop-filter: blur(1px);
+
+  .panel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    justify-content: space-between;
+    block-size: 100%;
+  }
+
+  .small-panel-controls-btn {
+    display: block;
+    padding: 0.5em;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: var(--clr-accent);
+    border: none;
+    border-radius: 50%;
+    transition: scale 100ms ease;
+
+    &:active {
+      scale: 0.95;
+    }
+
+    .small-control-btn-icon {
+      display: block;
+      inline-size: 1.5em;
+      block-size: 1.5em;
+      fill: var(--clr-pure);
+    }
+  }
+}

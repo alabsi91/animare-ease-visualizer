@@ -7,13 +7,20 @@ export default defineConfig({
     plugins.loadSourcesPlugin({ include: ["./pages/**/*.html"] }),
     plugins.transformJsPlugin(),
     plugins.transformCssPlugin({ plugins: [postcssPresetEnv()] }),
-    plugins.bundlePackagesPlugin({ chunks: { staticview: { include: ["@staticview/ui/**"] } } }),
+    plugins.bundlePackagesPlugin({
+      chunks: {
+        staticview: { include: ["@staticview/ui/**"] },
+        animation: { include: ["animare/**"] },
+        highlight: { include: ["highlight.js/**"] },
+      },
+    }),
     plugins.importAsStringPlugin(),
 
     plugins.htmlLayoutPlugin(),
     plugins.htmlPagesPlugin(),
     plugins.htmlInsertPlugin(),
     plugins.htmlBundleScriptPlugin(),
+    plugins.htmlBundleStylePlugin(),
     plugins.htmlInlineStylePlugin(),
     plugins.htmlInlineSvgPlugin(),
     plugins.htmlPreloadPlugin(),

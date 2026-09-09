@@ -1,0 +1,46 @@
+graph-editor {
+  block-size: 100dvh;
+  background-color: unset;
+  background-image: unset;
+  background-size: unset;
+}
+
+sv-code-editor {
+  --sv-gray-6: var(--clr-neutral2-750);
+}
+
+sv-combobox {
+  --sv-gray-6: var(--clr-input);
+  --sv-gray-0: var(--clr-text);
+  --sv-gray-5: var(--clr-border);
+  --sv-bdr-rad-md: 4px;
+}
+
+sv-slider {
+  --sv-thickness: 10px;
+  --sv-gray-6: var(--clr-neutral2-300);
+
+  display: block;
+}
+
+sv-toggle-checkbox {
+  --sv-checkbox-sz: 24px;
+  --sv-gray-6: transparent;
+}
+
+sv-tooltip {
+  --sv-gray-2: var(--clr-text-faded);
+
+  max-inline-size: 40ch;
+  padding: 0.4em 0.7em;
+}
+
+sv-tooltip:not(:defined) {
+  display: none;
+}
+
+sv-flyout::part(content) {
+  padding: 0.5em;
+  background-color: hsl(from var(--clr-input-active) h s l / 95%);
+  backdrop-filter: blur(4px);
+}

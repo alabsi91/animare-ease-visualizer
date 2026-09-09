@@ -1,0 +1,45 @@
+.contact-us-menu {
+  .contact-us-custom-trigger {
+    padding: 0;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+  }
+
+  .contact-us-custom-trigger svg {
+    display: block;
+    inline-size: 36px;
+    block-size: 36px;
+    fill: var(--clr-pure);
+  }
+
+  .contact-us-link {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+    padding: 0.5em;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 100ms ease;
+  }
+
+  a:visited {
+    color: var(--clr-pure);
+  }
+
+  .contact-us-link:hover {
+    background-color: #3b3b3b;
+  }
+
+  .contact-us-link span {
+    flex: 1;
+  }
+
+  .contact-us-link svg {
+    display: block;
+    inline-size: 24px;
+    block-size: 24px;
+    fill: var(--clr-text);
+  }
+}

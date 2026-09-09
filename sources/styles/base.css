@@ -1,0 +1,180 @@
+main {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  overflow: hidden;
+}
+
+* {
+  --clr-selection: var(--clr-accent1-700);
+
+  box-sizing: border-box;
+
+  &::selection {
+    background-color: var(--clr-selection);
+  }
+
+  /* stylelint-disable-next-line selector-no-vendor-prefix */
+  &::-moz-selection {
+    background-color: var(--clr-selection);
+  }
+}
+
+html {
+  font-family:
+    -apple-system, blinkmacsystemfont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  font-size: 1rem;
+  color-scheme: dark;
+}
+
+body {
+  color: var(--clr-text);
+  background-color: var(--clr-bg);
+  background-image: radial-gradient(var(--clr-bg-dot) 1px, var(--clr-bg) 1px);
+  background-size: 20px 20px;
+}
+
+body,
+html {
+  padding: 0;
+  margin: 0;
+}
+
+button,
+label,
+input {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+label {
+  cursor: pointer;
+}
+
+input {
+  padding: 0.5em;
+  color: var(--clr-text);
+  outline: none;
+  background-color: var(--clr-input);
+  border: 1px solid var(--clr-border);
+  border-radius: 4px;
+  transition-timing-function: ease;
+  transition-duration: 200ms;
+  transition-property: border-color, background-color, color;
+}
+
+input:focus {
+  color: hsl(from var(--clr-text) h s calc(l * 1.2));
+  background-color: var(--clr-input-active);
+  border-color: var(--ui-clr-accent);
+}
+
+input[type="number"] {
+  font-family: monospace;
+  text-align: center;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  margin: 0;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-appearance: none;
+}
+
+kbd {
+  display: inline-block;
+  min-inline-size: 1.5em;
+  padding: 0 5px;
+  margin-inline-end: 0.15em;
+  text-align: center;
+  border: 2px solid var(--ui-clr-accent);
+  border-radius: 0.25em;
+  box-shadow: 2px 2px #252525;
+
+  & > * {
+    display: block;
+  }
+}
+
+.divider {
+  inline-size: 100%;
+  block-size: 1px;
+  margin-block: 1em;
+  background-color: var(--clr-divider);
+}
+
+.panel-container {
+  padding: 1em;
+}
+
+.toggle-panel-btn {
+  padding: 0;
+  cursor: pointer;
+  background-color: unset;
+  border: unset;
+  transition: scale 100ms ease;
+
+  &:active {
+    scale: 0.9;
+  }
+
+  svg {
+    display: block;
+    inline-size: 36px;
+    block-size: 36px;
+    fill: var(--clr-pure);
+  }
+}
+
+.icon-btn {
+  padding: 0 0.2em;
+  cursor: pointer;
+  background-color: unset;
+  border: unset;
+  transition: scale 100ms ease;
+
+  &:active {
+    scale: 0.9;
+  }
+
+  svg {
+    display: block;
+    inline-size: 36px;
+    block-size: 36px;
+    fill: var(--clr-pure);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  @supports (scrollbar-color: #7a7a7a50 #7a7a7a50) {
+    .custom-scrollbar {
+      scrollbar-color: #7a7a7a50 #7a7a7a50;
+      scrollbar-width: thin;
+    }
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    inline-size: 6px;
+    block-size: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #7a7a7a00;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #7a7a7a50;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
