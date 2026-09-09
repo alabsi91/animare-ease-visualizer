@@ -23,10 +23,11 @@ export function initializeSidePanel() {
 
   // presets menu
   setupPresetsMenu();
-  elements.presetsMenu.addEventListener("valueChange", onPresetChange);
+  elements.presetsMenu.addEventListener("valuechange", onPresetChange);
 
-  // save preset
+  // save and delete preset
   elements.savePresetBtn.addEventListener("click", savePresetHandler);
+  elements.deletePresetBtn.addEventListener("click", deletePresetHandler);
 
   // auto hide toggle
   const isAutoHidePointsEnabled = storage.autoHidePoints ?? false;
@@ -243,68 +244,67 @@ function updatePathCode() {
 }
 
 function setupPresetsMenu() {
-  const presetOptions: (SelectOption | HTMLDivElement)[] = [];
-  for (const { name, path } of presets) {
-    // divider
-    if (name === "divider" && path === null) {
-      const divider = document.createElement("div");
-      divider.classList.add("menu-divider");
-      presetOptions.push(divider);
-      continue;
-    }
+  const presetOptions = presets.map(({ name, path }) => createPresetOption(name, path));
+  elements.presetsFlyout.append(...presetOptions);
 
-    // option
-    const option = document.createElement("select-option");
-    option.label = name;
-    option.textContent = name;
-    option.value = path || "none";
-    presetOptions.push(option);
-  }
-
-  elements.presetsMenu.append(...presetOptions);
-
-  const storagePresets = storage.savedGraphs;
-
-  for (const { name, path } of storagePresets) {
+  for (const { name, path } of storage.savedGraphs) {
     addCustomPresetToMenu(name, path);
   }
 
   elements.presetsMenu.refresh();
-  elements.presetsMenu.value = "none";
+  syncDeletePresetButton();
+}
+
+function createPresetOption(name: string, pathStr: string) {
+  const option = document.createElement("button");
+  option.type = "button";
+  option.textContent = name;
+  option.value = pathStr;
+  return option;
 }
 
 function addCustomPresetToMenu(name: string, pathStr: string) {
-  const option = document.createElement("select-option");
-  option.label = name;
-  option.value = pathStr;
-  option.textContent = name;
+  const option = createPresetOption(name, pathStr);
+  option.dataset.customPreset = name;
+  elements.presetsFlyout.append(option);
+}
 
-  const svgIcon = /*html*/ `
-  <svg class="preset-delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/>
-  </svg>`;
+function syncDeletePresetButton() {
+  elements.deletePresetBtn.hidden = getSelectedCustomPreset() === null;
+}
 
-  const deleteBtn = document.createElement("button");
-  deleteBtn.classList.add("preset-delete-btn");
-  deleteBtn.ariaLabel = "Delete preset";
-  deleteBtn.innerHTML = svgIcon;
+function getSelectedCustomPreset() {
+  const value = elements.presetsMenu.value;
+  if (typeof value !== "string" || !value) return null;
 
-  deleteBtn.addEventListener("click", e => {
-    e.stopImmediatePropagation();
-    storage.deleteGraph(name);
-    option.remove();
-    elements.presetsMenu.refresh();
-    showAlert("info", `Preset "${name}" was deleted`);
-  });
+  const options = elements.presetsFlyout.querySelectorAll<HTMLButtonElement>("[data-custom-preset]");
+  for (const option of options) {
+    if (option.value === value) return option;
+  }
 
-  option.appendChild(deleteBtn);
+  return null;
+}
 
-  elements.presetsMenu.append(option);
+function deletePresetHandler() {
+  const option = getSelectedCustomPreset();
+  if (!option) return;
+
+  const name = option.dataset.customPreset!;
+
+  storage.deleteGraph(name);
+  option.remove();
+  elements.presetsMenu.value = "";
+  elements.presetsMenu.refresh();
+  syncDeletePresetButton();
+
+  showAlert("info", `Preset "${name}" was deleted`);
 }
 
 function onPresetChange() {
+  syncDeletePresetButton();
+
   const val = elements.presetsMenu.value;
-  if (val === "none") return;
+  if (typeof val !== "string" || !val) return;
   elements.graphEditor.setFromPathStr(val);
   graphAnimation.setCustomEase(val);
   checkGraphOverlap();
@@ -312,7 +312,6 @@ function onPresetChange() {
 
 function savePresetHandler() {
   const presetName = elements.savePresetNameInput.value;
-
   if (!presetName) {
     showAlert("error", "Please enter the preset name first");
     return;
@@ -335,6 +334,7 @@ function savePresetHandler() {
   addCustomPresetToMenu(presetName, pathStr);
   elements.presetsMenu.refresh();
   elements.presetsMenu.value = pathStr;
+  syncDeletePresetButton();
 
   showAlert("success", "Preset saved to the local storage");
 }

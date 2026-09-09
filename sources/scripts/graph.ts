@@ -41,8 +41,7 @@ export function onGraphPathChange(pathStr: string) {
   graphAnimation.setCustomEase(pathStr);
 
   // presets menu
-  const currentPreset = elements.presetsMenu.value;
-  if (currentPreset !== "none") elements.presetsMenu.value = "none";
+  if (elements.presetsMenu.value) elements.presetsMenu.value = "";
 
   // save to local storage
   storage.lastPathDrawn = pathStr;

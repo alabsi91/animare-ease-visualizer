@@ -1,4 +1,4 @@
-import { solveTFromPositionX, splitCurveAtT } from "@components/graph-editor/helpers/geometry";
+import { solveTFromPositionX, splitCurveAtT } from "@graph-editor/helpers/geometry";
 import { Points } from "./points";
 
 import type { GraphEditor } from "../graph-editor-component";

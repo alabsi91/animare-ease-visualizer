@@ -179,11 +179,7 @@ sv-toggle-checkbox {
   --sv-gray-6: transparent;
 }
 
-select-option::part(option) {
-  justify-content: space-between;
-}
-
-menu-component::part(container) {
+sv-flyout::part(content) {
   padding: 0.5em;
   background-color: hsl(from var(--clr-input-active) h s l / 95%);
   backdrop-filter: blur(4px);
@@ -196,12 +192,9 @@ sv-slider {
   display: block;
 }
 
-menu-trigger {
-  --ui-clr-surface-1: var(--clr-input);
-  --ui-clr-surface-2: var(--clr-input);
-
-  &::part(trigger) {
-    font-size: 1rem;
-    color: var(--clr-text);
-  }
+sv-combobox {
+  --sv-gray-6: var(--clr-input);
+  --sv-gray-0: var(--clr-text);
+  --sv-gray-5: var(--clr-border);
+  --sv-bdr-rad-md: 4px;
 }

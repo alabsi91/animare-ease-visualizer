@@ -3,65 +3,38 @@ type Preset = {
   path: string;
 };
 
-type PresetDivider = {
-  name: "divider";
-  path: null;
-};
-
-const divider: PresetDivider = { name: "divider", path: null };
-
-export const presets: (Preset | PresetDivider)[] = [
-  { name: "...", path: "none" },
-
-  divider,
-
+export const presets: Preset[] = [
   { name: "sine in", path: "M 0 1 C 0.12 1 0.39 1 1 0" },
   { name: "sine out", path: "M 0 1 C 0.61 0 0.88 0 1 0" },
   { name: "sine in-out", path: "M 0 1 C 0.37 1 0.63 0 1 0" },
-
-  divider,
 
   { name: "quad in", path: "M 0 1 C 0.11 1 0.5 1 1 0" },
   { name: "quad out", path: "M 0 1 C 0.5 0 0.89 0 1 0" },
   { name: "quad in-out", path: "M 0 1 C 0.45 1 0.55 0 1 0" },
 
-  divider,
-
   { name: "cubic in", path: "M 0 1 C 0.32 1 0.67 1 1 0" },
   { name: "cubic out", path: "M 0 1 C 0.33 0 0.68 0 1 0" },
   { name: "cubic in-out", path: "M 0 1 C 0.65 1 0.35 0 1 0" },
-
-  divider,
 
   { name: "quart in", path: "M 0 1 C 0.5 1 0.75 1 1 0" },
   { name: "quart out", path: "M 0 1 C 0.25 0 0.5 0 1 0" },
   { name: "quart in-out", path: "M 0 1 C 0.76 1 0.24 0 1 0" },
 
-  divider,
-
   { name: "quint in", path: "M 0 1 C 0.64 1 0.78 1 1 0" },
   { name: "quint out", path: "M 0 1 C 0.22 0 0.36 0 1 0" },
   { name: "quint in-out", path: "M 0 1 C 0.83 1 0.17 0 1 0" },
-
-  divider,
 
   { name: "circ in", path: "M 0 1 C 0.55 1 1 0.55 1 0" },
   { name: "circ out", path: "M 0 1 C 0 0.45 0.45 0 1 0" },
   { name: "circ in-out", path: "M 0 1 C 0.85 1 0.15 0 1 0" },
 
-  divider,
-
   { name: "expo in", path: "M 0 1 C 0.7 1 0.84 1 1 0" },
   { name: "expo out", path: "M 0 1 C 0.16 0 0.3 0 1 0" },
   { name: "expo in-out", path: "M 0 1 C 0.87 1 0.13 0 1 0" },
 
-  divider,
-
   { name: "back in", path: "M 0 1 C 0.36 1 0.66 1.56 1 0" },
   { name: "back out", path: "M 0 1 C 0.34 -0.5 0.64 0 1 0" },
   { name: "back in-out", path: "M 0 1 C 0.68 1.6 0.32 -0.6 1 0" },
-
-  divider,
 
   {
     name: "bounce in",
@@ -76,8 +49,6 @@ export const presets: (Preset | PresetDivider)[] = [
     path: "M 0 1 C 0 1 0.013 0.992 0.022 0.992 C 0.031 0.992 0.045 1 0.045 1 C 0.045 1 0.07 0.969 0.092 0.969 C 0.114 0.969 0.137 1 0.137 1 C 0.137 1 0.175 0.875 0.225 0.875 C 0.275 0.875 0.319 1 0.319 1 C 0.319 1 0.4 0.5 0.5 0.5 C 0.6 0.5 0.683 0 0.683 0 C 0.683 0 0.725 0.128 0.773 0.125 C 0.821 0.122 0.865 0 0.865 0 C 0.865 0 0.885 0.032 0.908 0.032 C 0.931 0.032 0.955 0 0.955 0 C 0.955 0 0.962 0.008 0.977 0.008 C 0.992 0.008 1 0 1 0",
   },
 
-  divider,
-
   {
     name: "elastic in",
     path: "M 0 1 C 0.023 1 0.08 0.995 0.22 1.005 C 0.36 1.015 0.352 0.975 0.42 0.984 C 0.488 0.993 0.526 1.046 0.577 1.045 C 0.628 1.044 0.665 0.871 0.725 0.869 C 0.785 0.867 0.825 1.398 0.871 1.423 C 0.917 1.448 0.912 1 1 0",
@@ -90,8 +61,6 @@ export const presets: (Preset | PresetDivider)[] = [
     name: "elastic in-out",
     path: "M 0 1 C 0 1 0.061 1 0.148 1.005 C 0.235 1.01 0.26 0.967 0.3 0.975 C 0.34 0.983 0.39 1.154 0.42 1.111 C 0.45 1.068 0.544 -0.065 0.58 -0.112 C 0.616 -0.159 0.651 0.043 0.72 0.024 C 0.789 0.004 0.774 -0.005 0.816 -0.005 C 0.858 -0.005 0.879 0.005 1 0",
   },
-
-  divider,
 ];
 
 export const defaultSavedPreset = [

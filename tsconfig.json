@@ -6,7 +6,7 @@
       "@assets/*": ["./sources/assets/*"],
       "@styles/*": ["./sources/styles/*"],
       "@layouts/*": ["./sources/layouts/*"],
-      "@components/*": ["./sources/components/*"],
+      "@graph-editor/*": ["./sources/graph-editor/*"],
       "@parts/*": ["./sources/parts/*"],
       "@scripts/*": ["./sources/scripts/*"],
       "@types": ["./sources/types"]
