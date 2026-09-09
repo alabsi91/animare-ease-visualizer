@@ -1,5 +1,5 @@
 import { ease } from "animare/plugins";
-import hljs from "highlight.js/lib/core";
+import { createHighlighter } from "./highlighter";
 
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
@@ -17,8 +17,7 @@ const exportElements = {
 };
 
 export function initCssKeyframeExport() {
-  exportElements.propertyInput.highlighter = code => hljs.highlight(code, { language: "css" }).value;
-  exportElements.codePreview.highlighter = code => hljs.highlight(code, { language: "css" }).value;
+  exportElements.dialog.addEventListener("opened", setHighlighters, { once: true });
 
   exportElements.dialog.addEventListener("opened", generateCssKeyframesCode);
   exportElements.propertyInput.addEventListener("update", generateCssKeyframesCode);
@@ -26,6 +25,11 @@ export function initCssKeyframeExport() {
   exportElements.fromInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.toInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.copyBtn.addEventListener("click", copyCssKeyframesCodeHandler);
+}
+
+function setHighlighters() {
+  exportElements.propertyInput.highlighter = createHighlighter("css");
+  exportElements.codePreview.highlighter = createHighlighter("css");
 }
 
 function generateCssKeyframesCode() {

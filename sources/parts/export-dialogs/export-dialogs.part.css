@@ -9,7 +9,8 @@
   #export-css-keyframe-property {
     --sv-gray-5: var(--clr-border);
     --sv-gray-6: var(--clr-input-active);
-    --sv-accent: var(--clr-input-active);
+    --sv-active-line-background: transparent;
+    --sv-active-line-outline: transparent;
     --sv-bdr-sz-sm: 1px;
     --sv-bdr-rad-md: 4px;
     --sv-padding: 0.5em;
@@ -17,22 +18,12 @@
     &:state(--focus) {
       --sv-gray-5: var(--clr-accent);
       --sv-gray-6: var(--clr-bg);
-      --sv-accent: var(--clr-bg);
     }
 
     &::part(wrapper) {
       transition-timing-function: ease;
       transition-duration: 200ms;
       transition-property: border-color, background-color;
-    }
-
-    &::part(textarea) {
-      scrollbar-width: none;
-    }
-
-    &::part(textarea)::selection {
-      color: transparent;
-      background-color: color-mix(in oklab, var(--clr-accent) 40%, transparent);
     }
   }
 

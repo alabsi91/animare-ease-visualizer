@@ -3,23 +3,22 @@ import * as plugins from "@staticbolt/core/plugins";
 import { staticviewPlugin } from "@staticview/staticbolt-plugin";
 import postcssPresetEnv from "postcss-preset-env";
 
+const presetEnvironment = postcssPresetEnv();
+
 export default defineConfig({
   plugins: [
     plugins.loadSourcesPlugin({ include: ["./pages/**/*.html"] }),
     staticviewPlugin({
       include: ["sources/graph-editor/graph-editor.ts"],
-      postcssPlugins: [postcssPresetEnv()],
+      postcssPlugins: [presetEnvironment],
       minifyCssClasses: false,
       minifyCssVariables: false,
     }),
     plugins.transformJsPlugin(),
-    plugins.transformCssPlugin({ plugins: [postcssPresetEnv()] }),
+    plugins.transformCssPlugin({ plugins: [presetEnvironment] }),
     plugins.bundlePackagesPlugin({
-      chunks: {
-        packages: { include: ["animare/**", "highlight.js/**"] },
-      },
+      chunks: { highlight: { include: ["highlight.js/**"] } },
     }),
-    plugins.importAsStringPlugin(),
 
     plugins.htmlEnvOnlyPlugin(),
     plugins.htmlLayoutPlugin(),
@@ -29,7 +28,6 @@ export default defineConfig({
     plugins.htmlBundleStylePlugin(),
     plugins.htmlInlineStylePlugin(),
     plugins.htmlInlineSvgPlugin(),
-    plugins.htmlPreloadPlugin(),
     plugins.htmlMergeStylesPlugin(),
 
     plugins.cacheBustPlugin(),

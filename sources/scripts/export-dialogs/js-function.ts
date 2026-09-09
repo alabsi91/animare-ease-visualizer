@@ -1,5 +1,5 @@
 import { ease } from "animare/plugins";
-import hljs from "highlight.js/lib/core";
+import { createHighlighter } from "./highlighter";
 
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
@@ -14,7 +14,7 @@ const exportElements = {
 };
 
 export function initJsFunctionExport() {
-  exportElements.codePreview.highlighter = code => hljs.highlight(code, { language: "javascript" }).value;
+  exportElements.codePreview.highlighter = createHighlighter("javascript");
 
   exportElements.exportJsFunctionDialog.addEventListener("opened", generateJsFunctionCode);
   exportElements.samplesInput.addEventListener("input", generateJsFunctionCode);

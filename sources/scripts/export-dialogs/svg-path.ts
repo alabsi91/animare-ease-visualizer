@@ -1,4 +1,4 @@
-import hljs from "highlight.js/lib/core";
+import { createHighlighter } from "./highlighter";
 
 import { Points } from "@graph-editor/helpers/points";
 import { elements, getElement } from "../elements";
@@ -13,7 +13,7 @@ const exportElements = {
 };
 
 export function initSvgCodeExport() {
-  exportElements.codePreview.highlighter = code => hljs.highlight(code, { language: "html" }).value;
+  exportElements.codePreview.highlighter = createHighlighter("html");
 
   exportElements.exportSvgDialog.addEventListener("opened", generateSvgCode);
   exportElements.scaleInput.addEventListener("input", generateSvgCode);

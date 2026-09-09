@@ -1,5 +1,5 @@
 import { ease } from "animare/plugins";
-import hljs from "highlight.js/lib/core";
+import { createHighlighter } from "./highlighter";
 
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
@@ -14,7 +14,7 @@ const exportElements = {
 };
 
 export function initCssLinearExport() {
-  exportElements.codePreview.highlighter = code => hljs.highlight(code, { language: "css" }).value;
+  exportElements.codePreview.highlighter = createHighlighter("css");
 
   exportElements.exportCssLinearDialog.addEventListener("opened", generateCssLinearCode);
   exportElements.samplesInput.addEventListener("input", generateCssLinearCode);
