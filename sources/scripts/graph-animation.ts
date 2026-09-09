@@ -77,7 +77,7 @@ function createAnimation() {
         return;
       }
       // resume
-      const progress = elements.progressSlider.value;
+      const progress = elements.progressSlider.value as number;
       anim.play(`${progress}%`);
     },
     pause: () => {

@@ -13,9 +13,8 @@ export function initializeSidePanel() {
   elements.playBtns.forEach(e => e.addEventListener("click", playBtnHandler));
   elements.pauseBtns.forEach(e => e.addEventListener("click", pauseBtnHandler));
   elements.stopBtns.forEach(e => e.addEventListener("click", stopBtnHandler));
-  elements.progressSlider.addEventListener("valueChange", () => {
-    const value = elements.progressSlider.value;
-    graphAnimation.seek(value);
+  elements.progressSlider.addEventListener("valuechange", event => {
+    graphAnimation.seek(event.detail.value);
   });
 
   // export menu

@@ -19,7 +19,7 @@ export default defineConfig({
         postcssPresetEnv(),
       ],
     }),
-    plugins.bundlePackagesPlugin(),
+    plugins.bundlePackagesPlugin({ chunks: { staticview: { include: ["@staticview/ui/**"] } } }),
     plugins.importAsStringPlugin(),
 
     plugins.htmlLayoutPlugin(),

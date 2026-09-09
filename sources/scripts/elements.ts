@@ -21,7 +21,7 @@ export const elements = {
   playBtns: getAllElements<HTMLButtonElement>(".play-btn"),
   pauseBtns: getAllElements<HTMLButtonElement>(".pause-btn"),
   stopBtns: getAllElements<HTMLButtonElement>(".stop-btn"),
-  progressSlider: getElement<SliderComponent>(".progress-slider"),
+  progressSlider: getElement<Slider>(".progress-slider"),
   exportMenu: getElement<MenuComponent>(".export-menu"),
   presetsMenu: getElement<MenuComponent>(".presets-menu"),
   savePresetBtn: getElement<HTMLButtonElement>(".save-preset-btn"),

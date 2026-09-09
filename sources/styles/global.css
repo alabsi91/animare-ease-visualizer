@@ -29,6 +29,7 @@
   --sv-overlay: var(--ui-clr-backdrop);
   --sv-bdr-sz-md: 2px;
   --sv-bdr-rad-sm: 6px;
+  --sv-bdr-rad-md: var(--ui-rad-border-md);
   --sv-bdr-rad-lg: 0.8em;
 
   @media screen and (max-width: 800px) {
@@ -176,12 +177,12 @@ menu-component::part(container) {
   backdrop-filter: blur(4px);
 }
 
-slider-component {
-  --wcp-sz-thickness: 10px;
+sv-slider {
+  --sv-thickness: 10px;
+  --sv-gray-2: var(--clr-neutral2-10);
+  --sv-gray-6: var(--clr-neutral2-300);
 
-  &::part(bubble) {
-    display: none;
-  }
+  display: block;
 }
 
 menu-trigger {
