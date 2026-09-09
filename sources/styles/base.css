@@ -93,17 +93,32 @@ input::-webkit-inner-spin-button {
 }
 
 kbd {
-  display: inline-block;
-  min-inline-size: 1.5em;
-  padding: 0 5px;
+  display: inline-flex;
+  gap: 0.35em;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.6em;
+  padding: 0.2em 0.5em;
   margin-inline-end: 0.15em;
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.3;
+  vertical-align: middle;
+  color: var(--clr-text);
   text-align: center;
-  border: 2px solid var(--clr-accent);
-  border-radius: 0.25em;
-  box-shadow: 2px 2px var(--clr-border);
+  background-color: var(--clr-input-active);
+  border: 1px solid var(--clr-border);
+  border-block-end-width: 3px;
+  border-radius: 5px;
 
-  & > * {
-    display: block;
+  svg {
+    inline-size: 1.2em;
+    block-size: 1.2em;
+    fill: currentcolor;
+  }
+
+  svg[hidden] {
+    display: none;
   }
 }
 

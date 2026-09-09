@@ -5,9 +5,15 @@
     <li>
       <p class="list-bullet-title">Toggle anchor point smooth corner</p>
       <p class="list-item-shortcut">
-        <kbd>Shift</kbd>
+        <kbd>
+          <svg src="@assets/shift.svg" aria-hidden="true" inline></svg>
+          Shift
+        </kbd>
         +
-        <kbd>Click</kbd>
+        <kbd>
+          <svg src="@assets/mouse.svg" aria-hidden="true" inline></svg>
+          Click
+        </kbd>
         on the anchor point.
       </p>
       <p class="list-item-description">
@@ -19,9 +25,15 @@
     <li>
       <p class="list-bullet-title">Add new anchor point</p>
       <p class="list-item-shortcut">
-        <kbd class="alt-key">Alt</kbd>
+        <kbd class="alt-key">
+          <svg class="option-key-icon" src="@assets/option-key.svg" aria-hidden="true" inline hidden></svg>
+          <span class="key-label">Alt</span>
+        </kbd>
         +
-        <kbd>Click</kbd>
+        <kbd>
+          <svg src="@assets/mouse.svg" aria-hidden="true" inline></svg>
+          Click
+        </kbd>
         on the graph path.
       </p>
     </li>
@@ -29,7 +41,10 @@
     <li>
       <p class="list-bullet-title">Delete an anchor point</p>
       <p class="list-item-shortcut">
-        <kbd>Delete</kbd>
+        <kbd>
+          <svg src="@assets/backspace.svg" aria-hidden="true" inline></svg>
+          Delete
+        </kbd>
         the selected anchor point
       </p>
       <p class="list-item-description">The first and last anchor points cannot be deleted.</p>
@@ -38,9 +53,15 @@
     <li>
       <p class="list-bullet-title">Move control point independently</p>
       <p class="list-item-shortcut">
-        <kbd class="alt-key">Alt</kbd>
+        <kbd class="alt-key">
+          <svg class="option-key-icon" src="@assets/option-key.svg" aria-hidden="true" inline hidden></svg>
+          <span class="key-label">Alt</span>
+        </kbd>
         +
-        <kbd>Drag</kbd>
+        <kbd>
+          <svg src="@assets/drag.svg" aria-hidden="true" inline></svg>
+          Drag
+        </kbd>
         the control point.
       </p>
       <p class="list-item-description">When the control points are realigned, they automatically move together again.</p>
@@ -49,9 +70,15 @@
     <li>
       <p class="list-bullet-title">Lock movement to an axis</p>
       <p class="list-item-shortcut">
-        <kbd>Shift</kbd>
+        <kbd>
+          <svg src="@assets/shift.svg" aria-hidden="true" inline></svg>
+          Shift
+        </kbd>
         +
-        <kbd>Drag</kbd>
+        <kbd>
+          <svg src="@assets/drag.svg" aria-hidden="true" inline></svg>
+          Drag
+        </kbd>
         the anchor/control point.
       </p>
     </li>
@@ -59,9 +86,15 @@
     <li>
       <p class="list-bullet-title">Pan the graph panel</p>
       <p class="list-item-shortcut">
-        <kbd>Space</kbd>
+        <kbd>
+          <svg src="@assets/space-bar.svg" aria-hidden="true" inline></svg>
+          Space
+        </kbd>
         +
-        <kbd>Drag</kbd>
+        <kbd>
+          <svg src="@assets/drag.svg" aria-hidden="true" inline></svg>
+          Drag
+        </kbd>
         the graph panel.
       </p>
     </li>
@@ -69,7 +102,10 @@
     <li>
       <p class="list-bullet-title">Center the graph panel</p>
       <p class="list-item-shortcut">
-        <kbd>Double Click</kbd>
+        <kbd>
+          <svg src="@assets/mouse.svg" aria-hidden="true" inline></svg>
+          Double Click
+        </kbd>
         on the graph panel.
       </p>
     </li>
@@ -77,7 +113,10 @@
     <li>
       <p class="list-bullet-title">Zoom in and out</p>
       <p class="list-item-shortcut">
-        <kbd>Mouse Wheel</kbd>
+        <kbd>
+          <svg src="@assets/zoom.svg" aria-hidden="true" inline></svg>
+          Mouse Wheel
+        </kbd>
         over the graph panel.
       </p>
     </li>
@@ -108,7 +147,8 @@
   if (isMac) {
     const altKeys = document.querySelectorAll(".alt-key");
     altKeys.forEach(kbd => {
-      kbd.textContent = "Option";
+      kbd.querySelector(".key-label").textContent = "Option";
+      kbd.querySelector(".option-key-icon").removeAttribute("hidden");
     });
   }
 </script>
