@@ -40,7 +40,7 @@
   }
 
   input:focus {
-    color: hsl(from var(--clr-text) h s calc(l * 1.2));
+    color: var(--sb-color-gray-0);
     background-color: var(--clr-input-active);
     border-color: var(--clr-accent);
   }
@@ -88,15 +88,11 @@
     padding: 0.5em;
     margin-block-start: 1em;
     font-size: 1rem;
+    color: var(--clr-on-accent);
     cursor: pointer;
     background-color: var(--clr-accent);
     border: none;
     border-radius: 4px;
-    transition: scale 100ms ease;
-
-    &:active {
-      scale: 0.95;
-    }
   }
 
   .warning {
@@ -104,8 +100,9 @@
     padding: 0.5em 1em;
     margin-block-end: 1em;
     font-size: 1rem;
-    color: #fff;
-    background-color: #ffc40236;
+    color: var(--sb-warning-text);
+    background-color: var(--sb-warning-background);
+    border: 1px solid var(--sb-warning-border);
     border-radius: 4px;
   }
 }

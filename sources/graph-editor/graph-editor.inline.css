@@ -7,7 +7,7 @@
   /* anchors */
   --clr-anchor-circle: var(--clr-accent);
   --clr-active-anchor-circle: hsl(from var(--clr-accent) h calc(s * 2) l);
-  --clr-focus-anchor-circle-stroke: var(--clr-pure);
+  --clr-focus-anchor-circle-stroke: var(--clr-icon);
   --size-anchor-circle: 6px;
   --size-anchor-stroke: 2px;
 
@@ -19,8 +19,8 @@
   --size-ctrl-circle: 5px;
 
   /* path */
-  --clr-path: var(--clr-pure);
-  --clr-active-path: var(--clr-pure);
+  --clr-path: var(--clr-icon);
+  --clr-active-path: var(--clr-icon);
   --clr-filled-path: var(--clr-accent);
   --size-path-thickness: 2px;
   --size-filled-path-thickness: 3px;

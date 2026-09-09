@@ -4,5 +4,6 @@
 @import url("@parts/side-panel/side-panel.part.css");
 @import url("@parts/small-side-panel/small-side-panel.part.css");
 @import url("@parts/contact-us/contact-us.part.css");
+@import url("@parts/color-scheme-switch/color-scheme-switch.part.css");
 @import url("@parts/export-dialogs/export-dialogs.part.css");
 @import url("@parts/shortcuts-dialog/shortcuts-dialog.part.css");

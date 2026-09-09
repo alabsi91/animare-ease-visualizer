@@ -1,19 +1,19 @@
 .hljs-mz-command {
-  color: #80c4ff;
+  color: light-dark(#0b57a4, #80c4ff);
 }
 
 .hljs-command {
-  color: #81a2be;
+  color: light-dark(#1f5673, #81a2be);
 }
 
 .hljs-point-digit {
-  color: #f99157;
+  color: light-dark(#8a3b00, #f99157);
 }
 
 .hljs-point-dot {
-  color: #b6b6b6;
+  color: light-dark(#57534e, #b6b6b6);
 }
 
 .hljs-point-minus {
-  color: #b6b6b6;
+  color: light-dark(#57534e, #b6b6b6);
 }

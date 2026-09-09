@@ -9,6 +9,7 @@
     <sv-alert-stack></sv-alert-stack>
 
     <sv-tooltip id="contact-us-tooltip" side="inline-end">Contact Us</sv-tooltip>
+    <sv-tooltip id="color-scheme-tooltip" side="inline-end">Toggle light and dark mode</sv-tooltip>
 
     <part src="@parts/shortcuts-dialog/shortcuts-dialog.part.html"></part>
     <part src="@parts/export-dialogs/css-keyframe.part.html"></part>
@@ -37,10 +38,6 @@
 
 <insert selector="head">
   <link class="svg-highlight" rel="stylesheet" href="@styles/svg-path-highlight.css" inline />
-  <link
-    class="atom-one-dark"
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
-    inline
-  />
+  <link class="hljs-light" rel="stylesheet" href="highlight.js/styles/atom-one-light.min.css" inline />
+  <link class="hljs-dark" rel="stylesheet" href="highlight.js/styles/atom-one-dark.min.css" inline />
 </insert>

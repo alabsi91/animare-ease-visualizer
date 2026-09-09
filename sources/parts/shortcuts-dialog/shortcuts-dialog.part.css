@@ -8,7 +8,7 @@
 
   ul {
     padding-inline-start: 1.2em;
-    color: #ddd;
+    color: var(--clr-text);
   }
 
   .list-item-shortcut {
@@ -20,10 +20,11 @@
     margin-block-end: 0;
     font-size: 1.2rem;
     font-weight: bold;
+    color: var(--sb-color-gray-0);
   }
 
   .list-item-description {
     margin-block-start: 0.5em;
-    color: var(--clr-text);
+    color: var(--clr-text-faded);
   }
 }

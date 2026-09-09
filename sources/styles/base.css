@@ -5,8 +5,6 @@ main {
 }
 
 * {
-  --clr-selection: var(--clr-accent1-700);
-
   box-sizing: border-box;
 
   &::selection {
@@ -24,7 +22,16 @@ html {
     -apple-system, blinkmacsystemfont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   font-size: 1rem;
-  color-scheme: dark;
+  accent-color: var(--clr-accent);
+  color-scheme: dark light;
+
+  @media (prefers-color-scheme: light) {
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
 }
 
 body {
@@ -45,6 +52,7 @@ label,
 input {
   font-family: inherit;
   font-size: 1rem;
+  color: inherit;
 }
 
 label {
@@ -57,16 +65,16 @@ input {
   outline: none;
   background-color: var(--clr-input);
   border: 1px solid var(--clr-border);
-  border-radius: 4px;
+  border-radius: var(--sv-bdr-rad-sm);
   transition-timing-function: ease;
   transition-duration: 200ms;
   transition-property: border-color, background-color, color;
 }
 
 input:focus {
-  color: hsl(from var(--clr-text) h s calc(l * 1.2));
+  color: var(--sb-color-gray-0);
   background-color: var(--clr-input-active);
-  border-color: var(--ui-clr-accent);
+  border-color: var(--clr-accent);
 }
 
 input[type="number"] {
@@ -90,9 +98,9 @@ kbd {
   padding: 0 5px;
   margin-inline-end: 0.15em;
   text-align: center;
-  border: 2px solid var(--ui-clr-accent);
+  border: 2px solid var(--clr-accent);
   border-radius: 0.25em;
-  box-shadow: 2px 2px #252525;
+  box-shadow: 2px 2px var(--clr-border);
 
   & > * {
     display: block;
@@ -115,17 +123,12 @@ kbd {
   cursor: pointer;
   background-color: unset;
   border: unset;
-  transition: scale 100ms ease;
-
-  &:active {
-    scale: 0.9;
-  }
 
   svg {
     display: block;
-    inline-size: 36px;
-    block-size: 36px;
-    fill: var(--clr-pure);
+    inline-size: var(--sz-panel-icon);
+    block-size: var(--sz-panel-icon);
+    fill: var(--clr-icon);
   }
 }
 
@@ -134,24 +137,19 @@ kbd {
   cursor: pointer;
   background-color: unset;
   border: unset;
-  transition: scale 100ms ease;
-
-  &:active {
-    scale: 0.9;
-  }
 
   svg {
     display: block;
-    inline-size: 36px;
-    block-size: 36px;
-    fill: var(--clr-pure);
+    inline-size: var(--sz-panel-icon);
+    block-size: var(--sz-panel-icon);
+    fill: var(--clr-icon);
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  @supports (scrollbar-color: #7a7a7a50 #7a7a7a50) {
+  @supports (scrollbar-color: currentcolor transparent) {
     .custom-scrollbar {
-      scrollbar-color: #7a7a7a50 #7a7a7a50;
+      scrollbar-color: var(--clr-scrollbar) transparent;
       scrollbar-width: thin;
     }
   }
@@ -162,12 +160,12 @@ kbd {
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #7a7a7a00;
+    background-color: transparent;
     border-radius: 3px;
   }
 
   .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-    background-color: #7a7a7a50;
+    background-color: var(--clr-scrollbar);
   }
 
   .custom-scrollbar::-webkit-scrollbar-button {

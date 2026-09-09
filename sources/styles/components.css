@@ -6,7 +6,7 @@ graph-editor {
 }
 
 sv-code-editor {
-  --sv-gray-6: var(--clr-neutral2-750);
+  --sv-gray-6: var(--clr-input-active);
 }
 
 sv-combobox {
@@ -18,7 +18,7 @@ sv-combobox {
 
 sv-slider {
   --sv-thickness: 10px;
-  --sv-gray-6: var(--clr-neutral2-300);
+  --sv-gray-6: var(--sb-color-gray-4);
 
   display: block;
 }
@@ -29,7 +29,7 @@ sv-toggle-checkbox {
 }
 
 sv-tooltip {
-  --sv-gray-2: var(--clr-text-faded);
+  --sv-gray-2: var(--clr-text);
 
   max-inline-size: 40ch;
   padding: 0.4em 0.7em;
@@ -41,6 +41,6 @@ sv-tooltip:not(:defined) {
 
 sv-flyout::part(content) {
   padding: 0.5em;
-  background-color: hsl(from var(--clr-input-active) h s l / 95%);
+  background-color: color-mix(in oklab, var(--clr-input-active) 95%, transparent);
   backdrop-filter: blur(4px);
 }

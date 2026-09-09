@@ -9,9 +9,7 @@ export default defineConfig({
     plugins.transformCssPlugin({ plugins: [postcssPresetEnv()] }),
     plugins.bundlePackagesPlugin({
       chunks: {
-        staticview: { include: ["@staticview/ui/**"] },
-        animation: { include: ["animare/**"] },
-        highlight: { include: ["highlight.js/**"] },
+        packages: { include: ["@staticview/ui/**", "animare/**", "highlight.js/**"] },
       },
     }),
     plugins.importAsStringPlugin(),

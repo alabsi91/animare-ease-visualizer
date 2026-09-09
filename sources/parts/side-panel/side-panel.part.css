@@ -6,7 +6,7 @@
   overflow: auto;
   background-color: var(--clr-navigation-background);
   border-inline-end: solid 1px var(--clr-divider);
-  box-shadow: 2px 0 7px #00000024;
+  box-shadow: 2px 0 7px var(--clr-shadow);
   backdrop-filter: blur(1px);
   transform: translateY(0);
 }
@@ -43,15 +43,11 @@
     align-items: center;
     padding: 0.5em;
     font-size: 1rem;
+    color: var(--clr-on-accent);
     cursor: pointer;
     background-color: var(--clr-accent);
     border: none;
     border-radius: 4px;
-    transition: scale 100ms ease;
-
-    &:active {
-      scale: 0.95;
-    }
 
     span {
       flex: 1;
@@ -61,7 +57,7 @@
     .control-btn-icon {
       inline-size: 1.5em;
       block-size: 1.5em;
-      fill: var(--clr-pure);
+      fill: currentcolor;
     }
   }
 }
@@ -98,6 +94,7 @@
   [role="option"] {
     inline-size: 100%;
     padding: 0.5em;
+    color: var(--clr-text);
     text-align: start;
     cursor: pointer;
     background-color: unset;
@@ -107,16 +104,17 @@
   }
 
   [role="option"][data-active-option] {
-    background-color: var(--clr-input);
+    background-color: var(--clr-hover);
   }
 
   @media (hover: hover) and (pointer: fine) {
     [role="option"]:not([aria-selected="true"]):hover {
-      background-color: var(--clr-input);
+      background-color: var(--clr-hover);
     }
   }
 
   [role="option"][aria-selected="true"] {
+    color: var(--clr-on-accent);
     background-color: var(--clr-accent);
   }
 }
@@ -129,14 +127,14 @@
   border-radius: 4px;
 
   &:hover {
-    background-color: #000;
+    background-color: var(--clr-hover);
   }
 
   .preset-delete-icon {
     display: block;
     inline-size: 24px;
     block-size: 24px;
-    fill: var(--clr-pure);
+    fill: var(--clr-icon);
   }
 }
 
@@ -155,16 +153,11 @@
   display: block;
   flex: 0.5;
   padding: 0.5em;
-  color: var(--clr-pure);
+  color: var(--clr-on-accent);
   cursor: pointer;
   background-color: var(--clr-accent);
   border: unset;
   border-radius: 4px;
-  transition: scale 100ms ease;
-
-  &:active {
-    scale: 0.9;
-  }
 }
 
 .export-menu {
@@ -179,16 +172,11 @@
     align-items: center;
     padding: 0.5em;
     font-size: 1rem;
-    color: var(--clr-pure);
+    color: var(--clr-on-accent);
     cursor: pointer;
     background-color: var(--clr-accent);
     border: none;
     border-radius: 4px;
-    transition: scale 100ms ease;
-
-    &:active {
-      scale: 0.95;
-    }
 
     span {
       flex: 1;
@@ -205,6 +193,7 @@
     display: block;
     inline-size: 100%;
     padding: 0.5em;
+    color: var(--clr-text);
     text-align: start;
     cursor: pointer;
     background-color: unset;
@@ -214,7 +203,7 @@
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: var(--clr-input);
+        background-color: var(--clr-hover);
       }
     }
   }

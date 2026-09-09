@@ -1,6 +1,6 @@
 <div class="small-side-panel">
   <div class="panel-container">
-    <div>
+    <div class="small-panel-group">
       <button
         class="toggle-panel-btn show-side-panel"
         aria-label="show side panel"
@@ -23,15 +23,11 @@
         </svg>
       </button>
 
-      <br />
-
       <button class="small-panel-controls-btn pause-btn" aria-label="Pause animation">
         <svg class="small-control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
           <path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
         </svg>
       </button>
-
-      <br />
 
       <button class="small-panel-controls-btn stop-btn" aria-label="Stop animation">
         <svg class="small-control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
@@ -40,8 +36,10 @@
       </button>
     </div>
 
-    <div>
+    <div class="small-panel-group">
       <div class="divider"></div>
+
+      <part src="@parts/color-scheme-switch/color-scheme-switch.part.html"></part>
 
       <button
         class="icon-btn open-shortcuts-dialog"
@@ -49,9 +47,8 @@
         aria-label="Open keyboard shortcuts dialog"
         data-sv-tooltip="small-shortcuts-tooltip"
         aria-describedby="small-shortcuts-tooltip"
-        style="margin-bottom: 1em"
       >
-        <svg src="@assets/keyboard.svg" aria-hidden="true" inline></svg>
+        <svg src="@assets/help.svg" aria-hidden="true" inline></svg>
       </button>
       <sv-tooltip id="small-shortcuts-tooltip" side="inline-end">Keyboard Shortcuts</sv-tooltip>
 
