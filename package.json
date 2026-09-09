@@ -1,7 +1,7 @@
 {
   "type": "module",
   "dependencies": {
-    "@staticview/ui": "^1.0.0-beta.1",
+    "@staticview/ui": "^1.0.0-beta.2",
     "animare": "^2.0.0-beta.1.0.3",
     "highlight.js": "^11.12.0"
   },
@@ -9,6 +9,8 @@
     "dev": "staticbolt dev",
     "build": "staticbolt build",
     "serve": "staticbolt serve",
+    "generate-types": "sv types --include \"sources/graph-editor/*.ts\" --frameworks dom,global --outdir sources/graph-editor/types --flat",
+    "generate-docs": "sv docs --include \"sources/graph-editor/*.ts\" --md-out sources/graph-editor --md-name README.md --no-manifest --no-web-types --html-data-out sources/graph-editor/graph-editor.html-data.json",
     "fix-eslint": "eslint --fix",
     "fix-stylelint": "stylelint \"./sources/**/*.{css,html}\" \"./pages/**/*.html\" --fix",
     "fix-all": "npm run fix-eslint || npm run fix-stylelint"
@@ -27,6 +29,9 @@
     "@html-eslint/parser": "^0.65.0",
     "@staticbolt/core": "beta",
     "@staticbolt/lsp": "beta",
+    "@staticview/cli": "^1.0.0-beta.2",
+    "@staticview/eslint-plugin": "^1.0.0-beta.2",
+    "@staticview/staticbolt-plugin": "^1.0.0-beta.2",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",

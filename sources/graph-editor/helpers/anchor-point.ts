@@ -1,4 +1,4 @@
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 import type { Points } from "./points";
 import type { PointAddress } from "./types";
 
@@ -205,7 +205,7 @@ export class AnchorPoint {
     if (!this.#isChanged) return;
     this.#isChanged = false;
     this.graphEditor.historyManager.addSnapshotToHistory();
-    this.graphEditor.dispatchEvent(this.graphEditor.events.onComplete);
+    this.graphEditor.dispatchComplete();
   };
 
   #onPointerMove = (e: PointerEvent) => {

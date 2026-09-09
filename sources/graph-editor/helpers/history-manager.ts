@@ -1,7 +1,7 @@
 import { Points } from "./points";
 
 import type { Graph } from "./graph";
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 import type { PathCommands } from "./types";
 
 export class HistoryManager {
@@ -34,7 +34,7 @@ export class HistoryManager {
 
     this.graph.rerender();
     this.graphEditor.graph.path.updatePath();
-    this.graphEditor.dispatchEvent(this.graphEditor.events.onComplete);
+    this.graphEditor.dispatchComplete();
   };
 
   redo = () => {
@@ -48,7 +48,7 @@ export class HistoryManager {
 
     this.graph.rerender();
     this.graphEditor.graph.path.updatePath();
-    this.graphEditor.dispatchEvent(this.graphEditor.events.onComplete);
+    this.graphEditor.dispatchComplete();
   };
 
   takeSnapshot = () => {

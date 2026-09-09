@@ -1,7 +1,7 @@
 import { solveTFromPositionX, splitCurveAtT } from "@graph-editor/helpers/geometry";
 import { Points } from "./points";
 
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 import type { C_CMD, M_CMD } from "./types";
 
 export class Path {
@@ -135,6 +135,6 @@ export class Path {
 
     this.graphEditor.graph.addAnchorPoint(clickedCurveIdx);
     this.points.events.onUpdate.fire();
-    this.graphEditor.dispatchEvent(this.graphEditor.events.onComplete);
+    this.graphEditor.dispatchComplete();
   };
 }

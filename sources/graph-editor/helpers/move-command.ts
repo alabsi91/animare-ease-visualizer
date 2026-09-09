@@ -1,5 +1,5 @@
 import { AnchorPoint } from "./anchor-point";
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 import type { Points } from "./points";
 
 export class MoveCommand {

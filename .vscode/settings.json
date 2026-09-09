@@ -4,7 +4,7 @@
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html", "css"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "html.customData": [
-    "./sources/graph-editor/graph-editor-component.html-data.json",
+    "./sources/graph-editor/graph-editor.html-data.json",
     "./node_modules/@staticview/ui/custom.html-data.json"
   ],
   "vsicons.associations.files": [

@@ -21,10 +21,7 @@
   </head>
   <slot />
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-
+  <script type="module" production-only>
     const firebaseConfig = {
       apiKey: "AIzaSyAU26SFWmVYNvIFymLkA55DUhhiZ_3vBME",
       authDomain: "animare-ease-visualizer.firebaseapp.com",
@@ -35,7 +32,19 @@
       measurementId: "G-KG471HBTE5",
     };
 
-    const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
+    async function loadAnalytics() {
+      const [{ initializeApp }, { getAnalytics }] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js"),
+      ]);
+
+      getAnalytics(initializeApp(firebaseConfig));
+    }
+
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(loadAnalytics, { timeout: 5000 });
+    } else {
+      addEventListener("load", loadAnalytics);
+    }
   </script>
 </html>

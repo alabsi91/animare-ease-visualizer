@@ -16,6 +16,8 @@ import "@staticview/ui/types/global/dialog";
 import "@staticview/ui/types/global/slider";
 import "@staticview/ui/types/global/toggle-checkbox";
 import "@staticview/ui/types/global/tooltip";
+import "./graph-editor/types/dom-types";
+import "./graph-editor/types/global-types";
 
 import type { import_as_string as ImportAsString } from "@staticbolt/core/plugins";
 

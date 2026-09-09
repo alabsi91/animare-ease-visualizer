@@ -1,6 +1,7 @@
 import css from "@eslint/css";
 import pluginJs from "@eslint/js";
 import html from "@html-eslint/eslint-plugin";
+import staticview from "@staticview/eslint-plugin";
 import compat from "eslint-plugin-compat";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -8,7 +9,7 @@ import globals from "globals";
 import tsEslint from "typescript-eslint";
 
 export default defineConfig(
-  globalIgnores(["dist", "scripts", "eslint.config.mjs"]),
+  globalIgnores(["dist", "scripts", "eslint.config.mjs", "sources/graph-editor/types"]),
 
   {
     files: ["sources/**/*.{ts,html,css}", "pages/**/*.html", ".staticbolt.ts"],
@@ -33,6 +34,17 @@ export default defineConfig(
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/no-dynamic-delete": "off",
+    },
+  },
+
+  {
+    files: ["sources/graph-editor/**/*.ts"],
+    extends: [staticview.configs.recommended],
+    languageOptions: {
+      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+    },
+    rules: {
+      "sv/no-import-export-value": "off",
     },
   },
 

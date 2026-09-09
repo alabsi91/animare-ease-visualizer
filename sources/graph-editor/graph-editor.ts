@@ -6,38 +6,30 @@ import { KeyboardShortcutManager } from "./helpers/keyboard-shortcut-manager";
 import { Points } from "./helpers/points";
 import { Settings } from "./helpers/settings";
 
+import type { SV } from "@staticview/ui";
 import type { CubicCommand } from "./helpers/cubic-command";
 import type { MoveCommand } from "./helpers/move-command";
 import type { PathCommands } from "./helpers/types";
 
+declare const CustomEvent: SV.CustomEventT;
+
 const PATH_COMMANDS_RE = /^M(?:\s(?:-?\d+(?:\.\d+)?)){2}(?:\sC(?:\s(?:-?\d+(?:\.\d+)?)){6}){1,}/i;
 
-export class GraphEditor extends HTMLElement {
-  static readonly stylesheet = (() => {
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(import_as_string("./graph-editor.inline.css", { minify: true }));
-    return sheet;
-  })();
+/**
+ * `graph-editor` edits a cubic bezier easing curve on a zoomable panel.
+ *
+ * @title Graph Editor
+ * @markdown {./graph-editor.md}
+ */
+class GraphEditor extends HTMLElement implements SV.IWebComponent {
+  static readonly _componentName = "graph-editor";
 
-  /**
-   * - The svg viewBox size (width/height) that contain the graph path, anchor points, and control points
-   * - You should change the value in the css side too.
-   */
-  readonly PATH_SVG_VIEW_BOX_SIZE = 100;
-
-  readonly viewport: GraphViewPort;
-  readonly graphPanel: GraphPanel;
-  readonly graph: Graph;
-  readonly points: Points;
-  readonly settings: Settings;
-  readonly historyManager: HistoryManager;
-  readonly keyboardShortcutManager: KeyboardShortcutManager;
-  readonly abortController = new AbortController();
-  readonly events = {
-    /** Fired when the use finish drawing */
-    onComplete: new CustomEvent("complete"),
+  static readonly _events = {
+    /** Fired when the user finishes drawing. */
+    _complete: () => new CustomEvent("complete"),
   };
-  commandsRef: (CubicCommand | MoveCommand)[] = [];
+
+  readonly #shadow = $shadow({ cssFile: "./graph-editor.css", mode: "open" });
 
   #resizeObserver: ResizeObserver | null = null;
   #isPointerDown = false;
@@ -45,11 +37,43 @@ export class GraphEditor extends HTMLElement {
     return this.#isPointerDown && this.keyboardShortcutManager.isPanModifiersPressed;
   }
 
+  #dragOffset = { x: 0, y: 0 };
+
+  /**
+   * - The svg viewBox size (width/height) that contain the graph path, anchor points, and control points
+   * - You should change the value in the css side too.
+   */
+  readonly PATH_SVG_VIEW_BOX_SIZE: number = 100;
+
+  /** The outer svg that the panel is drawn into. It tracks the element's size. */
+  readonly viewport: GraphViewPort;
+
+  /** The square panel holding the graph. It handles zoom, panning, and the grid. */
+  readonly graphPanel: GraphPanel;
+
+  /** The drawn curve, its anchor points, and its control points. */
+  readonly graph: Graph;
+
+  /** The curve commands. Read `value` for the numbers and `valueStr` for the path string. */
+  readonly points: Points;
+
+  /** Snapping, zoom limits, and the keyboard shortcut assignments. */
+  readonly settings: Settings;
+
+  /** Undo and redo stack for point edits. */
+  readonly historyManager: HistoryManager;
+
+  /** Tracks which keys and modifiers are held down. */
+  readonly keyboardShortcutManager: KeyboardShortcutManager;
+
+  /** Aborts every listener the component added. Fires on disconnect. */
+  readonly abortController: AbortController = new AbortController();
+
+  /** The commands the graph is currently built from. */
+  commandsRef: (CubicCommand | MoveCommand)[] = [];
+
   constructor() {
     super();
-
-    const shadow = this.attachShadow({ mode: "open" });
-    shadow.adoptedStyleSheets = [GraphEditor.stylesheet];
 
     // Settings
     this.settings = new Settings(this);
@@ -65,7 +89,7 @@ export class GraphEditor extends HTMLElement {
     // Viewport
     this.viewport = new GraphViewPort(this);
     this.viewport.element.classList.add("main-svg");
-    shadow.appendChild(this.viewport.element);
+    this.#shadow.appendChild(this.viewport.element);
 
     // Panel
     this.graphPanel = new GraphPanel(this);
@@ -82,10 +106,12 @@ export class GraphEditor extends HTMLElement {
   }
 
   connectedCallback() {
+    $upgrade();
+
     const { signal } = this.abortController;
 
-    document.addEventListener("wheel", this.#onWheelHandler, { signal });
-    document.addEventListener("pointerup", this.#onPointerUpHandler, { signal });
+    this.ownerDocument.addEventListener("wheel", this.#onWheelHandler, { signal });
+    this.ownerDocument.addEventListener("pointerup", this.#onPointerUpHandler, { signal });
     this.viewport.element.addEventListener("pointermove", this.#onPointerMoveHandler, { signal });
     this.graphPanel.element.addEventListener("pointerdown", this.#onPanelPointerDownHandler, { signal });
     this.graphPanel.element.addEventListener("dblclick", this.graphPanel.center, { signal });
@@ -102,6 +128,11 @@ export class GraphEditor extends HTMLElement {
     this.graph.clear();
   }
 
+  /** Fires the `complete` event. The helpers call it once an edit settles. */
+  dispatchComplete = () => {
+    this.dispatchEvent(GraphEditor._events._complete());
+  };
+
   /** Returns `true` on success and `false` otherwise */
   setFromPathStr = (pathStr: string) => {
     if (!PATH_COMMANDS_RE.test(pathStr)) {
@@ -115,6 +146,7 @@ export class GraphEditor extends HTMLElement {
     return true;
   };
 
+  /** Replaces the graph with the given commands. */
   setFromPoints = (points: PathCommands) => {
     this.graph.clear(false);
     this.points.set(points);
@@ -122,6 +154,7 @@ export class GraphEditor extends HTMLElement {
     this.graph.path.updatePath();
   };
 
+  /** Zooms by one step. `1` zooms in, `-1` zooms out. Does nothing outside the zoom limits. */
   zoom = (d: 1 | -1, zoomStep = this.settings.zoomStep) => {
     const newSize = this.graphPanel.size + d * zoomStep;
     if (newSize < this.settings.zoomMin || newSize > this.settings.zoomMax) return;
@@ -131,10 +164,12 @@ export class GraphEditor extends HTMLElement {
     this.graphPanel.y -= (zoomStep / 2) * d;
   };
 
+  /** Zooms in by one step. Defaults to `settings.zoomStep`. */
   zoomIn = (step = this.settings.zoomStep) => {
     this.zoom(1, step);
   };
 
+  /** Zooms out by one step. Defaults to `settings.zoomStep`. */
   zoomOut = (step = this.settings.zoomStep) => {
     this.zoom(-1, step);
   };
@@ -159,7 +194,7 @@ export class GraphEditor extends HTMLElement {
     if (!this.settings.zoomEnabled) return;
 
     // check if the pointer position is over this
-    const elementsUnderPointer = document.elementsFromPoint(e.clientX, e.clientY);
+    const elementsUnderPointer = this.ownerDocument.elementsFromPoint(e.clientX, e.clientY);
     if (elementsUnderPointer[0] !== this) return;
 
     const d = e.deltaY > 0 ? -1 : 1;
@@ -179,8 +214,6 @@ export class GraphEditor extends HTMLElement {
     this.#isPointerDown = false;
     this.style.cursor = this.keyboardShortcutManager.isPanModifiersPressed ? "grab" : "default";
   };
-
-  #dragOffset = { x: 0, y: 0 };
 
   #onPanelPointerDownHandler = (e: PointerEvent) => {
     this.#isPointerDown = true;
@@ -208,14 +241,8 @@ export class GraphEditor extends HTMLElement {
   };
 }
 
-customElements.define("graph-editor", GraphEditor);
+$defineElement(GraphEditor);
 
-type GraphEditorLocal = GraphEditor;
+export type GraphEditorTypes = SV.WComponent<typeof GraphEditor>;
 
-declare global {
-  type GraphEditor = GraphEditorLocal;
-
-  interface HTMLElementTagNameMap {
-    "graph-editor": GraphEditor;
-  }
-}
+export type { GraphEditor };

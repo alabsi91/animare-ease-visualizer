@@ -1,5 +1,19 @@
 <layout src="@layouts/main.layout.html" title="Animare Ease Visualizer" description="Animare Ease Visualizer">
   <body>
+    <!-- Blocking classic script to prevent layout shifts because these are web components -->
+    <script iife bundle bundle-externals bundle-out="staticview.js">
+      import("@staticview/ui/alert-stack");
+      import("@staticview/ui/anchor");
+      import("@staticview/ui/code-editor");
+      import("@staticview/ui/combobox");
+      import("@staticview/ui/dialog");
+      import("@staticview/ui/flyout");
+      import("@staticview/ui/menu");
+      import("@staticview/ui/slider");
+      import("@staticview/ui/toggle-checkbox");
+      import("@staticview/ui/tooltip");
+    </script>
+
     <main>
       <part src="@parts/side-panel/side-panel.part.html"></part>
       <part src="@parts/small-side-panel/small-side-panel.part.html"></part>
@@ -19,19 +33,10 @@
 
     <div class="theme-layer"></div>
 
-    <script type="module" bundle preload>
-      import "@staticview/ui/anchor";
-      import "@staticview/ui/flyout";
-      import "@staticview/ui/menu";
-      import "@staticview/ui/combobox";
-      import "@graph-editor/graph-editor-component.ts";
-      import "@staticview/ui/code-editor";
-      import "@staticview/ui/alert-stack";
-      import "@staticview/ui/toggle-checkbox";
-      import "@staticview/ui/tooltip";
-      import "@staticview/ui/dialog";
-      import "@staticview/ui/slider";
-      import "@/scripts/main.ts";
+    <!-- The app bundle without packages -->
+    <script type="module" bundle bundle-out="app.js" preload="script">
+      import "@graph-editor/graph-editor.ts";
+      import "@scripts/main.ts";
     </script>
   </body>
 </layout>

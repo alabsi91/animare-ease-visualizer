@@ -1,6 +1,6 @@
 import { arePointsCollinear, mirrorPoint } from "@graph-editor/helpers/geometry";
 
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 import type { Points } from "./points";
 import type { PointAddress } from "./types";
 
@@ -226,7 +226,7 @@ export class ControlPoint {
     if (!this.#updateHistory) return;
     this.#updateHistory = false;
     this.graphEditor.historyManager.addSnapshotToHistory();
-    this.graphEditor.dispatchEvent(this.graphEditor.events.onComplete);
+    this.graphEditor.dispatchComplete();
   };
 
   #onPointerMove = (e: PointerEvent) => {

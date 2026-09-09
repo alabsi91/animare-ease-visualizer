@@ -1,7 +1,7 @@
 import { AnchorPoint } from "./anchor-point";
 import { ControlPoint } from "./control-point";
 
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 import type { Points } from "./points";
 
 export class CubicCommand {
@@ -45,6 +45,6 @@ export class CubicCommand {
     this.graphEditor.historyManager.takeSnapshot();
     this.remove();
     this.graphEditor.historyManager.addSnapshotToHistory();
-    this.graphEditor.dispatchEvent(this.graphEditor.events.onComplete);
+    this.graphEditor.dispatchComplete();
   };
 }

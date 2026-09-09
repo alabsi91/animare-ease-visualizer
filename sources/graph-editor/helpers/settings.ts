@@ -1,4 +1,4 @@
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 import type { KeyModifiers } from "./types";
 
 class KeyboardAssignment {

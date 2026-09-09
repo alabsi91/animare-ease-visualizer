@@ -1,4 +1,4 @@
-import type { GraphEditor } from "../graph-editor-component";
+import type { GraphEditor } from "../graph-editor";
 
 export type ViewBoxParams = {
   x: number;

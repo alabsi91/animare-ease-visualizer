@@ -2,7 +2,7 @@ import { CubicCommand } from "./cubic-command.js";
 import { MoveCommand } from "./move-command.js";
 import { Path } from "./path.js";
 
-import type { GraphEditor } from "../graph-editor-component.js";
+import type { GraphEditor } from "../graph-editor.js";
 import type { Points } from "./points.js";
 
 export class Graph {
