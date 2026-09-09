@@ -7,6 +7,11 @@ graph-editor {
 
 sv-code-editor {
   --sv-gray-6: var(--clr-input-active);
+
+  /* Safari paints the line numbers gutter over the highlight layer, hiding the first screenful of numbers. */
+  &::part(highlight) {
+    z-index: 1;
+  }
 }
 
 sv-combobox {
