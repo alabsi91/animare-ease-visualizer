@@ -1,4 +1,4 @@
-import * as WCP from "../wcp";
+import type * as WCP from "../wcp";
 
 declare const CustomEvent: WCP.CustomEventT;
 

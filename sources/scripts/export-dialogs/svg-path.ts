@@ -1,6 +1,6 @@
 import hljs from "highlight.js/lib/core";
 
-import { Points } from "~/sources/components/graph-editor/helpers/points";
+import { Points } from "@components/graph-editor/helpers/points";
 import { elements, getElement } from "../elements";
 
 const exportElements = {

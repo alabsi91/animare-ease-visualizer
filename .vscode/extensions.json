@@ -1,3 +1,8 @@
 {
-  "recommendations": ["plant.static-bolt-vscode", "christian-kohler.path-intellisense"]
+  "recommendations": [
+    "staticbolt.staticbolt-vscode-extension",
+    "esbenp.prettier-vscode",
+    "stylelint.vscode-stylelint",
+    "christian-kohler.path-intellisense"
+  ]
 }

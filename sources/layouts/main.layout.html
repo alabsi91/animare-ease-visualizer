@@ -6,11 +6,13 @@
     <link rel="stylesheet" href="@styles/theme.css" inline />
     <link rel="stylesheet" href="@styles/global.css" inline />
     <link rel="stylesheet" href="@styles/main.css" inline />
+    <!-- Safari supports this only since 17, and the app works without it. -->
+    <!-- eslint-disable-next-line html/use-baseline -->
     <link rel="manifest" href="@assets/favicon/manifest.json" />
     <link rel="icon" href="@assets/favicon/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="@assets/favicon/apple-touch-icon.png" />
-    <meta name="description" content="{{ description }}" />
-    <title>{{ title }}</title>
+    <meta name="description" content="{{ $data.description }}" />
+    <title>{{ $data.title }}</title>
   </head>
   <slot />
 

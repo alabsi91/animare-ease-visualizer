@@ -1,25 +1,28 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"],
+      "~/*": ["./pages/*"],
       "@/*": ["./sources/*"],
       "@assets/*": ["./sources/assets/*"],
       "@styles/*": ["./sources/styles/*"],
       "@layouts/*": ["./sources/layouts/*"],
       "@components/*": ["./sources/components/*"],
       "@parts/*": ["./sources/parts/*"],
+      "@scripts/*": ["./sources/scripts/*"],
       "@types": ["./sources/types"]
     },
     "lib": ["dom", "dom.iterable", "esnext"],
 
-    "types": [],
     "strict": true,
     "alwaysStrict": true,
     "target": "ES2022",
     "module": "Preserve",
+    "noEmit": true,
+    "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["sources"]
+  "include": ["sources", ".staticbolt.ts"]
 }

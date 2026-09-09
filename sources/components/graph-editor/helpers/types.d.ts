@@ -39,12 +39,4 @@ export type CmdIdx = Brand<number, "CMD_IDX">;
 export type XcoordIdx = Brand<number, "X_IDX">;
 export type PointAddress = [CmdIdx, XcoordIdx];
 export type KeyModifiers =
-  | "Control"
-  | "ControlLeft"
-  | "ControlRight"
-  | "Alt"
-  | "AltLeft"
-  | "AltRight"
-  | "Shift"
-  | "ShiftLeft"
-  | "ShiftRight";
+  "Control" | "ControlLeft" | "ControlRight" | "Alt" | "AltLeft" | "AltRight" | "Shift" | "ShiftLeft" | "ShiftRight";
