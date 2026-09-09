@@ -10,10 +10,10 @@
 
     <div class="export-inputs-container" id="export-css-keyframe-inputs-container">
       <div class="label-input-container">
-        <label for="export-css-keyframe-property">Property</label>
-        <code-editor id="export-css-keyframe-property" one-line="true" stylesheet=".atom-one-dark">
+        <span class="label">Property</span>
+        <sv-code-editor id="export-css-keyframe-property" one-line expand code-stylesheet=".atom-one-dark">
           <pre>transform: translateX({value}%);</pre>
-        </code-editor>
+        </sv-code-editor>
       </div>
 
       <div class="label-input-container">
@@ -32,15 +32,16 @@
       </div>
     </div>
 
-    <code-editor
+    <sv-code-editor
       class="export-code-preview"
       id="export-css-keyframe-code-preview"
-      stylesheet=".atom-one-dark"
-      linenumbers="true"
-      copy-button="true"
-      wrap-button="true"
-      readonly="true"
-    ></code-editor>
+      code-stylesheet=".atom-one-dark"
+      linenumbers
+      copy-button
+      wrap-button
+      readonly
+      expand
+    ></sv-code-editor>
 
     <button class="export-btn" id="export-css-keyframe-copy-btn">Copy</button>
   </div>

@@ -58,7 +58,7 @@ export function initializeSidePanel() {
   updatePathCode();
   elements.pathCodeEditor.highlighter = pathCodeHighlighter;
   elements.graphEditor.points.events.onUpdate.add(updatePathCode);
-  elements.pathCodeEditor.addEventListener("copyClick", onPathCodeCopy);
+  elements.pathCodeEditor.addEventListener("copyclick", onPathCodeCopy);
   elements.pathCodeEditor.addEventListener("blur", onPathCodeChange);
   elements.pathCodeEditor.addEventListener("keydown", pathCodeOnEnter);
 }

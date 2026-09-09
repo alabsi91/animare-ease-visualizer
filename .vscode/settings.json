@@ -5,7 +5,6 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "html.customData": [
     "./sources/components/anchor/anchor.html-data.json",
-    "./sources/components/code-editor/code-editor.html-data.json",
     "./sources/components/graph-editor/graph-editor-component.html-data.json",
     "./sources/components/menu/menu.html-data.json",
     "./sources/components/menu-trigger/menu-trigger.html-data.json",
