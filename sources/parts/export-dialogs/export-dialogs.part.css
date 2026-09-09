@@ -41,13 +41,6 @@
     padding-block: 0.7em;
     margin-inline: 1px;
     text-align: start;
-    background-color: var(--clr-input-active);
-  }
-
-  input:focus {
-    color: var(--sb-color-gray-0);
-    background-color: var(--clr-bg);
-    border-color: var(--clr-accent);
   }
 
   .content {

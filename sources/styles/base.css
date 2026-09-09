@@ -8,11 +8,7 @@ main {
   box-sizing: border-box;
 
   &::selection {
-    background-color: var(--clr-selection);
-  }
-
-  /* stylelint-disable-next-line selector-no-vendor-prefix */
-  &::-moz-selection {
+    color: var(--clr-on-accent);
     background-color: var(--clr-selection);
   }
 }
@@ -63,7 +59,7 @@ input {
   padding: 0.5em;
   color: var(--clr-text);
   outline: none;
-  background-color: var(--clr-input);
+  background-color: var(--clr-input-active);
   border: 1px solid var(--clr-border);
   border-radius: var(--sv-bdr-rad-sm);
   transition-timing-function: ease;
@@ -73,15 +69,13 @@ input {
 
 input:focus {
   color: var(--sb-color-gray-0);
-  background-color: var(--clr-input-active);
+  background-color: var(--clr-bg);
   border-color: var(--clr-accent);
 }
 
 input[type="number"] {
   font-family: monospace;
   text-align: center;
-  /* stylelint-disable-next-line property-no-vendor-prefix */
-  -moz-appearance: textfield;
   appearance: textfield;
 }
 

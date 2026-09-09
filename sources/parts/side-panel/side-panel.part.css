@@ -272,3 +272,18 @@
     white-space: nowrap;
   }
 }
+
+.svg-path-code-editor {
+  --sv-gray-5: var(--clr-border);
+
+  &::part(wrapper) {
+    transition-timing-function: ease;
+    transition-duration: 200ms;
+    transition-property: border-color, background-color;
+  }
+
+  &:state(--focus) {
+    --sv-gray-5: var(--clr-accent);
+    --sv-gray-6: var(--clr-bg);
+  }
+}

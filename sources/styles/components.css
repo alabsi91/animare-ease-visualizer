@@ -15,10 +15,21 @@ sv-code-editor {
 }
 
 sv-combobox {
-  --sv-gray-6: var(--clr-input);
+  --sv-gray-6: var(--clr-input-active);
   --sv-gray-0: var(--clr-text);
   --sv-gray-5: var(--clr-border);
   --sv-bdr-rad-md: 4px;
+
+  &::part(trigger) {
+    transition-timing-function: ease;
+    transition-duration: 200ms;
+    transition-property: border-color, background-color;
+  }
+
+  &:focus-within {
+    --sv-gray-0: var(--sb-color-gray-0);
+    --sv-gray-6: var(--clr-bg);
+  }
 }
 
 sv-slider {
