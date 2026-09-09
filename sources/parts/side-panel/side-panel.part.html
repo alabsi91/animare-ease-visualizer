@@ -80,7 +80,19 @@
 
       <div class="save-preset-container">
         <input type="text" name="preset-name" class="save-preset-name-input" placeholder="Preset name" />
-        <button class="save-preset-btn" data-sv-tooltip="save-preset-tooltip" aria-describedby="save-preset-tooltip">Save</button>
+        <button
+          class="save-preset-btn"
+          aria-label="Save preset"
+          data-sv-tooltip="save-preset-tooltip"
+          aria-describedby="save-preset-tooltip"
+        >
+          <svg class="save-preset-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+            <path
+              d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h447q16 0 30.5 6t25.5 17l114 114q11 11 17 25.5t6 30.5v447q0 33-23.5 56.5T760-120H200Zm365-155q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35ZM280-560h280q17 0 28.5-11.5T600-600v-80q0-17-11.5-28.5T560-720H280q-17 0-28.5 11.5T240-680v80q0 17 11.5 28.5T280-560Z"
+            />
+          </svg>
+          <span class="save-preset-btn-label">Save</span>
+        </button>
       </div>
 
       <sv-tooltip id="save-preset-tooltip" side="block-end">Save to local storage</sv-tooltip>
@@ -93,11 +105,6 @@
         <sv-flyout>
           <button class="export-trigger-btn" slot="trigger" type="button">
             <span>Export</span>
-            <svg class="export-trigger-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
-              <path
-                d="M320-160q-17 0-28.5-11.5T280-200q0-17 11.5-28.5T320-240h320q17 0 28.5 11.5T680-200q0 17-11.5 28.5T640-160H320Zm160-160q-17 0-28.5-11.5T440-360v-287l-76 75q-11 11-27.5 11.5T308-572q-11-11-11-28t11-28l144-144q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q11 11 11.5 27.5T652-572q-11 11-28 11t-28-11l-76-75v287q0 17-11.5 28.5T480-320Z"
-              />
-            </svg>
           </button>
 
           <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-css-keyframe-dialog">

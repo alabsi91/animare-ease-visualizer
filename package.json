@@ -21,6 +21,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@eslint/css": "^2.0.0",
     "@eslint/js": "^10.0.1",
     "@html-eslint/eslint-plugin": "^0.65.0",
     "@html-eslint/parser": "^0.65.0",

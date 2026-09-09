@@ -91,6 +91,10 @@
 }
 
 .presets-menu {
+  sv-flyout::part(content) {
+    max-block-size: min(20rem, var(--sv-anchor-available-height));
+  }
+
   [role="option"] {
     inline-size: 100%;
     padding: 0.5em;
@@ -142,6 +146,8 @@
   display: flex;
   flex-direction: row;
   gap: 1em;
+  container-name: save-preset;
+  container-type: inline-size;
 }
 
 .save-preset-name-input {
@@ -150,14 +156,44 @@
 }
 
 .save-preset-btn {
-  display: block;
+  display: flex;
   flex: 0.5;
+  flex-direction: row;
+  align-items: center;
   padding: 0.5em;
+  font-size: 1rem;
   color: var(--clr-on-accent);
   cursor: pointer;
   background-color: var(--clr-accent);
   border: unset;
   border-radius: 4px;
+
+  .save-preset-btn-label {
+    flex: 1;
+    padding: 0 0.5em;
+  }
+
+  .save-preset-btn-icon {
+    inline-size: 1.5em;
+    block-size: 1.5em;
+    fill: currentcolor;
+  }
+}
+
+@container save-preset (max-width: 320px) {
+  .save-preset-btn {
+    flex: none;
+    justify-content: center;
+  }
+
+  .save-preset-btn-label {
+    display: none;
+  }
+}
+
+.save-preset-name-input:placeholder-shown + .save-preset-btn {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .export-menu {
@@ -180,12 +216,6 @@
 
     span {
       flex: 1;
-    }
-
-    .export-trigger-btn-icon {
-      inline-size: 1em;
-      block-size: 1em;
-      fill: currentcolor;
     }
   }
 

@@ -1,16 +1,23 @@
 .export-dialog {
+  .export-code-preview {
+    &::part(textarea) {
+      min-block-size: 100px;
+      max-block-size: 300px;
+    }
+  }
+
   #export-css-keyframe-property {
     --sv-gray-5: var(--clr-border);
-    --sv-gray-6: var(--clr-input);
-    --sv-accent: var(--clr-input);
+    --sv-gray-6: var(--clr-input-active);
+    --sv-accent: var(--clr-input-active);
     --sv-bdr-sz-sm: 1px;
     --sv-bdr-rad-md: 4px;
     --sv-padding: 0.5em;
 
     &:state(--focus) {
       --sv-gray-5: var(--clr-accent);
-      --sv-gray-6: var(--clr-input-active);
-      --sv-accent: var(--clr-input-active);
+      --sv-gray-6: var(--clr-bg);
+      --sv-accent: var(--clr-bg);
     }
 
     &::part(wrapper) {
@@ -19,16 +26,13 @@
       transition-property: border-color, background-color;
     }
 
+    &::part(textarea) {
+      scrollbar-width: none;
+    }
+
     &::part(textarea)::selection {
       color: var(--clr-selection);
       background-color: var(--clr-selection);
-    }
-  }
-
-  .export-code-preview {
-    &::part(textarea) {
-      min-block-size: 100px;
-      max-block-size: 300px;
     }
   }
 
@@ -37,11 +41,12 @@
     padding-block: 0.7em;
     margin-inline: 1px;
     text-align: start;
+    background-color: var(--clr-input-active);
   }
 
   input:focus {
     color: var(--sb-color-gray-0);
-    background-color: var(--clr-input-active);
+    background-color: var(--clr-bg);
     border-color: var(--clr-accent);
   }
 
@@ -58,7 +63,7 @@
   }
 
   .export-dialog-title {
-    margin-block: 0 2rem;
+    margin-block: 0.2em 2em;
     font-size: 1.5rem;
     font-weight: bold;
     text-align: center;

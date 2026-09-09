@@ -1,3 +1,4 @@
+import css from "@eslint/css";
 import pluginJs from "@eslint/js";
 import html from "@html-eslint/eslint-plugin";
 import compat from "eslint-plugin-compat";
@@ -10,11 +11,18 @@ export default defineConfig(
   globalIgnores(["dist", "scripts", "eslint.config.mjs"]),
 
   {
-    files: ["sources/**/*.{ts,html}", "pages/**/*.html", ".staticbolt.ts"],
+    files: ["sources/**/*.{ts,html,css}", "pages/**/*.html", ".staticbolt.ts"],
     extends: [eslintPluginPrettierRecommended],
     rules: {
       "prettier/prettier": "warn",
     },
+  },
+
+  {
+    files: ["sources/**/*.css"],
+    plugins: { css },
+    language: "css/css",
+    languageOptions: { tolerant: true },
   },
 
   {
