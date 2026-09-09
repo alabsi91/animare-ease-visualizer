@@ -9,7 +9,6 @@
     "dev": "staticbolt dev",
     "build": "staticbolt build",
     "serve": "staticbolt serve",
-    "copy-component": "node scripts/copy-web-component.mjs",
     "fix-eslint": "eslint --fix",
     "fix-stylelint": "stylelint \"./sources/**/*.{css,html}\" \"./pages/**/*.html\" --fix",
     "fix-all": "npm run fix-eslint || npm run fix-stylelint"
@@ -27,6 +26,7 @@
     "@html-eslint/parser": "^0.65.0",
     "@staticbolt/core": "beta",
     "@staticbolt/lsp": "beta",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-compat": "^7.0.2",
@@ -36,6 +36,7 @@
     "postcss-html": "^2.0.0",
     "postcss-preset-env": "^11.5.2",
     "prettier": "^3.9.6",
+    "prettier-plugin-jinja-template": "^2.2.0",
     "prettier-plugin-jsdoc": "^1.8.1",
     "stylelint": "^17.15.0",
     "stylelint-config-recess-order": "^7.8.0",

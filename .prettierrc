@@ -1,10 +1,18 @@
 {
-  "plugins": ["prettier-plugin-jsdoc", "./scripts/prettier-plugin-allow-oneliner-methods.js"],
+  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-jsdoc", "prettier-plugin-jinja-template"],
   "trailingComma": "es5",
   "tabWidth": 2,
   "printWidth": 130,
   "semi": true,
   "arrowParens": "avoid",
   "htmlWhitespaceSensitivity": "ignore",
-  "singleQuote": false
+  "singleQuote": false,
+  "importOrder": ["<BUILTIN_MODULES>", "<THIRD_PARTY_MODULES>", "<SEPARATOR>", "^[./]", "<SEPARATOR>", "<TS_TYPES>"],
+  "importOrderSeparation": true,
+  "overrides": [
+    {
+      "files": ["*.layout.html", "*.part.html"],
+      "options": { "parser": "jinja-template" }
+    }
+  ]
 }
