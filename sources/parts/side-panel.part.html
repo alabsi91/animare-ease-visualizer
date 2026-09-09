@@ -98,18 +98,27 @@
 
     <p class="panel-title">Settings</p>
 
-    <toggle-checkbox id="auto-hide-toggle" label="Auto hide anchor points"></toggle-checkbox>
-    <tooltip-component for="#auto-hide-toggle" preferred-sequence="right">
+    <div class="checkbox-label-container" id="auto-hide-row">
+      <label for="auto-hide-toggle">Auto hide anchor points</label>
+      <sv-toggle-checkbox id="auto-hide-toggle"></sv-toggle-checkbox>
+    </div>
+    <tooltip-component for="#auto-hide-row" preferred-sequence="right">
       <span>Auto hide anchor points when the graph path is not focused</span>
     </tooltip-component>
 
-    <toggle-checkbox id="snap-to-grid-toggle" label="Enable snapping to grid" checked="true"></toggle-checkbox>
-    <tooltip-component for="#snap-to-grid-toggle" preferred-sequence="right">
+    <div class="checkbox-label-container" id="snap-to-grid-row">
+      <label for="snap-to-grid-toggle">Enable snapping to grid</label>
+      <sv-toggle-checkbox id="snap-to-grid-toggle" checked></sv-toggle-checkbox>
+    </div>
+    <tooltip-component for="#snap-to-grid-row" preferred-sequence="right">
       <span>Enable snapping to the grid visible lines</span>
     </tooltip-component>
 
-    <toggle-checkbox id="snap-to-points-toggle" label="Enable snapping to points" checked="true"></toggle-checkbox>
-    <tooltip-component for="#snap-to-points-toggle" preferred-sequence="right">
+    <div class="checkbox-label-container" id="snap-to-points-row">
+      <label for="snap-to-points-toggle">Enable snapping to points</label>
+      <sv-toggle-checkbox id="snap-to-points-toggle" checked></sv-toggle-checkbox>
+    </div>
+    <tooltip-component for="#snap-to-points-row" preferred-sequence="right">
       <span>Enable snapping to points and their horizontal/vertical guide lines</span>
     </tooltip-component>
 

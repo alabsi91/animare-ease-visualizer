@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "@staticview/ui": "^1.0.0-beta.1",
     "animare": "^2.0.0-beta.1.0.3",
     "highlight.js": "^11.12.0"
   },

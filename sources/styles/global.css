@@ -20,6 +20,15 @@
   --ui-clr-backdrop: hsl(from var(--clr-neutral2-990) h s l / 90%);
   --ui-rad-border-md: 6px;
 
+  /* Staticview */
+  --sv-accent: var(--clr-accent);
+  --sv-accent-content: var(--clr-pure);
+  --sv-gray-3: var(--clr-text-faded);
+  --sv-gray-5: var(--clr-neutral2-700);
+  --sv-gray-6: transparent;
+  --sv-bdr-sz-md: 2px;
+  --sv-bdr-rad-sm: 6px;
+
   @media screen and (max-width: 800px) {
     --base-font-size: 12px;
   }
@@ -135,12 +144,23 @@ graph-editor {
   background-size: unset;
 }
 
-toggle-checkbox {
+.checkbox-label-container {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  justify-content: space-between;
   margin-block: 1em;
 
-  &::part(label) {
+  label {
+    flex: 1;
     text-align: start;
+    cursor: pointer;
+    user-select: none;
   }
+}
+
+sv-toggle-checkbox {
+  --sv-checkbox-sz: 24px;
 }
 
 select-option::part(option) {

@@ -32,14 +32,14 @@ export function initializeSidePanel() {
   const isAutoHidePointsEnabled = storage.autoHidePoints ?? false;
   elements.autoHidePointsToggle.checked = isAutoHidePointsEnabled;
   elements.graphEditor.settings.autoHidePoints = isAutoHidePointsEnabled;
-  elements.autoHidePointsToggle.addEventListener("stateChange", autoHidePointsToggleHandler);
+  elements.autoHidePointsToggle.addEventListener("clicked", autoHidePointsToggleHandler);
 
   // grid snap toggle
   const isSnapToGridEnabled = storage.snapToGrid ?? true;
   elements.snapToGridToggle.checked = isSnapToGridEnabled;
   elements.graphEditor.settings.anchorSnapToGrid = isSnapToGridEnabled;
   elements.graphEditor.settings.ctrlSnapToGrid = isSnapToGridEnabled;
-  elements.snapToGridToggle.addEventListener("stateChange", snapToGridToggleHandler);
+  elements.snapToGridToggle.addEventListener("clicked", snapToGridToggleHandler);
 
   // points snap toggle
   const isSnapToPointsEnabled = storage.snapToPoints ?? true;
@@ -48,7 +48,7 @@ export function initializeSidePanel() {
   elements.graphEditor.settings.anchorSnapToOtherCtrl = isSnapToPointsEnabled;
   elements.graphEditor.settings.ctrlSnapToOtherCtrl = isSnapToPointsEnabled;
   elements.graphEditor.settings.ctrlSnapToOtherAnchors = isSnapToPointsEnabled;
-  elements.snapToPointsToggle.addEventListener("stateChange", snapToPointsToggleHandler);
+  elements.snapToPointsToggle.addEventListener("clicked", snapToPointsToggleHandler);
 
   // duration input
   elements.durationInput.addEventListener("blur", durationInputHandler);
