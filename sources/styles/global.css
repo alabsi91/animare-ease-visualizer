@@ -25,9 +25,11 @@
   --sv-accent-content: var(--clr-pure);
   --sv-gray-3: var(--clr-text-faded);
   --sv-gray-5: var(--clr-neutral2-700);
-  --sv-gray-6: transparent;
+  --sv-gray-6: var(--ui-clr-surface-1);
+  --sv-overlay: var(--ui-clr-backdrop);
   --sv-bdr-sz-md: 2px;
   --sv-bdr-rad-sm: 6px;
+  --sv-bdr-rad-lg: 0.8em;
 
   @media screen and (max-width: 800px) {
     --base-font-size: 12px;
@@ -161,6 +163,7 @@ graph-editor {
 
 sv-toggle-checkbox {
   --sv-checkbox-sz: 24px;
+  --sv-gray-6: transparent;
 }
 
 select-option::part(option) {

@@ -4,7 +4,7 @@ import hljs from "highlight.js/lib/core";
 import { elements, getElement } from "../elements";
 
 const exportElements = {
-  exportCssLinearDialog: getElement<DialogComponent>("#export-css-linear-dialog"),
+  exportCssLinearDialog: getElement<Dialog>("#export-css-linear-dialog"),
   samplesInput: getElement<HTMLInputElement>("#export-css-linear-samples"),
   nameInput: getElement<HTMLInputElement>("#export-css-linear-name"),
   codePreview: getElement<CodeEditor>("#export-css-linear-code-preview"),

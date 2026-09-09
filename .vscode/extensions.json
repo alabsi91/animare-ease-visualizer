@@ -2,7 +2,6 @@
   "recommendations": [
     "staticbolt.staticbolt-vscode-extension",
     "esbenp.prettier-vscode",
-    "stylelint.vscode-stylelint",
-    "christian-kohler.path-intellisense"
+    "stylelint.vscode-stylelint"
   ]
 }

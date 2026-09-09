@@ -4,7 +4,7 @@ import hljs from "highlight.js/lib/core";
 import { elements, getElement } from "../elements";
 
 const exportElements = {
-  dialog: getElement<DialogComponent>("#export-css-keyframe-dialog"),
+  dialog: getElement<Dialog>("#export-css-keyframe-dialog"),
   inputsContainer: getElement<HTMLDivElement>("#export-css-keyframe-inputs-container"),
   propertyInput: getElement<CodeEditor>("#export-css-keyframe-property"),
   samplesInput: getElement<HTMLInputElement>("#export-css-keyframe-samples"),

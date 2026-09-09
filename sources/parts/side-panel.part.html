@@ -7,7 +7,11 @@
           <span>Contact Us</span>
         </tooltip-component>
 
-        <button class="icon-btn open-shortcuts-dialog" dialog-open="shortcuts-dialog" aria-label="Open keyboard shortcuts dialog">
+        <button
+          class="icon-btn open-shortcuts-dialog"
+          data-dialog-open="shortcuts-dialog"
+          aria-label="Open keyboard shortcuts dialog"
+        >
           <svg src="@assets/keyboard.svg" aria-hidden="true" inline></svg>
         </button>
         <tooltip-component for=".side-panel .open-shortcuts-dialog" preferred-sequence="left">
@@ -87,10 +91,10 @@
           </div>
         </menu-trigger>
 
-        <button class="export-menu-btn" dialog-open="export-css-keyframe-dialog">CSS Keyframe</button>
-        <button class="export-menu-btn" dialog-open="export-css-linear-dialog">CSS Linear</button>
-        <button class="export-menu-btn" dialog-open="export-svg-dialog">SVG Path</button>
-        <button class="export-menu-btn" dialog-open="export-js-function-dialog">JS Function</button>
+        <button class="export-menu-btn" data-dialog-open="export-css-keyframe-dialog">CSS Keyframe</button>
+        <button class="export-menu-btn" data-dialog-open="export-css-linear-dialog">CSS Linear</button>
+        <button class="export-menu-btn" data-dialog-open="export-svg-dialog">SVG Path</button>
+        <button class="export-menu-btn" data-dialog-open="export-js-function-dialog">JS Function</button>
       </menu-component>
     </div>
 

@@ -1,4 +1,6 @@
+import "@staticview/ui/types/dom/dialog";
 import "@staticview/ui/types/dom/toggle-checkbox";
+import "@staticview/ui/types/global/dialog";
 import "@staticview/ui/types/global/toggle-checkbox";
 
 import type { import_as_string as ImportAsString } from "@staticbolt/core/plugins";

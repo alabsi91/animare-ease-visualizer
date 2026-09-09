@@ -4,7 +4,7 @@ import { Points } from "@components/graph-editor/helpers/points";
 import { elements, getElement } from "../elements";
 
 const exportElements = {
-  exportSvgDialog: getElement<DialogComponent>("#export-svg-dialog"),
+  exportSvgDialog: getElement<Dialog>("#export-svg-dialog"),
   scaleInput: getElement<HTMLInputElement>("#export-svg-scale"),
   codePreview: getElement<CodeEditor>("#export-svg-code-preview"),
   copyBtn: getElement<HTMLButtonElement>("#export-svg-copy-btn"),
