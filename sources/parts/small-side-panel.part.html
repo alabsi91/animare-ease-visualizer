@@ -1,16 +1,19 @@
 <div class="small-side-panel">
   <div class="panel-container">
     <div>
-      <button class="toggle-panel-btn show-side-panel" aria-label="show side panel">
+      <button
+        class="toggle-panel-btn show-side-panel"
+        aria-label="show side panel"
+        data-sv-tooltip="show-panel-tooltip"
+        aria-describedby="show-panel-tooltip"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
           <path
             d="M360-160v-640q0-17 11.5-28.5T400-840q17 0 28.5 11.5T440-800v640q0 17-11.5 28.5T400-120q-17 0-28.5-11.5T360-160Zm160-168v-304q0-14 12-19t22 5l138 138q12 12 12 28t-12 28L554-314q-10 10-22 5t-12-19Z"
           />
         </svg>
       </button>
-      <tooltip-component for=".show-side-panel" preferred-sequence="right">
-        <span>Show side panel</span>
-      </tooltip-component>
+      <sv-tooltip id="show-panel-tooltip" side="inline-end">Show side panel</sv-tooltip>
 
       <div class="divider"></div>
 
@@ -44,18 +47,15 @@
         class="icon-btn open-shortcuts-dialog"
         data-dialog-open="shortcuts-dialog"
         aria-label="Open keyboard shortcuts dialog"
+        data-sv-tooltip="small-shortcuts-tooltip"
+        aria-describedby="small-shortcuts-tooltip"
         style="margin-bottom: 1em"
       >
         <svg src="@assets/keyboard.svg" aria-hidden="true" inline></svg>
       </button>
-      <tooltip-component for=".small-side-panel .open-shortcuts-dialog" preferred-sequence="right">
-        <span>Keyboard Shortcuts</span>
-      </tooltip-component>
+      <sv-tooltip id="small-shortcuts-tooltip" side="inline-end">Keyboard Shortcuts</sv-tooltip>
 
       <part src="@parts/contact-us.part.html"></part>
-      <tooltip-component for=".small-side-panel .contact-us-custom-trigger" preferred-sequence="right">
-        <span>Contact Us</span>
-      </tooltip-component>
     </div>
   </div>
 </div>

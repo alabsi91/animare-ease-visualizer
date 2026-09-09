@@ -3,28 +3,28 @@
     <div class="hide-panel-btn-container">
       <div style="display: flex; gap: 1em">
         <part src="@parts/contact-us.part.html"></part>
-        <tooltip-component for=".side-panel .contact-us-menu .contact-us-custom-trigger" preferred-sequence="right">
-          <span>Contact Us</span>
-        </tooltip-component>
 
         <button
           class="icon-btn open-shortcuts-dialog"
           data-dialog-open="shortcuts-dialog"
           aria-label="Open keyboard shortcuts dialog"
+          data-sv-tooltip="shortcuts-tooltip"
+          aria-describedby="shortcuts-tooltip"
         >
           <svg src="@assets/keyboard.svg" aria-hidden="true" inline></svg>
         </button>
-        <tooltip-component for=".side-panel .open-shortcuts-dialog" preferred-sequence="left">
-          <span>Keyboard Shortcuts</span>
-        </tooltip-component>
+        <sv-tooltip id="shortcuts-tooltip" side="inline-start">Keyboard Shortcuts</sv-tooltip>
       </div>
 
-      <button class="toggle-panel-btn hide-panel-btn" aria-label="Hide side panel">
+      <button
+        class="toggle-panel-btn hide-panel-btn"
+        aria-label="Hide side panel"
+        data-sv-tooltip="hide-panel-tooltip"
+        aria-describedby="hide-panel-tooltip"
+      >
         <svg src="@assets/hide-panle.svg" aria-hidden="true" inline></svg>
       </button>
-      <tooltip-component for=".hide-panel-btn" preferred-sequence="right">
-        <span>Hide side panel</span>
-      </tooltip-component>
+      <sv-tooltip id="hide-panel-tooltip" side="inline-end">Hide side panel</sv-tooltip>
     </div>
 
     <div class="divider"></div>
@@ -68,12 +68,10 @@
 
       <div class="save-preset-container">
         <input type="text" name="preset-name" class="save-preset-name-input" placeholder="Preset name" />
-        <button class="save-preset-btn">Save</button>
+        <button class="save-preset-btn" data-sv-tooltip="save-preset-tooltip" aria-describedby="save-preset-tooltip">Save</button>
       </div>
 
-      <tooltip-component for=".save-preset-btn" preferred-sequence="bottom">
-        <span>Save to local storage</span>
-      </tooltip-component>
+      <sv-tooltip id="save-preset-tooltip" side="block-end">Save to local storage</sv-tooltip>
     </div>
 
     <div class="divider"></div>
@@ -102,29 +100,25 @@
 
     <p class="panel-title">Settings</p>
 
-    <div class="checkbox-label-container" id="auto-hide-row">
+    <div class="checkbox-label-container" data-sv-tooltip="auto-hide-tooltip">
       <label for="auto-hide-toggle">Auto hide anchor points</label>
-      <sv-toggle-checkbox id="auto-hide-toggle"></sv-toggle-checkbox>
+      <sv-toggle-checkbox id="auto-hide-toggle" aria-describedby="auto-hide-tooltip"></sv-toggle-checkbox>
     </div>
-    <tooltip-component for="#auto-hide-row" preferred-sequence="right">
-      <span>Auto hide anchor points when the graph path is not focused</span>
-    </tooltip-component>
+    <sv-tooltip id="auto-hide-tooltip" side="inline-end">Auto hide anchor points when the graph path is not focused</sv-tooltip>
 
-    <div class="checkbox-label-container" id="snap-to-grid-row">
+    <div class="checkbox-label-container" data-sv-tooltip="snap-to-grid-tooltip">
       <label for="snap-to-grid-toggle">Enable snapping to grid</label>
-      <sv-toggle-checkbox id="snap-to-grid-toggle" checked></sv-toggle-checkbox>
+      <sv-toggle-checkbox id="snap-to-grid-toggle" checked aria-describedby="snap-to-grid-tooltip"></sv-toggle-checkbox>
     </div>
-    <tooltip-component for="#snap-to-grid-row" preferred-sequence="right">
-      <span>Enable snapping to the grid visible lines</span>
-    </tooltip-component>
+    <sv-tooltip id="snap-to-grid-tooltip" side="inline-end">Enable snapping to the grid visible lines</sv-tooltip>
 
-    <div class="checkbox-label-container" id="snap-to-points-row">
+    <div class="checkbox-label-container" data-sv-tooltip="snap-to-points-tooltip">
       <label for="snap-to-points-toggle">Enable snapping to points</label>
-      <sv-toggle-checkbox id="snap-to-points-toggle" checked></sv-toggle-checkbox>
+      <sv-toggle-checkbox id="snap-to-points-toggle" checked aria-describedby="snap-to-points-tooltip"></sv-toggle-checkbox>
     </div>
-    <tooltip-component for="#snap-to-points-row" preferred-sequence="right">
-      <span>Enable snapping to points and their horizontal/vertical guide lines</span>
-    </tooltip-component>
+    <sv-tooltip id="snap-to-points-tooltip" side="inline-end">
+      Enable snapping to points and their horizontal/vertical guide lines
+    </sv-tooltip>
 
     <div class="input-label-container">
       <label for="duration-input">Animation duration</label>

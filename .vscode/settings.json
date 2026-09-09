@@ -9,7 +9,6 @@
     "./sources/components/menu/menu.html-data.json",
     "./sources/components/menu-trigger/menu-trigger.html-data.json",
     "./sources/components/select-option/select-option.html-data.json",
-    "./sources/components/tooltip/tooltip.html-data.json",
     "./node_modules/@staticview/ui/custom.html-data.json"
   ],
   "vsicons.associations.files": [
