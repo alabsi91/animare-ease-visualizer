@@ -6,8 +6,8 @@
 
   /* anchors */
   --clr-anchor-circle: var(--clr-accent);
+  --clr-focus-anchor-circle-stroke: hsl(from var(--clr-accent) h calc(s * 4) calc(l * 2));
   --clr-active-anchor-circle: hsl(from var(--clr-accent) h calc(s * 2) l);
-  --clr-focus-anchor-circle-stroke: var(--clr-icon);
   --size-anchor-circle: 6px;
   --size-anchor-stroke: 2px;
 
@@ -246,6 +246,12 @@
     &:hover {
       background-color: var(--clr-hover);
     }
+  }
+
+  &[aria-pressed="true"] {
+    color: var(--clr-on-accent);
+    background-color: var(--clr-accent);
+    border-color: var(--clr-accent);
   }
 
   &:disabled {

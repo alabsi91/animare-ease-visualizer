@@ -1,6 +1,11 @@
+import { arePointsCollinear, mirrorPoint } from "@graph-editor/helpers/geometry";
+
 import type { GraphEditor } from "../graph-editor";
 import type { Points } from "./points";
 import type { PointAddress } from "./types";
+
+/** How far a control point turns around its anchor to come off the shared line, in radians */
+const BREAK_CTRL_ANGLE = Math.PI / 12;
 
 export class AnchorPoint {
   readonly graphEditor: GraphEditor;
@@ -108,6 +113,46 @@ export class AnchorPoint {
     const nextCmdCtrl = nextCmdIdx >= length ? null : ([nextCmdIdx, 0] as PointAddress);
 
     return [sameCmdCtrl, nextCmdCtrl] as const;
+  }
+
+  /** `true` when the anchor carries a control point on each side */
+  get hasTwoCtrls() {
+    const [ctrl1Address, ctrl2Address] = this.#getAttachedCtrlAddress();
+    return ctrl1Address !== null && ctrl2Address !== null;
+  }
+
+  /** `true` while the control points share one line through the anchor, so dragging one mirrors the other */
+  get isCtrlAligned() {
+    const [ctrl1Address, ctrl2Address] = this.#getAttachedCtrlAddress();
+    if (!ctrl1Address || !ctrl2Address) return false;
+
+    const ctrl1 = this.points.getPoint(ctrl1Address);
+    const ctrl2 = this.points.getPoint(ctrl2Address);
+
+    return arePointsCollinear(ctrl1, [this.x, this.y], ctrl2);
+  }
+
+  /** Breaks the control points off their shared line, or puts them back on it. */
+  toggleFreeCtrl() {
+    const [ctrl1Address, ctrl2Address] = this.#getAttachedCtrlAddress();
+    if (!ctrl1Address || !ctrl2Address) return;
+
+    const anchor: [number, number] = [this.x, this.y];
+    const ctrl1 = this.points.getPoint(ctrl1Address);
+    const ctrl2 = this.points.getPoint(ctrl2Address);
+
+    if (this.isCtrlAligned) {
+      const reachX = ctrl2[0] - anchor[0];
+      const reachY = ctrl2[1] - anchor[1];
+      const cos = Math.cos(BREAK_CTRL_ANGLE);
+      const sin = Math.sin(BREAK_CTRL_ANGLE);
+
+      this.points.setPoint(ctrl2Address, [anchor[0] + reachX * cos - reachY * sin, anchor[1] + reachX * sin + reachY * cos]);
+    } else {
+      this.points.setPoint(ctrl2Address, mirrorPoint(ctrl1, ctrl2, anchor));
+    }
+
+    this.points.events.onUpdate.fire();
   }
 
   /** Aligns the attached control points with the anchor, or pulls them apart again. */
