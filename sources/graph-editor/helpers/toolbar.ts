@@ -3,10 +3,10 @@ import { CubicCommand } from "./cubic-command";
 import type { GraphEditor } from "../graph-editor";
 import type { MoveCommand } from "./move-command";
 
-const SMOOTH_CORNER_ICON = /*html*/ `
+// the same icons live in `sources/assets/toolbar`, where the help dialog inlines them
+const FIT_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path class="toolbar-icon-curve" d="M3 19C10 19 14 5 21 5" />
-    <circle cx="12" cy="12" r="2.6" />
+    <path class="toolbar-icon-curve" d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4" />
   </svg>
 `;
 
@@ -24,6 +24,13 @@ const REDO_ICON = /*html*/ `
   </svg>
 `;
 
+const AXIS_LOCK_ICON = /*html*/ `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path class="toolbar-icon-curve" d="M12 3v18M3 12h18" />
+    <circle cx="12" cy="12" r="2.4" />
+  </svg>
+`;
+
 const FREE_CTRL_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path class="toolbar-icon-curve" d="M4 18 12 12 20 14" />
@@ -33,10 +40,10 @@ const FREE_CTRL_ICON = /*html*/ `
   </svg>
 `;
 
-const AXIS_LOCK_ICON = /*html*/ `
+const SMOOTH_CORNER_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path class="toolbar-icon-curve" d="M12 3v18M3 12h18" />
-    <circle cx="12" cy="12" r="2.4" />
+    <path class="toolbar-icon-curve" d="M3 19C10 19 14 5 21 5" />
+    <circle cx="12" cy="12" r="2.6" />
   </svg>
 `;
 
@@ -65,6 +72,7 @@ export class Toolbar {
     this.element = document.createElement("div");
     this.element.classList.add("toolbar");
 
+    this.#addButton("Fit the curve to the view", FIT_ICON, this.#onFitClick);
     this.#undoButton = this.#addButton("Undo", UNDO_ICON, graphEditor.historyManager.undo);
     this.#redoButton = this.#addButton("Redo", REDO_ICON, graphEditor.historyManager.redo);
     this.#axisLockButton = this.#addButton("Hold a drag to one axis", AXIS_LOCK_ICON, this.#onAxisLockClick);
@@ -137,6 +145,10 @@ export class Toolbar {
 
   #syncButtonsLater = () => {
     setTimeout(this.#syncButtons);
+  };
+
+  #onFitClick = () => {
+    this.graphEditor.fitToPath();
   };
 
   #onAxisLockClick = () => {

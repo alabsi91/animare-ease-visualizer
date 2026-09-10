@@ -2,6 +2,7 @@
   <body>
     <!-- Blocking classic script to prevent layout shifts because these are web components -->
     <script iife bundle bundle-externals>
+      import("@staticview/ui/accordion");
       import("@staticview/ui/anchor");
       import("@staticview/ui/flyout");
       import("@staticview/ui/alert-stack");
@@ -22,7 +23,7 @@
 
     <sv-alert-stack swipe-dismiss></sv-alert-stack>
 
-    <part src="@parts/shortcuts-dialog/shortcuts-dialog.part.html"></part>
+    <part src="@parts/help-dialog/help-dialog.part.html"></part>
     <part src="@parts/export-dialogs/css-keyframe.part.html"></part>
     <part src="@parts/export-dialogs/css-linear.part.html"></part>
     <part src="@parts/export-dialogs/svg-path.part.html"></part>

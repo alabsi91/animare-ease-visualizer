@@ -1,5 +1,3 @@
-import { defaultSavedPreset } from "./presets";
-
 type SavedGraph = {
   name: string;
   path: string;
@@ -55,10 +53,8 @@ class ProjectStorage {
 
   get savedGraphs(): SavedGraph[] {
     const str = window.localStorage.getItem(this.SAVED_GRAPHS_KEY);
-    if (str === null) {
-      window.localStorage.setItem(this.SAVED_GRAPHS_KEY, JSON.stringify(defaultSavedPreset));
-      return defaultSavedPreset;
-    }
+    if (str === null) return [];
+
     return JSON.parse(str) as SavedGraph[];
   }
 

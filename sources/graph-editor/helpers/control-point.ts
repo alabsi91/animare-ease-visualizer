@@ -22,8 +22,8 @@ export class ControlPoint {
   #isCtrlFree = false;
   #updateHistory = false;
   #isDragging = false;
+  #abortController = new AbortController();
 
-  #isActive = false;
   get isActive() {
     return this.#isActive;
   }
@@ -32,6 +32,7 @@ export class ControlPoint {
     this.svgCircle.classList.toggle("active-ctrl-circle", value);
     this.svgLine.classList.toggle("active-ctrl-line", value);
   }
+  #isActive = false;
 
   get x() {
     return this.points.getPointX(this.ctrlAddress);
@@ -63,8 +64,6 @@ export class ControlPoint {
     // the second control point of a curve is attached to the current command anchor
     return this.isFirstCtrl ? this.ctrlAddress[0] - 1 : this.ctrlAddress[0];
   }
-
-  #abortController = new AbortController();
 
   constructor(graphEditor: GraphEditor, ctrlAddress: PointAddress) {
     this.graphEditor = graphEditor;

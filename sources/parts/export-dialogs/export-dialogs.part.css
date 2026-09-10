@@ -7,8 +7,8 @@
   }
 
   #export-css-keyframe-property {
-    --sv-gray-5: var(--clr-border);
-    --sv-gray-6: var(--clr-input-active);
+    --sv-gray-5: var(--sb-color-gray-5);
+    --sv-gray-6: var(--sb-color-gray-7);
     --sv-active-line-background: transparent;
     --sv-active-line-outline: transparent;
     --sv-bdr-sz-sm: 1px;
@@ -16,8 +16,8 @@
     --sv-padding: 0.5em;
 
     &:state(--focus) {
-      --sv-gray-5: var(--clr-accent);
-      --sv-gray-6: var(--clr-bg);
+      --sv-gray-5: var(--sb-color-accent);
+      --sv-gray-6: var(--sb-color-black);
     }
 
     &::part(wrapper) {
@@ -77,9 +77,9 @@
     padding: 0.5em;
     margin-block-start: 1em;
     font-size: 1rem;
-    color: var(--clr-on-accent);
+    color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
-    background-color: var(--clr-accent);
+    background-color: var(--sb-color-accent);
     border: none;
     border-radius: 4px;
   }

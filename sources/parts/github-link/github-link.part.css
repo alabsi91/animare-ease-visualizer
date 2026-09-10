@@ -1,0 +1,10 @@
+.github-link {
+  display: block;
+
+  svg {
+    display: block;
+    inline-size: var(--sz-panel-icon);
+    block-size: var(--sz-panel-icon);
+    fill: var(--sb-color-gray-0);
+  }
+}

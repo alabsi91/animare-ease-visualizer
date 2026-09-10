@@ -131,7 +131,7 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
     this.ownerDocument.addEventListener("pointerup", this.#onPointerUpHandler, { signal });
     this.viewport.element.addEventListener("pointermove", this.#onPointerMoveHandler, { signal });
     this.graphPanel.element.addEventListener("pointerdown", this.#onPanelPointerDownHandler, { signal });
-    this.graphPanel.element.addEventListener("dblclick", this.graphPanel.center, { signal });
+    this.graphPanel.element.addEventListener("dblclick", this.#onDoubleClickHandler, { signal });
     this.addEventListener("pointerdown", this.#onTouchPointerDownHandler, { signal });
     this.ownerDocument.addEventListener("pointermove", this.#onTouchPointerMoveHandler, { signal });
     this.ownerDocument.addEventListener("pointerup", this.#onTouchPointerUpHandler, { signal });
@@ -140,6 +140,7 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
 
     this.#resizeObserver = new ResizeObserver(this.#onResizeHandler);
     this.#resizeObserver.observe(this);
+    this.#onResizeHandler();
   }
 
   disconnectedCallback() {
@@ -195,9 +196,47 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
     this.zoom(-1, step);
   };
 
+  /**
+   * Zooms and pans so the whole curve is in view. The curve ends up centered, the grid does not.
+   *
+   * @param padding - Space left between the curve and the editor edges, in pixels. Defaults to a tenth of the shortest side
+   */
+  fitToPath = (padding = Math.min(this.viewport.width, this.viewport.height) * 0.1) => {
+    const pathBounds = this.graph.path.element.getBBox();
+    if (!pathBounds.width || !pathBounds.height) return;
+
+    const viewBoxSize = this.PATH_SVG_VIEW_BOX_SIZE;
+
+    // the grid is always in view, so a curve that stays inside it fits the grid instead
+    const left = Math.min(pathBounds.x, 0);
+    const top = Math.min(pathBounds.y, 0);
+    const right = Math.max(pathBounds.x + pathBounds.width, viewBoxSize);
+    const bottom = Math.max(pathBounds.y + pathBounds.height, viewBoxSize);
+
+    const sizeToFitWidth = (this.viewport.width - padding * 2) / ((right - left) / viewBoxSize);
+    const sizeToFitHeight = (this.viewport.height - padding * 2) / ((bottom - top) / viewBoxSize);
+
+    const sizeToFitBoth = Math.min(sizeToFitWidth, sizeToFitHeight);
+    const size = Math.min(Math.max(sizeToFitBoth, this.settings.zoomMin), this.settings.zoomMax);
+
+    const centerX = (left + right) / 2 / viewBoxSize;
+    const centerY = (top + bottom) / 2 / viewBoxSize;
+
+    this.graphPanel.size = size;
+    this.graphPanel.x = this.viewport.width / 2 - centerX * size;
+    this.graphPanel.y = this.viewport.height / 2 - centerY * size;
+  };
+
+  #onDoubleClickHandler = () => {
+    this.fitToPath();
+  };
+
   #onResizeHandler = () => {
     const width = this.clientWidth;
     const height = this.clientHeight;
+
+    // the element has no layout yet, a zero viewport would throw the panel off screen
+    if (!width || !height) return;
 
     const isCenteredX = this.graphPanel.x === this.viewport.width / 2 - this.graphPanel.size / 2;
     const isCenteredY = this.graphPanel.y === this.viewport.height / 2 - this.graphPanel.size / 2;

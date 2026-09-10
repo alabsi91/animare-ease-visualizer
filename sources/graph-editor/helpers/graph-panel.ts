@@ -50,7 +50,6 @@ export class GraphPanel {
     this.#fpsCounter.textContent = value.toFixed(0) + " FPS";
   }
 
-  #x = 0;
   /** ViewBox x */
   get x() {
     return this.#x;
@@ -59,8 +58,8 @@ export class GraphPanel {
     this.#x = value;
     this.element.setAttribute("x", `${value}`);
   }
+  #x = 0;
 
-  #y = 0;
   /** ViewBox y */
   get y() {
     return this.#y;
@@ -69,8 +68,8 @@ export class GraphPanel {
     this.#y = value;
     this.element.setAttribute("y", `${value}`);
   }
+  #y = 0;
 
-  #size = 0;
   /** ViewBox size */
   get size() {
     return this.#size;
@@ -81,6 +80,7 @@ export class GraphPanel {
     this.element.setAttribute("width", `${value}`);
     this.element.style.setProperty("--grid-size", `${value}`);
   }
+  #size = 0;
 
   constructor(graphEditor: GraphEditor) {
     this.graphEditor = graphEditor;

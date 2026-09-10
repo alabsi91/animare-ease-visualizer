@@ -3,9 +3,9 @@
   inline-size: var(--large-side-panel-width);
   block-size: 100dvh;
   overflow: auto;
-  background-color: var(--clr-navigation-background);
-  border-inline-end: solid 1px var(--clr-divider);
-  box-shadow: 2px 0 7px var(--clr-shadow);
+  background-color: color-mix(in oklab, var(--sb-color-gray-7) 50%, transparent);
+  border-inline-end: solid 1px var(--sb-color-gray-5);
+  box-shadow: 2px 0 7px light-dark(oklch(20% 0.012 var(--sb-hue-base) / 15%), oklch(0% 0 0deg / 40%));
   backdrop-filter: blur(1px);
   transition:
     translate var(--side-panel-duration) var(--side-panel-easing),
@@ -37,11 +37,23 @@
   }
 }
 
+.panel-title-row {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+
+  .icon-btn svg {
+    inline-size: 1.1em;
+    block-size: 1.1em;
+    fill: var(--sb-color-gray-3);
+  }
+}
+
 .panel-title {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.25rem;
   font-weight: bold;
-  color: var(--clr-text);
+  color: var(--sb-color-text);
 }
 
 .hide-panel-btn-container {
@@ -58,7 +70,6 @@
   flex-direction: row;
   gap: 1em;
   justify-content: center;
-  padding-inline: 10px;
   container-name: controls;
   container-type: inline-size;
 
@@ -69,9 +80,9 @@
     align-items: center;
     padding: 0.5em;
     font-size: 1rem;
-    color: var(--clr-on-accent);
+    color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
-    background-color: var(--clr-accent);
+    background-color: var(--sb-color-accent);
     border: none;
     border-radius: 4px;
 
@@ -116,39 +127,6 @@
   }
 }
 
-.presets-menu {
-  sv-flyout::part(content) {
-    max-block-size: min(20rem, var(--sv-anchor-available-height));
-  }
-
-  [role="option"] {
-    inline-size: 100%;
-    padding: 0.5em;
-    color: var(--clr-text);
-    text-align: start;
-    cursor: pointer;
-    background-color: unset;
-    border: none;
-    border-radius: 4px;
-    transition: background-color 100ms ease;
-  }
-
-  [role="option"][data-active-option] {
-    background-color: var(--clr-hover);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    [role="option"]:not([aria-selected="true"]):hover {
-      background-color: var(--clr-hover);
-    }
-  }
-
-  [role="option"][aria-selected="true"] {
-    color: var(--clr-on-accent);
-    background-color: var(--clr-accent);
-  }
-}
-
 .preset-delete-btn {
   padding: 0.2em;
   cursor: pointer;
@@ -157,14 +135,14 @@
   border-radius: 4px;
 
   &:hover {
-    background-color: var(--clr-hover);
+    background-color: var(--sb-color-gray-5);
   }
 
   .preset-delete-icon {
     display: block;
     inline-size: 24px;
     block-size: 24px;
-    fill: var(--clr-icon);
+    fill: var(--sb-color-gray-0);
   }
 }
 
@@ -188,9 +166,9 @@
   align-items: center;
   padding: 0.5em;
   font-size: 1rem;
-  color: var(--clr-on-accent);
+  color: oklch(98% 0.009 var(--sb-hue-base));
   cursor: pointer;
-  background-color: var(--clr-accent);
+  background-color: var(--sb-color-accent);
   border: unset;
   border-radius: 4px;
 
@@ -222,6 +200,11 @@
   opacity: 0.5;
 }
 
+.export-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .export-menu {
   sv-flyout::part(content) {
     inline-size: var(--sv-anchor-width);
@@ -234,9 +217,9 @@
     align-items: center;
     padding: 0.5em;
     font-size: 1rem;
-    color: var(--clr-on-accent);
+    color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
-    background-color: var(--clr-accent);
+    background-color: var(--sb-color-accent);
     border: none;
     border-radius: 4px;
 
@@ -249,7 +232,7 @@
     display: block;
     inline-size: 100%;
     padding: 0.5em;
-    color: var(--clr-text);
+    color: var(--sb-color-text);
     text-align: start;
     cursor: pointer;
     background-color: unset;
@@ -259,7 +242,7 @@
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: var(--clr-hover);
+        background-color: var(--sb-color-gray-5);
       }
     }
   }
@@ -300,7 +283,7 @@
 }
 
 .svg-path-code-editor {
-  --sv-gray-5: var(--clr-border);
+  --sv-gray-5: var(--sb-color-gray-5);
 
   &::part(wrapper) {
     transition-timing-function: ease;
@@ -309,7 +292,7 @@
   }
 
   &:state(--focus) {
-    --sv-gray-5: var(--clr-accent);
-    --sv-gray-6: var(--clr-bg);
+    --sv-gray-5: var(--sb-color-accent);
+    --sv-gray-6: var(--sb-color-black);
   }
 }

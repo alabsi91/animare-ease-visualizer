@@ -3,7 +3,8 @@
 @import url("@styles/components.css");
 @import url("@parts/side-panel/side-panel.part.css");
 @import url("@parts/small-side-panel/small-side-panel.part.css");
-@import url("@parts/contact-us/contact-us.part.css");
+@import url("@parts/github-link/github-link.part.css");
 @import url("@parts/color-scheme-switch/color-scheme-switch.part.css");
 @import url("@parts/export-dialogs/export-dialogs.part.css");
-@import url("@parts/shortcuts-dialog/shortcuts-dialog.part.css");
+@import url("@parts/help-dialog/help-dialog.part.css");
+@import url("@parts/ease-generator/ease-generator.part.css");

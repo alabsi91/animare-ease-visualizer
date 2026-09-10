@@ -21,8 +21,8 @@ function findPointFromT(
   return point;
 }
 
-/** - Check if the path is overlapping to turned it `red`. */
-export function checkOverlap(points: number[][]): boolean {
+/** `true` when the curve moves backward in time, which is not a valid easing */
+export function checkPathOverlap(points: number[][]): boolean {
   const samples = 1000;
   let largest: number | undefined = undefined;
 

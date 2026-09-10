@@ -1,0 +1,32 @@
+.ease-generator {
+  display: flex;
+  flex-direction: column;
+}
+
+.ease-generator-params {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4em;
+  padding-inline-start: 0.2em;
+
+  &:not(:empty) {
+    padding-block: 1.5em 1em;
+  }
+}
+
+.ease-generator-param {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5em 1em;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ease-generator-param-value {
+  font-family: monospace;
+  color: var(--sb-color-gray-3);
+}
+
+.ease-generator-param sv-slider {
+  grid-column: 1 / -1;
+}

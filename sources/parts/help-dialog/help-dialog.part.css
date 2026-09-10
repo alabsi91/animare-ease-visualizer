@@ -1,0 +1,98 @@
+.help-dialog {
+  color: var(--sb-color-text);
+
+  .help-dialog-title {
+    margin-block: 0 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .help-group {
+    margin-block-end: 2rem;
+  }
+
+  .help-group-title {
+    margin-block: 0 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sb-color-gray-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .help-action {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0.5em 1.5em;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0.8em;
+    border-block-start: solid 1px var(--sb-color-gray-5);
+  }
+
+  .help-action-label {
+    flex: 1;
+    min-inline-size: 12em;
+  }
+
+  .help-action-name {
+    margin: 0;
+    color: var(--sb-color-gray-0);
+  }
+
+  .help-action-note {
+    margin-block: 0.3em 0;
+    font-size: 0.9em;
+    color: var(--sb-color-gray-3);
+  }
+
+  .help-action-ways {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6em;
+    align-items: center;
+  }
+
+  .help-way {
+    display: flex;
+    gap: 0.3em;
+    align-items: center;
+  }
+
+  .help-way-plus,
+  .help-way-or {
+    color: var(--sb-color-gray-3);
+  }
+
+  .help-way-or {
+    font-size: 0.85em;
+    font-style: italic;
+  }
+
+  /* the same round button the editor's toolbar draws, its styles live inside the editor's shadow */
+  .toolbar-btn-preview {
+    display: grid;
+    place-items: center;
+    inline-size: 2em;
+    block-size: 2em;
+    color: var(--sb-color-gray-0);
+    background-color: color-mix(in oklab, var(--sb-color-gray-7) 50%, transparent);
+    border: solid 1px var(--sb-color-gray-5);
+    border-radius: 50%;
+
+    svg {
+      inline-size: 1.2em;
+      block-size: 1.2em;
+      fill: currentcolor;
+    }
+
+    .toolbar-icon-curve {
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+}

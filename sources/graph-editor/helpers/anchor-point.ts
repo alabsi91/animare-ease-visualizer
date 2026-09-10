@@ -23,8 +23,8 @@ export class AnchorPoint {
   #lockedDirection: "x" | "y" | null = null;
   #isChanged = false;
   #isDragging = false;
+  #abortController = new AbortController();
 
-  #isActive = false;
   get isActive() {
     return this.#isActive;
   }
@@ -32,6 +32,7 @@ export class AnchorPoint {
     this.#isActive = val;
     this.svgCircle.classList.toggle("active-anchor-circle", val);
   }
+  #isActive = false;
 
   get isFocused() {
     return this.svgCircle.matches(":focus");
@@ -54,8 +55,6 @@ export class AnchorPoint {
     const command = this.points.getCmd(this.cmdIdx);
     command[command.length - 1] = value;
   }
-
-  #abortController = new AbortController();
 
   constructor(graphEditor: GraphEditor, cmdIdx: number) {
     this.graphEditor = graphEditor;

@@ -1,8 +1,8 @@
-import { elements } from "./elements";
+import { checkPathOverlap } from "./path-overlap";
+import { elements } from "../elements";
 import { graphAnimation } from "./graph-animation";
-import { checkOverlap } from "./helpers";
-import { storage } from "./storage";
-import { showAlert } from "./alert";
+import { storage } from "../storage";
+import { showAlert } from "../alert";
 
 export function initGraph() {
   const shortestSide = Math.min(elements.graphEditor.offsetWidth, elements.graphEditor.offsetHeight);
@@ -13,6 +13,7 @@ export function initGraph() {
   const lastPathDrawn = storage.lastPathDrawn;
   if (lastPathDrawn) {
     elements.graphEditor.setFromPathStr(lastPathDrawn);
+    elements.graphEditor.fitToPath();
     graphAnimation.setCustomEase(lastPathDrawn);
     checkGraphOverlap();
   }
@@ -21,7 +22,7 @@ export function initGraph() {
 }
 
 export function checkGraphOverlap() {
-  const isOverlapping = checkOverlap(elements.graphEditor.points.value);
+  const isOverlapping = checkPathOverlap(elements.graphEditor.points.value);
   if (isOverlapping) {
     elements.graphEditor.style.setProperty("--clr-path", "red");
     elements.graphEditor.style.setProperty("--clr-active-path", "red");
@@ -42,7 +43,9 @@ export function onGraphPathChange(pathStr: string) {
   graphAnimation.setCustomEase(pathStr);
 
   // presets menu
-  if (elements.presetsMenu.value) elements.presetsMenu.value = "";
+  if (elements.presetsMenu.value) {
+    elements.presetsMenu.value = "";
+  }
 
   // save to local storage
   storage.lastPathDrawn = pathStr;

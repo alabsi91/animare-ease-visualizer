@@ -1,3 +1,4 @@
+import "@staticview/ui/types/dom/accordion";
 import "@staticview/ui/types/dom/alert-stack";
 import "@staticview/ui/types/dom/combobox";
 import "@staticview/ui/types/dom/flyout";
@@ -7,6 +8,7 @@ import "@staticview/ui/types/dom/dialog";
 import "@staticview/ui/types/dom/slider";
 import "@staticview/ui/types/dom/toggle-checkbox";
 import "@staticview/ui/types/dom/tooltip";
+import "@staticview/ui/types/global/accordion";
 import "@staticview/ui/types/global/alert-stack";
 import "@staticview/ui/types/global/combobox";
 import "@staticview/ui/types/global/flyout";

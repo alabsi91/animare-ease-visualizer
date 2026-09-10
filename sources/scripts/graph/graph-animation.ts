@@ -1,6 +1,6 @@
 import type { OnUpdateCallback, TimelineGlobalOptions } from "animare";
 import animare, { createAnimations, Timing } from "animare";
-import { elements } from "./elements";
+import { elements } from "../elements";
 import { ease } from "animare/plugins";
 
 function prepareAnimation() {

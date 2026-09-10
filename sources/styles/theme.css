@@ -6,6 +6,7 @@
 
   /* Grayscale */
   --sb-color-gray-0: light-dark(oklch(30% 0.034 var(--sb-hue-base)), oklch(90% 0.017 var(--sb-hue-base)));
+  --sb-color-gray-1: light-dark(oklch(36% 0.038 var(--sb-hue-base)), oklch(80% 0.03 var(--sb-hue-base)));
   --sb-color-gray-2: light-dark(oklch(36% 0.038 var(--sb-hue-base)), oklch(80% 0.03 var(--sb-hue-base)));
   --sb-color-gray-3: light-dark(oklch(44% 0.034 var(--sb-hue-base)), oklch(65% 0.028 var(--sb-hue-base)));
   --sb-color-gray-4: light-dark(oklch(66% 0.03 var(--sb-hue-base)), oklch(48% 0.024 var(--sb-hue-base)));
@@ -25,46 +26,31 @@
   --sb-warning-border: light-dark(#b8860b, #8a6a1d);
   --sb-warning-text: light-dark(#6b4800, #f0d9a4);
 
-  /* Roles */
-  --clr-accent: var(--sb-color-accent);
-  --clr-secondary: var(--sb-color-secondary);
-  --clr-on-accent: oklch(98% 0.009 var(--sb-hue-base));
-  --clr-icon: var(--sb-color-gray-0);
-  --clr-text: var(--sb-color-text);
-  --clr-text-faded: var(--sb-color-gray-3);
-  --clr-navigation-background: color-mix(in oklab, var(--sb-color-gray-7) 50%, transparent);
-  --clr-border: var(--sb-color-gray-5);
-  --clr-divider: var(--sb-color-gray-5);
-  --clr-input: var(--sb-color-gray-6);
-  --clr-input-active: var(--sb-color-gray-7);
-  --clr-bg: var(--sb-color-black);
-  --clr-bg-dot: var(--sb-color-gray-5);
-  --clr-selection: var(--sb-color-accent-low);
-  --clr-shadow: light-dark(oklch(20% 0.012 var(--sb-hue-base) / 15%), oklch(0% 0 0deg / 40%));
-  --clr-scrollbar: color-mix(in oklab, var(--sb-color-gray-3) 50%, transparent);
-  --clr-hover: var(--sb-color-gray-5);
-
   /* Sizes */
   --sz-panel-icon: 28px;
 
   /* Staticview */
-  --sv-accent: var(--sb-color-accent);
-  --sv-accent-content: var(--clr-on-accent);
   --sv-gray-0: var(--sb-color-gray-0);
+  --sv-gray-1: var(--sb-color-gray-1);
   --sv-gray-2: var(--sb-color-gray-2);
   --sv-gray-3: var(--sb-color-gray-3);
+  --sv-gray-4: var(--sb-color-gray-4);
   --sv-gray-5: var(--sb-color-gray-5);
   --sv-gray-6: var(--sb-color-gray-6);
+  --sv-gray-7: var(--sb-color-gray-7);
+  --sv-accent: var(--sb-color-accent);
+  --sv-accent-content: oklch(98% 0.009 var(--sb-hue-base));
+  --sv-info: light-dark(#252e8a, #c5cff5);
+  --sv-success: light-dark(#1a5e55, #c7eae2);
+  --sv-warning: light-dark(#6b4800, #f8e2b6);
+  --sv-error: light-dark(#7b1a2e, #f3c8cb);
   --sv-overlay: color-mix(in oklab, var(--sb-color-black) 90%, transparent);
-  --sv-error: #f44336;
-  --sv-info: #2196f3;
-  --sv-success: #4caf50;
-  --sv-warning: #f90;
+  --sv-bdr-sz-sm: 1px;
   --sv-bdr-sz-md: 2px;
-  --sv-bdr-rad-sm: 6px;
-  --sv-bdr-rad-md: 6px;
-  --sv-bdr-rad-lg: 0.8em;
-  --sv-dir: 1;
+  --sv-bdr-sz-lg: 4px;
+  --sv-bdr-rad-sm: 4px;
+  --sv-bdr-rad-md: 8px;
+  --sv-bdr-rad-lg: 16px;
 
   @media screen and (max-width: 800px) {
     --base-font-size: 12px;

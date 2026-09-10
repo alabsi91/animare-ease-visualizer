@@ -1,0 +1,263 @@
+<sv-dialog class="help-dialog" id="help-dialog" aria-labelledby="help-dialog-title" close-button>
+  <h1 class="help-dialog-title" id="help-dialog-title">Help</h1>
+
+  <section class="help-group">
+    <h2 class="help-group-title">Anchor points</h2>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Add an anchor point</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd class="alt-key">
+            <svg class="option-key-icon" src="@assets/option-key.svg" aria-hidden="true" inline hidden></svg>
+            <span class="key-label">Alt</span>
+          </kbd>
+          <span class="help-way-plus">+</span>
+          <kbd>
+            <svg src="@assets/mouse.svg" aria-hidden="true" inline></svg>
+            Click
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <kbd>Long press</kbd>
+        </span>
+      </div>
+    </div>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Delete an anchor point</p>
+        <p class="help-action-note">The first and last anchor points cannot be deleted.</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd>
+            <svg src="@assets/backspace.svg" aria-hidden="true" inline></svg>
+            Delete
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <span class="toolbar-btn-preview">
+            <svg src="@assets/toolbar/delete-anchor.svg" inline></svg>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Toggle a smooth corner</p>
+        <p class="help-action-note">A smooth corner hides both control points and pins them to the anchor.</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd>
+            <svg src="@assets/shift.svg" aria-hidden="true" inline></svg>
+            Shift
+          </kbd>
+          <span class="help-way-plus">+</span>
+          <kbd>
+            <svg src="@assets/mouse.svg" aria-hidden="true" inline></svg>
+            Click
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <span class="toolbar-btn-preview">
+            <svg src="@assets/toolbar/smooth-corner.svg" inline></svg>
+          </span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="help-group">
+    <h2 class="help-group-title">Dragging</h2>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Move one control point on its own</p>
+        <p class="help-action-note">Line the two back up and they move together again.</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd class="alt-key">
+            <svg class="option-key-icon" src="@assets/option-key.svg" aria-hidden="true" inline hidden></svg>
+            <span class="key-label">Alt</span>
+          </kbd>
+          <span class="help-way-plus">+</span>
+          <kbd>
+            <svg src="@assets/drag.svg" aria-hidden="true" inline></svg>
+            Drag
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <span class="toolbar-btn-preview">
+            <svg src="@assets/toolbar/free-ctrl.svg" inline></svg>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Hold a drag to one axis</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd>
+            <svg src="@assets/shift.svg" aria-hidden="true" inline></svg>
+            Shift
+          </kbd>
+          <span class="help-way-plus">+</span>
+          <kbd>
+            <svg src="@assets/drag.svg" aria-hidden="true" inline></svg>
+            Drag
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <span class="toolbar-btn-preview">
+            <svg src="@assets/toolbar/axis-lock.svg" inline></svg>
+          </span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="help-group">
+    <h2 class="help-group-title">The view</h2>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Fit the curve to the view</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd>
+            <svg src="@assets/mouse.svg" aria-hidden="true" inline></svg>
+            Double click
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <span class="toolbar-btn-preview">
+            <svg src="@assets/toolbar/fit.svg" inline></svg>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Pan the graph panel</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd>
+            <svg src="@assets/space-bar.svg" aria-hidden="true" inline></svg>
+            Space
+          </kbd>
+          <span class="help-way-plus">+</span>
+          <kbd>
+            <svg src="@assets/drag.svg" aria-hidden="true" inline></svg>
+            Drag
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <kbd>Pinch</kbd>
+        </span>
+      </div>
+    </div>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Zoom in and out</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd>
+            <svg src="@assets/zoom.svg" aria-hidden="true" inline></svg>
+            Wheel
+          </kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <kbd>Pinch</kbd>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="help-group">
+    <h2 class="help-group-title">History</h2>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Undo</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd class="primary-modifier-key">
+            <svg class="command-key-icon" src="@assets/command-key.svg" aria-hidden="true" inline hidden></svg>
+            <span class="key-label">Ctrl</span>
+          </kbd>
+          <span class="help-way-plus">+</span>
+          <kbd>Z</kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <span class="toolbar-btn-preview">
+            <svg src="@assets/toolbar/undo.svg" inline></svg>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="help-action">
+      <div class="help-action-label">
+        <p class="help-action-name">Redo</p>
+      </div>
+      <div class="help-action-ways">
+        <span class="help-way">
+          <kbd class="primary-modifier-key">
+            <svg class="command-key-icon" src="@assets/command-key.svg" aria-hidden="true" inline hidden></svg>
+            <span class="key-label">Ctrl</span>
+          </kbd>
+          <span class="help-way-plus">+</span>
+          <kbd>Y</kbd>
+        </span>
+        <span class="help-way-or">or</span>
+        <span class="help-way">
+          <span class="toolbar-btn-preview">
+            <svg src="@assets/toolbar/redo.svg" inline></svg>
+          </span>
+        </span>
+      </div>
+    </div>
+  </section>
+</sv-dialog>
+
+<script type="module">
+  const isMac = /Mac|iPhone|iPod|iPad/.test(navigator.platform);
+
+  if (isMac) {
+    const altKeys = document.querySelectorAll(".alt-key");
+    altKeys.forEach(kbd => {
+      kbd.querySelector(".key-label").textContent = "Option";
+      kbd.querySelector(".option-key-icon").removeAttribute("hidden");
+    });
+
+    const primaryModifierKeys = document.querySelectorAll(".primary-modifier-key");
+    primaryModifierKeys.forEach(kbd => {
+      kbd.querySelector(".key-label").textContent = "Command";
+      kbd.querySelector(".command-key-icon").removeAttribute("hidden");
+    });
+  }
+</script>

@@ -6,9 +6,9 @@
   block-size: 100dvh;
   overflow: hidden;
   font-size: var(--small-side-panel-font-size);
-  background-color: var(--clr-navigation-background);
-  border-inline-end: solid 1px var(--clr-divider);
-  box-shadow: 2px 0 7px var(--clr-shadow);
+  background-color: color-mix(in oklab, var(--sb-color-gray-7) 50%, transparent);
+  border-inline-end: solid 1px var(--sb-color-gray-5);
+  box-shadow: 2px 0 7px light-dark(oklch(20% 0.012 var(--sb-hue-base) / 15%), oklch(0% 0 0deg / 40%));
   backdrop-filter: blur(1px);
   translate: -100% 0;
   transition:
@@ -45,9 +45,9 @@
     grid-area: 2 / 1;
     inline-size: auto;
     block-size: var(--small-side-panel-size);
-    border-block-start: solid 1px var(--clr-divider);
+    border-block-start: solid 1px var(--sb-color-gray-5);
     border-inline-end: none;
-    box-shadow: 0 -2px 7px var(--clr-shadow);
+    box-shadow: 0 -2px 7px light-dark(oklch(20% 0.012 var(--sb-hue-base) / 15%), oklch(0% 0 0deg / 40%));
     translate: 0 0;
     transition-delay: 0s;
 
@@ -77,9 +77,9 @@
     display: block;
     padding: 0.5em;
     font-size: inherit;
-    color: var(--clr-on-accent);
+    color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
-    background-color: var(--clr-accent);
+    background-color: var(--sb-color-accent);
     border: none;
     border-radius: 50%;
 

@@ -4,8 +4,9 @@ import type { GraphEditorTypes } from "../graph-editor.ts";
 
 declare global {
   /**
-   * `graph-editor` edits a cubic bezier easing curve on a zoomable panel.The curve is a path made of one `M` command and one or more `C` commands, drawn inside a square viewBox of
-   * `PATH_SVG_VIEW_BOX_SIZE`. Every anchor point carries two control points, and dragging either one reshapes the curve.
+   * `graph-editor` edits a cubic bezier easing curve on a zoomable panel.The curve is a path made of one `M` command and one or
+   * more `C` commands, drawn inside a square viewBox of `PATH_SVG_VIEW_BOX_SIZE`. Every anchor point carries two control points,
+   * and dragging either one reshapes the curve.
    *
    * ```html
    * <graph-editor></graph-editor>
@@ -22,11 +23,11 @@ declare global {
    * editor.points.events.onUpdate.add(() => console.log(editor.points.valueStr));
    * ```
    *
-   * `setFromPathStr` returns `false` and logs when the string does not follow `M x y C cx1 cy1 cx2 cy2 x y`.
-   * Pass commands directly with `setFromPoints` to skip the parsing.
+   * `setFromPathStr` returns `false` and logs when the string does not follow `M x y C cx1 cy1 cx2 cy2 x y`. Pass commands
+   * directly with `setFromPoints` to skip the parsing.
    *
-   * The `complete` event fires once an edit settles, which is the point to persist the curve.
-   * `points.events.onUpdate` fires on every change instead, including while dragging.
+   * The `complete` event fires once an edit settles, which is the point to persist the curve. `points.events.onUpdate` fires on
+   * every change instead, including while dragging.
    *
    * ## Panning and zooming
    *
@@ -37,13 +38,13 @@ declare global {
    * editor.settings.panEnabled = false;
    * ```
    *
-   * `zoomIn` and `zoomOut` step by `settings.zoomStep`, staying inside `settings.zoomMin` and `settings.zoomMax`.
-   * Double clicking the panel re-centers it.
+   * `zoomIn` and `zoomOut` step by `settings.zoomStep`, staying inside `settings.zoomMin` and `settings.zoomMax`. Double clicking
+   * the panel re-centers it.
    *
    * ## Snapping
    *
-   * Anchor points and control points snap separately, each to the grid, to other anchors, and to other control points.
-   * Every combination is its own flag on `settings`, so a curve can snap to the grid while ignoring nearby points:
+   * Anchor points and control points snap separately, each to the grid, to other anchors, and to other control points. Every
+   * combination is its own flag on `settings`, so a curve can snap to the grid while ignoring nearby points:
    *
    * ```js
    * editor.settings.anchorSnapToGrid = true;
@@ -54,8 +55,8 @@ declare global {
    *
    * ## History
    *
-   * Point edits go through `historyManager`, which keeps up to `settings.maxHistory` steps.
-   * The undo and redo keys live in `settings` as `undoKeys` and `redoKeys`.
+   * Point edits go through `historyManager`, which keeps up to `settings.maxHistory` steps. The undo and redo keys live in
+   * `settings` as `undoKeys` and `redoKeys`.
    */
   type GraphEditor = GraphEditorTypes["Instance"];
 }

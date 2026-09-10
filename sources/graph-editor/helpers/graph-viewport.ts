@@ -17,7 +17,6 @@ export class GraphViewPort {
   readonly graphEditor: GraphEditor;
   readonly element: SVGElement;
 
-  #x = 0;
   /** ViewBox x */
   get x() {
     return this.#x;
@@ -26,8 +25,8 @@ export class GraphViewPort {
     this.#x = value;
     this.element.setAttribute("viewBox", `${value} ${this.#y} ${this.#width} ${this.#height}`);
   }
+  #x = 0;
 
-  #y = 0;
   /** ViewBox y */
   get y() {
     return this.#y;
@@ -36,8 +35,8 @@ export class GraphViewPort {
     this.#y = value;
     this.element.setAttribute("viewBox", `${this.#x} ${value} ${this.#width} ${this.#height}`);
   }
+  #y = 0;
 
-  #width = 100;
   /** ViewBox width */
   get width() {
     return this.#width;
@@ -46,8 +45,8 @@ export class GraphViewPort {
     this.#width = value;
     this.element.setAttribute("viewBox", `${this.#x} ${this.#y} ${value} ${this.#height}`);
   }
+  #width = 100;
 
-  #height = 100;
   /** ViewBox height */
   get height() {
     return this.#height;
@@ -56,6 +55,7 @@ export class GraphViewPort {
     this.#height = value;
     this.element.setAttribute("viewBox", `${this.#x} ${this.#y} ${this.#width} ${value}`);
   }
+  #height = 100;
 
   constructor(graphEditor: GraphEditor) {
     this.graphEditor = graphEditor;
