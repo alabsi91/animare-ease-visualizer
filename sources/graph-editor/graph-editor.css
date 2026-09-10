@@ -21,20 +21,30 @@
   /* path */
   --clr-path: var(--clr-icon);
   --clr-active-path: var(--clr-icon);
+  --clr-pressed-path: var(--clr-accent);
   --clr-filled-path: var(--clr-accent);
   --size-path-thickness: 2px;
   --size-filled-path-thickness: 3px;
-  --dur-point-actions: 200ms;
 
   position: relative;
   display: block;
   touch-action: none;
+  user-select: none;
   background-color: var(--clr-grid-line);
   background-image: radial-gradient(var(--clr-panel-background) 1px, var(--clr-grid-line) 1px);
   background-size: 20px 20px;
+  /* stylelint-disable property-no-vendor-prefix */
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  /* stylelint-enable property-no-vendor-prefix */
 
   @media (prefers-reduced-motion) {
     --dur-clr-transition: 0ms;
+  }
+
+  @media (pointer: coarse) {
+    --size-path-thickness: 4px;
+    --size-filled-path-thickness: 5px;
   }
 }
 
@@ -143,6 +153,15 @@
   transition: stroke var(--dur-clr-transition) linear;
 }
 
+@media (pointer: coarse) {
+  .graph-path:active {
+    --clr-path: var(--clr-pressed-path);
+    --clr-active-path: var(--clr-pressed-path);
+
+    transition: none;
+  }
+}
+
 .graph-panel:has(*:focus) {
   .graph-path {
     stroke: var(--clr-active-path);
@@ -204,26 +223,8 @@
   inset-block-start: 1em;
   inset-inline-end: 1em;
   display: flex;
-  visibility: hidden;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.5em;
-  opacity: 0;
-  translate: 1.5em 0;
-  transition:
-    opacity var(--dur-point-actions) ease,
-    translate var(--dur-point-actions) ease,
-    visibility 0s var(--dur-point-actions);
-
-  &.point-actions-visible {
-    visibility: visible;
-    opacity: 1;
-    translate: 0 0;
-    transition-delay: 0s;
-  }
-
-  @media (prefers-reduced-motion) {
-    --dur-point-actions: 0ms;
-  }
 }
 
 .point-action-btn {
@@ -247,8 +248,9 @@
     }
   }
 
-  &[hidden] {
-    display: none;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 
   svg {
@@ -262,5 +264,6 @@
     stroke: currentcolor;
     stroke-width: 2;
     stroke-linecap: round;
+    stroke-linejoin: round;
   }
 }

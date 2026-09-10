@@ -47,6 +47,9 @@ export class Settings {
 
   panEnabled: boolean = true;
 
+  /** How long a touch has to rest on the path before it adds an anchor point, in milliseconds */
+  addAnchorLongPressDuration: number = 500;
+
   zoomEnabled: boolean = true;
   /** In pixels */
   zoomStep: number = 20;

@@ -4,6 +4,9 @@ import { Points } from "./points";
 import type { GraphEditor } from "../graph-editor";
 import type { C_CMD, M_CMD } from "./types";
 
+/** How far a touch may drift and still count as a long press, in pixels */
+const LONG_PRESS_MOVE_TOLERANCE = 10;
+
 export class Path {
   readonly element: SVGPathElement;
   readonly graphEditor: GraphEditor;
@@ -21,6 +24,9 @@ export class Path {
   set animFilledPath(value: number) {
     this.maskRect.setAttribute("width", `${value}%`);
   }
+
+  #longPressTimeoutId = 0;
+  #pressPosition = { x: 0, y: 0 };
 
   constructor(graphEditor: GraphEditor) {
     this.graphEditor = graphEditor;
@@ -63,6 +69,10 @@ export class Path {
 
     const signal = graphEditor.abortController.signal;
     path.addEventListener("pointerdown", this.#onPointerDown, { signal });
+    path.addEventListener("contextmenu", this.#onContextMenu, { signal });
+    document.addEventListener("pointerup", this.#cancelLongPress, { signal });
+    document.addEventListener("pointercancel", this.#cancelLongPress, { signal });
+    document.addEventListener("pointermove", this.#onPointerMove, { signal });
     this.points.events.onUpdate.add(this.updatePath, signal);
   }
 
@@ -71,11 +81,50 @@ export class Path {
     this.d = Points.constructPathStr(normalizeValues);
   };
 
-  #onPointerDown = (e: PointerEvent) => {
-    if (!this.graphEditor.keyboardShortcutManager.isAddAnchorModifiersPressed) return;
+  #onPointerMove = (e: PointerEvent) => {
+    if (this.#longPressTimeoutId === 0) return;
 
+    const movedDistance = Math.hypot(e.clientX - this.#pressPosition.x, e.clientY - this.#pressPosition.y);
+    if (movedDistance > LONG_PRESS_MOVE_TOLERANCE) this.#cancelLongPress();
+  };
+
+  #onContextMenu = (e: Event) => {
+    e.preventDefault();
+  };
+
+  #cancelLongPress = () => {
+    clearTimeout(this.#longPressTimeoutId);
+    this.#longPressTimeoutId = 0;
+  };
+
+  #onLongPress = () => {
+    this.#longPressTimeoutId = 0;
+
+    if (!this.graphEditor.isPinching) {
+      this.#addAnchorAt(this.#pressPosition.x, this.#pressPosition.y);
+    }
+  };
+
+  #onPointerDown = (e: PointerEvent) => {
+    this.#pressPosition = { x: e.clientX, y: e.clientY };
+
+    if (this.graphEditor.keyboardShortcutManager.isAddAnchorModifiersPressed) {
+      this.#addAnchorAt(e.clientX, e.clientY);
+      return;
+    }
+
+    if (e.pointerType !== "touch") return;
+    if (this.graphEditor.isPinching) return;
+
+    this.#cancelLongPress();
+    this.#longPressTimeoutId = window.setTimeout(this.#onLongPress, this.graphEditor.settings.addAnchorLongPressDuration);
+  };
+
+  #addAnchorAt(pressX: number, pressY: number) {
     const shadow = this.graphEditor.shadowRoot;
     if (!shadow) return;
+
+    this.graphEditor.historyManager.takeSnapshot();
 
     const PATH_SVG_VIEW_BOX_SIZE = this.graphEditor.PATH_SVG_VIEW_BOX_SIZE;
 
@@ -87,7 +136,7 @@ export class Path {
       const pathCmds = Points.scale([prevAnchor, cmd], PATH_SVG_VIEW_BOX_SIZE);
       this.d = Points.constructPathStr(pathCmds);
 
-      const clickHit = shadow.elementsFromPoint(e.clientX, e.clientY).includes(this.element);
+      const clickHit = shadow.elementsFromPoint(pressX, pressY).includes(this.element);
       if (!clickHit) continue;
 
       this.updatePath(); // revert
@@ -98,11 +147,12 @@ export class Path {
     // failed
     if (clickedCurveIdx === 0) {
       this.updatePath(); // revert
+      this.graphEditor.historyManager.removeSnapshot();
       return;
     }
 
     const { left: editorX, top: editorY } = this.graphEditor.getBoundingClientRect();
-    let clickX = e.clientX - (editorX + this.graphEditor.graphPanel.x); // relative to panel
+    let clickX = pressX - (editorX + this.graphEditor.graphPanel.x); // relative to panel
     clickX = clickX * (PATH_SVG_VIEW_BOX_SIZE / this.graphEditor.graphPanel.size); // scale
     clickX /= PATH_SVG_VIEW_BOX_SIZE; // normalize
 
@@ -121,7 +171,7 @@ export class Path {
     } else {
       // For curves that are not "valid" (a curve going backwards against the time)
       // we add a new curve that will change the path shape
-      let clickY = e.clientY - (editorY + this.graphEditor.graphPanel.y); // relative to panel
+      let clickY = pressY - (editorY + this.graphEditor.graphPanel.y); // relative to panel
       clickY = clickY * (PATH_SVG_VIEW_BOX_SIZE / this.graphEditor.graphPanel.size); // scale
       clickY /= PATH_SVG_VIEW_BOX_SIZE; // normalize
 
@@ -135,6 +185,7 @@ export class Path {
 
     this.graphEditor.graph.addAnchorPoint(clickedCurveIdx);
     this.points.events.onUpdate.fire();
+    this.graphEditor.historyManager.addSnapshotToHistory();
     this.graphEditor.dispatchComplete();
-  };
+  }
 }

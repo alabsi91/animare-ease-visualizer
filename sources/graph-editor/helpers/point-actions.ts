@@ -10,6 +10,20 @@ const SMOOTH_CORNER_ICON = /*html*/ `
   </svg>
 `;
 
+const UNDO_ICON = /*html*/ `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path class="point-action-curve" d="M4 10h9a5 5 0 0 1 0 10h-3" />
+    <path class="point-action-curve" d="M8 6 4 10l4 4" />
+  </svg>
+`;
+
+const REDO_ICON = /*html*/ `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path class="point-action-curve" d="M20 10h-9a5 5 0 0 0 0 10h3" />
+    <path class="point-action-curve" d="M16 6l4 4-4 4" />
+  </svg>
+`;
+
 const DELETE_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
@@ -20,6 +34,9 @@ export class PointActions {
   readonly graphEditor: GraphEditor;
   readonly element: HTMLDivElement;
 
+  readonly #undoButton: HTMLButtonElement;
+  readonly #redoButton: HTMLButtonElement;
+  readonly #smoothCornerButton: HTMLButtonElement;
   readonly #deleteButton: HTMLButtonElement;
   readonly #tooltips: { tooltip: HTMLElementTagNameMap["sv-tooltip"]; button: HTMLButtonElement }[] = [];
 
@@ -31,13 +48,17 @@ export class PointActions {
     this.element = document.createElement("div");
     this.element.classList.add("point-actions");
 
-    this.#addButton("Toggle smooth corner", SMOOTH_CORNER_ICON, this.#onSmoothCornerClick);
+    this.#undoButton = this.#addButton("Undo", UNDO_ICON, graphEditor.historyManager.undo);
+    this.#redoButton = this.#addButton("Redo", REDO_ICON, graphEditor.historyManager.redo);
+    this.#smoothCornerButton = this.#addButton("Toggle smooth corner", SMOOTH_CORNER_ICON, this.#onSmoothCornerClick);
     this.#deleteButton = this.#addButton("Delete anchor point", DELETE_ICON, this.#onDeleteClick);
+
+    const signal = graphEditor.abortController.signal;
+    graphEditor.addEventListener("complete", this.#syncToFocusedAnchor, { signal });
 
     const shadow = graphEditor.shadowRoot;
     if (!shadow) return;
 
-    const signal = graphEditor.abortController.signal;
     shadow.addEventListener("focusin", this.#syncToFocusedAnchor, { signal });
     shadow.addEventListener("focusout", this.#syncToFocusedAnchorLater, { signal });
   }
@@ -46,6 +67,7 @@ export class PointActions {
     const button = document.createElement("button");
     button.type = "button";
     button.classList.add("point-action-btn");
+    button.disabled = true;
     button.setAttribute("aria-label", label);
     button.innerHTML = icon;
 
@@ -55,7 +77,7 @@ export class PointActions {
 
     const tooltip = document.createElement("sv-tooltip");
     tooltip.textContent = label;
-    tooltip.side = "inline-start";
+    tooltip.side = "block-end";
     this.#tooltips.push({ tooltip, button });
 
     this.element.append(button, tooltip);
@@ -83,15 +105,17 @@ export class PointActions {
   #syncToFocusedAnchor = () => {
     this.#attachTooltips();
 
-    // the buttons are reachable by keyboard, so focus landing on them keeps the anchor selected
     const focusedElement = this.graphEditor.shadowRoot?.activeElement ?? null;
     if (!this.element.contains(focusedElement)) {
       this.#focusedAnchorCircle = focusedElement;
     }
 
     const command = this.#getCommandOfAnchor(this.#focusedAnchorCircle);
-    this.element.classList.toggle("point-actions-visible", command !== null);
-    this.#deleteButton.hidden = !this.#isDeletable(command);
+
+    this.#undoButton.disabled = !this.graphEditor.historyManager.canUndo;
+    this.#redoButton.disabled = !this.graphEditor.historyManager.canRedo;
+    this.#smoothCornerButton.disabled = command === null;
+    this.#deleteButton.disabled = !this.#isDeletable(command);
   };
 
   #syncToFocusedAnchorLater = () => {

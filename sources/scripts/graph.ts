@@ -5,7 +5,8 @@ import { storage } from "./storage";
 import { showAlert } from "./alert";
 
 export function initGraph() {
-  const size = Math.max(Math.min(elements.graphEditor.offsetWidth, elements.graphEditor.offsetHeight) - 200, 200);
+  const shortestSide = Math.min(elements.graphEditor.offsetWidth, elements.graphEditor.offsetHeight);
+  const size = Math.max(shortestSide * 0.8, 200);
   elements.graphEditor.settings.panelSize = size;
   elements.graphEditor.graphPanel.center();
 

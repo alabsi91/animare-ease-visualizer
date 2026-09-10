@@ -23,6 +23,16 @@ export class HistoryManager {
     graphEditor.keyboardShortcutManager.addListener("Redo", this.redo);
   }
 
+  /** `true` while there is a step left to undo */
+  get canUndo(): boolean {
+    return this.#undoStack.length > 0;
+  }
+
+  /** `true` while there is a step left to redo */
+  get canRedo(): boolean {
+    return this.#redoStack.length > 0;
+  }
+
   undo = () => {
     if (!this.#undoStack.length) return;
 
