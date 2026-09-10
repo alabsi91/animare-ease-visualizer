@@ -22,6 +22,7 @@ export class AnchorPoint {
   #startPointerPos = { x: 0, y: 0 };
   #lockedDirection: "x" | "y" | null = null;
   #isChanged = false;
+  #isDragging = false;
 
   #isActive = false;
   get isActive() {
@@ -225,6 +226,7 @@ export class AnchorPoint {
   #onPointerDown = (e: PointerEvent) => {
     this.isActive = true;
     this.#startPointerPos = { x: e.clientX, y: e.clientY };
+    this.#isDragging = false;
     this.graphEditor.historyManager.takeSnapshot();
 
     // smooth corner
@@ -254,8 +256,18 @@ export class AnchorPoint {
     this.graphEditor.dispatchComplete();
   };
 
+  #hasTouchTraveledEnough(e: PointerEvent) {
+    if (this.#isDragging || e.pointerType !== "touch") return true;
+
+    const movedDistance = Math.hypot(e.clientX - this.#startPointerPos.x, e.clientY - this.#startPointerPos.y);
+    this.#isDragging = movedDistance >= this.graphEditor.settings.touchDragStartDistance;
+
+    return this.#isDragging;
+  }
+
   #onPointerMove = (e: PointerEvent) => {
     if (!this.isActive || this.graphEditor.isPinching) return;
+    if (!this.#hasTouchTraveledEnough(e)) return;
 
     const isAnchorLockMovementPressed = this.graphEditor.keyboardShortcutManager.isAnchorLockMovementModifiersPressed;
     if (this.#lockedDirection === null && isAnchorLockMovementPressed) {

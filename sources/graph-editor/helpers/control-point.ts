@@ -21,6 +21,7 @@ export class ControlPoint {
   #lockedDirection: "x" | "y" | null = null;
   #isCtrlFree = false;
   #updateHistory = false;
+  #isDragging = false;
 
   #isActive = false;
   get isActive() {
@@ -190,6 +191,7 @@ export class ControlPoint {
   #onPointerDown = (e: PointerEvent) => {
     this.isActive = true;
     this.#startPointerPos = { x: e.clientX, y: e.clientY };
+    this.#isDragging = false;
     this.graphEditor.historyManager.takeSnapshot();
 
     if (this.graphEditor.settings.ctrlSnapEnabled) {
@@ -229,8 +231,18 @@ export class ControlPoint {
     this.graphEditor.dispatchComplete();
   };
 
+  #hasTouchTraveledEnough(e: PointerEvent) {
+    if (this.#isDragging || e.pointerType !== "touch") return true;
+
+    const movedDistance = Math.hypot(e.clientX - this.#startPointerPos.x, e.clientY - this.#startPointerPos.y);
+    this.#isDragging = movedDistance >= this.graphEditor.settings.touchDragStartDistance;
+
+    return this.#isDragging;
+  }
+
   #onPointerMove = (e: PointerEvent) => {
     if (!this.isActive || this.graphEditor.isPinching) return;
+    if (!this.#hasTouchTraveledEnough(e)) return;
 
     const isCtrlLockMovementPressed = this.graphEditor.keyboardShortcutManager.isCtrlLockMovementModifiersPressed;
     if (this.#lockedDirection === null && isCtrlLockMovementPressed) {

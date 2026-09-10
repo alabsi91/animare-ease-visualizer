@@ -50,6 +50,9 @@ export class Settings {
   /** How long a touch has to rest on the path before it adds an anchor point, in milliseconds */
   addAnchorLongPressDuration: number = 500;
 
+  /** How far a touch has to travel before it starts dragging a point, in pixels */
+  touchDragStartDistance: number = 8;
+
   zoomEnabled: boolean = true;
   /** In pixels */
   zoomStep: number = 20;
