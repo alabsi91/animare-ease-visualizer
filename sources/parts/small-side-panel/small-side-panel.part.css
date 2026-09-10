@@ -1,4 +1,5 @@
 .small-side-panel {
+  z-index: 1;
   visibility: hidden;
   grid-area: 1 / 1;
   inline-size: var(--small-side-panel-size);
