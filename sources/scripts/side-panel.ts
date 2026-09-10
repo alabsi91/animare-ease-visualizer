@@ -7,8 +7,8 @@ import { showAlert } from "./alert";
 
 export function initializeSidePanel() {
   // show/hide side panel
-  elements.hideSidePanelBtn.addEventListener("click", hideLargeSidePanel);
-  elements.showSidePanelBtn.addEventListener("click", hideSmallSidePanel);
+  elements.hideSidePanelBtn.addEventListener("click", () => setSidePanelExpanded(false));
+  elements.showSidePanelBtn.addEventListener("click", () => setSidePanelExpanded(true));
 
   // animation controls
   elements.playBtns.forEach(e => e.addEventListener("click", playBtnHandler));
@@ -65,118 +65,12 @@ export function initializeSidePanel() {
   elements.pathCodeEditor.addEventListener("keydown", pathCodeOnEnter);
 }
 
-async function hideLargeSidePanel() {
-  const animOpt: KeyframeAnimationOptions = {
-    duration: 200,
-    easing: "ease",
-    fill: "forwards",
-  };
+function setSidePanelExpanded(isExpanded: boolean) {
+  elements.main.classList.toggle("side-panel-expanded", isExpanded);
+  elements.main.classList.toggle("side-panel-collapsed", !isExpanded);
 
-  const sidePanelWidth = getComputedStyle(elements.sidePanel).width;
-
-  const mainAnim = elements.main.animate(
-    [{ gridTemplateColumns: `${sidePanelWidth} 1fr` }, { gridTemplateColumns: "0px 1fr" }],
-    animOpt
-  );
-
-  const sidePanelAnim = elements.sidePanel.animate([{}, { transform: "translateX(-100%)" }], animOpt);
-
-  await Promise.all([mainAnim.finished, sidePanelAnim.finished]);
-
-  elements.main.style.removeProperty("grid-template-columns");
-  mainAnim.cancel();
-
-  sidePanelAnim.commitStyles();
-  sidePanelAnim.cancel();
-
-  elements.sidePanel.style.display = "none";
-
-  await showSmallSidePanel();
-}
-
-async function hideSmallSidePanel() {
-  const animOpt: KeyframeAnimationOptions = {
-    duration: 200,
-    easing: "ease",
-    fill: "forwards",
-  };
-
-  const sidePanelWidth = getComputedStyle(elements.smallSidePanel).width;
-
-  const mainAnim = elements.main.animate(
-    [{ gridTemplateColumns: `${sidePanelWidth} 1fr` }, { gridTemplateColumns: "0px 1fr" }],
-    animOpt
-  );
-
-  const sidePanelAnim = elements.smallSidePanel.animate(
-    [{ transform: "translateX(0%)" }, { transform: "translateX(-100%)" }],
-    animOpt
-  );
-
-  await Promise.all([mainAnim.finished, sidePanelAnim.finished]);
-
-  mainAnim.cancel();
-
-  sidePanelAnim.commitStyles();
-  sidePanelAnim.cancel();
-  elements.smallSidePanel.style.display = "none";
-
-  await showLargeSidePanel();
-}
-
-async function showSmallSidePanel() {
-  const animOpt: KeyframeAnimationOptions = {
-    duration: 200,
-    easing: "ease",
-    fill: "forwards",
-  };
-
-  elements.smallSidePanel.style.display = "block";
-  const sidePanelWidth = getComputedStyle(elements.smallSidePanel).width;
-
-  const mainAnim = elements.main.animate(
-    [{ gridTemplateColumns: "0px 1fr" }, { gridTemplateColumns: `${sidePanelWidth} 1fr` }],
-    animOpt
-  );
-
-  const sidePanelAnim = elements.smallSidePanel.animate(
-    [{ transform: "translateX(-100%)" }, { transform: "translateX(0)" }],
-    animOpt
-  );
-
-  await Promise.all([mainAnim.finished, sidePanelAnim.finished]);
-
-  sidePanelAnim.commitStyles();
-  sidePanelAnim.cancel();
-
-  mainAnim.cancel();
-}
-
-async function showLargeSidePanel() {
-  elements.smallSidePanel.style.display = "none";
-
-  const animOpt: KeyframeAnimationOptions = {
-    duration: 200,
-    easing: "ease",
-    fill: "forwards",
-  };
-
-  elements.sidePanel.style.display = "block";
-  const sidePanelWidth = getComputedStyle(elements.sidePanel).width;
-
-  const mainAnim = elements.main.animate(
-    [{ gridTemplateColumns: "0px 1fr" }, { gridTemplateColumns: `${sidePanelWidth} 1fr` }],
-    animOpt
-  );
-
-  const sidePanelAnim = elements.sidePanel.animate([{}, { transform: "translateX(0)" }], animOpt);
-
-  await Promise.all([mainAnim.finished, sidePanelAnim.finished]);
-
-  sidePanelAnim.commitStyles();
-  sidePanelAnim.cancel();
-
-  mainAnim.cancel();
+  const buttonToFocus = isExpanded ? elements.hideSidePanelBtn : elements.showSidePanelBtn;
+  buttonToFocus.focus();
 }
 
 function durationInputOnEnter(event: KeyboardEvent) {

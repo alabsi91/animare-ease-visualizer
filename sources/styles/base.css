@@ -1,7 +1,38 @@
 main {
+  --large-side-panel-width: clamp(300px, 24vw, 450px);
+  --small-side-panel-font-size: 1rem;
+  --small-side-panel-size: calc(4.5 * var(--small-side-panel-font-size));
+  --side-panel-column: var(--large-side-panel-width);
+  --side-panel-duration: 200ms;
+  --side-panel-easing: ease;
+
+  position: relative;
   display: grid;
-  grid-template-columns: auto 1fr;
-  overflow: hidden;
+  grid-template-columns: var(--side-panel-column) minmax(0, 1fr);
+  block-size: 100dvh;
+  overflow: clip;
+  transition: grid-template-columns var(--side-panel-duration) var(--side-panel-easing);
+
+  &.side-panel-collapsed {
+    --side-panel-column: var(--small-side-panel-size);
+  }
+
+  @media screen and (max-width: 800px) {
+    --small-side-panel-font-size: 0.75rem;
+    --side-panel-row: var(--small-side-panel-size);
+
+    grid-template-rows: minmax(0, 1fr) var(--side-panel-row);
+    grid-template-columns: minmax(0, 1fr);
+    transition: grid-template-rows var(--side-panel-duration) var(--side-panel-easing);
+
+    &.side-panel-expanded {
+      --side-panel-row: 0px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    --side-panel-duration: 0s;
+  }
 }
 
 * {

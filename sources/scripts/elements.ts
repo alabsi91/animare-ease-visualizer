@@ -14,8 +14,6 @@ export const elements = {
   main: getElement<HTMLElement>("main"),
   graphEditor: getElement<GraphEditor>("graph-editor"),
   alertStack: getElement<AlertStack>("sv-alert-stack"),
-  sidePanel: getElement<HTMLDivElement>(".side-panel"),
-  smallSidePanel: getElement<HTMLDivElement>(".small-side-panel"),
   hideSidePanelBtn: getElement<HTMLButtonElement>(".hide-panel-btn"),
   showSidePanelBtn: getElement<HTMLButtonElement>(".show-side-panel"),
   playBtns: getAllElements<HTMLButtonElement>(".play-btn"),

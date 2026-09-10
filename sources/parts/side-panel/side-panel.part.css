@@ -1,14 +1,40 @@
 .side-panel {
-  inline-size: 24vw;
-  min-inline-size: 300px;
-  max-inline-size: 450px;
+  grid-area: 1 / 1;
+  inline-size: var(--large-side-panel-width);
   block-size: 100dvh;
   overflow: auto;
   background-color: var(--clr-navigation-background);
   border-inline-end: solid 1px var(--clr-divider);
   box-shadow: 2px 0 7px var(--clr-shadow);
   backdrop-filter: blur(1px);
-  transform: translateY(0);
+  transition:
+    translate var(--side-panel-duration) var(--side-panel-easing),
+    visibility 0s;
+
+  .side-panel-collapsed & {
+    visibility: hidden;
+    translate: -100% 0;
+    transition-delay: 0s, var(--side-panel-duration);
+  }
+
+  @media screen and (max-width: 800px) {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: 1;
+    visibility: hidden;
+    grid-area: auto;
+    inline-size: 100%;
+    backdrop-filter: blur(7px);
+    translate: -100% 0;
+    transition-delay: 0s, var(--side-panel-duration);
+
+    .side-panel-expanded & {
+      visibility: visible;
+      translate: 0 0;
+      transition-delay: 0s;
+    }
+  }
 }
 
 .panel-title {

@@ -68,6 +68,7 @@
 
   @media screen and (max-width: 800px) {
     --base-font-size: 12px;
+    --sz-panel-icon: 22px;
   }
 }
 
