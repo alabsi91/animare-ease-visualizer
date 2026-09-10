@@ -5,28 +5,28 @@ import type { MoveCommand } from "./move-command";
 
 const SMOOTH_CORNER_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path class="point-action-curve" d="M3 19C10 19 14 5 21 5" />
+    <path class="toolbar-icon-curve" d="M3 19C10 19 14 5 21 5" />
     <circle cx="12" cy="12" r="2.6" />
   </svg>
 `;
 
 const UNDO_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path class="point-action-curve" d="M4 10h9a5 5 0 0 1 0 10h-3" />
-    <path class="point-action-curve" d="M8 6 4 10l4 4" />
+    <path class="toolbar-icon-curve" d="M4 10h9a5 5 0 0 1 0 10h-3" />
+    <path class="toolbar-icon-curve" d="M8 6 4 10l4 4" />
   </svg>
 `;
 
 const REDO_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path class="point-action-curve" d="M20 10h-9a5 5 0 0 0 0 10h3" />
-    <path class="point-action-curve" d="M16 6l4 4-4 4" />
+    <path class="toolbar-icon-curve" d="M20 10h-9a5 5 0 0 0 0 10h3" />
+    <path class="toolbar-icon-curve" d="M16 6l4 4-4 4" />
   </svg>
 `;
 
 const FREE_CTRL_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path class="point-action-curve" d="M4 18 12 12 20 14" />
+    <path class="toolbar-icon-curve" d="M4 18 12 12 20 14" />
     <circle cx="12" cy="12" r="2.4" />
     <circle cx="4" cy="18" r="1.8" />
     <circle cx="20" cy="14" r="1.8" />
@@ -35,7 +35,7 @@ const FREE_CTRL_ICON = /*html*/ `
 
 const AXIS_LOCK_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path class="point-action-curve" d="M12 3v18M3 12h18" />
+    <path class="toolbar-icon-curve" d="M12 3v18M3 12h18" />
     <circle cx="12" cy="12" r="2.4" />
   </svg>
 `;
@@ -46,7 +46,7 @@ const DELETE_ICON = /*html*/ `
   </svg>
 `;
 
-export class PointActions {
+export class Toolbar {
   readonly graphEditor: GraphEditor;
   readonly element: HTMLDivElement;
 
@@ -64,7 +64,7 @@ export class PointActions {
     this.graphEditor = graphEditor;
 
     this.element = document.createElement("div");
-    this.element.classList.add("point-actions");
+    this.element.classList.add("toolbar");
 
     this.#undoButton = this.#addButton("Undo", UNDO_ICON, graphEditor.historyManager.undo);
     this.#redoButton = this.#addButton("Redo", REDO_ICON, graphEditor.historyManager.redo);
@@ -73,22 +73,22 @@ export class PointActions {
     this.#smoothCornerButton = this.#addButton("Toggle smooth corner", SMOOTH_CORNER_ICON, this.#onSmoothCornerClick);
     this.#deleteButton = this.#addButton("Delete anchor point", DELETE_ICON, this.#onDeleteClick);
 
-    this.#syncToFocusedAnchor();
+    this.#syncButtons();
 
     const signal = graphEditor.abortController.signal;
-    graphEditor.addEventListener("complete", this.#syncToFocusedAnchor, { signal });
+    graphEditor.addEventListener("complete", this.#syncButtons, { signal });
 
     const shadow = graphEditor.shadowRoot;
     if (!shadow) return;
 
-    shadow.addEventListener("focusin", this.#syncToFocusedAnchor, { signal });
-    shadow.addEventListener("focusout", this.#syncToFocusedAnchorLater, { signal });
+    shadow.addEventListener("focusin", this.#syncButtons, { signal });
+    shadow.addEventListener("focusout", this.#syncButtonsLater, { signal });
   }
 
   #addButton(label: string, icon: string, onClick: () => void) {
     const button = document.createElement("button");
     button.type = "button";
-    button.classList.add("point-action-btn");
+    button.classList.add("toolbar-btn");
     button.setAttribute("aria-label", label);
     button.innerHTML = icon;
 
@@ -123,7 +123,7 @@ export class PointActions {
     return command.anchorPoint.cmdIdx !== this.graphEditor.points.length - 1;
   }
 
-  #syncToFocusedAnchor = () => {
+  #syncButtons = () => {
     this.#attachTooltips();
 
     const focusedElement = this.graphEditor.shadowRoot?.activeElement ?? null;
@@ -144,13 +144,13 @@ export class PointActions {
     this.#deleteButton.disabled = !this.#isDeletable(command);
   };
 
-  #syncToFocusedAnchorLater = () => {
-    setTimeout(this.#syncToFocusedAnchor);
+  #syncButtonsLater = () => {
+    setTimeout(this.#syncButtons);
   };
 
   #onAxisLockClick = () => {
     this.graphEditor.settings.axisLockEnabled = !this.graphEditor.settings.axisLockEnabled;
-    this.#syncToFocusedAnchor();
+    this.#syncButtons();
   };
 
   #onFreeCtrlClick = () => {
@@ -178,6 +178,6 @@ export class PointActions {
     if (!this.#isDeletable(command)) return;
 
     command.deleteAnchor();
-    this.#syncToFocusedAnchor();
+    this.#syncButtons();
   };
 }

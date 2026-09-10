@@ -218,7 +218,7 @@
   stroke: var(--clr-active-ctrl-line);
 }
 
-.point-actions {
+.toolbar {
   position: absolute;
   inset-block-start: 1em;
   inset-inline-end: 1em;
@@ -227,7 +227,7 @@
   gap: 0.5em;
 }
 
-.point-action-btn {
+.toolbar-btn {
   display: grid;
   place-items: center;
   inline-size: 2.5em;
@@ -265,7 +265,7 @@
     fill: currentcolor;
   }
 
-  .point-action-curve {
+  .toolbar-icon-curve {
     fill: none;
     stroke: currentcolor;
     stroke-width: 2;
