@@ -124,7 +124,10 @@
     <li>
       <p class="list-bullet-title">Undo changes</p>
       <p class="list-item-shortcut">
-        <kbd>Ctrl</kbd>
+        <kbd class="primary-modifier-key">
+          <svg class="command-key-icon" src="@assets/command-key.svg" aria-hidden="true" inline hidden></svg>
+          <span class="key-label">Ctrl</span>
+        </kbd>
         +
         <kbd>Z</kbd>
       </p>
@@ -133,7 +136,10 @@
     <li>
       <p class="list-bullet-title">Redo changes</p>
       <p class="list-item-shortcut">
-        <kbd>Ctrl</kbd>
+        <kbd class="primary-modifier-key">
+          <svg class="command-key-icon" src="@assets/command-key.svg" aria-hidden="true" inline hidden></svg>
+          <span class="key-label">Ctrl</span>
+        </kbd>
         +
         <kbd>Y</kbd>
       </p>
@@ -149,6 +155,12 @@
     altKeys.forEach(kbd => {
       kbd.querySelector(".key-label").textContent = "Option";
       kbd.querySelector(".option-key-icon").removeAttribute("hidden");
+    });
+
+    const primaryModifierKeys = document.querySelectorAll(".primary-modifier-key");
+    primaryModifierKeys.forEach(kbd => {
+      kbd.querySelector(".key-label").textContent = "Command";
+      kbd.querySelector(".command-key-icon").removeAttribute("hidden");
     });
   }
 </script>

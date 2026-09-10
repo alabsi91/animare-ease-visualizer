@@ -1,6 +1,9 @@
 import type { GraphEditor } from "../graph-editor";
 import type { KeyModifiers } from "./types";
 
+/** Apple keyboards put the shortcut modifier on Command, every other one puts it on Control */
+const PRIMARY_MODIFIER: KeyModifiers = /Mac|iPhone|iPod|iPad/.test(navigator.platform) ? "Meta" : "Control";
+
 class KeyboardAssignment {
   readonly keys: Set<string>;
   readonly modifiers: Set<KeyModifiers>;
@@ -42,8 +45,8 @@ export class Settings {
   addAnchorModifiers = new KeyboardAssignment({ modifiers: ["Alt"] });
   freeCtrlModifiers = new KeyboardAssignment({ modifiers: ["Alt"] });
   panKeys = new KeyboardAssignment({ keys: [" "] });
-  undoKeys = new KeyboardAssignment({ modifiers: ["Control"], keys: ["z"] });
-  redoKeys = new KeyboardAssignment({ modifiers: ["Control"], keys: ["y"] });
+  undoKeys = new KeyboardAssignment({ modifiers: [PRIMARY_MODIFIER], keys: ["z"] });
+  redoKeys = new KeyboardAssignment({ modifiers: [PRIMARY_MODIFIER], keys: ["y"] });
 
   panEnabled: boolean = true;
 

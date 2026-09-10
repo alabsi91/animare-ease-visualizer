@@ -8,7 +8,7 @@ type ShortcutEvent = {
 };
 
 export class KeyboardShortcutManager {
-  readonly #modifierKeys = new Set(["Control", "Alt", "Shift"]);
+  readonly #modifierKeys = new Set(["Control", "Meta", "Alt", "Shift"]);
 
   readonly graphEditor: GraphEditor;
   readonly settings: Settings;
@@ -94,6 +94,10 @@ export class KeyboardShortcutManager {
       this.modifiersPressed.add("Control");
       this.modifiersPressed.add(e.location === 2 ? "ControlRight" : "ControlLeft");
     }
+    if (e.metaKey) {
+      this.modifiersPressed.add("Meta");
+      this.modifiersPressed.add(e.location === 2 ? "MetaRight" : "MetaLeft");
+    }
     if (e.altKey) {
       this.modifiersPressed.add("Alt");
       this.modifiersPressed.add(e.location === 2 ? "AltRight" : "AltLeft");
@@ -116,9 +120,18 @@ export class KeyboardShortcutManager {
       this.keysPressed.delete(e.key.toLowerCase());
     }
 
+    // macOS holds back key up while Command is down, so the keys it swallowed are dropped here
+    if (e.key === "Meta") {
+      this.keysPressed.clear();
+    }
+
     if (!e.ctrlKey) {
       this.modifiersPressed.delete("Control");
       this.modifiersPressed.delete(e.location === 2 ? "ControlRight" : "ControlLeft");
+    }
+    if (!e.metaKey) {
+      this.modifiersPressed.delete("Meta");
+      this.modifiersPressed.delete(e.location === 2 ? "MetaRight" : "MetaLeft");
     }
     if (!e.altKey) {
       this.modifiersPressed.delete("Alt");
