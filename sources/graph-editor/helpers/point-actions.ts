@@ -1,0 +1,118 @@
+import { CubicCommand } from "./cubic-command";
+
+import type { GraphEditor } from "../graph-editor";
+import type { MoveCommand } from "./move-command";
+
+const SMOOTH_CORNER_ICON = /*html*/ `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path class="point-action-curve" d="M3 19C10 19 14 5 21 5" />
+    <circle cx="12" cy="12" r="2.6" />
+  </svg>
+`;
+
+const DELETE_ICON = /*html*/ `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
+  </svg>
+`;
+
+export class PointActions {
+  readonly graphEditor: GraphEditor;
+  readonly element: HTMLDivElement;
+
+  readonly #deleteButton: HTMLButtonElement;
+  readonly #tooltips: { tooltip: HTMLElementTagNameMap["sv-tooltip"]; button: HTMLButtonElement }[] = [];
+
+  #focusedAnchorCircle: Element | null = null;
+
+  constructor(graphEditor: GraphEditor) {
+    this.graphEditor = graphEditor;
+
+    this.element = document.createElement("div");
+    this.element.classList.add("point-actions");
+
+    this.#addButton("Toggle smooth corner", SMOOTH_CORNER_ICON, this.#onSmoothCornerClick);
+    this.#deleteButton = this.#addButton("Delete anchor point", DELETE_ICON, this.#onDeleteClick);
+
+    const shadow = graphEditor.shadowRoot;
+    if (!shadow) return;
+
+    const signal = graphEditor.abortController.signal;
+    shadow.addEventListener("focusin", this.#syncToFocusedAnchor, { signal });
+    shadow.addEventListener("focusout", this.#syncToFocusedAnchorLater, { signal });
+  }
+
+  #addButton(label: string, icon: string, onClick: () => void) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.classList.add("point-action-btn");
+    button.setAttribute("aria-label", label);
+    button.innerHTML = icon;
+
+    // tapping a button must not pull the focus off the anchor point it acts on
+    button.addEventListener("pointerdown", e => e.preventDefault());
+    button.addEventListener("click", onClick);
+
+    const tooltip = document.createElement("sv-tooltip");
+    tooltip.textContent = label;
+    tooltip.side = "inline-start";
+    this.#tooltips.push({ tooltip, button });
+
+    this.element.append(button, tooltip);
+    return button;
+  }
+
+  #attachTooltips() {
+    for (const { tooltip, button } of this.#tooltips) {
+      if (tooltip.targets.length === 0) tooltip.targets = [button];
+    }
+  }
+
+  #getCommandOfAnchor(anchorCircle: Element | null) {
+    if (!anchorCircle) return null;
+
+    const command = this.graphEditor.commandsRef.find(c => c.anchorPoint.svgCircle === anchorCircle);
+    return command ?? null;
+  }
+
+  #isDeletable(command: CubicCommand | MoveCommand | null): command is CubicCommand {
+    if (!(command instanceof CubicCommand)) return false;
+    return command.anchorPoint.cmdIdx !== this.graphEditor.points.length - 1;
+  }
+
+  #syncToFocusedAnchor = () => {
+    this.#attachTooltips();
+
+    // the buttons are reachable by keyboard, so focus landing on them keeps the anchor selected
+    const focusedElement = this.graphEditor.shadowRoot?.activeElement ?? null;
+    if (!this.element.contains(focusedElement)) {
+      this.#focusedAnchorCircle = focusedElement;
+    }
+
+    const command = this.#getCommandOfAnchor(this.#focusedAnchorCircle);
+    this.element.classList.toggle("point-actions-visible", command !== null);
+    this.#deleteButton.hidden = !this.#isDeletable(command);
+  };
+
+  #syncToFocusedAnchorLater = () => {
+    setTimeout(this.#syncToFocusedAnchor);
+  };
+
+  #onSmoothCornerClick = () => {
+    const command = this.#getCommandOfAnchor(this.#focusedAnchorCircle);
+    if (!command) return;
+
+    this.graphEditor.historyManager.takeSnapshot();
+    command.anchorPoint.toggleSmoothCorner();
+    this.graphEditor.historyManager.addSnapshotToHistory();
+    this.graphEditor.dispatchComplete();
+  };
+
+  #onDeleteClick = () => {
+    const command = this.#getCommandOfAnchor(this.#focusedAnchorCircle);
+    if (!this.#isDeletable(command)) return;
+
+    command.deleteAnchor();
+    this.#syncToFocusedAnchor();
+  };
+}

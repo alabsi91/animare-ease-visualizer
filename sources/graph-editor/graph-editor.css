@@ -24,7 +24,9 @@
   --clr-filled-path: var(--clr-accent);
   --size-path-thickness: 2px;
   --size-filled-path-thickness: 3px;
+  --dur-point-actions: 200ms;
 
+  position: relative;
   display: block;
   touch-action: none;
   background-color: var(--clr-grid-line);
@@ -195,4 +197,70 @@
 
 .active-ctrl-line {
   stroke: var(--clr-active-ctrl-line);
+}
+
+.point-actions {
+  position: absolute;
+  inset-block-start: 1em;
+  inset-inline-end: 1em;
+  display: flex;
+  visibility: hidden;
+  flex-direction: column;
+  gap: 0.5em;
+  opacity: 0;
+  translate: 1.5em 0;
+  transition:
+    opacity var(--dur-point-actions) ease,
+    translate var(--dur-point-actions) ease,
+    visibility 0s var(--dur-point-actions);
+
+  &.point-actions-visible {
+    visibility: visible;
+    opacity: 1;
+    translate: 0 0;
+    transition-delay: 0s;
+  }
+
+  @media (prefers-reduced-motion) {
+    --dur-point-actions: 0ms;
+  }
+}
+
+.point-action-btn {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5em;
+  block-size: 2.5em;
+  padding: 0;
+  color: var(--clr-icon);
+  cursor: pointer;
+  background-color: var(--clr-navigation-background);
+  border: solid 1px var(--clr-divider);
+  border-radius: 50%;
+  box-shadow: 0 2px 7px var(--clr-shadow);
+  backdrop-filter: blur(1px);
+  transition: background-color var(--dur-clr-transition) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--clr-hover);
+    }
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  svg {
+    inline-size: 1.4em;
+    block-size: 1.4em;
+    fill: currentcolor;
+  }
+
+  .point-action-curve {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
 }

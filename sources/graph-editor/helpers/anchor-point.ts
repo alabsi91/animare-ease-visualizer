@@ -110,7 +110,8 @@ export class AnchorPoint {
     return [sameCmdCtrl, nextCmdCtrl] as const;
   }
 
-  #toggleSmoothCorner() {
+  /** Aligns the attached control points with the anchor, or pulls them apart again. */
+  toggleSmoothCorner() {
     const currentX = this.x;
     const currentY = this.y;
     const [ctrl1Address, ctrl2Address] = this.#getAttachedCtrlAddress();
@@ -183,7 +184,7 @@ export class AnchorPoint {
 
     // smooth corner
     if (this.graphEditor.keyboardShortcutManager.isSmoothCornerModifiersPressed) {
-      this.#toggleSmoothCorner();
+      this.toggleSmoothCorner();
       this.#isChanged = true;
     }
 

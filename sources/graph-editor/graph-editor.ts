@@ -3,6 +3,7 @@ import { GraphPanel } from "./helpers/graph-panel";
 import { GraphViewPort } from "./helpers/graph-viewport";
 import { HistoryManager } from "./helpers/history-manager";
 import { KeyboardShortcutManager } from "./helpers/keyboard-shortcut-manager";
+import { PointActions } from "./helpers/point-actions";
 import { Points } from "./helpers/points";
 import { Settings } from "./helpers/settings";
 
@@ -70,6 +71,9 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
   /** Tracks which keys and modifiers are held down. */
   readonly keyboardShortcutManager: KeyboardShortcutManager;
 
+  /** The buttons that act on the focused anchor point. */
+  readonly pointActions: PointActions;
+
   /** Aborts every listener the component added. Fires on disconnect. */
   readonly abortController: AbortController = new AbortController();
 
@@ -112,6 +116,10 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
 
     // History manager
     this.historyManager = new HistoryManager(this);
+
+    // Point actions
+    this.pointActions = new PointActions(this);
+    this.#shadow.appendChild(this.pointActions.element);
   }
 
   connectedCallback() {

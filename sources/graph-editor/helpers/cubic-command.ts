@@ -19,13 +19,13 @@ export class CubicCommand {
     this.controlPoint2 = new ControlPoint(graphEditor, [cmdIdx, 2]);
 
     this.graphEditor.commandsRef.push(this);
-    this.graphEditor.keyboardShortcutManager.addListener("DeleteAnchor", this.#deleteHandler);
+    this.graphEditor.keyboardShortcutManager.addListener("DeleteAnchor", this.#deleteAnchorIfFocused);
   }
 
   /** @param mutatePoints - Also mutate `PathCommands` data, or just safely remove elements and listeners */
   remove(mutatePoints = true) {
     this.graphEditor.commandsRef = this.graphEditor.commandsRef.filter(p => p !== this);
-    this.graphEditor.keyboardShortcutManager.removeListener("DeleteAnchor", this.#deleteHandler);
+    this.graphEditor.keyboardShortcutManager.removeListener("DeleteAnchor", this.#deleteAnchorIfFocused);
     this.anchorPoint.remove();
     this.controlPoint1.remove();
     this.controlPoint2.remove();
@@ -35,8 +35,8 @@ export class CubicCommand {
     this.points.events.onUpdate.fire();
   }
 
-  #deleteHandler = () => {
-    if (!this.anchorPoint.isFocused) return;
+  /** Removes the anchor point along with its control points. Does nothing on the last command. */
+  deleteAnchor = () => {
     if (this.anchorPoint.cmdIdx === this.points.length - 1) {
       console.warn("Cannot delete the last command");
       return;
@@ -46,5 +46,10 @@ export class CubicCommand {
     this.remove();
     this.graphEditor.historyManager.addSnapshotToHistory();
     this.graphEditor.dispatchComplete();
+  };
+
+  #deleteAnchorIfFocused = () => {
+    if (!this.anchorPoint.isFocused) return;
+    this.deleteAnchor();
   };
 }
