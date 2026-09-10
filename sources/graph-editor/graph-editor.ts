@@ -39,6 +39,10 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
 
   #dragOffset = { x: 0, y: 0 };
 
+  #activeTouchPoints = new Map<number, { x: number; y: number }>();
+  #pinchDistance = 0;
+  #pinchCenter = { x: 0, y: 0 };
+
   /**
    * - The svg viewBox size (width/height) that contain the graph path, anchor points, and control points
    * - You should change the value in the css side too.
@@ -68,6 +72,11 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
 
   /** Aborts every listener the component added. Fires on disconnect. */
   readonly abortController: AbortController = new AbortController();
+
+  /** `true` while two fingers are down on the editor, zooming and panning the graph panel. */
+  get isPinching(): boolean {
+    return this.#activeTouchPoints.size === 2;
+  }
 
   /** The commands the graph is currently built from. */
   commandsRef: (CubicCommand | MoveCommand)[] = [];
@@ -115,6 +124,10 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
     this.viewport.element.addEventListener("pointermove", this.#onPointerMoveHandler, { signal });
     this.graphPanel.element.addEventListener("pointerdown", this.#onPanelPointerDownHandler, { signal });
     this.graphPanel.element.addEventListener("dblclick", this.graphPanel.center, { signal });
+    this.addEventListener("pointerdown", this.#onTouchPointerDownHandler, { signal });
+    this.ownerDocument.addEventListener("pointermove", this.#onTouchPointerMoveHandler, { signal });
+    this.ownerDocument.addEventListener("pointerup", this.#onTouchPointerUpHandler, { signal });
+    this.ownerDocument.addEventListener("pointercancel", this.#onTouchPointerUpHandler, { signal });
     window.addEventListener("resize", this.#onResizeHandler, { signal });
 
     this.#resizeObserver = new ResizeObserver(this.#onResizeHandler);
@@ -226,6 +239,57 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
       y: e.clientY - (top + this.graphPanel.y),
     };
   };
+
+  #onTouchPointerDownHandler = (e: PointerEvent) => {
+    if (e.pointerType !== "touch") return;
+
+    this.#activeTouchPoints.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (this.#activeTouchPoints.size !== 2) return;
+
+    this.#pinchDistance = this.#getTouchDistance();
+    this.#pinchCenter = this.#getTouchCenter();
+  };
+
+  #onTouchPointerMoveHandler = (e: PointerEvent) => {
+    if (!this.#activeTouchPoints.has(e.pointerId)) return;
+
+    this.#activeTouchPoints.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (this.#activeTouchPoints.size !== 2) return;
+
+    const center = this.#getTouchCenter();
+    const distance = this.#getTouchDistance();
+    const sizeDelta = distance - this.#pinchDistance;
+
+    if (this.settings.panEnabled) {
+      this.graphPanel.x += center.x - this.#pinchCenter.x;
+      this.graphPanel.y += center.y - this.#pinchCenter.y;
+    }
+
+    if (this.settings.zoomEnabled && sizeDelta !== 0) {
+      this.zoom(sizeDelta > 0 ? 1 : -1, Math.abs(sizeDelta));
+    }
+
+    this.#pinchCenter = center;
+    this.#pinchDistance = distance;
+  };
+
+  #onTouchPointerUpHandler = (e: PointerEvent) => {
+    this.#activeTouchPoints.delete(e.pointerId);
+    if (this.#activeTouchPoints.size !== 2) return;
+
+    this.#pinchDistance = this.#getTouchDistance();
+    this.#pinchCenter = this.#getTouchCenter();
+  };
+
+  #getTouchDistance() {
+    const [first, second] = this.#activeTouchPoints.values();
+    return Math.hypot(second.x - first.x, second.y - first.y);
+  }
+
+  #getTouchCenter() {
+    const [first, second] = this.#activeTouchPoints.values();
+    return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+  }
 
   #onPointerMoveHandler = (e: PointerEvent) => {
     if (this.#isPanning) {

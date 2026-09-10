@@ -230,7 +230,7 @@ export class ControlPoint {
   };
 
   #onPointerMove = (e: PointerEvent) => {
-    if (!this.isActive) return;
+    if (!this.isActive || this.graphEditor.isPinching) return;
 
     const isCtrlLockMovementPressed = this.graphEditor.keyboardShortcutManager.isCtrlLockMovementModifiersPressed;
     if (this.#lockedDirection === null && isCtrlLockMovementPressed) {

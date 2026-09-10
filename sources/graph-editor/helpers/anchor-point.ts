@@ -209,7 +209,7 @@ export class AnchorPoint {
   };
 
   #onPointerMove = (e: PointerEvent) => {
-    if (!this.isActive) return;
+    if (!this.isActive || this.graphEditor.isPinching) return;
 
     const isAnchorLockMovementPressed = this.graphEditor.keyboardShortcutManager.isAnchorLockMovementModifiersPressed;
     if (this.#lockedDirection === null && isAnchorLockMovementPressed) {
