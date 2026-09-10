@@ -36,7 +36,7 @@ export default defineConfig({
     plugins.copyAssetsPlugin(),
     plugins.analyzeOutputPlugin({ skipUnusedFiles: true }),
 
-    plugins.developmentServerPlugin(),
+    plugins.developmentServerPlugin({ host: true }),
     plugins.coreHtmlPlugin(),
     plugins.coreScriptPlugin(),
     plugins.coreStylePlugin(),
