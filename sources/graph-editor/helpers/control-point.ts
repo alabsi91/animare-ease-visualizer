@@ -244,7 +244,9 @@ export class ControlPoint {
     if (!this.isActive || this.graphEditor.isPinching) return;
     if (!this.#hasTouchTraveledEnough(e)) return;
 
-    const isCtrlLockMovementPressed = this.graphEditor.keyboardShortcutManager.isCtrlLockMovementModifiersPressed;
+    const isCtrlLockMovementPressed =
+      this.graphEditor.settings.axisLockEnabled || this.graphEditor.keyboardShortcutManager.isCtrlLockMovementModifiersPressed;
+
     if (this.#lockedDirection === null && isCtrlLockMovementPressed) {
       const dirX = Math.abs(e.clientX - this.#startPointerPos.x);
       const dirY = Math.abs(e.clientY - this.#startPointerPos.y);

@@ -24,7 +24,6 @@ class KeyboardAssignment {
 export class Settings {
   graphEditor: GraphEditor;
 
-  #panelSize = 500;
   /** Graph panel size */
   get panelSize() {
     return this.#panelSize;
@@ -33,6 +32,7 @@ export class Settings {
     this.#panelSize = value;
     this.graphEditor.graphPanel.size = value;
   }
+  #panelSize = 500;
 
   /** Keyboard shortcuts */
   anchorDeleteKeys = new KeyboardAssignment({ keys: ["Delete"] });
@@ -52,6 +52,9 @@ export class Settings {
 
   /** How far a touch has to travel before it starts dragging a point, in pixels */
   touchDragStartDistance: number = 8;
+
+  /** Holds a dragged point to one axis, the same as holding the lock movement modifier */
+  axisLockEnabled: boolean = false;
 
   zoomEnabled: boolean = true;
   /** In pixels */

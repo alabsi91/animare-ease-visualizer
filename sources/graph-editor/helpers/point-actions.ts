@@ -33,6 +33,13 @@ const FREE_CTRL_ICON = /*html*/ `
   </svg>
 `;
 
+const AXIS_LOCK_ICON = /*html*/ `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path class="point-action-curve" d="M12 3v18M3 12h18" />
+    <circle cx="12" cy="12" r="2.4" />
+  </svg>
+`;
+
 const DELETE_ICON = /*html*/ `
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
@@ -45,6 +52,7 @@ export class PointActions {
 
   readonly #undoButton: HTMLButtonElement;
   readonly #redoButton: HTMLButtonElement;
+  readonly #axisLockButton: HTMLButtonElement;
   readonly #freeCtrlButton: HTMLButtonElement;
   readonly #smoothCornerButton: HTMLButtonElement;
   readonly #deleteButton: HTMLButtonElement;
@@ -60,6 +68,7 @@ export class PointActions {
 
     this.#undoButton = this.#addButton("Undo", UNDO_ICON, graphEditor.historyManager.undo);
     this.#redoButton = this.#addButton("Redo", REDO_ICON, graphEditor.historyManager.redo);
+    this.#axisLockButton = this.#addButton("Hold a drag to one axis", AXIS_LOCK_ICON, this.#onAxisLockClick);
     this.#freeCtrlButton = this.#addButton("Move control points on their own", FREE_CTRL_ICON, this.#onFreeCtrlClick);
     this.#smoothCornerButton = this.#addButton("Toggle smooth corner", SMOOTH_CORNER_ICON, this.#onSmoothCornerClick);
     this.#deleteButton = this.#addButton("Delete anchor point", DELETE_ICON, this.#onDeleteClick);
@@ -126,6 +135,7 @@ export class PointActions {
 
     const anchorPoint = command?.anchorPoint ?? null;
 
+    this.#axisLockButton.setAttribute("aria-pressed", String(this.graphEditor.settings.axisLockEnabled));
     this.#freeCtrlButton.disabled = !anchorPoint?.hasTwoCtrls;
     this.#freeCtrlButton.setAttribute("aria-pressed", String(anchorPoint !== null && !anchorPoint.isCtrlAligned));
     this.#undoButton.disabled = !this.graphEditor.historyManager.canUndo;
@@ -136,6 +146,11 @@ export class PointActions {
 
   #syncToFocusedAnchorLater = () => {
     setTimeout(this.#syncToFocusedAnchor);
+  };
+
+  #onAxisLockClick = () => {
+    this.graphEditor.settings.axisLockEnabled = !this.graphEditor.settings.axisLockEnabled;
+    this.#syncToFocusedAnchor();
   };
 
   #onFreeCtrlClick = () => {

@@ -269,7 +269,9 @@ export class AnchorPoint {
     if (!this.isActive || this.graphEditor.isPinching) return;
     if (!this.#hasTouchTraveledEnough(e)) return;
 
-    const isAnchorLockMovementPressed = this.graphEditor.keyboardShortcutManager.isAnchorLockMovementModifiersPressed;
+    const isAnchorLockMovementPressed =
+      this.graphEditor.settings.axisLockEnabled || this.graphEditor.keyboardShortcutManager.isAnchorLockMovementModifiersPressed;
+
     if (this.#lockedDirection === null && isAnchorLockMovementPressed) {
       const dirX = Math.abs(e.clientX - this.#startPointerPos.x);
       const dirY = Math.abs(e.clientY - this.#startPointerPos.y);
