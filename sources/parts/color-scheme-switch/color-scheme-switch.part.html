@@ -1,10 +1,17 @@
+<!--props
+  interface Props {
+    tooltipId: string;
+    tooltipSide: string;
+  }
+-->
+
 <button
   type="button"
   class="color-scheme-switch"
   aria-label="Switch to dark mode"
   aria-pressed="false"
-  data-sv-tooltip="color-scheme-tooltip"
-  aria-describedby="color-scheme-tooltip"
+  data-sv-tooltip="{{ $data.tooltipId }}"
+  aria-describedby="{{ $data.tooltipId }}"
 >
   <svg
     class="switch-icon switch-icon-sun"
@@ -32,6 +39,8 @@
     />
   </svg>
 </button>
+
+<sv-tooltip id="{{ $data.tooltipId }}" side="{{ $data.tooltipSide }}">Toggle light and dark mode</sv-tooltip>
 
 <insert selector="head">
   <script type="module">

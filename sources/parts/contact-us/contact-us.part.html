@@ -1,3 +1,10 @@
+<!--props
+  interface Props {
+    tooltipId: string;
+    tooltipSide: string;
+  }
+-->
+
 <div class="contact-us-menu">
   <sv-flyout>
     <button
@@ -5,8 +12,8 @@
       slot="trigger"
       type="button"
       aria-label="Contact Us"
-      data-sv-tooltip="contact-us-tooltip"
-      aria-describedby="contact-us-tooltip"
+      data-sv-tooltip="{{ $data.tooltipId }}"
+      aria-describedby="{{ $data.tooltipId }}"
     >
       <svg src="@assets/links.svg" aria-hidden="true" inline></svg>
     </button>
@@ -49,3 +56,5 @@
     </a>
   </sv-flyout>
 </div>
+
+<sv-tooltip id="{{ $data.tooltipId }}" side="{{ $data.tooltipSide }}">Contact Us</sv-tooltip>

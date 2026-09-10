@@ -173,7 +173,7 @@ kbd {
 }
 
 .icon-btn {
-  padding: 0 0.2em;
+  padding: 0;
   cursor: pointer;
   background-color: unset;
   border: unset;

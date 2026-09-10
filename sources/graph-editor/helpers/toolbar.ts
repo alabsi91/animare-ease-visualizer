@@ -56,7 +56,6 @@ export class Toolbar {
   readonly #freeCtrlButton: HTMLButtonElement;
   readonly #smoothCornerButton: HTMLButtonElement;
   readonly #deleteButton: HTMLButtonElement;
-  readonly #tooltips: { tooltip: HTMLElementTagNameMap["sv-tooltip"]; button: HTMLButtonElement }[] = [];
 
   #focusedAnchorCircle: Element | null = null;
 
@@ -99,16 +98,10 @@ export class Toolbar {
     const tooltip = document.createElement("sv-tooltip");
     tooltip.textContent = label;
     tooltip.side = "block-end";
-    this.#tooltips.push({ tooltip, button });
+    tooltip.targets = [button];
 
     this.element.append(button, tooltip);
     return button;
-  }
-
-  #attachTooltips() {
-    for (const { tooltip, button } of this.#tooltips) {
-      if (tooltip.targets.length === 0) tooltip.targets = [button];
-    }
   }
 
   #getCommandOfAnchor(anchorCircle: Element | null) {
@@ -124,8 +117,6 @@ export class Toolbar {
   }
 
   #syncButtons = () => {
-    this.#attachTooltips();
-
     const focusedElement = this.graphEditor.shadowRoot?.activeElement ?? null;
     if (!this.element.contains(focusedElement)) {
       this.#focusedAnchorCircle = focusedElement;

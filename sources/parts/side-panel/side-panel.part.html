@@ -1,8 +1,12 @@
 <div class="side-panel custom-scrollbar">
   <div class="panel-container">
     <div class="hide-panel-btn-container">
-      <div style="display: flex; gap: 1em">
-        <part src="@parts/color-scheme-switch/color-scheme-switch.part.html"></part>
+      <div style="display: flex; gap: 1em; align-items: center;">
+        <part
+          src="@parts/color-scheme-switch/color-scheme-switch.part.html"
+          tooltipId="color-scheme-tooltip"
+          tooltipSide="block-end"
+        ></part>
 
         <button
           class="icon-btn open-shortcuts-dialog"
@@ -13,9 +17,9 @@
         >
           <svg src="@assets/help.svg" aria-hidden="true" inline></svg>
         </button>
-        <sv-tooltip id="shortcuts-tooltip" side="inline-start">Keyboard Shortcuts</sv-tooltip>
+        <sv-tooltip id="shortcuts-tooltip" side="block-end">Keyboard Shortcuts</sv-tooltip>
 
-        <part src="@parts/contact-us/contact-us.part.html"></part>
+        <part src="@parts/contact-us/contact-us.part.html" tooltipId="contact-us-tooltip" tooltipSide="block-end"></part>
       </div>
 
       <button

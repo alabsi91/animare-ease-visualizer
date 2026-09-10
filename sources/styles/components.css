@@ -44,6 +44,7 @@ sv-tooltip {
 
   max-inline-size: 40ch;
   padding: 0.4em 0.7em;
+  font-size: 1rem;
 }
 
 sv-tooltip:not(:defined) {

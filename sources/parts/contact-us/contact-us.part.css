@@ -1,4 +1,6 @@
 .contact-us-menu {
+  display: contents;
+
   .contact-us-custom-trigger {
     padding: 0;
     cursor: pointer;

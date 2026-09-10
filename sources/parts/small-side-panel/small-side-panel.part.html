@@ -39,7 +39,11 @@
     <div class="small-panel-group">
       <div class="divider"></div>
 
-      <part src="@parts/color-scheme-switch/color-scheme-switch.part.html"></part>
+      <part
+        src="@parts/color-scheme-switch/color-scheme-switch.part.html"
+        tooltipId="small-color-scheme-tooltip"
+        tooltipSide="inline-end"
+      ></part>
 
       <button
         class="icon-btn open-shortcuts-dialog"
@@ -52,7 +56,7 @@
       </button>
       <sv-tooltip id="small-shortcuts-tooltip" side="inline-end">Keyboard Shortcuts</sv-tooltip>
 
-      <part src="@parts/contact-us/contact-us.part.html"></part>
+      <part src="@parts/contact-us/contact-us.part.html" tooltipId="small-contact-us-tooltip" tooltipSide="inline-end"></part>
     </div>
   </div>
 </div>
