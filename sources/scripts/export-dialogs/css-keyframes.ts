@@ -1,19 +1,24 @@
 import { ease } from "animare/plugins";
+import { pickStopsWithinBudget } from "./easing-stops";
+import { drawPlot, resetPlot } from "./export-plot";
 import { createHighlighter } from "./highlighter";
 
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
 
+const VALUE_DECIMALS = 2;
+
 const exportElements = {
   dialog: getElement<Dialog>("#export-css-keyframe-dialog"),
   inputsContainer: getElement<HTMLDivElement>("#export-css-keyframe-inputs-container"),
   propertyInput: getElement<CodeEditor>("#export-css-keyframe-property"),
-  samplesInput: getElement<HTMLInputElement>("#export-css-keyframe-samples"),
+  maxKeyframesInput: getElement<HTMLInputElement>("#export-css-keyframe-max-keyframes"),
   fromInput: getElement<HTMLInputElement>("#export-css-keyframe-from"),
   toInput: getElement<HTMLInputElement>("#export-css-keyframe-to"),
   codePreview: getElement<CodeEditor>("#export-css-keyframe-code-preview"),
   warning: getElement<HTMLDivElement>("#export-css-keyframe-warning"),
   copyBtn: getElement<HTMLButtonElement>("#export-css-keyframe-copy-btn"),
+  plot: getElement<HTMLCanvasElement>("#export-css-keyframe-plot"),
 };
 
 export function initCssKeyframeExport() {
@@ -21,7 +26,7 @@ export function initCssKeyframeExport() {
 
   exportElements.dialog.addEventListener("opened", generateCssKeyframesCode);
   exportElements.propertyInput.addEventListener("update", generateCssKeyframesCode);
-  exportElements.samplesInput.addEventListener("input", generateCssKeyframesCode);
+  exportElements.maxKeyframesInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.fromInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.toInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.copyBtn.addEventListener("click", copyCssKeyframesCodeHandler);
@@ -32,13 +37,24 @@ function setHighlighters() {
   exportElements.codePreview.highlighter = createHighlighter("css");
 }
 
+/** A single curve is a plain cubic-bezier, which needs neither the inputs nor a plot */
+function setSingleCurveMode(isSingleCurve: boolean) {
+  exportElements.warning.hidden = !isSingleCurve;
+  exportElements.inputsContainer.hidden = isSingleCurve;
+  exportElements.plot.hidden = isSingleCurve;
+}
+
+function showInvalidInputAlert(title: string, hint: string) {
+  resetPlot(exportElements.plot);
+  showAlert("error", title, hint);
+}
+
 function generateCssKeyframesCode() {
-  // If the graph is a bezier curve
   const curves = elements.graphEditor.points.value;
   const isSingleCurve = curves.length === 2;
+  setSingleCurveMode(isSingleCurve);
+
   if (isSingleCurve) {
-    exportElements.warning.style.display = "block";
-    exportElements.inputsContainer.style.display = "none";
     const cx1 = +curves[1][0].toFixed(3);
     const cy1 = +(1 - curves[1][1]).toFixed(3);
     const cx2 = +curves[1][2].toFixed(3);
@@ -47,58 +63,36 @@ function generateCssKeyframesCode() {
     return;
   }
 
-  exportElements.warning.style.removeProperty("display");
-  exportElements.inputsContainer.style.removeProperty("display");
-
-  const isValidNum = (value: number) => {
-    if (isNaN(value) || !isFinite(value) || value < 0) return false;
-    return true;
-  };
-
-  const samples = exportElements.samplesInput.valueAsNumber;
-  if (!isValidNum(samples) || samples < 2 || samples > 500) {
-    showAlert("error", "Invalid samples");
+  const maxKeyframes = exportElements.maxKeyframesInput.valueAsNumber;
+  if (isNaN(maxKeyframes) || !isFinite(maxKeyframes) || maxKeyframes < 2 || maxKeyframes > 500) {
+    showInvalidInputAlert("Invalid max keyframes", "Enter a whole number between 2 and 500");
     return;
   }
 
   const from = exportElements.fromInput.valueAsNumber;
-  if (!isValidNum(from)) {
-    showAlert("error", "Invalid from value");
+  if (!Number.isFinite(from)) {
+    showInvalidInputAlert("Invalid from value", "Enter a number");
     return;
   }
 
   const to = exportElements.toInput.valueAsNumber;
-  if (!isValidNum(to)) {
-    showAlert("error", "Invalid to value");
+  if (!Number.isFinite(to)) {
+    showInvalidInputAlert("Invalid to value", "Enter a number");
     return;
   }
 
   const property = exportElements.propertyInput.value;
-
   const easingFunction = ease.custom(elements.graphEditor.points.valueStr);
-
-  const results: { progress: number; value: number }[] = [];
-  for (let i = 0; i < samples; i++) {
-    const progress0to1 = i / (samples - 1);
-    const progress0to100 = Math.round(progress0to1 * 100);
-    const value = +(from + (to - from) * easingFunction(progress0to1)).toFixed(2);
-
-    // collapse duplicates (untested)
-    // const prev = results.at(-1);
-    // if (prev && prev.progress && prev.value === value) {
-    //   prev.progress = progress0to100;
-    //   continue;
-    // }
-
-    results.push({ progress: progress0to100, value });
-  }
+  const { sampledValues, stops } = pickStopsWithinBudget(easingFunction, maxKeyframes);
 
   let codeStr = "";
-  for (const { progress, value } of results) {
-    codeStr += `\n  ${progress}% { ${property.replaceAll("{value}", value.toString())} }`;
+  for (const stop of stops) {
+    const value = +(from + (to - from) * stop.value).toFixed(VALUE_DECIMALS);
+    codeStr += `\n  ${stop.position}% { ${property.replaceAll("{value}", value.toString())} }`;
   }
 
   exportElements.codePreview.value = `@keyframes my-custom-easing {${codeStr}\n}`;
+  drawPlot(exportElements.plot, sampledValues, stops);
 }
 
 function copyCssKeyframesCodeHandler() {

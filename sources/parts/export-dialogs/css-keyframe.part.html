@@ -2,7 +2,7 @@
   <h1 class="export-dialog-title" id="export-css-keyframe-title">Export as CSS Keyframes</h1>
 
   <div class="content">
-    <div class="warning" id="export-css-keyframe-warning">
+    <div class="warning" id="export-css-keyframe-warning" hidden>
       The current path uses a single curve, which can be represented with the CSS
       <strong>cubic-bezier()</strong>
       function. Consider using multiple curves to generate the result as a keyframes animation.
@@ -17,9 +17,22 @@
       </div>
 
       <div class="label-input-container">
-        <label for="export-css-keyframe-samples">Samples</label>
-        <input type="number" name="samples" id="export-css-keyframe-samples" autocomplete="off" value="100" />
+        <label for="export-css-keyframe-max-keyframes">Max keyframes</label>
+        <input
+          type="number"
+          name="max-keyframes"
+          id="export-css-keyframe-max-keyframes"
+          autocomplete="off"
+          value="100"
+          min="2"
+          max="500"
+          aria-describedby="export-css-keyframe-max-keyframes-tooltip"
+          data-sv-tooltip="export-css-keyframe-max-keyframes-tooltip"
+        />
       </div>
+      <sv-tooltip id="export-css-keyframe-max-keyframes-tooltip" side="block-end">
+        More keyframes means a closer match and longer CSS. Past a point it stops looking any different.
+      </sv-tooltip>
 
       <div class="label-input-container">
         <label for="export-css-keyframe-from">From</label>
@@ -31,6 +44,17 @@
         <input type="number" name="to" id="export-css-keyframe-to" autocomplete="off" value="100" />
       </div>
     </div>
+
+    <canvas
+      class="export-plot"
+      id="export-css-keyframe-plot"
+      aria-label="The curve the exported keyframes rebuild"
+      aria-describedby="export-css-keyframe-plot-tooltip"
+      data-sv-tooltip="export-css-keyframe-plot-tooltip"
+    ></canvas>
+    <sv-tooltip id="export-css-keyframe-plot-tooltip" side="block-end">
+      A preview of the exported easing. If it still matches the curve you drew, you have enough keyframes.
+    </sv-tooltip>
 
     <sv-code-editor
       class="export-code-preview"

@@ -1,22 +1,15 @@
 import { ease } from "animare/plugins";
+import { pickStopsWithinBudget } from "./easing-stops";
+import { drawPlot, resetPlot } from "./export-plot";
 import { createHighlighter, createTailwindClassHighlighter } from "./highlighter";
 
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
 
-type EasingFunction = (time: number) => number;
+import type { EasingStop } from "./easing-stops";
 
-interface LinearStop {
-  position: number;
-  value: number;
-}
-
-// A position is written with one decimal. A stop can only land on a 0.1% step.
-const SAMPLES_PER_PERCENT = 10;
-const LAST_SAMPLE_INDEX = 100 * SAMPLES_PER_PERCENT;
 const VALUE_DECIMALS = 3;
 const HALF_VALUE_STEP = 0.5 / 10 ** VALUE_DECIMALS;
-const TOLERANCE_SEARCH_ROUNDS = 30;
 
 const exportElements = {
   exportCssLinearDialog: getElement<Dialog>("#export-css-linear-dialog"),
@@ -62,75 +55,14 @@ export function initCssLinearExport() {
   exportElements.copyBtn.addEventListener("click", copyCssLinearCodeHandler);
 }
 
-function sampleEasing(easingFunction: EasingFunction) {
-  const sampledValues: number[] = [];
-
-  for (let sampleIndex = 0; sampleIndex <= LAST_SAMPLE_INDEX; sampleIndex++) {
-    sampledValues.push(easingFunction(sampleIndex / LAST_SAMPLE_INDEX));
-  }
-
-  return sampledValues;
-}
-
-function getFewestStopSampleIndexes(sampledValues: number[], tolerance: number) {
-  const stopSampleIndexes = [0];
-  let startIndex = 0;
-
-  while (startIndex < LAST_SAMPLE_INDEX) {
-    let lowestAllowedSlope = -Infinity;
-    let highestAllowedSlope = Infinity;
-    let farthestIndex = startIndex + 1;
-
-    for (let endIndex = startIndex + 1; endIndex <= LAST_SAMPLE_INDEX; endIndex++) {
-      const width = endIndex - startIndex;
-      const rise = sampledValues[endIndex] - sampledValues[startIndex];
-      const chordSlope = rise / width;
-
-      const isChordAllowed = chordSlope >= lowestAllowedSlope && chordSlope <= highestAllowedSlope;
-      if (isChordAllowed) {
-        farthestIndex = endIndex;
-      }
-
-      lowestAllowedSlope = Math.max(lowestAllowedSlope, (rise - tolerance) / width);
-      highestAllowedSlope = Math.min(highestAllowedSlope, (rise + tolerance) / width);
-      if (lowestAllowedSlope > highestAllowedSlope) break;
-    }
-
-    startIndex = farthestIndex;
-    stopSampleIndexes.push(startIndex);
-  }
-
-  return stopSampleIndexes;
-}
-
-function getStopSampleIndexesWithinBudget(sampledValues: number[], maxStops: number) {
-  let tooTightTolerance = 0;
-  let affordableTolerance = Math.max(...sampledValues) - Math.min(...sampledValues);
-  let stopSampleIndexes = getFewestStopSampleIndexes(sampledValues, affordableTolerance);
-
-  for (let round = 0; round < TOLERANCE_SEARCH_ROUNDS; round++) {
-    const tolerance = (tooTightTolerance + affordableTolerance) / 2;
-    const candidateStopSampleIndexes = getFewestStopSampleIndexes(sampledValues, tolerance);
-
-    if (candidateStopSampleIndexes.length <= maxStops) {
-      affordableTolerance = tolerance;
-      stopSampleIndexes = candidateStopSampleIndexes;
-    } else {
-      tooTightTolerance = tolerance;
-    }
-  }
-
-  return stopSampleIndexes;
-}
-
-function createRoundedStops(sampledValues: number[], stopSampleIndexes: number[]): LinearStop[] {
-  return stopSampleIndexes.map(sampleIndex => ({
-    position: sampleIndex / SAMPLES_PER_PERCENT,
-    value: Number(sampledValues[sampleIndex].toFixed(VALUE_DECIMALS)),
+function roundStops(stops: EasingStop[]): EasingStop[] {
+  return stops.map(stop => ({
+    position: stop.position,
+    value: Number(stop.value.toFixed(VALUE_DECIMALS)),
   }));
 }
 
-function dropRedundantStops(stops: LinearStop[]) {
+function dropRedundantStops(stops: EasingStop[]) {
   const keptStops = [stops[0]];
 
   for (let index = 1; index < stops.length - 1; index++) {
@@ -152,7 +84,7 @@ function dropRedundantStops(stops: LinearStop[]) {
   return keptStops;
 }
 
-function formatStops(stops: LinearStop[]) {
+function formatStops(stops: EasingStop[]) {
   const formattedStops = stops.map((stop, index) => {
     const isEndStop = index === 0 || index === stops.length - 1;
     return isEndStop ? `${stop.value}` : `${stop.value} ${stop.position}%`;
@@ -161,65 +93,7 @@ function formatStops(stops: LinearStop[]) {
   return formattedStops.join(", ");
 }
 
-/** Resizes the canvas to what css gave it, which also wipes whatever was drawn before */
-function resetPlot() {
-  const canvas = exportElements.plot;
-  const context = canvas.getContext("2d");
-  if (!context) return null;
-
-  const pixelRatio = window.devicePixelRatio || 1;
-
-  canvas.width = canvas.clientWidth * pixelRatio;
-  canvas.height = canvas.clientHeight * pixelRatio;
-  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-
-  return { context, width: canvas.clientWidth, height: canvas.clientHeight };
-}
-
-/** Draws the curve the stops rebuild. A tighter budget shows its cost here */
-function drawPlot(sampledValues: number[], stops: LinearStop[]) {
-  const canvas = exportElements.plot;
-  const prepared = resetPlot();
-  if (!prepared) return;
-
-  const { context, width, height } = prepared;
-
-  const lowest = Math.min(...sampledValues, 0);
-  const highest = Math.max(...sampledValues, 1);
-  const padding = 12;
-  const plotWidth = width - padding * 2;
-  const plotHeight = height - padding * 2;
-
-  const toX = (time: number) => padding + time * plotWidth;
-  const toY = (value: number) => padding + plotHeight - ((value - lowest) / (highest - lowest)) * plotHeight;
-
-  context.strokeStyle = getComputedStyle(canvas).color;
-  context.fillStyle = context.strokeStyle;
-
-  // the 0 and the 1 lines, which is what an overshoot is read against
-  context.globalAlpha = 0.2;
-  context.lineWidth = 1;
-  for (const value of [0, 1]) {
-    context.beginPath();
-    context.moveTo(padding, toY(value));
-    context.lineTo(padding + plotWidth, toY(value));
-    context.stroke();
-  }
-
-  context.globalAlpha = 1;
-  context.lineWidth = 1.5;
-  context.beginPath();
-  stops.forEach((stop, index) => {
-    const x = toX(stop.position / 100);
-    const y = toY(stop.value);
-    if (index === 0) context.moveTo(x, y);
-    else context.lineTo(x, y);
-  });
-  context.stroke();
-}
-
 function generateCssLinearCode() {
-  // If the graph is a bezier curve
   const curves = elements.graphEditor.points.value;
   const isSingleCurve = curves.length === 2;
   setSingleCurveMode(isSingleCurve);
@@ -235,18 +109,17 @@ function generateCssLinearCode() {
 
   const maxStops = exportElements.maxStopsInput.valueAsNumber;
   if (isNaN(maxStops) || !isFinite(maxStops) || maxStops < 2 || maxStops > 500) {
-    resetPlot();
+    resetPlot(exportElements.plot);
     showAlert("error", "Invalid max stops", "Enter a whole number between 2 and 500");
     return;
   }
 
   const easingFunction = ease.custom(elements.graphEditor.points.valueStr);
-  const sampledValues = sampleEasing(easingFunction);
-  const stopSampleIndexes = getStopSampleIndexesWithinBudget(sampledValues, maxStops);
-  const stops = dropRedundantStops(createRoundedStops(sampledValues, stopSampleIndexes));
+  const { sampledValues, stops } = pickStopsWithinBudget(easingFunction, maxStops);
+  const exportedStops = dropRedundantStops(roundStops(stops));
 
-  exportElements.codePreview.value = formatOutput(`linear(${formatStops(stops)})`);
-  drawPlot(sampledValues, stops);
+  exportElements.codePreview.value = formatOutput(`linear(${formatStops(exportedStops)})`);
+  drawPlot(exportElements.plot, sampledValues, exportedStops);
 }
 
 function copyCssLinearCodeHandler() {

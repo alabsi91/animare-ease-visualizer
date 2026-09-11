@@ -1,4 +1,8 @@
 .export-dialog {
+  [hidden] {
+    display: none !important;
+  }
+
   sv-segmented-control {
     --sv-gray-6: var(--sb-color-gray-7);
     --sv-bdr-rad-lg: 8px;
@@ -108,7 +112,7 @@
   .label-input-container {
     display: grid;
     flex-direction: row;
-    grid-template-columns: 75px 1fr;
+    grid-template-columns: 7em 1fr;
     gap: 1em;
     align-items: center;
 
@@ -137,7 +141,6 @@
   }
 
   .warning {
-    display: none;
     padding: 0.5em 1em;
     margin-block-end: 1em;
     font-size: 1rem;
