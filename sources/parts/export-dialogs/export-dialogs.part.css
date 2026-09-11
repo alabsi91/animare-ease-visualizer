@@ -12,7 +12,6 @@
     --sv-active-line-background: transparent;
     --sv-active-line-outline: transparent;
     --sv-bdr-sz-sm: 1px;
-    --sv-bdr-rad-md: 4px;
     --sv-padding: 0.5em;
 
     &:state(--focus) {
@@ -81,7 +80,7 @@
     cursor: pointer;
     background-color: var(--sb-color-accent);
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
   }
 
   .warning {

@@ -67,45 +67,25 @@
 
 .controls-container {
   display: flex;
-  flex-direction: row;
   gap: 1em;
   justify-content: center;
-  container-name: controls;
-  container-type: inline-size;
 
   .control-btn {
-    display: flex;
+    display: grid;
     flex: 1;
-    flex-direction: row;
-    align-items: center;
+    place-items: center;
     padding: 0.5em;
-    font-size: 1rem;
     color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
     background-color: var(--sb-color-accent);
     border: none;
-    border-radius: 4px;
-
-    span {
-      flex: 1;
-      padding: 0 0.5em;
-    }
-
-    .control-btn-icon {
-      inline-size: 1.5em;
-      block-size: 1.5em;
-      fill: currentcolor;
-    }
-  }
-}
-
-@container controls (max-width: 320px) {
-  .control-btn {
-    justify-content: center;
+    border-radius: 8px;
   }
 
-  span {
-    display: none;
+  .control-btn-icon {
+    inline-size: 1.5em;
+    block-size: 1.5em;
+    fill: currentcolor;
   }
 }
 
@@ -170,7 +150,7 @@
   cursor: pointer;
   background-color: var(--sb-color-accent);
   border: unset;
-  border-radius: 4px;
+  border-radius: 8px;
 
   .save-preset-btn-label {
     flex: 1;
@@ -221,7 +201,7 @@
     cursor: pointer;
     background-color: var(--sb-color-accent);
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
 
     span {
       flex: 1;

@@ -36,30 +36,62 @@
     <div class="divider"></div>
 
     <div class="controls-container">
-      <button class="control-btn play-btn" aria-label="Play animation">
+      <button
+        class="control-btn play-btn"
+        aria-label="Play animation"
+        data-sv-tooltip="play-tooltip"
+        aria-describedby="play-tooltip"
+      >
         <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
           <path d="M320-200v-560l440 280-440 280Z" />
         </svg>
-        <span>Play</span>
       </button>
+      <sv-tooltip id="play-tooltip" side="block-end">Play</sv-tooltip>
 
-      <button class="control-btn pause-btn" aria-label="Pause animation">
+      <button
+        class="control-btn pause-btn"
+        aria-label="Pause animation"
+        data-sv-tooltip="pause-tooltip"
+        aria-describedby="pause-tooltip"
+      >
         <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
           <path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
         </svg>
-        <span>Pause</span>
       </button>
+      <sv-tooltip id="pause-tooltip" side="block-end">Pause</sv-tooltip>
 
-      <button class="control-btn stop-btn" aria-label="Stop animation">
+      <button
+        class="control-btn stop-btn"
+        aria-label="Stop animation"
+        data-sv-tooltip="stop-tooltip"
+        aria-describedby="stop-tooltip"
+      >
         <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
           <path d="M240-240v-480h480v480H240Z" />
         </svg>
-        <span>Stop</span>
       </button>
+      <sv-tooltip id="stop-tooltip" side="block-end">Stop</sv-tooltip>
+
+      <button
+        class="control-btn"
+        data-dialog-open="preview-dialog"
+        aria-label="Open the preview"
+        data-sv-tooltip="preview-tooltip"
+        aria-describedby="preview-tooltip"
+      >
+        <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+          <path
+            d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"
+          />
+        </svg>
+      </button>
+      <sv-tooltip id="preview-tooltip" side="block-end">Preview the curve on a shape</sv-tooltip>
     </div>
 
     <br />
-    <sv-slider class="progress-slider" value="0" aria-label="Progress seek" step="0.01" thumb-contained disabled></sv-slider>
+    <sv-slider class="progress-slider" value="0" aria-label="Progress seek" step="0.01" thumb-contained disabled>
+      <span slot="thumb-1" aria-hidden="true"></span>
+    </sv-slider>
 
     <div class="divider"></div>
 

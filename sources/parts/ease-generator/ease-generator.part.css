@@ -17,12 +17,17 @@
 .ease-generator-param {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0.5em 1em;
+  gap: 4px 1em;
   align-items: center;
   cursor: pointer;
 }
 
+.ease-generator-param-label {
+  margin-inline-start: 2px;
+}
+
 .ease-generator-param-value {
+  margin-inline-end: 4px;
   font-family: monospace;
   color: var(--sb-color-gray-3);
 }

@@ -93,7 +93,7 @@ input {
   outline: none;
   background-color: var(--sb-color-gray-7);
   border: 1px solid var(--sb-color-gray-5);
-  border-radius: var(--sv-bdr-rad-sm);
+  border-radius: 8px;
   transition-timing-function: ease;
   transition-duration: 200ms;
   transition-property: border-color, background-color, color;

@@ -1,4 +1,4 @@
-export function getElement<T extends HTMLElement>(selector: string): T {
+export function getElement<T extends Element>(selector: string): T {
   const element = document.querySelector<T>(selector);
   if (!element) throw new Error(`Element ${selector} not found`);
   return element;
@@ -30,6 +30,16 @@ export const elements = {
   easeGeneratorFlyout: getElement<Flyout>(".ease-generator-menu sv-flyout"),
   easeGeneratorParams: getElement<HTMLDivElement>(".ease-generator-params"),
   easeGeneratorParamTemplate: getElement<HTMLTemplateElement>(".ease-generator-param-template"),
+  previewDialog: getElement<Dialog>("#preview-dialog"),
+  previewStage: getElement<HTMLDivElement>(".preview-stage"),
+  previewShape: getElement<HTMLDivElement>(".preview-shape"),
+  previewProperties: getElement<HTMLDivElement>(".preview-properties"),
+  previewProgressSlider: getElement<Slider>(".preview-progress-slider"),
+  previewDurationSlider: getElement<Slider>(".preview-duration-slider"),
+  previewDurationInput: getElement<HTMLInputElement>(".preview-duration-input"),
+  previewLoopToggle: getElement<Toggle>(".preview-loop-toggle"),
+  previewPlayBtn: getElement<HTMLButtonElement>(".preview-play-btn"),
+  previewPlayIcon: getElement<SVGPathElement>(".preview-play-icon"),
   autoHidePointsToggle: getElement<ToggleCheckbox>("#auto-hide-toggle"),
   snapToGridToggle: getElement<ToggleCheckbox>("#snap-to-grid-toggle"),
   snapToPointsToggle: getElement<ToggleCheckbox>("#snap-to-points-toggle"),

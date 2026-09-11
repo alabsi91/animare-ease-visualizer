@@ -13,7 +13,7 @@ sv-combobox {
   --sv-gray-6: var(--sb-color-gray-7);
   --sv-gray-0: var(--sb-color-text);
   --sv-gray-5: var(--sb-color-gray-5);
-  --sv-bdr-rad-md: 4px;
+  --sv-bdr-rad-md: 8px;
 
   &::part(trigger) {
     transition-timing-function: ease;
@@ -57,10 +57,31 @@ sv-combobox {
 }
 
 sv-slider {
-  --sv-thickness: 10px;
-  --sv-thumb-size: 16px;
+  --sv-thickness: 2.3em;
+  --sv-thumb-size: 0.6em;
 
   display: block;
+
+  [slot="thumb-1"] {
+    position: relative;
+    inline-size: var(--sv-thumb-size);
+    block-size: 2.3em;
+    background-color: var(--sv-accent-content);
+    border: solid 1px #bdbdbd8c;
+    border-radius: 10px;
+    transition-timing-function: var(--sv-ease);
+    transition-duration: var(--sv-dur);
+    transition-property: scale, background-color;
+  }
+
+  &:state(--active) {
+    [slot="thumb-1"] {
+      background-color: rgb(from var(--sv-accent-content) r g b / 50%);
+      box-shadow: 0 6px 16px #00000045;
+      backdrop-filter: blur(1px);
+      scale: 1.2;
+    }
+  }
 }
 
 sv-toggle-checkbox {
@@ -88,4 +109,14 @@ sv-flyout::part(content) {
 
 sv-combobox sv-flyout::part(content) {
   max-block-size: min(20rem, var(--sv-anchor-available-height));
+}
+
+@media screen and (max-width: 400px) {
+  sv-dialog::part(content) {
+    padding-inline: 1em;
+  }
+
+  sv-dialog::part(close-button) {
+    margin-inline-end: 1px;
+  }
 }

@@ -7,4 +7,5 @@
 @import url("@parts/color-scheme-switch/color-scheme-switch.part.css");
 @import url("@parts/export-dialogs/export-dialogs.part.css");
 @import url("@parts/help-dialog/help-dialog.part.css");
+@import url("@parts/preview-dialog/preview-dialog.part.css");
 @import url("@parts/ease-generator/ease-generator.part.css");
