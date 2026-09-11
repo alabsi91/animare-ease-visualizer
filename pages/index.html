@@ -1,7 +1,7 @@
 <layout src="@layouts/main.layout.html" title="Animare Ease Visualizer" description="Animare Ease Visualizer">
   <body>
     <!-- Blocking classic script to prevent layout shifts because these are web components -->
-    <script iife bundle bundle-externals>
+    <script iife bundle bundle-externals bundle-out="packages/staticview.js">
       import("@staticview/ui/accordion");
       import("@staticview/ui/anchor");
       import("@staticview/ui/flyout");
@@ -40,7 +40,7 @@
     <div class="theme-layer"></div>
 
     <!-- The app bundle with animare.js and without highlight.js -->
-    <script type="module" bundle bundle-externals="**/highlight.js/**">
+    <script type="module" bundle bundle-externals="**/highlight.js/**" bundle-out="app.js">
       import "@graph-editor/graph-editor.ts";
       import "@scripts/main.ts";
     </script>
