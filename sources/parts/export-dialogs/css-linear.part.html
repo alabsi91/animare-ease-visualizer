@@ -10,11 +10,6 @@
   </div>
 
   <div class="content">
-    <sv-segmented-control class="export-format" id="export-css-linear-format" value="css" aria-label="Output format">
-      <button value="css">CSS</button>
-      <button value="tailwind">Tailwind</button>
-    </sv-segmented-control>
-
     <div class="label-input-container" id="export-css-linear-max-stops-row">
       <label for="export-css-linear-max-stops">Max stops</label>
       <input
@@ -43,6 +38,11 @@
     <sv-tooltip id="export-css-linear-plot-tooltip" side="block-end">
       A preview of the exported easing. If it still matches the curve you drew, you have enough points.
     </sv-tooltip>
+
+    <sv-segmented-control class="export-format" id="export-css-linear-format" value="css" aria-label="Output format">
+      <button value="css">CSS</button>
+      <button value="tailwind">Tailwind</button>
+    </sv-segmented-control>
 
     <sv-code-editor
       class="export-code-preview"
