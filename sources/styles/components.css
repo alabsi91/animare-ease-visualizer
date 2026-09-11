@@ -16,9 +16,15 @@ sv-combobox {
   --sv-bdr-rad-md: 8px;
 
   &::part(trigger) {
+    padding-block: 0.4em;
     transition-timing-function: ease;
     transition-duration: 200ms;
     transition-property: border-color, background-color;
+  }
+
+  &::part(input) {
+    padding-block: 0;
+    line-height: 1.4;
   }
 
   &:focus-within {
@@ -57,7 +63,7 @@ sv-combobox {
 }
 
 sv-slider {
-  --sv-thickness: 2.3em;
+  --sv-thickness: 2.325em;
   --sv-thumb-size: 0.6em;
 
   display: block;

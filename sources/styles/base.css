@@ -80,6 +80,7 @@ label,
 input {
   font-family: inherit;
   font-size: 1rem;
+  line-height: 1.4;
   color: inherit;
 }
 
@@ -88,7 +89,7 @@ label {
 }
 
 input {
-  padding: 0.5em;
+  padding: 0.4em 0.5em;
   color: var(--sb-color-text);
   outline: none;
   background-color: var(--sb-color-gray-7);

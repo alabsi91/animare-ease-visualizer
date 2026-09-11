@@ -74,17 +74,17 @@
     display: grid;
     flex: 1;
     place-items: center;
-    padding: 0.5em;
+    padding: 0.4em 0.5em;
     color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
     background-color: var(--sb-color-accent);
-    border: none;
+    border: solid 1px transparent;
     border-radius: 8px;
   }
 
   .control-btn-icon {
-    inline-size: 1.5em;
-    block-size: 1.5em;
+    inline-size: 1.4em;
+    block-size: 1.4em;
     fill: currentcolor;
   }
 }
@@ -144,12 +144,12 @@
   flex: 0.5;
   flex-direction: row;
   align-items: center;
-  padding: 0.5em;
+  padding: 0.4em 0.5em;
   font-size: 1rem;
   color: oklch(98% 0.009 var(--sb-hue-base));
   cursor: pointer;
   background-color: var(--sb-color-accent);
-  border: unset;
+  border: solid 1px transparent;
   border-radius: 8px;
 
   .save-preset-btn-label {
@@ -158,8 +158,8 @@
   }
 
   .save-preset-btn-icon {
-    inline-size: 1.5em;
-    block-size: 1.5em;
+    inline-size: 1.4em;
+    block-size: 1.4em;
     fill: currentcolor;
   }
 }
@@ -195,12 +195,13 @@
     flex: 1;
     flex-direction: row;
     align-items: center;
-    padding: 0.5em;
+    padding: 0.4em 0.5em;
     font-size: 1rem;
+    line-height: inherit;
     color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
     background-color: var(--sb-color-accent);
-    border: none;
+    border: solid 1px transparent;
     border-radius: 8px;
 
     span {

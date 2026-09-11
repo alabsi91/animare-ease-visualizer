@@ -12,6 +12,10 @@
       border-radius: 4px;
     }
 
+    button {
+      padding-block: 0.2em;
+    }
+
     [aria-checked="true"] {
       color: var(--sv-accent-content);
     }
@@ -85,7 +89,6 @@
 
   input {
     min-inline-size: 0;
-    padding-block: 0.7em;
     margin-inline: 1px;
     text-align: start;
   }
@@ -130,13 +133,13 @@
 
   .export-btn {
     flex: 1;
-    padding: 0.5em;
+    padding: 0.4em 0.5em;
     margin-block-start: 1em;
     font-size: 1rem;
     color: oklch(98% 0.009 var(--sb-hue-base));
     cursor: pointer;
     background-color: var(--sb-color-accent);
-    border: none;
+    border: solid 1px transparent;
     border-radius: 8px;
   }
 
