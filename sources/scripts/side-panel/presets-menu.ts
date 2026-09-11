@@ -1,7 +1,6 @@
-import { checkGraphOverlap } from "../graph/graph";
 import { elements } from "../elements";
-import { graphAnimation } from "../graph/graph-animation";
 import { presets } from "./presets";
+import { setGraphPath } from "../graph/graph";
 import { storage } from "../storage";
 import { showAlert } from "../alert";
 
@@ -61,12 +60,10 @@ function getSelectedCustomPreset() {
 function onPresetChange() {
   syncDeletePresetButton();
 
-  const val = elements.presetsMenu.value;
-  if (typeof val !== "string" || !val) return;
+  const pathStr = elements.presetsMenu.value;
+  if (typeof pathStr !== "string" || !pathStr) return;
 
-  elements.graphEditor.setFromPathStr(val);
-  graphAnimation.setCustomEase(val);
-  checkGraphOverlap();
+  setGraphPath(pathStr);
 }
 
 function savePresetHandler() {

@@ -38,12 +38,30 @@ function graphEditorCompleteHandler() {
   onGraphPathChange(elements.graphEditor.points.valueStr);
 }
 
+/** Draws a path and records it as one undoable step */
+export function setGraphPath(pathStr: string) {
+  const { historyManager } = elements.graphEditor;
+
+  historyManager.takeSnapshot();
+
+  const success = elements.graphEditor.setFromPathStr(pathStr);
+  if (!success) {
+    historyManager.removeSnapshot();
+    return false;
+  }
+
+  historyManager.addSnapshotToHistory();
+  elements.graphEditor.dispatchComplete();
+
+  return true;
+}
+
 export function onGraphPathChange(pathStr: string) {
   // animation
   graphAnimation.setCustomEase(pathStr);
 
   // presets menu
-  if (elements.presetsMenu.value) {
+  if (elements.presetsMenu.value && elements.presetsMenu.value !== pathStr) {
     elements.presetsMenu.value = "";
   }
 

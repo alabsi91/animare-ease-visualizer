@@ -1,5 +1,5 @@
 import { elements } from "../elements";
-import { onGraphPathChange } from "../graph/graph";
+import { setGraphPath } from "../graph/graph";
 import { showAlert } from "../alert";
 
 /** Keeps the SVG path box in step with the curve, and draws what the user types back into it */
@@ -35,11 +35,8 @@ function onPathCodeCopy() {
 function onPathCodeChange() {
   const newCode = elements.pathCodeEditor.value.replace(/\n|\s{2,}/g, " ");
 
-  const success = elements.graphEditor.setFromPathStr(newCode);
-  if (success) {
-    onGraphPathChange(newCode);
-    return;
-  }
+  const success = setGraphPath(newCode);
+  if (success) return;
 
   updatePathCode(); // revert
   showAlert(
