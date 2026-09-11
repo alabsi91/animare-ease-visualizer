@@ -19,11 +19,25 @@ function startLoading() {
   return (highlighterPromise ??= loadHighlighter());
 }
 
-// Fetch it once the page has settled, so an export dialog opens with it already there.
 if (typeof requestIdleCallback === "function") {
   requestIdleCallback(startLoading, { timeout: 5000 });
 } else {
   window.addEventListener("load", startLoading, { once: true });
+}
+
+function escapeHtml(code: string) {
+  return code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+export function createTailwindClassHighlighter() {
+  return (code: string) => {
+    if (!code) return code;
+
+    return escapeHtml(code)
+      .replace(/^([a-z-]+?)-\[/, '<span class="hljs-attribute">$1</span>-[')
+      .replace(/([a-z-]+)\(/g, '<span class="hljs-title">$1</span>(')
+      .replace(/\d+(\.\d+)?%?/g, '<span class="hljs-number">$&</span>');
+  };
 }
 
 export function createHighlighter(language: Language) {

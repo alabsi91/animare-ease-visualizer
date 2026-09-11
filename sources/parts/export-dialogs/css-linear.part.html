@@ -10,15 +10,39 @@
   </div>
 
   <div class="content">
-    <div class="label-input-container">
-      <label for="export-css-linear-samples">Samples</label>
-      <input type="number" name="samples" id="export-css-linear-samples" autocomplete="off" value="100" />
-    </div>
+    <sv-segmented-control class="export-format" id="export-css-linear-format" value="css" aria-label="Output format">
+      <button value="css">CSS</button>
+      <button value="tailwind">Tailwind</button>
+    </sv-segmented-control>
 
-    <div class="label-input-container">
-      <label for="export-css-linear-name">Name</label>
-      <input type="text" name="name" id="export-css-linear-name" autocomplete="off" value="--custom-easing" />
+    <div class="label-input-container" id="export-css-linear-max-stops-row">
+      <label for="export-css-linear-max-stops">Max stops</label>
+      <input
+        type="number"
+        name="max-stops"
+        id="export-css-linear-max-stops"
+        autocomplete="off"
+        value="75"
+        min="2"
+        max="500"
+        aria-describedby="export-css-linear-max-stops-tooltip"
+        data-sv-tooltip="export-css-linear-max-stops-tooltip"
+      />
     </div>
+    <sv-tooltip id="export-css-linear-max-stops-tooltip" side="block-end">
+      More points means a closer match and longer CSS. Past a point it stops looking any different.
+    </sv-tooltip>
+
+    <canvas
+      class="export-plot"
+      id="export-css-linear-plot"
+      aria-label="The curve the exported stops rebuild"
+      aria-describedby="export-css-linear-plot-tooltip"
+      data-sv-tooltip="export-css-linear-plot-tooltip"
+    ></canvas>
+    <sv-tooltip id="export-css-linear-plot-tooltip" side="block-end">
+      A preview of the exported easing. If it still matches the curve you drew, you have enough points.
+    </sv-tooltip>
 
     <sv-code-editor
       class="export-code-preview"
@@ -28,6 +52,7 @@
       wrap-button
       readonly
       expand
+      wrap
     ></sv-code-editor>
 
     <button class="export-btn" id="export-css-linear-copy-btn">Copy</button>

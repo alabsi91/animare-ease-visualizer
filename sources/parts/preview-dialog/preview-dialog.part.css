@@ -1,61 +1,8 @@
 .preview-dialog {
   color: var(--sb-color-text);
 
-  sv-tooltip {
-    --sv-gray-6: var(--sb-color-gray-7);
-  }
-
-  sv-slider {
-    --sv-thickness: 2.3em;
-    --sv-thumb-size: 0.6em;
-    --sv-gray-6: var(--sb-color-gray-7);
-
-    [slot="thumb-1"] {
-      position: relative;
-      inline-size: var(--sv-thumb-size);
-      block-size: 2.3em;
-      border-radius: 10px;
-      transition:
-        scale var(--sv-dur) var(--sv-ease),
-        box-shadow var(--sv-dur) var(--sv-ease);
-
-      &::before {
-        position: absolute;
-        inset: 0;
-        content: "";
-        border-radius: inherit;
-        backdrop-filter: blur(7px);
-        transition: backdrop-filter var(--sv-dur) var(--sv-ease);
-      }
-
-      &::after {
-        position: absolute;
-        inset: 0;
-        padding: 1px;
-        content: "";
-        border-radius: inherit;
-        backdrop-filter: blur(4px) brightness(180%) saturate(190%);
-        mask:
-          linear-gradient(#000 0 0) content-box,
-          linear-gradient(#000 0 0);
-        mask-composite: exclude;
-      }
-    }
-
-    &:state(--active) {
-      [slot="thumb-1"] {
-        box-shadow:
-          0 6px 16px #00000045,
-          inset 0 1px 1px #ffffff8c;
-        scale: 1.3;
-
-        &::before {
-          backdrop-filter: blur(0.4px);
-        }
-      }
-    }
-  }
-
+  sv-tooltip,
+  sv-slider,
   sv-toggle {
     --sv-gray-6: var(--sb-color-gray-7);
   }
@@ -99,7 +46,6 @@
     translate: calc(var(--move-x) * var(--travel-x) * var(--position)) calc(var(--move-y) * var(--travel-y) * var(--position));
   }
 
-  /* the wider gap between the groups is what reads as the grouping */
   .preview-properties {
     display: flex;
     flex-wrap: wrap;

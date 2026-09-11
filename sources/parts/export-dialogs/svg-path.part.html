@@ -7,6 +7,21 @@
       <input type="number" name="scale" id="export-svg-scale" value="100" autocomplete="off" />
     </div>
 
+    <div class="checkbox-label-container">
+      <label for="export-svg-fit">Fit the box to the curve</label>
+      <sv-toggle-checkbox id="export-svg-fit" checked></sv-toggle-checkbox>
+    </div>
+
+    <div
+      class="export-preview"
+      id="export-svg-preview"
+      role="img"
+      aria-label="The exported svg"
+      aria-describedby="export-svg-preview-tooltip"
+      data-sv-tooltip="export-svg-preview-tooltip"
+    ></div>
+    <sv-tooltip id="export-svg-preview-tooltip" side="block-end">A preview of the SVG below.</sv-tooltip>
+
     <sv-code-editor
       class="export-code-preview"
       id="export-svg-code-preview"
@@ -15,6 +30,7 @@
       wrap-button
       readonly
       expand
+      wrap
     ></sv-code-editor>
 
     <div class="export-buttons-container">

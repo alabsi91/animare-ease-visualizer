@@ -47,7 +47,7 @@ declare global {
      * ## Snapping
      *
      * Anchor points and control points snap separately, each to the grid, to other anchors, and to other control points. Every
-     * combination is its own flag on `settings`, so a curve can snap to the grid while ignoring nearby points:
+     * combination is its own flag on `settings`. A curve can snap to the grid while ignoring nearby points:
      *
      * ```js
      * editor.settings.anchorSnapToGrid = true;

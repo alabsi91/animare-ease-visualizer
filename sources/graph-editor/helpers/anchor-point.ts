@@ -121,7 +121,7 @@ export class AnchorPoint {
     return ctrl1Address !== null && ctrl2Address !== null;
   }
 
-  /** `true` while the control points share one line through the anchor, so dragging one mirrors the other */
+  /** `true` while the control points share one line through the anchor. Dragging one then mirrors the other */
   get isCtrlAligned() {
     const [ctrl1Address, ctrl2Address] = this.#getAttachedCtrlAddress();
     if (!ctrl1Address || !ctrl2Address) return false;

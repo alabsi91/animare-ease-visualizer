@@ -207,7 +207,7 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
 
     const viewBoxSize = this.PATH_SVG_VIEW_BOX_SIZE;
 
-    // the grid is always in view, so a curve that stays inside it fits the grid instead
+    // the grid is always in view. A curve that stays inside it fits the grid instead
     const left = Math.min(pathBounds.x, 0);
     const top = Math.min(pathBounds.y, 0);
     const right = Math.max(pathBounds.x + pathBounds.width, viewBoxSize);

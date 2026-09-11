@@ -70,7 +70,6 @@
     font-style: italic;
   }
 
-  /* the same round button the editor's toolbar draws, its styles live inside the editor's shadow */
   .toolbar-btn-preview {
     display: grid;
     place-items: center;

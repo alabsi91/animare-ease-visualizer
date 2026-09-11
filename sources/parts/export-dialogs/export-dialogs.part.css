@@ -1,7 +1,60 @@
 .export-dialog {
+  sv-segmented-control {
+    --sv-gray-6: var(--sb-color-gray-7);
+    --sv-bdr-rad-lg: 8px;
+
+    &::part(indicator),
+    button {
+      border-radius: 4px;
+    }
+
+    [aria-checked="true"] {
+      color: var(--sv-accent-content);
+    }
+  }
+
+  .checkbox-label-container {
+    flex-direction: row-reverse;
+    gap: 0.8em;
+    justify-content: flex-end;
+    padding-block: 0.5em;
+    margin-block: 0;
+
+    label {
+      flex: none;
+    }
+  }
+
+  .export-preview,
+  .export-plot {
+    color: var(--sb-color-accent);
+    background-color: var(--sb-color-gray-7);
+    border: solid 1px var(--sb-color-gray-5);
+    border-radius: 8px;
+  }
+
+  .export-preview {
+    display: grid;
+    place-items: center;
+    padding: 0.8em;
+
+    svg {
+      inline-size: auto;
+      max-inline-size: 100%;
+      block-size: auto;
+      max-block-size: 16rem;
+    }
+  }
+
+  .export-plot {
+    display: block;
+    inline-size: 100%;
+    block-size: 14rem;
+  }
+
   .export-code-preview {
     &::part(textarea) {
-      min-block-size: 100px;
+      min-block-size: 200px;
       max-block-size: 300px;
     }
   }

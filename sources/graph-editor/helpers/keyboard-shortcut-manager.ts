@@ -120,7 +120,7 @@ export class KeyboardShortcutManager {
       this.keysPressed.delete(e.key.toLowerCase());
     }
 
-    // macOS holds back key up while Command is down, so the keys it swallowed are dropped here
+    // macOS holds back key up while Command is down. The keys it swallowed are dropped here
     if (e.key === "Meta") {
       this.keysPressed.clear();
     }

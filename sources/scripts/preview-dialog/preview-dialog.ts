@@ -6,7 +6,7 @@ import { previewProperties } from "./properties";
 /** How many times the curve is read to find how far it overshoots */
 const CURVE_SAMPLES = 100;
 
-/** Room left at each edge even for a curve that never leaves its ends, so the shape never touches the frame */
+/** Room left at each edge even for a curve that never leaves its ends. The shape then never touches the frame */
 const MIN_OVERSHOOT_ROOM = 0.08;
 
 const activeProperties = new Set<string>();
@@ -24,7 +24,7 @@ function setDuration(value: number) {
   animation.updateValues({ duration: durationMs });
 }
 
-/** A loop alternates, so every second leg runs the timeline backwards and the progress has to read backwards with it */
+/** A loop alternates. Every second leg runs the timeline backwards, and the progress has to read backwards with it */
 function isReturningLeg() {
   return isLooping && animation.timelineInfo.playCount % 2 === 0;
 }

@@ -41,7 +41,7 @@ Double clicking the panel re-centers it.
 ## Snapping
 
 Anchor points and control points snap separately, each to the grid, to other anchors, and to other control points.
-Every combination is its own flag on `settings`, so a curve can snap to the grid while ignoring nearby points:
+Every combination is its own flag on `settings`. A curve can snap to the grid while ignoring nearby points:
 
 ```js
 editor.settings.anchorSnapToGrid = true;
@@ -119,11 +119,25 @@ Tracks which keys and modifiers are held down.
 **Type:** `KeyboardShortcutManager`\
 **Readonly:** `true`
 
+#### `toolbar`
+
+The buttons sitting over the graph.
+
+**Type:** `Toolbar`\
+**Readonly:** `true`
+
 #### `abortController`
 
 Aborts every listener the component added. Fires on disconnect.
 
 **Type:** `AbortController`\
+**Readonly:** `true`
+
+#### `isPinching`
+
+`true` while two fingers are down on the editor, zooming and panning the graph panel.
+
+**Type:** `boolean`\
 **Readonly:** `true`
 
 #### `commandsRef`
@@ -169,6 +183,12 @@ Zooms out by one step. Defaults to `settings.zoomStep`.
 
 **Type:** `Function`
 
+#### `fitToPath`
+
+Zooms and pans so the whole curve is in view. The curve ends up centered, the grid does not.
+
+**Type:** `Function`
+
 ---
 
 ### Events
@@ -188,8 +208,8 @@ Fired when the user finishes drawing.
 | `--clr-grid-line`                  |             |
 | `--clr-graph-txt`                  |             |
 | `--clr-anchor-circle`              | anchors     |
-| `--clr-active-anchor-circle`       |             |
 | `--clr-focus-anchor-circle-stroke` |             |
+| `--clr-active-anchor-circle`       |             |
 | `--size-anchor-circle`             |             |
 | `--size-anchor-stroke`             |             |
 | `--clr-ctrl-circle`                | ctrl        |
@@ -199,6 +219,7 @@ Fired when the user finishes drawing.
 | `--size-ctrl-circle`               |             |
 | `--clr-path`                       | path        |
 | `--clr-active-path`                |             |
+| `--clr-pressed-path`               |             |
 | `--clr-filled-path`                |             |
 | `--size-path-thickness`            |             |
 | `--size-filled-path-thickness`     |             |
