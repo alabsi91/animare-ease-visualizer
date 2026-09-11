@@ -1,0 +1,27 @@
+<sv-dialog class="export-dialog" id="export-compose-dialog" aria-labelledby="export-compose-title" close-button>
+  <h1 class="export-dialog-title" id="export-compose-title">Export as Jetpack Compose easing</h1>
+
+  <div class="warning" id="export-compose-warning" hidden></div>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-compose-name">Name</label>
+      <input type="text" name="name" id="export-compose-name" autocomplete="off" value="customEasing" />
+    </div>
+
+    <sv-code-editor
+      class="export-code-preview"
+      id="export-compose-code-preview"
+      linenumbers
+      copy-button
+      wrap-button
+      readonly
+      expand
+    ></sv-code-editor>
+
+    <div class="export-buttons-container">
+      <button class="export-btn" id="export-compose-copy-btn">Copy</button>
+      <button class="export-btn" id="export-compose-download-btn">Download</button>
+    </div>
+  </div>
+</sv-dialog>

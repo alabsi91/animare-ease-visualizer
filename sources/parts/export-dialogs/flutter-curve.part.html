@@ -1,0 +1,27 @@
+<sv-dialog class="export-dialog" id="export-flutter-dialog" aria-labelledby="export-flutter-title" close-button>
+  <h1 class="export-dialog-title" id="export-flutter-title">Export as Flutter curve</h1>
+
+  <div class="warning" id="export-flutter-warning" hidden></div>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-flutter-name">Name</label>
+      <input type="text" name="name" id="export-flutter-name" autocomplete="off" value="CustomEasing" />
+    </div>
+
+    <sv-code-editor
+      class="export-code-preview"
+      id="export-flutter-code-preview"
+      linenumbers
+      copy-button
+      wrap-button
+      readonly
+      expand
+    ></sv-code-editor>
+
+    <div class="export-buttons-container">
+      <button class="export-btn" id="export-flutter-copy-btn">Copy</button>
+      <button class="export-btn" id="export-flutter-download-btn">Download</button>
+    </div>
+  </div>
+</sv-dialog>

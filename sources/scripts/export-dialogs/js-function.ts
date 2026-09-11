@@ -7,6 +7,7 @@ import { showAlert } from "../alert";
 const exportElements = {
   exportJsFunctionDialog: getElement<Dialog>("#export-js-function-dialog"),
   samplesInput: getElement<HTMLInputElement>("#export-js-function-samples"),
+  warning: getElement<HTMLDivElement>("#export-js-function-warning"),
   nameInput: getElement<HTMLInputElement>("#export-js-function-name"),
   codePreview: getElement<CodeEditor>("#export-js-function-code-preview"),
   copyBtn: getElement<HTMLButtonElement>("#export-js-function-copy-btn"),
@@ -23,6 +24,15 @@ export function initJsFunctionExport() {
   exportElements.downloadBtn.addEventListener("click", downloadJsFile);
 }
 
+function setSingleCurveMode(isSingleCurve: boolean) {
+  exportElements.warning.hidden = !isSingleCurve;
+
+  if (isSingleCurve) {
+    exportElements.warning.textContent =
+      "The current path uses a single curve, which the CSS cubic-bezier() function covers on its own.";
+  }
+}
+
 function generateJsFunctionCode() {
   const name = exportElements.nameInput.value;
   try {
@@ -31,6 +41,8 @@ function generateJsFunctionCode() {
     showAlert("error", "Invalid JavaScript variable name");
     return;
   }
+
+  setSingleCurveMode(elements.graphEditor.points.value.length === 2);
 
   const samples = exportElements.samplesInput.valueAsNumber;
   if (isNaN(samples) || !isFinite(samples) || samples <= 0 || samples > 1000) {

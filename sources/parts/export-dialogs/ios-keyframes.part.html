@@ -1,0 +1,27 @@
+<sv-dialog class="export-dialog" id="export-ios-dialog" aria-labelledby="export-ios-title" close-button>
+  <h1 class="export-dialog-title" id="export-ios-title">Export as iOS keyframes</h1>
+
+  <div class="warning" id="export-ios-warning" hidden></div>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-ios-name">Name</label>
+      <input type="text" name="name" id="export-ios-name" autocomplete="off" value="customEase" />
+    </div>
+
+    <sv-code-editor
+      class="export-code-preview"
+      id="export-ios-code-preview"
+      linenumbers
+      copy-button
+      wrap-button
+      readonly
+      expand
+    ></sv-code-editor>
+
+    <div class="export-buttons-container">
+      <button class="export-btn" id="export-ios-copy-btn">Copy</button>
+      <button class="export-btn" id="export-ios-download-btn">Download</button>
+    </div>
+  </div>
+</sv-dialog>

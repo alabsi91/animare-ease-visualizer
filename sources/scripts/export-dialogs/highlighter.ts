@@ -1,4 +1,4 @@
-type Language = "css" | "javascript" | "html";
+type Language = "css" | "javascript" | "html" | "swift" | "kotlin" | "dart";
 
 let highlighterPromise: ReturnType<typeof loadHighlighter> | undefined;
 
@@ -7,10 +7,16 @@ async function loadHighlighter() {
   const { default: css } = await import("highlight.js/lib/languages/css");
   const { default: javascript } = await import("highlight.js/lib/languages/javascript");
   const { default: html } = await import("highlight.js/lib/languages/xml");
+  const { default: swift } = await import("highlight.js/lib/languages/swift");
+  const { default: kotlin } = await import("highlight.js/lib/languages/kotlin");
+  const { default: dart } = await import("highlight.js/lib/languages/dart");
 
   hljs.registerLanguage("css", css);
   hljs.registerLanguage("javascript", javascript);
   hljs.registerLanguage("html", html);
+  hljs.registerLanguage("swift", swift);
+  hljs.registerLanguage("kotlin", kotlin);
+  hljs.registerLanguage("dart", dart);
 
   return hljs;
 }

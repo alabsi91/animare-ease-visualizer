@@ -1,0 +1,22 @@
+<sv-dialog class="export-dialog" id="export-gsap-dialog" aria-labelledby="export-gsap-title" close-button>
+  <h1 class="export-dialog-title" id="export-gsap-title">Export as GSAP CustomEase</h1>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-gsap-name">Name</label>
+      <input type="text" name="name" id="export-gsap-name" autocomplete="off" value="customEase" />
+    </div>
+
+    <sv-code-editor
+      class="export-code-preview"
+      id="export-gsap-code-preview"
+      linenumbers
+      copy-button
+      wrap-button
+      readonly
+      expand
+    ></sv-code-editor>
+
+    <button class="export-btn" id="export-gsap-copy-btn">Copy</button>
+  </div>
+</sv-dialog>

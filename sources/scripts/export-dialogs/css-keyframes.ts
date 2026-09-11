@@ -1,6 +1,7 @@
 import { ease } from "animare/plugins";
 import { pickStopsWithinBudget } from "./easing-stops";
 import { drawPlot, resetPlot } from "./export-plot";
+import { getIsSingleCurve, getSingleCurveControlPoints } from "./easing-path";
 import { createHighlighter } from "./highlighter";
 
 import { elements, getElement } from "../elements";
@@ -50,16 +51,12 @@ function showInvalidInputAlert(title: string, hint: string) {
 }
 
 function generateCssKeyframesCode() {
-  const curves = elements.graphEditor.points.value;
-  const isSingleCurve = curves.length === 2;
+  const isSingleCurve = getIsSingleCurve();
   setSingleCurveMode(isSingleCurve);
 
   if (isSingleCurve) {
-    const cx1 = +curves[1][0].toFixed(3);
-    const cy1 = +(1 - curves[1][1]).toFixed(3);
-    const cx2 = +curves[1][2].toFixed(3);
-    const cy2 = +(1 - curves[1][3]).toFixed(3);
-    exportElements.codePreview.value = `.element {\n  transition: transform 0.6s cubic-bezier(${cx1}, ${cy1}, ${cx2}, ${cy2});\n}`;
+    const controlPoints = getSingleCurveControlPoints().map(value => +value.toFixed(3));
+    exportElements.codePreview.value = `.element {\n  transition: transform 0.6s cubic-bezier(${controlPoints.join(", ")});\n}`;
     return;
   }
 

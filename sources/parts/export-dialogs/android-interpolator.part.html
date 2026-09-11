@@ -1,0 +1,28 @@
+<sv-dialog class="export-dialog" id="export-android-dialog" aria-labelledby="export-android-title" close-button>
+  <h1 class="export-dialog-title" id="export-android-title">Export as Android interpolator</h1>
+
+  <div class="warning" id="export-android-warning" hidden></div>
+
+  <div class="content">
+    <div class="label-input-container">
+      <label for="export-android-name">File name</label>
+      <input type="text" name="name" id="export-android-name" autocomplete="off" value="custom_ease" />
+    </div>
+
+    <sv-code-editor
+      class="export-code-preview"
+      id="export-android-code-preview"
+      linenumbers
+      copy-button
+      wrap-button
+      readonly
+      expand
+      wrap
+    ></sv-code-editor>
+
+    <div class="export-buttons-container">
+      <button class="export-btn" id="export-android-copy-btn">Copy</button>
+      <button class="export-btn" id="export-android-download-btn">Download</button>
+    </div>
+  </div>
+</sv-dialog>
