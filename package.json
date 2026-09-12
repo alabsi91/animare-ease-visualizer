@@ -14,7 +14,7 @@
     "fix-eslint": "eslint --fix",
     "fix-stylelint": "stylelint \"./sources/**/*.{css,html}\" \"./pages/**/*.html\" --fix",
     "fix-all": "npm run fix-eslint && npm run fix-stylelint",
-    "deploy": "npm run build && npx wrangler pages deploy ./docs/dist --project-name=ease"
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=ease"
   },
   "browserslist": [
     "last 2 Chrome versions",
