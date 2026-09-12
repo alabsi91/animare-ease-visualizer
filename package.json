@@ -13,7 +13,8 @@
     "generate-docs": "sv docs --include \"sources/graph-editor/*.ts\" --md-out sources/graph-editor --md-name README.md --no-manifest --no-web-types --html-data-out sources/graph-editor/graph-editor.html-data.json",
     "fix-eslint": "eslint --fix",
     "fix-stylelint": "stylelint \"./sources/**/*.{css,html}\" \"./pages/**/*.html\" --fix",
-    "fix-all": "npm run fix-eslint && npm run fix-stylelint"
+    "fix-all": "npm run fix-eslint && npm run fix-stylelint",
+    "deploy": "npm run build && npx wrangler pages deploy ./docs/dist --project-name=ease"
   },
   "browserslist": [
     "last 2 Chrome versions",
