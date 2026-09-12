@@ -1,12 +1,12 @@
 {
-  "short_name": "Animare",
-  "name": "Animare Ease Visualizer",
-  "description": "A tool to create custom easing functions",
+  "short_name": "Easing editor",
+  "name": "Advanced easing editor",
+  "description": "Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android.",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  "theme_color": "#222",
-  "background_color": "#a370f0",
+  "theme_color": "#131016",
+  "background_color": "#131016",
   "icons": [
     { "src": "./favicon.ico", "type": "image/x-icon", "sizes": "16x16 32x32" },
     { "src": "./icon-192.png", "type": "image/png", "sizes": "192x192" },

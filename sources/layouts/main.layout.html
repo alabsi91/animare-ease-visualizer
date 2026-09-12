@@ -1,23 +1,49 @@
-<!--props
-  interface Props {
-    title: string;
-    description: string;
-  }
--->
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <!-- Firefox has no support for this, and the app works without it. -->
+    <!-- eslint-disable-next-line html/use-baseline -->
+    <meta name="theme-color" content="#faf7fd" media="(prefers-color-scheme: light)" />
+    <!-- eslint-disable-next-line html/use-baseline -->
+    <meta name="theme-color" content="#131016" media="(prefers-color-scheme: dark)" />
+    <link rel="canonical" href="https://ease.a-labs.space/" />
     <link rel="stylesheet" href="@styles/main.css" bundle inline />
     <!-- Safari supports this only since 17, and the app works without it. -->
     <!-- eslint-disable-next-line html/use-baseline -->
     <link rel="manifest" href="@assets/favicon/manifest.json" />
     <link rel="icon" href="@assets/favicon/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="@assets/favicon/apple-touch-icon.png" />
-    <meta name="description" content="{{ $data.description }}" />
-    <title>{{ $data.title }}</title>
+    <meta
+      name="description"
+      content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
+    />
+    <title>Advanced easing editor — draw and export easing curves</title>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Advanced easing editor" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://ease.a-labs.space/" />
+    <meta property="og:title" content="Advanced easing editor — draw and export easing curves" />
+    <meta
+      property="og:description"
+      content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
+    />
+    <meta property="og:image" content="https://ease.a-labs.space/banner.png" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:alt" content="An easing curve plotted on the editor grid" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Advanced easing editor — draw and export easing curves" />
+    <meta
+      name="twitter:description"
+      content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
+    />
+    <meta name="twitter:image" content="https://ease.a-labs.space/banner.png" />
+    <meta name="twitter:image:alt" content="An easing curve plotted on the editor grid" />
   </head>
   <slot />
 
