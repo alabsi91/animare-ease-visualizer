@@ -75,6 +75,8 @@
     --sv-bdr-sz-sm: 1px;
     --sv-padding: 0.5em;
 
+    min-inline-size: 0;
+
     &:state(--focus) {
       --sv-gray-5: var(--sb-color-accent);
       --sv-gray-6: var(--sb-color-black);
