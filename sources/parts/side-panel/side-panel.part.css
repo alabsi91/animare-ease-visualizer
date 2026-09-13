@@ -3,7 +3,7 @@
   inline-size: var(--large-side-panel-width);
   block-size: 100dvh;
   overflow: auto;
-  background-color: color-mix(in oklab, var(--sb-color-gray-7) 50%, transparent);
+  background-color: rgb(from var(--sb-color-gray-7) r g b / 50%);
   border-inline-end: solid 1px var(--sb-color-gray-5);
   box-shadow: 2px 0 7px light-dark(oklch(20% 0.012 var(--sb-hue-base) / 15%), oklch(0% 0 0deg / 40%));
   backdrop-filter: blur(1px);
@@ -25,7 +25,8 @@
     visibility: hidden;
     grid-area: auto;
     inline-size: 100%;
-    backdrop-filter: blur(7px);
+    background-color: var(--sb-color-gray-7);
+    backdrop-filter: unset;
     translate: -100% 0;
     transition-delay: 0s, var(--side-panel-duration);
 
