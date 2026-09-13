@@ -3,6 +3,10 @@
     display: none !important;
   }
 
+  sv-tooltip {
+    --sv-gray-6: var(--sb-color-gray-7);
+  }
+
   sv-segmented-control {
     --sv-gray-6: var(--sb-color-gray-7);
     --sv-bdr-rad-lg: 8px;
