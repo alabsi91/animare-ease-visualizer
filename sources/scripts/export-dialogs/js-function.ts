@@ -12,7 +12,42 @@ const exportElements = {
   codePreview: getElement<CodeEditor>("#export-js-function-code-preview"),
   copyBtn: getElement<HTMLButtonElement>("#export-js-function-copy-btn"),
   downloadBtn: getElement<HTMLButtonElement>("#export-js-function-download-btn"),
+  targetControl: getElement<SegmentedControl>("#export-js-function-target"),
 };
+
+function buildJavaScriptFunction(name: string, valuesLiteral: string) {
+  return [
+    `const values = ${valuesLiteral};`,
+    "const lastIdx = values.length - 1;",
+    `const ${name} = t => values[Math.floor(t * lastIdx)] ?? values[lastIdx];`,
+    `export default ${name};`,
+  ].join("\n");
+}
+
+function buildAfterEffectsExpression(name: string, valuesLiteral: string) {
+  return [
+    `var values = ${valuesLiteral};`,
+    "var lastIdx = values.length - 1;",
+    "",
+    `function ${name}(t) {`,
+    "  var index = Math.floor(t * lastIdx);",
+    "  if (index < 0) index = 0;",
+    "  if (index > lastIdx) index = lastIdx;",
+    "  return values[index];",
+    "}",
+    "",
+    "var duration = 2;",
+    "var from = 0;",
+    "var to = 500;",
+    "",
+    "var progress = clamp((time - inPoint) / duration, 0, 1);",
+    `from + (to - from) * ${name}(progress);`,
+  ].join("\n");
+}
+
+function getSelectedTarget() {
+  return exportElements.targetControl.value;
+}
 
 export function initJsFunctionExport() {
   exportElements.codePreview.highlighter = createHighlighter("javascript");
@@ -22,6 +57,7 @@ export function initJsFunctionExport() {
   exportElements.nameInput.addEventListener("input", generateJsFunctionCode);
   exportElements.copyBtn.addEventListener("click", copyJsFunctionCodeHandler);
   exportElements.downloadBtn.addEventListener("click", downloadJsFile);
+  exportElements.targetControl.addEventListener("valuechange", generateJsFunctionCode);
 }
 
 function setSingleCurveMode(isSingleCurve: boolean) {
@@ -58,7 +94,15 @@ function generateJsFunctionCode() {
     values[i] = +easingFunction(t).toFixed(3);
   }
 
-  exportElements.codePreview.value = `const values = ${JSON.stringify([...values])};\nconst lastIdx = values.length - 1;\nconst ${name} = t => {\n  'worklet';\n  return values[Math.floor(t * lastIdx)] ?? values[lastIdx];\n}\nexport default ${name};`;
+  const valuesLiteral = JSON.stringify([...values]);
+  const target = getSelectedTarget();
+
+  if (target === "after-effects") {
+    exportElements.codePreview.value = buildAfterEffectsExpression(name, valuesLiteral);
+    return;
+  }
+
+  exportElements.codePreview.value = buildJavaScriptFunction(name, valuesLiteral);
 }
 
 function downloadJsFile() {
