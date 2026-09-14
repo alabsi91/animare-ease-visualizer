@@ -38,6 +38,7 @@ export const elements = {
   previewDurationSlider: getElement<Slider>(".preview-duration-slider"),
   previewDurationInput: getElement<HTMLInputElement>(".preview-duration-input"),
   previewLoopToggle: getElement<Toggle>(".preview-loop-toggle"),
+  previewReverseToggle: getElement<Toggle>(".preview-reverse-toggle"),
   previewPlayBtn: getElement<HTMLButtonElement>(".preview-play-btn"),
   previewPlayIcon: getElement<SVGPathElement>(".preview-play-icon"),
   autoHidePointsToggle: getElement<ToggleCheckbox>("#auto-hide-toggle"),

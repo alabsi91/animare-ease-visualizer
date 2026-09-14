@@ -174,6 +174,7 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
     this.points.set(points);
     this.graph.rerender();
     this.graph.path.updatePath();
+    this.points.events.onUpdate.fire();
   };
 
   /** Zooms by one step. `1` zooms in, `-1` zooms out. Does nothing outside the zoom limits. */

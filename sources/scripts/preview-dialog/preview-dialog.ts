@@ -12,6 +12,7 @@ const MIN_OVERSHOOT_ROOM = 0.08;
 const activeProperties = new Set<string>();
 
 let isLooping = true;
+let isPlayingBackwardsOnEveryOtherLoop = true;
 let isRunning = false;
 let durationMs = 1000;
 let lastWrittenNames = new Set<string>();
@@ -24,9 +25,9 @@ function setDuration(value: number) {
   animation.updateValues({ duration: durationMs });
 }
 
-/** A loop alternates. Every second leg runs the timeline backwards, and the progress has to read backwards with it */
+/** Every second leg runs the timeline backwards, and the progress has to read backwards with it */
 function isReturningLeg() {
-  return isLooping && animation.timelineInfo.playCount % 2 === 0;
+  return isLooping && isPlayingBackwardsOnEveryOtherLoop && animation.timelineInfo.playCount % 2 === 0;
 }
 
 function onFinished() {
@@ -61,6 +62,8 @@ export function initializePreviewDialog() {
   animation.on(Event.Complete, onFinished);
 
   elements.previewLoopToggle.addEventListener("pressedchange", toggleLoop);
+  elements.previewReverseToggle.addEventListener("pressedchange", toggleReverse);
+  syncReverseToggle();
   elements.previewPlayBtn.addEventListener("click", togglePlay);
   elements.previewDurationSlider.addEventListener("valuechange", event => {
     setDuration(event.detail.value);
@@ -127,12 +130,6 @@ function drawShape(easedValue: number) {
   shapeStyle.setProperty("--move-y", activeProperties.has("moveY") ? "1" : "0");
 }
 
-/**
- * Tells the css how far past its ends the curve reaches, as a fraction of the travel.
- *
- * The start and the end of the curve keep their own places, and the room the css leaves at each edge is what the overshoot spills
- * into.
- */
 function measureCurve(easing: (time: number) => number) {
   let overshoot = MIN_OVERSHOOT_ROOM;
 
@@ -155,7 +152,7 @@ function play() {
     ease: easing,
     duration: durationMs,
     playCount: isLooping ? -1 : 1,
-    direction: isLooping ? Direction.Alternate : Direction.Forward,
+    direction: isLooping && isPlayingBackwardsOnEveryOtherLoop ? Direction.Alternate : Direction.Forward,
   });
 
   animation.play();
@@ -179,5 +176,15 @@ function stop() {
 
 function toggleLoop() {
   isLooping = elements.previewLoopToggle.pressed;
+  syncReverseToggle();
   play();
+}
+
+function toggleReverse() {
+  isPlayingBackwardsOnEveryOtherLoop = elements.previewReverseToggle.pressed;
+  play();
+}
+
+function syncReverseToggle() {
+  elements.previewReverseToggle.disabled = !isLooping;
 }

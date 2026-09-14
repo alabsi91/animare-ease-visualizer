@@ -1,13 +1,11 @@
 import { Points } from "./points";
 
-import type { Graph } from "./graph";
 import type { GraphEditor } from "../graph-editor";
 import type { PathCommands } from "./types";
 
 export class HistoryManager {
   readonly graphEditor: GraphEditor;
   readonly points: Points;
-  readonly graph: Graph;
 
   readonly #undoStack: PathCommands[] = [];
   readonly #redoStack: PathCommands[] = [];
@@ -17,7 +15,6 @@ export class HistoryManager {
   constructor(graphEditor: GraphEditor) {
     this.graphEditor = graphEditor;
     this.points = graphEditor.points;
-    this.graph = graphEditor.graph;
 
     graphEditor.keyboardShortcutManager.addListener("Undo", this.undo);
     graphEditor.keyboardShortcutManager.addListener("Redo", this.redo);
@@ -40,10 +37,8 @@ export class HistoryManager {
     if (!undoPathCommands) return;
 
     this.#redoStack.push(this.points.valueCopy);
-    this.points.set(undoPathCommands);
 
-    this.graph.rerender();
-    this.graphEditor.graph.path.updatePath();
+    this.graphEditor.setFromPoints(undoPathCommands);
     this.graphEditor.dispatchComplete();
   };
 
@@ -54,10 +49,8 @@ export class HistoryManager {
     if (!redoPathCommands) return;
 
     this.#undoStack.push(this.points.valueCopy);
-    this.points.set(redoPathCommands);
 
-    this.graph.rerender();
-    this.graphEditor.graph.path.updatePath();
+    this.graphEditor.setFromPoints(redoPathCommands);
     this.graphEditor.dispatchComplete();
   };
 

@@ -5,8 +5,8 @@ import { storage } from "../storage";
 import { showAlert } from "../alert";
 
 const MAX_PRESET_NAME_LENGTH = 15;
+const CURVE_ICON_PADDING = 0.08;
 
-/** Fills the presets menu and wires saving and deleting the user's own presets */
 export function initializePresetsMenu() {
   const presetOptions = presets.map(({ name, path }) => createPresetOption(name, path));
   elements.presetsFlyout.append(...presetOptions);
@@ -26,9 +26,32 @@ export function initializePresetsMenu() {
 function createPresetOption(name: string, pathStr: string) {
   const option = document.createElement("button");
   option.type = "button";
-  option.textContent = name;
+  option.className = "preset-option";
   option.value = pathStr;
+
+  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  icon.setAttribute("class", "preset-curve-icon");
+  icon.setAttribute("aria-hidden", "true");
+  icon.setAttribute("viewBox", getCurveViewBox(pathStr));
+  icon.setAttribute("preserveAspectRatio", "none");
+
+  const curve = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  curve.setAttribute("d", pathStr);
+  curve.setAttribute("vector-effect", "non-scaling-stroke");
+  icon.append(curve);
+
+  option.append(icon, name);
   return option;
+}
+
+function getCurveViewBox(pathStr: string) {
+  const numbers = pathStr.match(/-?\d*\.?\d+/g)?.map(Number) ?? [];
+  const verticalValues = numbers.filter((_, index) => index % 2 === 1);
+
+  const top = Math.min(0, ...verticalValues) - CURVE_ICON_PADDING;
+  const bottom = Math.max(1, ...verticalValues) + CURVE_ICON_PADDING;
+
+  return `0 ${top} 1 ${bottom - top}`;
 }
 
 function addCustomPresetToMenu(name: string, pathStr: string) {
@@ -64,6 +87,7 @@ function onPresetChange() {
   if (typeof pathStr !== "string" || !pathStr) return;
 
   setGraphPath(pathStr);
+  elements.graphEditor.fitToPath();
 }
 
 function savePresetHandler() {

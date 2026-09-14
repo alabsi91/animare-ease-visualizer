@@ -106,7 +106,8 @@
     border-radius: 8px;
   }
 
-  .preview-loop-toggle {
+  .preview-loop-toggle,
+  .preview-reverse-toggle {
     --sv-bdr-rad-md: 50%;
 
     flex: none;

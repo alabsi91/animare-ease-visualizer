@@ -114,6 +114,24 @@
   }
 }
 
+.preset-option {
+  display: flex;
+  flex-direction: row;
+  gap: 0.6em;
+  align-items: center;
+}
+
+.preset-curve-icon {
+  flex: none;
+  inline-size: 1.2em;
+  block-size: 1.2em;
+  overflow: visible;
+  opacity: 0.7;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1px;
+}
+
 .preset-delete-btn {
   padding: 0.2em;
   cursor: pointer;
