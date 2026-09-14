@@ -55,6 +55,7 @@ export default defineConfig(
     languageOptions: { parser: html.parser },
     language: "html/html",
     rules: {
+      "html/lowercase": "off",
       "html/id-naming-convention": "off",
       "html/svg-require-viewbox": "off",
       "html/attrs-newline": "off",
