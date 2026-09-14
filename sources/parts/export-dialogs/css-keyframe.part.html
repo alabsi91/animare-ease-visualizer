@@ -1,17 +1,17 @@
-<sv-dialog class="export-dialog" id="export-css-keyframe-dialog" aria-labelledby="export-css-keyframe-title" close-button>
-  <h1 class="export-dialog-title" id="export-css-keyframe-title">Export as CSS Keyframes</h1>
+<sv-dialog id="export-css-keyframe-dialog" class="export-dialog" aria-labelledby="export-css-keyframe-title" close-button>
+  <h1 id="export-css-keyframe-title" class="export-dialog-title">Export as CSS Keyframes</h1>
 
   <div class="content">
-    <div class="warning" id="export-css-keyframe-warning" hidden>
+    <div id="export-css-keyframe-warning" class="warning" hidden>
       The current path uses a single curve, which can be represented with the CSS
       <strong>cubic-bezier()</strong>
       function. Consider using multiple curves to generate the result as a keyframes animation.
     </div>
 
-    <div class="export-inputs-container" id="export-css-keyframe-inputs-container">
+    <div id="export-css-keyframe-inputs-container" class="export-inputs-container">
       <div class="label-input-container">
         <span class="label">Property</span>
-        <sv-code-editor id="export-css-keyframe-property" one-line expand>
+        <sv-code-editor id="export-css-keyframe-property" expand one-line>
           <pre>transform: translateX({value}%);</pre>
         </sv-code-editor>
       </div>
@@ -19,15 +19,15 @@
       <div class="label-input-container">
         <label for="export-css-keyframe-max-keyframes">Max keyframes</label>
         <input
-          type="number"
-          name="max-keyframes"
           id="export-css-keyframe-max-keyframes"
-          autocomplete="off"
-          value="75"
-          min="2"
-          max="500"
+          type="number"
           aria-describedby="export-css-keyframe-max-keyframes-tooltip"
+          autocomplete="off"
           data-sv-tooltip="export-css-keyframe-max-keyframes-tooltip"
+          max="500"
+          min="2"
+          name="max-keyframes"
+          value="75"
         />
       </div>
       <sv-tooltip id="export-css-keyframe-max-keyframes-tooltip" side="block-end">
@@ -36,20 +36,20 @@
 
       <div class="label-input-container">
         <label for="export-css-keyframe-from">From</label>
-        <input type="number" name="from" id="export-css-keyframe-from" autocomplete="off" value="0" />
+        <input id="export-css-keyframe-from" type="number" autocomplete="off" name="from" value="0" />
       </div>
 
       <div class="label-input-container">
         <label for="export-css-keyframe-to">To</label>
-        <input type="number" name="to" id="export-css-keyframe-to" autocomplete="off" value="100" />
+        <input id="export-css-keyframe-to" type="number" autocomplete="off" name="to" value="100" />
       </div>
     </div>
 
     <canvas
-      class="export-plot"
       id="export-css-keyframe-plot"
-      aria-label="The curve the exported keyframes rebuild"
+      class="export-plot"
       aria-describedby="export-css-keyframe-plot-tooltip"
+      aria-label="The curve the exported keyframes rebuild"
       data-sv-tooltip="export-css-keyframe-plot-tooltip"
     ></canvas>
     <sv-tooltip id="export-css-keyframe-plot-tooltip" side="inline-end">
@@ -57,16 +57,16 @@
     </sv-tooltip>
 
     <sv-code-editor
-      class="export-code-preview"
       id="export-css-keyframe-code-preview"
-      linenumbers
+      class="export-code-preview"
       copy-button
-      wrap-button
-      readonly
       expand
+      linenumbers
+      readonly
       wrap
+      wrap-button
     ></sv-code-editor>
 
-    <button class="export-btn" id="export-css-keyframe-copy-btn">Copy</button>
+    <button id="export-css-keyframe-copy-btn" type="submit" class="export-btn">Copy</button>
   </div>
 </sv-dialog>

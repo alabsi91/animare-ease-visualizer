@@ -1,7 +1,7 @@
-<sv-dialog class="export-dialog" id="export-css-linear-dialog" aria-labelledby="export-css-linear-title" close-button>
-  <h1 class="export-dialog-title" id="export-css-linear-title">Export as CSS linear()</h1>
+<sv-dialog id="export-css-linear-dialog" class="export-dialog" aria-labelledby="export-css-linear-title" close-button>
+  <h1 id="export-css-linear-title" class="export-dialog-title">Export as CSS linear()</h1>
 
-  <div class="warning" id="export-css-linear-warning" hidden>
+  <div id="export-css-linear-warning" class="warning" hidden>
     The current path uses a single curve, which can be represented with the CSS
     <strong>cubic-bezier()</strong>
     function. Consider using multiple curves to generate the result as a
@@ -10,18 +10,18 @@
   </div>
 
   <div class="content">
-    <div class="label-input-container" id="export-css-linear-max-stops-row">
+    <div id="export-css-linear-max-stops-row" class="label-input-container">
       <label for="export-css-linear-max-stops">Max stops</label>
       <input
-        type="number"
-        name="max-stops"
         id="export-css-linear-max-stops"
-        autocomplete="off"
-        value="75"
-        min="2"
-        max="500"
+        type="number"
         aria-describedby="export-css-linear-max-stops-tooltip"
+        autocomplete="off"
         data-sv-tooltip="export-css-linear-max-stops-tooltip"
+        max="500"
+        min="2"
+        name="max-stops"
+        value="75"
       />
     </div>
     <sv-tooltip id="export-css-linear-max-stops-tooltip" side="block-start">
@@ -29,32 +29,32 @@
     </sv-tooltip>
 
     <canvas
-      class="export-plot"
       id="export-css-linear-plot"
-      aria-label="The curve the exported stops rebuild"
+      class="export-plot"
       aria-describedby="export-css-linear-plot-tooltip"
+      aria-label="The curve the exported stops rebuild"
       data-sv-tooltip="export-css-linear-plot-tooltip"
     ></canvas>
     <sv-tooltip id="export-css-linear-plot-tooltip" side="inline-end">
       A preview of the exported easing. If it still matches the curve you drew, you have enough points.
     </sv-tooltip>
 
-    <sv-segmented-control class="export-format" id="export-css-linear-format" value="css" aria-label="Output format">
-      <button value="css">CSS</button>
-      <button value="tailwind">Tailwind</button>
+    <sv-segmented-control id="export-css-linear-format" class="export-format" aria-label="Output format" value="css">
+      <button type="submit" value="css">CSS</button>
+      <button type="submit" value="tailwind">Tailwind</button>
     </sv-segmented-control>
 
     <sv-code-editor
-      class="export-code-preview"
       id="export-css-linear-code-preview"
-      linenumbers
+      class="export-code-preview"
       copy-button
-      wrap-button
-      readonly
       expand
+      linenumbers
+      readonly
       wrap
+      wrap-button
     ></sv-code-editor>
 
-    <button class="export-btn" id="export-css-linear-copy-btn">Copy</button>
+    <button id="export-css-linear-copy-btn" type="submit" class="export-btn">Copy</button>
   </div>
 </sv-dialog>

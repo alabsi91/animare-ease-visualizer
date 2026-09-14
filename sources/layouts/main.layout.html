@@ -2,48 +2,46 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark light" />
-    <!-- Firefox has no support for this, and the app works without it. -->
-    <!-- eslint-disable-next-line html/use-baseline -->
-    <meta name="theme-color" content="#faf7fd" media="(prefers-color-scheme: light)" />
-    <!-- eslint-disable-next-line html/use-baseline -->
-    <meta name="theme-color" content="#131016" media="(prefers-color-scheme: dark)" />
-    <link rel="canonical" href="https://ease.a-labs.space/" />
-    <link rel="stylesheet" href="@styles/main.css" bundle inline />
-    <!-- Safari supports this only since 17, and the app works without it. -->
-    <!-- eslint-disable-next-line html/use-baseline -->
-    <link rel="manifest" href="@assets/favicon/manifest.json" />
-    <link rel="icon" href="@assets/favicon/favicon.ico" sizes="any" />
-    <link rel="apple-touch-icon" href="@assets/favicon/apple-touch-icon.png" />
-    <meta
-      name="description"
-      content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
-    />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Advanced easing editor — draw and export easing curves</title>
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Advanced easing editor" />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="https://ease.a-labs.space/" />
-    <meta property="og:title" content="Advanced easing editor — draw and export easing curves" />
+    <link bundle href="@styles/main.css" inline rel="stylesheet" />
+    <meta content="dark light" name="color-scheme" />
+    <!--eslint-disable-next-line html/use-baseline -->
+    <meta content="#faf7fd" media="(prefers-color-scheme: light)" name="theme-color" />
+    <!--eslint-disable-next-line html/use-baseline -->
+    <meta content="#131016" media="(prefers-color-scheme: dark)" name="theme-color" />
+    <link href="https://ease.a-labs.space/" rel="canonical" />
+    <!--eslint-disable-next-line html/use-baseline -->
+    <link href="@assets/favicon/manifest.json" rel="manifest" />
+    <link href="@assets/favicon/favicon.ico" rel="icon" sizes="any" />
+    <link href="@assets/favicon/apple-touch-icon.png" rel="apple-touch-icon" />
     <meta
+      content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
+      name="description"
+    />
+
+    <meta content="website" property="og:type" />
+    <meta content="Advanced easing editor" property="og:site_name" />
+    <meta content="en_US" property="og:locale" />
+    <meta content="https://ease.a-labs.space/" property="og:url" />
+    <meta content="Advanced easing editor — draw and export easing curves" property="og:title" />
+    <meta
+      content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
       property="og:description"
-      content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
     />
-    <meta property="og:image" content="https://ease.a-labs.space/banner.png" />
-    <meta property="og:image:width" content="2400" />
-    <meta property="og:image:height" content="1260" />
-    <meta property="og:image:alt" content="An easing curve plotted on the editor grid" />
+    <meta content="https://ease.a-labs.space/banner.png" property="og:image" />
+    <meta content="2400" property="og:image:width" />
+    <meta content="1260" property="og:image:height" />
+    <meta content="An easing curve plotted on the editor grid" property="og:image:alt" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Advanced easing editor — draw and export easing curves" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Advanced easing editor — draw and export easing curves" name="twitter:title" />
     <meta
-      name="twitter:description"
       content="Draw easing curves on a visual graph, preview them on a live shape, and export to CSS, GSAP, SVG, JavaScript, Flutter, Jetpack Compose, iOS and Android."
+      name="twitter:description"
     />
-    <meta name="twitter:image" content="https://ease.a-labs.space/banner.png" />
-    <meta name="twitter:image:alt" content="An easing curve plotted on the editor grid" />
+    <meta content="https://ease.a-labs.space/banner.png" name="twitter:image" />
+    <meta content="An easing curve plotted on the editor grid" name="twitter:image:alt" />
   </head>
   <slot />
 

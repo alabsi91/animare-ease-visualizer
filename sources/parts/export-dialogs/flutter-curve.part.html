@@ -1,27 +1,27 @@
-<sv-dialog class="export-dialog" id="export-flutter-dialog" aria-labelledby="export-flutter-title" close-button>
-  <h1 class="export-dialog-title" id="export-flutter-title">Export as Flutter curve</h1>
+<sv-dialog id="export-flutter-dialog" class="export-dialog" aria-labelledby="export-flutter-title" close-button>
+  <h1 id="export-flutter-title" class="export-dialog-title">Export as Flutter curve</h1>
 
-  <div class="warning" id="export-flutter-warning" hidden></div>
+  <div id="export-flutter-warning" class="warning" hidden></div>
 
   <div class="content">
     <div class="label-input-container">
       <label for="export-flutter-name">Name</label>
-      <input type="text" name="name" id="export-flutter-name" autocomplete="off" value="CustomEasing" />
+      <input id="export-flutter-name" type="text" autocomplete="off" name="name" value="CustomEasing" />
     </div>
 
     <sv-code-editor
-      class="export-code-preview"
       id="export-flutter-code-preview"
-      linenumbers
+      class="export-code-preview"
       copy-button
-      wrap-button
-      readonly
       expand
+      linenumbers
+      readonly
+      wrap-button
     ></sv-code-editor>
 
     <div class="export-buttons-container">
-      <button class="export-btn" id="export-flutter-copy-btn">Copy</button>
-      <button class="export-btn" id="export-flutter-download-btn">Download</button>
+      <button id="export-flutter-copy-btn" type="submit" class="export-btn">Copy</button>
+      <button id="export-flutter-download-btn" type="submit" class="export-btn">Download</button>
     </div>
   </div>
 </sv-dialog>

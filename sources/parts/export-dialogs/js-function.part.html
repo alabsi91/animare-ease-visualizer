@@ -1,37 +1,37 @@
-<sv-dialog class="export-dialog" id="export-js-function-dialog" aria-labelledby="export-js-function-title" close-button>
-  <h1 class="export-dialog-title" id="export-js-function-title">Export as JavaScript function</h1>
+<sv-dialog id="export-js-function-dialog" class="export-dialog" aria-labelledby="export-js-function-title" close-button>
+  <h1 id="export-js-function-title" class="export-dialog-title">Export as JavaScript function</h1>
 
-  <div class="warning" id="export-js-function-warning" hidden></div>
+  <div id="export-js-function-warning" class="warning" hidden></div>
 
   <div class="content">
     <div class="label-input-container">
       <label for="export-js-function-samples">Samples</label>
-      <input type="number" name="samples" id="export-js-function-samples" autocomplete="off" value="100" />
+      <input id="export-js-function-samples" type="number" autocomplete="off" name="samples" value="100" />
     </div>
 
     <div class="label-input-container">
       <label for="export-js-function-name">Name</label>
-      <input type="text" name="name" id="export-js-function-name" autocomplete="off" value="customEasing" />
+      <input id="export-js-function-name" type="text" autocomplete="off" name="name" value="customEasing" />
     </div>
 
-    <sv-segmented-control class="export-format" id="export-js-function-target" value="javascript" aria-label="Target">
-      <button value="javascript">Java&#8203;Script</button>
-      <button value="after-effects">After Effects</button>
+    <sv-segmented-control id="export-js-function-target" class="export-format" aria-label="Target" value="javascript">
+      <button type="submit" value="javascript">Java&#8203;Script</button>
+      <button type="submit" value="after-effects">After Effects</button>
     </sv-segmented-control>
 
     <sv-code-editor
-      class="export-code-preview"
       id="export-js-function-code-preview"
-      linenumbers
+      class="export-code-preview"
       copy-button
-      wrap-button
-      readonly
       expand
+      linenumbers
+      readonly
+      wrap-button
     ></sv-code-editor>
 
     <div class="export-buttons-container">
-      <button class="export-btn" id="export-js-function-copy-btn">Copy</button>
-      <button class="export-btn" id="export-js-function-download-btn">Download</button>
+      <button id="export-js-function-copy-btn" type="submit" class="export-btn">Copy</button>
+      <button id="export-js-function-download-btn" type="submit" class="export-btn">Download</button>
     </div>
   </div>
 </sv-dialog>

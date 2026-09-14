@@ -1,34 +1,36 @@
 <div class="side-panel custom-scrollbar">
   <div class="panel-container">
     <div class="hide-panel-btn-container">
-      <div style="display: flex; gap: 1em; align-items: center;">
+      <div class="panel-actions-container">
         <part
           src="@parts/color-scheme-switch/color-scheme-switch.part.html"
-          tooltipId="color-scheme-tooltip"
-          tooltipSide="block-end"
+          tooltipid="color-scheme-tooltip"
+          tooltipside="block-end"
         ></part>
 
         <button
+          type="submit"
           class="icon-btn open-help-dialog"
-          data-dialog-open="help-dialog"
-          aria-label="Open the help dialog"
-          data-sv-tooltip="help-tooltip"
           aria-describedby="help-tooltip"
+          aria-label="Open the help dialog"
+          data-dialog-open="help-dialog"
+          data-sv-tooltip="help-tooltip"
         >
-          <svg src="@assets/help.svg" aria-hidden="true" inline></svg>
+          <svg aria-hidden="true" inline src="@assets/help.svg"></svg>
         </button>
         <sv-tooltip id="help-tooltip" side="block-end">Help</sv-tooltip>
 
-        <part src="@parts/github-link/github-link.part.html" tooltipId="github-tooltip" tooltipSide="block-end"></part>
+        <part src="@parts/github-link/github-link.part.html" tooltipid="github-tooltip" tooltipside="block-end"></part>
       </div>
 
       <button
+        type="submit"
         class="toggle-panel-btn hide-panel-btn"
+        aria-describedby="hide-panel-tooltip"
         aria-label="Hide side panel"
         data-sv-tooltip="hide-panel-tooltip"
-        aria-describedby="hide-panel-tooltip"
       >
-        <svg src="@assets/hide-panle.svg" aria-hidden="true" inline></svg>
+        <svg aria-hidden="true" inline src="@assets/hide-panle.svg"></svg>
       </button>
       <sv-tooltip id="hide-panel-tooltip" side="inline-end">Hide side panel</sv-tooltip>
     </div>
@@ -37,49 +39,53 @@
 
     <div class="controls-container">
       <button
+        type="submit"
         class="control-btn play-btn"
+        aria-describedby="play-tooltip"
         aria-label="Play animation"
         data-sv-tooltip="play-tooltip"
-        aria-describedby="play-tooltip"
       >
-        <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+        <svg class="control-btn-icon" aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
           <path d="M320-200v-560l440 280-440 280Z" />
         </svg>
       </button>
       <sv-tooltip id="play-tooltip" side="block-end">Play</sv-tooltip>
 
       <button
+        type="submit"
         class="control-btn pause-btn"
+        aria-describedby="pause-tooltip"
         aria-label="Pause animation"
         data-sv-tooltip="pause-tooltip"
-        aria-describedby="pause-tooltip"
       >
-        <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+        <svg class="control-btn-icon" aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
           <path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
         </svg>
       </button>
       <sv-tooltip id="pause-tooltip" side="block-end">Pause</sv-tooltip>
 
       <button
+        type="submit"
         class="control-btn stop-btn"
+        aria-describedby="stop-tooltip"
         aria-label="Stop animation"
         data-sv-tooltip="stop-tooltip"
-        aria-describedby="stop-tooltip"
       >
-        <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+        <svg class="control-btn-icon" aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
           <path d="M240-240v-480h480v480H240Z" />
         </svg>
       </button>
       <sv-tooltip id="stop-tooltip" side="block-end">Stop</sv-tooltip>
 
       <button
+        type="submit"
         class="control-btn"
-        data-dialog-open="preview-dialog"
-        aria-label="Open the preview"
-        data-sv-tooltip="preview-tooltip"
         aria-describedby="preview-tooltip"
+        aria-label="Open the preview"
+        data-dialog-open="preview-dialog"
+        data-sv-tooltip="preview-tooltip"
       >
-        <svg class="control-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+        <svg class="control-btn-icon" aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"
           />
@@ -89,8 +95,8 @@
     </div>
 
     <br />
-    <sv-slider class="progress-slider" value="0" aria-label="Progress seek" step="0.01" thumb-contained disabled>
-      <span slot="thumb-1" aria-hidden="true"></span>
+    <sv-slider class="progress-slider" aria-label="Progress seek" disabled step="0.01" thumb-contained value="0">
+      <span aria-hidden="true" slot="thumb-1"></span>
     </sv-slider>
 
     <div class="divider"></div>
@@ -101,17 +107,18 @@
 
     <div class="presets-menu-container">
       <div class="presets-row">
-        <sv-combobox class="presets-menu" aria-label="Presets" placeholder="Presets">
+        <sv-combobox class="presets-menu" aria-label="Presets" autocomplete="off" placeholder="Presets">
           <sv-flyout></sv-flyout>
         </sv-combobox>
 
         <button
+          type="submit"
           class="preset-delete-btn"
+          aria-describedby="delete-preset-tooltip"
           aria-label="Delete the selected preset"
           data-sv-tooltip="delete-preset-tooltip"
-          aria-describedby="delete-preset-tooltip"
         >
-          <svg class="preset-delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="preset-delete-icon" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
           </svg>
         </button>
@@ -120,15 +127,23 @@
       <sv-tooltip id="delete-preset-tooltip" side="block-end">Delete the selected preset</sv-tooltip>
 
       <div class="save-preset-container">
-        <input type="text" name="preset-name" class="save-preset-name-input" placeholder="Preset name" />
+        <input
+          type="text"
+          class="save-preset-name-input"
+          aria-label="Preset name"
+          autocomplete="off"
+          name="preset-name"
+          placeholder="Preset name"
+        />
         <button
+          type="submit"
           class="save-preset-btn"
-          aria-label="Save preset"
-          disabled
-          data-sv-tooltip="save-preset-tooltip"
           aria-describedby="save-preset-tooltip"
+          aria-label="Save preset"
+          data-sv-tooltip="save-preset-tooltip"
+          disabled
         >
-          <svg class="save-preset-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+          <svg class="save-preset-btn-icon" aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h447q16 0 30.5 6t25.5 17l114 114q11 11 17 25.5t6 30.5v447q0 33-23.5 56.5T760-120H200Zm365-155q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35ZM280-560h280q17 0 28.5-11.5T600-600v-80q0-17-11.5-28.5T560-720H280q-17 0-28.5 11.5T240-680v80q0 17 11.5 28.5T280-560Z"
             />
@@ -142,33 +157,33 @@
       <div class="export-container">
         <sv-menu class="export-menu">
           <sv-flyout>
-            <button class="export-trigger-btn" slot="trigger" type="button">
+            <button type="button" class="export-trigger-btn" slot="trigger">
               <span>Export</span>
             </button>
 
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-css-linear-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-css-linear-dialog" role="menuitem">
               CSS Linear
             </button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-css-keyframe-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-css-keyframe-dialog" role="menuitem">
               CSS Keyframe
             </button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-svg-dialog">SVG Path</button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-gsap-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-svg-dialog" role="menuitem">SVG Path</button>
+            <button type="button" class="export-menu-btn" data-dialog-open="export-gsap-dialog" role="menuitem">
               GSAP CustomEase
             </button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-android-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-android-dialog" role="menuitem">
               Android Interpolator
             </button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-compose-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-compose-dialog" role="menuitem">
               Jetpack Compose
             </button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-ios-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-ios-dialog" role="menuitem">
               iOS Keyframes
             </button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-flutter-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-flutter-dialog" role="menuitem">
               Flutter Curve
             </button>
-            <button class="export-menu-btn" type="button" role="menuitem" data-dialog-open="export-js-function-dialog">
+            <button type="button" class="export-menu-btn" data-dialog-open="export-js-function-dialog" role="menuitem">
               JS Function
             </button>
           </sv-flyout>
@@ -192,13 +207,13 @@
 
     <div class="checkbox-label-container" data-sv-tooltip="snap-to-grid-tooltip">
       <label for="snap-to-grid-toggle">Enable snapping to grid</label>
-      <sv-toggle-checkbox id="snap-to-grid-toggle" checked aria-describedby="snap-to-grid-tooltip"></sv-toggle-checkbox>
+      <sv-toggle-checkbox id="snap-to-grid-toggle" aria-describedby="snap-to-grid-tooltip" checked></sv-toggle-checkbox>
     </div>
     <sv-tooltip id="snap-to-grid-tooltip" side="inline-end">Enable snapping to the grid visible lines</sv-tooltip>
 
     <div class="checkbox-label-container" data-sv-tooltip="snap-to-points-tooltip">
       <label for="snap-to-points-toggle">Enable snapping to points</label>
-      <sv-toggle-checkbox id="snap-to-points-toggle" checked aria-describedby="snap-to-points-tooltip"></sv-toggle-checkbox>
+      <sv-toggle-checkbox id="snap-to-points-toggle" aria-describedby="snap-to-points-tooltip" checked></sv-toggle-checkbox>
     </div>
     <sv-tooltip id="snap-to-points-tooltip" side="inline-end">
       Enable snapping to points and their horizontal/vertical guide lines
@@ -206,7 +221,7 @@
 
     <div class="input-label-container">
       <label for="duration-input">Animation duration</label>
-      <input type="number" name="duration" id="duration-input" value="2000" />
+      <input id="duration-input" type="number" autocomplete="off" name="duration" value="2000" />
     </div>
 
     <div class="divider"></div>
@@ -215,13 +230,13 @@
       <h2 class="panel-title">SVG Path</h2>
 
       <button
-        class="icon-btn"
         type="button"
+        class="icon-btn"
+        aria-describedby="svg-path-tooltip"
         aria-label="About the SVG path"
         data-sv-tooltip="svg-path-tooltip"
-        aria-describedby="svg-path-tooltip"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+        <svg aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"
           />
@@ -229,7 +244,7 @@
       </button>
     </div>
 
-    <sv-tooltip id="svg-path-tooltip" trigger="click" side="inline-end">
+    <sv-tooltip id="svg-path-tooltip" side="inline-end" trigger="click">
       The curve as an SVG path. Edit it here or paste one in to draw it, following
       <code>M x y C cx1 cy1 cx2 cy2 x y</code>
       .

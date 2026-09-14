@@ -9,7 +9,7 @@ import globals from "globals";
 import tsEslint from "typescript-eslint";
 
 export default defineConfig(
-  globalIgnores(["dist", "scripts", "eslint.config.mjs", "sources/graph-editor/types"]),
+  globalIgnores(["dist", "eslint.config.mjs", "sources/graph-editor/types"]),
 
   {
     files: ["sources/**/*.{ts,html,css}", "pages/**/*.html", ".staticbolt.ts"],
@@ -51,10 +51,12 @@ export default defineConfig(
   {
     files: ["sources/**/*.html", "pages/**/*.html"],
     plugins: { html },
-    extends: ["html/recommended"],
+    extends: ["html/all"],
     languageOptions: { parser: html.parser },
     language: "html/html",
     rules: {
+      "html/id-naming-convention": "off",
+      "html/svg-require-viewbox": "off",
       "html/attrs-newline": "off",
       "html/no-extra-spacing-attrs": "off",
       "html/no-extra-spacing-tags": "off",

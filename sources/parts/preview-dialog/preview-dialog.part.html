@@ -1,5 +1,5 @@
-<sv-dialog class="preview-dialog" id="preview-dialog" aria-labelledby="preview-dialog-title" close-button>
-  <h1 class="preview-dialog-title" id="preview-dialog-title">Preview</h1>
+<sv-dialog id="preview-dialog" class="preview-dialog" aria-labelledby="preview-dialog-title" close-button>
+  <h1 id="preview-dialog-title" class="preview-dialog-title">Preview</h1>
 
   <div class="preview-stage">
     <div class="preview-shape"></div>
@@ -7,13 +7,13 @@
 
   <div class="preview-buttons">
     <button
-      class="preview-play-btn"
       type="button"
+      class="preview-play-btn"
+      aria-describedby="preview-play-tooltip"
       aria-label="Play the preview"
       data-sv-tooltip="preview-play-tooltip"
-      aria-describedby="preview-play-tooltip"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+      <svg aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
         <path class="preview-play-icon" d="M320-200v-560l440 280-440 280Z" />
       </svg>
     </button>
@@ -21,24 +21,24 @@
 
     <sv-slider
       class="preview-progress-slider"
-      min="0"
-      max="100"
-      step="0.1"
-      value="0"
       aria-label="Preview progress"
+      max="100"
+      min="0"
+      step="0.1"
       thumb-contained
+      value="0"
     >
       <span slot="thumb-1"></span>
     </sv-slider>
 
     <sv-toggle
       class="preview-loop-toggle"
-      pressed
+      aria-describedby="preview-loop-tooltip"
       aria-label="Loop the preview"
       data-sv-tooltip="preview-loop-tooltip"
-      aria-describedby="preview-loop-tooltip"
+      pressed
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+      <svg aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M280-80 120-240l160-160 56 58-62 62h406v-160h80v240H274l62 62-56 58Zm-80-440v-240h486l-62-62 56-58 160 160-160 160-56-58 62-62H280v160h-80Z"
         />
@@ -51,49 +51,50 @@
     <span>Duration</span>
     <sv-slider
       class="preview-duration-slider"
-      min="100"
-      max="5000"
-      step="50"
-      value="1000"
       aria-label="Preview duration"
+      max="5000"
+      min="100"
+      step="50"
       thumb-contained
+      value="1000"
     >
-      <span slot="thumb-1" aria-hidden="true"></span>
+      <span aria-hidden="true" slot="thumb-1"></span>
     </sv-slider>
     <input
       type="number"
       class="preview-duration-input"
-      name="preview-duration"
-      min="100"
+      aria-label="Preview duration in milliseconds"
+      autocomplete="off"
       max="5000"
+      min="100"
+      name="preview-duration"
       step="50"
       value="1000"
-      aria-label="Preview duration in milliseconds"
     />
   </label>
 
   <div class="divider"></div>
 
   <div class="preview-properties">
-    <div class="preview-property-group" role="group" aria-label="Position">
+    <div class="preview-property-group" aria-label="Position" role="group">
       <sv-toggle class="preview-property-toggle" data-property="moveX" pressed>
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M3 12h18M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" />
         </svg>
         Move X
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="moveY">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M12 3v18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3" />
         </svg>
         Move Y
       </sv-toggle>
     </div>
 
-    <div class="preview-property-group" role="group" aria-label="Size">
+    <div class="preview-property-group" aria-label="Size" role="group">
       <sv-toggle class="preview-property-toggle" data-property="scale">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M9 9h6v6H9z" />
           <path d="M4 4l3 3M4 4v3M4 4h3M20 20l-3-3M20 20v-3M20 20h-3" />
         </svg>
@@ -101,44 +102,44 @@
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="scaleX">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M4 5v14M20 5v14M9 12h6M9 12l2-2M9 12l2 2M15 12l-2-2M15 12l-2 2" />
         </svg>
         Scale X
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="scaleY">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M5 4h14M5 20h14M12 9v6M12 9l-2 2M12 9l2 2M12 15l-2-2M12 15l2-2" />
         </svg>
         Scale Y
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="width">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M3 12h18M3 8v8M21 8v8" />
         </svg>
         Width
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="height">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M12 3v18M8 3h8M8 21h8" />
         </svg>
         Height
       </sv-toggle>
     </div>
 
-    <div class="preview-property-group" role="group" aria-label="Rotation">
+    <div class="preview-property-group" aria-label="Rotation" role="group">
       <sv-toggle class="preview-property-toggle" data-property="rotate">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M20 12a8 8 0 1 1-2.3-5.6M20 3v4h-4" />
         </svg>
         Rotate
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="rotateX">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <ellipse cx="12" cy="12" rx="9" ry="4.5" />
           <path d="M12 4v16" />
         </svg>
@@ -146,7 +147,7 @@
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="rotateY">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <ellipse cx="12" cy="12" rx="4.5" ry="9" />
           <path d="M4 12h16" />
         </svg>
@@ -154,31 +155,31 @@
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="skew">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M9 5h11l-5 14H4z" />
         </svg>
         Skew
       </sv-toggle>
     </div>
 
-    <div class="preview-property-group" role="group" aria-label="Appearance">
+    <div class="preview-property-group" aria-label="Appearance" role="group">
       <sv-toggle class="preview-property-toggle" data-property="opacity">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M5 5h14v14H5z" />
-          <path d="M12 5h7v14h-7z" fill="currentColor" stroke="none" opacity="0.45" />
+          <path d="M12 5h7v14h-7z" fill="currentColor" opacity="0.45" stroke="none" />
         </svg>
         Fade
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="radius">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M4 12a8 8 0 0 1 8-8h8v8a8 8 0 0 1-8 8H4z" />
         </svg>
         Round
       </sv-toggle>
 
       <sv-toggle class="preview-property-toggle" data-property="color">
-        <svg class="preview-property-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="preview-property-icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M12 3a9 9 0 1 0 0 18 2.5 2.5 0 0 0 2-4 2.5 2.5 0 0 1 2-4h2a3 3 0 0 0 3-3 9 9 0 0 0-9-7Z" />
           <circle cx="7.5" cy="12.5" r="1.2" />
           <circle cx="10" cy="8" r="1.2" />

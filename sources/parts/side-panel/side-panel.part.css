@@ -62,6 +62,12 @@
   justify-content: space-between;
 }
 
+.panel-actions-container {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+
 .hide-panel-btn {
   translate: 35% 0;
 }

@@ -2,13 +2,13 @@
   <h2 class="panel-title">Generate</h2>
 
   <button
-    class="icon-btn"
     type="button"
+    class="icon-btn"
+    aria-describedby="ease-generator-tooltip"
     aria-label="About the generator"
     data-sv-tooltip="ease-generator-tooltip"
-    aria-describedby="ease-generator-tooltip"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+    <svg aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"
       />
@@ -16,7 +16,7 @@
   </button>
 </div>
 
-<sv-tooltip id="ease-generator-tooltip" trigger="click" side="inline-end">
+<sv-tooltip id="ease-generator-tooltip" side="inline-end" trigger="click">
   Build a curve from a spring, wobble, back or poly function. Drag the sliders to shape it, then edit the result like any other
   curve.
 </sv-tooltip>
@@ -24,7 +24,7 @@
 <br />
 
 <div class="ease-generator">
-  <sv-combobox class="ease-generator-menu" aria-label="Easing function" placeholder="Pick a function">
+  <sv-combobox class="ease-generator-menu" aria-label="Easing function" autocomplete="off" placeholder="Pick a function">
     <sv-flyout></sv-flyout>
   </sv-combobox>
 
@@ -36,7 +36,7 @@
     <span class="ease-generator-param-label"></span>
     <span class="ease-generator-param-value"></span>
     <sv-slider thumb-contained>
-      <span slot="thumb-1" aria-hidden="true"></span>
+      <span aria-hidden="true" slot="thumb-1"></span>
     </sv-slider>
   </label>
 </template>
