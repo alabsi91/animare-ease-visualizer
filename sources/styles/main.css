@@ -5,6 +5,7 @@
 @import url("@parts/small-side-panel/small-side-panel.part.css");
 @import url("@parts/github-link/github-link.part.css");
 @import url("@parts/color-scheme-switch/color-scheme-switch.part.css");
+@import url("@parts/theme-menu/theme-menu.part.css");
 @import url("@parts/export-dialogs/export-dialogs.part.css");
 @import url("@parts/help-dialog/help-dialog.part.css");
 @import url("@parts/preview-dialog/preview-dialog.part.css");

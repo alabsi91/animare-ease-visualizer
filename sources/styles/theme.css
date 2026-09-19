@@ -4,21 +4,60 @@
   --sb-hue-secondary: 300;
   --sb-hue-base: 305;
 
+  /* Chroma */
+  --sb-chroma-scale: 1;
+
   /* Grayscale */
-  --sb-color-gray-0: light-dark(oklch(30% 0.034 var(--sb-hue-base)), oklch(90% 0.017 var(--sb-hue-base)));
-  --sb-color-gray-1: light-dark(oklch(36% 0.038 var(--sb-hue-base)), oklch(80% 0.03 var(--sb-hue-base)));
-  --sb-color-gray-2: light-dark(oklch(36% 0.038 var(--sb-hue-base)), oklch(80% 0.03 var(--sb-hue-base)));
-  --sb-color-gray-3: light-dark(oklch(44% 0.034 var(--sb-hue-base)), oklch(65% 0.028 var(--sb-hue-base)));
-  --sb-color-gray-4: light-dark(oklch(66% 0.03 var(--sb-hue-base)), oklch(48% 0.024 var(--sb-hue-base)));
-  --sb-color-gray-5: light-dark(oklch(88% 0.023 var(--sb-hue-base)), oklch(29% 0.02 var(--sb-hue-base)));
-  --sb-color-gray-6: light-dark(oklch(93% 0.017 var(--sb-hue-base)), oklch(23% 0.017 var(--sb-hue-base)));
-  --sb-color-gray-7: light-dark(oklch(96% 0.012 var(--sb-hue-base)), oklch(20.5% 0.014 var(--sb-hue-base)));
-  --sb-color-black: light-dark(oklch(98% 0.009 var(--sb-hue-base)), oklch(18% 0.012 var(--sb-hue-base)));
+  --sb-color-gray-0: light-dark(
+    oklch(30% calc(0.034 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(90% calc(0.017 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-gray-1: light-dark(
+    oklch(36% calc(0.038 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(80% calc(0.03 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-gray-2: light-dark(
+    oklch(36% calc(0.038 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(80% calc(0.03 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-gray-3: light-dark(
+    oklch(44% calc(0.034 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(65% calc(0.028 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-gray-4: light-dark(
+    oklch(66% calc(0.03 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(48% calc(0.024 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-gray-5: light-dark(
+    oklch(88% calc(0.023 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(29% calc(0.02 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-gray-6: light-dark(
+    oklch(93% calc(0.017 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(23% calc(0.017 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-gray-7: light-dark(
+    oklch(96% calc(0.012 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(20.5% calc(0.014 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
+  --sb-color-black: light-dark(
+    oklch(98% calc(0.009 * var(--sb-chroma-scale)) var(--sb-hue-base)),
+    oklch(18% calc(0.012 * var(--sb-chroma-scale)) var(--sb-hue-base))
+  );
 
   /* Colors */
-  --sb-color-accent: light-dark(oklch(63% 0.1197 var(--sb-hue-accent)), oklch(63% 0.105 var(--sb-hue-accent)));
-  --sb-color-accent-low: light-dark(oklch(50% 0.1 var(--sb-hue-accent)), oklch(40% 0.1 var(--sb-hue-accent)));
-  --sb-color-secondary: light-dark(oklch(58% 0.13 var(--sb-hue-secondary)), oklch(70% 0.12 var(--sb-hue-secondary)));
+  --sb-color-accent: light-dark(
+    oklch(63% calc(0.1197 * var(--sb-chroma-scale)) var(--sb-hue-accent)),
+    oklch(63% calc(0.105 * var(--sb-chroma-scale)) var(--sb-hue-accent))
+  );
+  --sb-color-accent-low: light-dark(
+    oklch(50% calc(0.1 * var(--sb-chroma-scale)) var(--sb-hue-accent)),
+    oklch(40% calc(0.1 * var(--sb-chroma-scale)) var(--sb-hue-accent))
+  );
+  --sb-color-secondary: light-dark(
+    oklch(58% calc(0.13 * var(--sb-chroma-scale)) var(--sb-hue-secondary)),
+    oklch(70% calc(0.12 * var(--sb-chroma-scale)) var(--sb-hue-secondary))
+  );
   --sb-color-text: var(--sb-color-gray-2);
 
   /* Alert Colors */
@@ -56,6 +95,53 @@
     --base-font-size: 12px;
     --sz-panel-icon: 22px;
   }
+}
+
+[data-theme] {
+  --sb-chroma-scale: 1;
+}
+
+[data-theme="gold"] {
+  --sb-hue-accent: 85;
+  --sb-hue-secondary: 300;
+  --sb-hue-base: 305;
+}
+
+[data-theme="ocean"] {
+  --sb-hue-accent: 235;
+  --sb-hue-secondary: 195;
+  --sb-hue-base: 250;
+}
+
+[data-theme="forest"] {
+  --sb-hue-accent: 150;
+  --sb-hue-secondary: 100;
+  --sb-hue-base: 155;
+}
+
+[data-theme="sunset"] {
+  --sb-hue-accent: 55;
+  --sb-hue-secondary: 25;
+  --sb-hue-base: 40;
+}
+
+[data-theme="rose"] {
+  --sb-hue-accent: 10;
+  --sb-hue-secondary: 330;
+  --sb-hue-base: 350;
+}
+
+[data-theme="violet"] {
+  --sb-hue-accent: 295;
+  --sb-hue-secondary: 255;
+  --sb-hue-base: 300;
+}
+
+[data-theme="mono"] {
+  --sb-hue-accent: 0;
+  --sb-hue-secondary: 0;
+  --sb-hue-base: 0;
+  --sb-chroma-scale: 0;
 }
 
 [dir="rtl"] {

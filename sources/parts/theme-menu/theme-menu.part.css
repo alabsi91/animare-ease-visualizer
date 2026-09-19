@@ -1,0 +1,47 @@
+.theme-menu {
+  display: block;
+  line-height: 0;
+
+  sv-flyout::part(content) {
+    min-inline-size: 10rem;
+  }
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: row;
+  gap: 0.6em;
+  align-items: center;
+  padding: 0.5em;
+  font-size: 1rem;
+  color: var(--sb-color-text);
+  text-align: start;
+  cursor: pointer;
+  background-color: unset;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 100ms ease;
+
+  &[aria-checked="true"] {
+    background-color: var(--sb-color-gray-5);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--sb-color-gray-5);
+    }
+  }
+}
+
+.theme-swatch {
+  flex: none;
+  inline-size: 1.2em;
+  block-size: 1.2em;
+  background: conic-gradient(
+    oklch(70% calc(0.14 * var(--sb-chroma-scale)) var(--sb-hue-accent)) 0deg 90deg,
+    oklch(64% calc(0.13 * var(--sb-chroma-scale)) var(--sb-hue-secondary)) 90deg 180deg,
+    oklch(45% calc(0.1 * var(--sb-chroma-scale)) var(--sb-hue-accent)) 180deg 270deg,
+    oklch(85% calc(0.02 * var(--sb-chroma-scale)) var(--sb-hue-base)) 270deg 360deg
+  );
+  border-radius: 50%;
+}

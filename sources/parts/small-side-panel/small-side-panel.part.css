@@ -73,6 +73,12 @@
     }
   }
 
+  @media screen and (max-width: 340px) {
+    .theme-menu {
+      display: none;
+    }
+  }
+
   .small-panel-controls-btn {
     display: block;
     padding: 0.5em;
