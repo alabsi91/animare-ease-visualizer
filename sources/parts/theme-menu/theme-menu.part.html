@@ -63,74 +63,76 @@
 
 <insert selector="head">
   <script type="application/x-typescript">
-    const STORAGE_KEY = "theme";
-    const DEFAULT_THEME = "gold";
+    {
+      const STORAGE_KEY = "theme";
+      const DEFAULT_THEME = "gold";
 
-    document.documentElement.dataset.theme = window.localStorage.getItem(STORAGE_KEY) ?? DEFAULT_THEME;
+      document.documentElement.dataset.theme = window.localStorage.getItem(STORAGE_KEY) ?? DEFAULT_THEME;
 
-    function markCheckedOption(options: NodeListOf<HTMLButtonElement>, theme: string) {
-      for (const option of options) {
-        option.setAttribute("aria-checked", String(option.dataset.theme === theme));
-      }
-    }
-
-    function getAccentHexColor() {
-      const probe = document.createElement("span");
-      probe.style.color = "var(--sb-color-accent)";
-      document.body.append(probe);
-      const accentColor = window.getComputedStyle(probe).color;
-      probe.remove();
-
-      const canvas = document.createElement("canvas");
-      canvas.width = 1;
-      canvas.height = 1;
-
-      const context = canvas.getContext("2d")!;
-      context.fillStyle = accentColor;
-      context.fillRect(0, 0, 1, 1);
-
-      const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
-      return "#" + [red, green, blue].map(channel => channel.toString(16).padStart(2, "0")).join("");
-    }
-
-    const faviconLink = document.querySelector<HTMLLinkElement>('link[rel="icon"][type="image/svg+xml"]');
-    const faviconHref = faviconLink?.href;
-    let faviconDocument: Document | undefined;
-
-    async function paintFavicon() {
-      if (!faviconLink || !faviconHref) return;
-
-      if (!faviconDocument) {
-        const response = await fetch(faviconHref);
-        faviconDocument = new DOMParser().parseFromString(await response.text(), "image/svg+xml");
+      function markCheckedOption(options: NodeListOf<HTMLButtonElement>, theme: string) {
+        for (const option of options) {
+          option.setAttribute("aria-checked", String(option.dataset.theme === theme));
+        }
       }
 
-      faviconDocument.getElementById("favicon-tile")!.setAttribute("fill", getAccentHexColor());
+      function getAccentHexColor() {
+        const probe = document.createElement("span");
+        probe.style.color = "var(--sb-color-accent)";
+        document.body.append(probe);
+        const accentColor = window.getComputedStyle(probe).color;
+        probe.remove();
 
-      const markup = new XMLSerializer().serializeToString(faviconDocument);
-      faviconLink.href = "data:image/svg+xml," + encodeURIComponent(markup);
-    }
+        const canvas = document.createElement("canvas");
+        canvas.width = 1;
+        canvas.height = 1;
 
-    function setupThemeMenus() {
-      const options = document.querySelectorAll<HTMLButtonElement>(".theme-option");
+        const context = canvas.getContext("2d")!;
+        context.fillStyle = accentColor;
+        context.fillRect(0, 0, 1, 1);
 
-      markCheckedOption(options, document.documentElement.dataset.theme!);
-      paintFavicon();
-
-      for (const option of options) {
-        option.addEventListener("click", () => {
-          const theme = option.dataset.theme!;
-
-          document.documentElement.dataset.theme = theme;
-          window.localStorage.setItem(STORAGE_KEY, theme);
-          markCheckedOption(options, theme);
-          paintFavicon();
-        });
+        const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+        return "#" + [red, green, blue].map(channel => channel.toString(16).padStart(2, "0")).join("");
       }
 
-      document.addEventListener("color-scheme-changed", () => void paintFavicon());
-    }
+      const faviconLink = document.querySelector<HTMLLinkElement>('link[rel="icon"][type="image/svg+xml"]');
+      const faviconHref = faviconLink?.href;
+      let faviconDocument: Document | undefined;
 
-    document.addEventListener("DOMContentLoaded", setupThemeMenus, { once: true, passive: true });
+      async function paintFavicon() {
+        if (!faviconLink || !faviconHref) return;
+
+        if (!faviconDocument) {
+          const response = await fetch(faviconHref);
+          faviconDocument = new DOMParser().parseFromString(await response.text(), "image/svg+xml");
+        }
+
+        faviconDocument.getElementById("favicon-tile")!.setAttribute("fill", getAccentHexColor());
+
+        const markup = new XMLSerializer().serializeToString(faviconDocument);
+        faviconLink.href = "data:image/svg+xml," + encodeURIComponent(markup);
+      }
+
+      function setupThemeMenus() {
+        const options = document.querySelectorAll<HTMLButtonElement>(".theme-option");
+
+        markCheckedOption(options, document.documentElement.dataset.theme!);
+        paintFavicon();
+
+        for (const option of options) {
+          option.addEventListener("click", () => {
+            const theme = option.dataset.theme!;
+
+            document.documentElement.dataset.theme = theme;
+            window.localStorage.setItem(STORAGE_KEY, theme);
+            markCheckedOption(options, theme);
+            paintFavicon();
+          });
+        }
+
+        document.addEventListener("color-scheme-changed", () => void paintFavicon());
+      }
+
+      document.addEventListener("DOMContentLoaded", setupThemeMenus, { once: true, passive: true });
+    }
   </script>
 </insert>
