@@ -74,10 +74,11 @@
   #export-css-keyframe-property {
     --sv-gray-5: var(--sb-color-gray-5);
     --sv-gray-6: var(--sb-color-gray-7);
-    --sv-active-line-background: transparent;
-    --sv-active-line-outline: transparent;
+    --sv-code-editor-active-ln-bg: transparent;
+    --sv-code-editor-active-ln-bdr-clr: transparent;
+    --sv-code-editor-ln-height: 1.4;
     --sv-bdr-sz-sm: 1px;
-    --sv-padding: 0.5em;
+    --sv-code-editor-pad: 0.4em;
 
     min-inline-size: 0;
 

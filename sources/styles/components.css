@@ -63,20 +63,20 @@ sv-combobox {
 }
 
 sv-slider {
-  --sv-thickness: 2.325em;
-  --sv-thumb-size: 0.6em;
+  --sv-slider-track-thickness: 2.325em;
+  --sv-slider-thumb-sz: 0.6em;
 
   display: block;
 
   [slot="thumb-1"] {
     position: relative;
-    inline-size: var(--sv-thumb-size);
+    inline-size: var(--sv-slider-thumb-sz);
     block-size: 2.3em;
     background-color: var(--sv-accent-content);
     border: solid 1px #bdbdbd8c;
     border-radius: 10px;
-    transition-timing-function: var(--sv-ease);
-    transition-duration: var(--sv-dur);
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+    transition-duration: 300ms;
     transition-property: scale, background-color;
   }
 
@@ -91,7 +91,7 @@ sv-slider {
 }
 
 sv-toggle-checkbox {
-  --sv-checkbox-sz: 24px;
+  --sv-toggle-checkbox-sz: 24px;
   --sv-gray-6: transparent;
 }
 
