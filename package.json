@@ -2,7 +2,7 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "@staticview/ui": "^1.0.0-beta.3",
+    "@staticview/ui": "^1.0.0-beta.7",
     "animare": "beta",
     "highlight.js": "^11.12.0"
   },

@@ -52,7 +52,9 @@ function getSelectedTarget() {
 export function initJsFunctionExport() {
   exportElements.codePreview.highlighter = createHighlighter("javascript");
 
-  exportElements.exportJsFunctionDialog.addEventListener("opened", generateJsFunctionCode);
+  exportElements.exportJsFunctionDialog.addEventListener("openedchange", () => {
+    if (exportElements.exportJsFunctionDialog.opened) generateJsFunctionCode();
+  });
   exportElements.samplesInput.addEventListener("input", generateJsFunctionCode);
   exportElements.nameInput.addEventListener("input", generateJsFunctionCode);
   exportElements.copyBtn.addEventListener("click", copyJsFunctionCodeHandler);

@@ -20,7 +20,9 @@ const exportElements = {
 export function initFlutterCurveExport() {
   exportElements.codePreview.highlighter = createHighlighter("dart");
 
-  exportElements.dialog.addEventListener("opened", generateFlutterCurveCode);
+  exportElements.dialog.addEventListener("openedchange", () => {
+    if (exportElements.dialog.opened) generateFlutterCurveCode();
+  });
   exportElements.nameInput.addEventListener("input", generateFlutterCurveCode);
   exportElements.copyBtn.addEventListener("click", copyFlutterCurveCodeHandler);
   exportElements.downloadBtn.addEventListener("click", downloadDartFile);

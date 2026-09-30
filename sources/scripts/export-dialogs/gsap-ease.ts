@@ -14,7 +14,9 @@ const exportElements = {
 export function initGsapEaseExport() {
   exportElements.codePreview.highlighter = createHighlighter("javascript");
 
-  exportElements.dialog.addEventListener("opened", generateGsapEaseCode);
+  exportElements.dialog.addEventListener("openedchange", () => {
+    if (exportElements.dialog.opened) generateGsapEaseCode();
+  });
   exportElements.nameInput.addEventListener("input", generateGsapEaseCode);
   exportElements.copyBtn.addEventListener("click", copyGsapEaseCodeHandler);
 }

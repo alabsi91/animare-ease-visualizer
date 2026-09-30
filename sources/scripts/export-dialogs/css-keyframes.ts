@@ -23,10 +23,12 @@ const exportElements = {
 };
 
 export function initCssKeyframeExport() {
-  exportElements.dialog.addEventListener("opened", setHighlighters, { once: true });
+  exportElements.dialog.addEventListener("openedchange", setHighlighters, { once: true });
 
-  exportElements.dialog.addEventListener("opened", generateCssKeyframesCode);
-  exportElements.propertyInput.addEventListener("update", generateCssKeyframesCode);
+  exportElements.dialog.addEventListener("openedchange", () => {
+    if (exportElements.dialog.opened) generateCssKeyframesCode();
+  });
+  exportElements.propertyInput.addEventListener("valuechange", generateCssKeyframesCode);
   exportElements.maxKeyframesInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.fromInput.addEventListener("input", generateCssKeyframesCode);
   exportElements.toInput.addEventListener("input", generateCssKeyframesCode);

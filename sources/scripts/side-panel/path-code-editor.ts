@@ -8,7 +8,7 @@ export function initializePathCodeEditor() {
 
   elements.pathCodeEditor.highlighter = highlightPathCode;
   elements.graphEditor.points.events.onUpdate.add(updatePathCode);
-  elements.pathCodeEditor.addEventListener("copyclick", onPathCodeCopy);
+  elements.pathCodeEditor.addEventListener("copyclicked", onPathCodeCopy);
   elements.pathCodeEditor.addEventListener("blur", onPathCodeChange);
   elements.pathCodeEditor.addEventListener("keydown", onPathCodeKeyDown);
 }

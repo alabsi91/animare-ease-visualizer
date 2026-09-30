@@ -55,10 +55,12 @@ function createParamRow(param: EaseGenerator["params"][number]) {
   slider.value = param.value;
   slider.setAttribute("aria-label", param.label);
 
-  slider.addEventListener("beforechange", takeHistorySnapshot);
-  slider.addEventListener("valuechange", event => {
-    selectedValues[param.name] = event.detail.value;
-    value.textContent = String(event.detail.value);
+  slider.addEventListener("adjusted", takeHistorySnapshot);
+  slider.addEventListener("valuechange", () => {
+    const sliderValue = slider.value as number;
+
+    selectedValues[param.name] = sliderValue;
+    value.textContent = String(sliderValue);
     draw();
   });
   slider.addEventListener("pointerup", addHistorySnapshot);

@@ -65,9 +65,11 @@ const exportElements = {
 export function initSvgCodeExport() {
   exportElements.codePreview.highlighter = createHighlighter("html");
 
-  exportElements.exportSvgDialog.addEventListener("opened", generateSvgCode);
+  exportElements.exportSvgDialog.addEventListener("openedchange", () => {
+    if (exportElements.exportSvgDialog.opened) generateSvgCode();
+  });
   exportElements.scaleInput.addEventListener("input", generateSvgCode);
-  exportElements.fitToggle.addEventListener("clicked", generateSvgCode);
+  exportElements.fitToggle.addEventListener("checkedchange", generateSvgCode);
   exportElements.copyBtn.addEventListener("click", copySvgCodeHandler);
   exportElements.downloadBtn.addEventListener("click", downloadSvg);
 }

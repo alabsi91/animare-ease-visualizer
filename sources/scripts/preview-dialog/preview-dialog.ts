@@ -54,7 +54,7 @@ export function initializePreviewDialog() {
     wirePropertyToggle(toggle);
   }
 
-  elements.previewProgressSlider.addEventListener("valuechange", event => {
+  elements.previewProgressSlider.addEventListener("adjusted", event => {
     animation.seek(`${event.detail.value}%`);
     animation.playOneFrame();
   });
@@ -65,8 +65,8 @@ export function initializePreviewDialog() {
   elements.previewReverseToggle.addEventListener("pressedchange", toggleReverse);
   syncReverseToggle();
   elements.previewPlayBtn.addEventListener("click", togglePlay);
-  elements.previewDurationSlider.addEventListener("valuechange", event => {
-    setDuration(event.detail.value);
+  elements.previewDurationSlider.addEventListener("valuechange", () => {
+    setDuration(elements.previewDurationSlider.value as number);
     elements.previewDurationInput.value = String(durationMs);
   });
 
@@ -75,7 +75,9 @@ export function initializePreviewDialog() {
     elements.previewDurationSlider.value = durationMs;
   });
 
-  elements.previewDialog.addEventListener("opened", play);
+  elements.previewDialog.addEventListener("openedchange", () => {
+    if (elements.previewDialog.opened) play();
+  });
   elements.previewDialog.addEventListener("dismissed", stop);
 
   drawShape(0);

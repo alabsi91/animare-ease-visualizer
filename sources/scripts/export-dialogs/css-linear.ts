@@ -50,7 +50,9 @@ function setSingleCurveMode(isSingleCurve: boolean) {
 export function initCssLinearExport() {
   onFormatChange();
 
-  exportElements.exportCssLinearDialog.addEventListener("opened", generateCssLinearCode);
+  exportElements.exportCssLinearDialog.addEventListener("openedchange", () => {
+    if (exportElements.exportCssLinearDialog.opened) generateCssLinearCode();
+  });
   exportElements.maxStopsInput.addEventListener("input", generateCssLinearCode);
   exportElements.formatControl.addEventListener("valuechange", onFormatChange);
   exportElements.copyBtn.addEventListener("click", copyCssLinearCodeHandler);

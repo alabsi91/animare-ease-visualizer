@@ -16,7 +16,9 @@ const exportElements = {
 export function initJetpackComposeExport() {
   exportElements.codePreview.highlighter = createHighlighter("kotlin");
 
-  exportElements.dialog.addEventListener("opened", generateJetpackComposeCode);
+  exportElements.dialog.addEventListener("openedchange", () => {
+    if (exportElements.dialog.opened) generateJetpackComposeCode();
+  });
   exportElements.nameInput.addEventListener("input", generateJetpackComposeCode);
   exportElements.copyBtn.addEventListener("click", copyJetpackComposeCodeHandler);
   exportElements.downloadBtn.addEventListener("click", downloadKotlinFile);

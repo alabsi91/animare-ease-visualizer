@@ -11,7 +11,7 @@ export function initializeSidePanel() {
   elements.playBtns.forEach(e => e.addEventListener("click", () => graphAnimation.play()));
   elements.pauseBtns.forEach(e => e.addEventListener("click", () => graphAnimation.pause()));
   elements.stopBtns.forEach(e => e.addEventListener("click", () => graphAnimation.stop()));
-  elements.progressSlider.addEventListener("valuechange", event => graphAnimation.seek(event.detail.value));
+  elements.progressSlider.addEventListener("adjusted", event => graphAnimation.seek(event.detail.value));
 
   document.querySelectorAll(".export-menu-btn").forEach(el => el.addEventListener("click", () => elements.exportMenu.close()));
 
@@ -36,7 +36,7 @@ function setupAutoHidePointsToggle() {
 
   elements.autoHidePointsToggle.checked = isEnabled;
   elements.graphEditor.settings.autoHidePoints = isEnabled;
-  elements.autoHidePointsToggle.addEventListener("clicked", onAutoHidePointsToggle);
+  elements.autoHidePointsToggle.addEventListener("checkedchange", onAutoHidePointsToggle);
 }
 
 function onAutoHidePointsToggle() {
@@ -52,7 +52,7 @@ function setupSnapToGridToggle() {
   elements.snapToGridToggle.checked = isEnabled;
   elements.graphEditor.settings.anchorSnapToGrid = isEnabled;
   elements.graphEditor.settings.ctrlSnapToGrid = isEnabled;
-  elements.snapToGridToggle.addEventListener("clicked", onSnapToGridToggle);
+  elements.snapToGridToggle.addEventListener("checkedchange", onSnapToGridToggle);
 }
 
 function onSnapToGridToggle() {
@@ -68,7 +68,7 @@ function setupSnapToPointsToggle() {
 
   elements.snapToPointsToggle.checked = isEnabled;
   setSnapToPoints(isEnabled);
-  elements.snapToPointsToggle.addEventListener("clicked", onSnapToPointsToggle);
+  elements.snapToPointsToggle.addEventListener("checkedchange", onSnapToPointsToggle);
 }
 
 function onSnapToPointsToggle() {

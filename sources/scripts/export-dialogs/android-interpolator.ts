@@ -16,7 +16,9 @@ const exportElements = {
 export function initAndroidInterpolatorExport() {
   exportElements.codePreview.highlighter = createHighlighter("html");
 
-  exportElements.dialog.addEventListener("opened", generateAndroidInterpolatorCode);
+  exportElements.dialog.addEventListener("openedchange", () => {
+    if (exportElements.dialog.opened) generateAndroidInterpolatorCode();
+  });
   exportElements.nameInput.addEventListener("input", generateAndroidInterpolatorCode);
   exportElements.copyBtn.addEventListener("click", copyAndroidInterpolatorCodeHandler);
   exportElements.downloadBtn.addEventListener("click", downloadAndroidInterpolatorFile);

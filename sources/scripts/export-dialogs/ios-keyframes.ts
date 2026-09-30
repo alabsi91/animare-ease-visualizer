@@ -20,7 +20,9 @@ const exportElements = {
 export function initIosKeyframesExport() {
   exportElements.codePreview.highlighter = createHighlighter("swift");
 
-  exportElements.dialog.addEventListener("opened", generateIosKeyframesCode);
+  exportElements.dialog.addEventListener("openedchange", () => {
+    if (exportElements.dialog.opened) generateIosKeyframesCode();
+  });
   exportElements.nameInput.addEventListener("input", generateIosKeyframesCode);
   exportElements.copyBtn.addEventListener("click", copyIosKeyframesCodeHandler);
   exportElements.downloadBtn.addEventListener("click", downloadSwiftFile);
