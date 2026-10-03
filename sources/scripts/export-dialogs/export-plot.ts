@@ -1,7 +1,26 @@
-import type { EasingStop } from "./easing-stops";
+import type { EasingStop } from "../export-code/easing-stops";
+
+type PlotData = {
+  sampledValues: number[];
+  stops: EasingStop[];
+};
+
+const plotDataByCanvas = new WeakMap<HTMLCanvasElement, PlotData>();
+
+/** A canvas has no size while its dialog is closed. This paints the plot again once it gets one. */
+const plotResizeObserver = new ResizeObserver(entries => {
+  for (const { target } of entries) {
+    const canvas = target as HTMLCanvasElement;
+
+    const plotData = plotDataByCanvas.get(canvas);
+    if (plotData) {
+      paintPlot(canvas, plotData);
+    }
+  }
+});
 
 /** Resizes the canvas to what css gave it, which also wipes whatever was drawn before */
-export function resetPlot(canvas: HTMLCanvasElement) {
+function prepareCanvas(canvas: HTMLCanvasElement) {
   const context = canvas.getContext("2d");
   if (!context) return null;
 
@@ -14,9 +33,8 @@ export function resetPlot(canvas: HTMLCanvasElement) {
   return { context, width: canvas.clientWidth, height: canvas.clientHeight };
 }
 
-/** Draws the curve the stops rebuild. A tighter budget shows its cost here */
-export function drawPlot(canvas: HTMLCanvasElement, sampledValues: number[], stops: EasingStop[]) {
-  const prepared = resetPlot(canvas);
+function paintPlot(canvas: HTMLCanvasElement, { sampledValues, stops }: PlotData) {
+  const prepared = prepareCanvas(canvas);
   if (!prepared) return;
 
   const { context, width, height } = prepared;
@@ -52,4 +70,19 @@ export function drawPlot(canvas: HTMLCanvasElement, sampledValues: number[], sto
     else context.lineTo(x, y);
   });
   context.stroke();
+}
+
+/** Clears the plot and forgets it */
+export function resetPlot(canvas: HTMLCanvasElement) {
+  plotDataByCanvas.delete(canvas);
+  prepareCanvas(canvas);
+}
+
+/** Draws the curve the stops rebuild. A tighter budget shows its cost here */
+export function drawPlot(canvas: HTMLCanvasElement, sampledValues: number[], stops: EasingStop[]) {
+  const plotData = { sampledValues, stops };
+
+  plotDataByCanvas.set(canvas, plotData);
+  plotResizeObserver.observe(canvas);
+  paintPlot(canvas, plotData);
 }
