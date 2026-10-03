@@ -10,7 +10,7 @@ function returnErrorsAsResult(tool: ModelContextTool): ModelContextTool {
         return tool.execute(input);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        return JSON.stringify({ error: message });
+        return JSON.stringify({ isError: true, error: message });
       }
     },
   };

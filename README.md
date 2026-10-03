@@ -58,16 +58,17 @@ dialog says so rather than quietly emitting something the platform will clamp.
 The page registers [WebMCP](https://webmachinelearning.github.io/webmcp/) tools on `document.modelContext`, so
 an AI agent in the browser can draw a curve and get the code for it. It works in a headless browser too.
 
-| Tool                                                                  | What it does                                          |
-| --------------------------------------------------------------------- | ----------------------------------------------------- |
-| `get_easing_curve`                                                    | Reads the curve in the editor                         |
-| `set_easing_curve`                                                    | Draws a path or a `cubic-bezier()`                    |
-| `apply_easing_preset`                                                 | Draws a built-in preset                               |
-| `generate_easing_curve`                                               | Draws a spring, bounce, elastic and so on from values |
-| `export_css_linear`, `export_css_keyframes`, `export_svg`             | Web exports                                           |
-| `export_gsap_custom_ease`, `export_javascript_function`               | JavaScript exports                                    |
-| `export_android_interpolator`, `export_jetpack_compose_easing`        | Android exports                                       |
-| `export_flutter_curve`, `export_ios_keyframes`                        | Flutter and iOS exports                               |
+| Tool                                                           | What it does                                          |
+| -------------------------------------------------------------- | ----------------------------------------------------- |
+| `get_easing_curve`                                             | Reads the curve in the editor                         |
+| `set_easing_curve`                                             | Draws a path or a `cubic-bezier()`                    |
+| `apply_easing_preset`                                          | Draws a built-in preset                               |
+| `generate_easing_curve`                                        | Draws a spring, bounce, elastic and so on from values |
+| `show_easing_curve`                                            | Fits the curve in view and says what to screenshot    |
+| `export_css_linear`, `export_css_keyframes`, `export_svg`      | Web exports                                           |
+| `export_gsap_custom_ease`, `export_javascript_function`        | JavaScript exports                                    |
+| `export_android_interpolator`, `export_jetpack_compose_easing` | Android exports                                       |
+| `export_flutter_curve`, `export_ios_keyframes`                 | Flutter and iOS exports                               |
 
 The drawing tools change the editor the user sees, as one step they can undo, and describe the result with
 sampled values, since the agent cannot see the graph. The export tools take an optional `path` and fall back

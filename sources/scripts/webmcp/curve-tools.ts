@@ -7,6 +7,8 @@ import { PATH_FORMAT_DESCRIPTION, createCurveDescription, getPathCommandsFromInp
 
 import { Points } from "@graph-editor/helpers/points";
 
+import type { EaseGenerator } from "../ease-generator/generators";
+
 type SetEasingCurveInput = {
   path?: string;
   cubicBezier?: [number, number, number, number];
@@ -45,11 +47,32 @@ function createCubicBezierPathStr([x1, y1, x2, y2]: [number, number, number, num
   return `M 0 1 C ${numbers.join(" ")} 1 0`;
 }
 
-function describeEditorCurve() {
+function assertValidGeneratorParameters(generator: EaseGenerator, parameters: Record<string, number>) {
+  for (const [parameterName, value] of Object.entries(parameters)) {
+    const param = generator.params.find(param => param.name === parameterName);
+    if (!param) {
+      const parameterNames = generator.params.map(param => param.name).join(", ");
+      throw new Error(`"${generator.name}" has no parameter "${parameterName}". It takes: ${parameterNames}.`);
+    }
+
+    const stepCount = (value - param.min) / param.step;
+    const isOnStep = Math.abs(stepCount - Math.round(stepCount)) < 1e-9;
+
+    const isInRange = Number.isFinite(value) && value >= param.min && value <= param.max;
+    if (!isInRange || !isOnStep) {
+      throw new Error(`"${parameterName}" has to be a number from ${param.min} to ${param.max} in steps of ${param.step}.`);
+    }
+  }
+}
+
+/** Zooms the editor to the curve so the user sees what the agent changed */
+function fitAndDescribeEditorCurve() {
   elements.graphEditor.fitToPath();
 
-  return JSON.stringify(createCurveDescription(elements.graphEditor.points.value));
+  return createCurveDescription(elements.graphEditor.points.value);
 }
+
+const EMPTY_INPUT_SCHEMA = { type: "object", properties: {}, additionalProperties: false };
 
 const CURVE_DESCRIPTION_NOTE =
   "Returns the curve as JSON: `path` in the editor's SVG format, `cubicBezier` with the CSS control points when the curve is one segment from corner to corner, " +
@@ -59,7 +82,7 @@ const getEasingCurveTool: ModelContextTool = {
   name: "get_easing_curve",
   title: "Read the easing curve",
   description: `Reads the easing curve that is open in the editor. ${CURVE_DESCRIPTION_NOTE}`,
-  inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  inputSchema: EMPTY_INPUT_SCHEMA,
   annotations: { readOnlyHint: true },
   execute: () => JSON.stringify(createCurveDescription(elements.graphEditor.points.value)),
 };
@@ -86,11 +109,15 @@ const setEasingCurveTool: ModelContextTool = {
     additionalProperties: false,
   },
   execute: ({ path, cubicBezier }: SetEasingCurveInput) => {
-    if ((path === undefined) === (cubicBezier === undefined)) {
-      throw new Error("Pass either `path` or `cubicBezier`, not both and not neither.");
+    if (path !== undefined && cubicBezier !== undefined) {
+      throw new Error("Pass either `path` or `cubicBezier`, not both.");
     }
 
-    const pathStr = cubicBezier ? createCubicBezierPathStr(cubicBezier) : path!;
+    const pathStr = cubicBezier ? createCubicBezierPathStr(cubicBezier) : path;
+    if (pathStr === undefined) {
+      throw new Error("Pass either `path` or `cubicBezier`.");
+    }
+
     const pathCommands = getPathCommandsFromInput(pathStr);
 
     const isDrawn = setGraphPath(Points.constructPathStr(pathCommands));
@@ -98,7 +125,7 @@ const setEasingCurveTool: ModelContextTool = {
       throw new Error(`The editor could not draw this path. ${PATH_FORMAT_DESCRIPTION}`);
     }
 
-    return describeEditorCurve();
+    return JSON.stringify(fitAndDescribeEditorCurve());
   },
 };
 
@@ -122,7 +149,7 @@ const applyEasingPresetTool: ModelContextTool = {
 
     elements.presetsMenu.value = preset.path;
 
-    return describeEditorCurve();
+    return JSON.stringify(fitAndDescribeEditorCurve());
   },
 };
 
@@ -153,26 +180,39 @@ const generateEasingCurveTool: ModelContextTool = {
       throw new Error(`Unknown generator "${generatorName}". Use one of: ${generatorNames}.`);
     }
 
-    for (const [parameterName, value] of Object.entries(parameters)) {
-      const param = generator.params.find(param => param.name === parameterName);
-      if (!param) {
-        const parameterNames = generator.params.map(param => param.name).join(", ");
-        throw new Error(`"${generator.name}" has no parameter "${parameterName}". It takes: ${parameterNames}.`);
-      }
-
-      const stepCount = (value - param.min) / param.step;
-      const isOnStep = Math.abs(stepCount - Math.round(stepCount)) < 1e-9;
-
-      const isInRange = Number.isFinite(value) && value >= param.min && value <= param.max;
-      if (!isInRange || !isOnStep) {
-        throw new Error(`"${parameterName}" has to be a number from ${param.min} to ${param.max} in steps of ${param.step}.`);
-      }
-    }
-
+    assertValidGeneratorParameters(generator, parameters);
     selectEaseGenerator(generator, parameters);
 
-    return describeEditorCurve();
+    return JSON.stringify(fitAndDescribeEditorCurve());
   },
 };
 
-export const curveTools = [getEasingCurveTool, setEasingCurveTool, applyEasingPresetTool, generateEasingCurveTool];
+const GRAPH_SELECTOR = "graph-editor";
+
+const showEasingCurveTool: ModelContextTool = {
+  name: "show_easing_curve",
+  title: "Show the easing curve",
+  description:
+    "Zooms the editor so the whole curve is in view, then tells you which element to screenshot to see it. " +
+    "Use it to check the shape and the overshoot with your own eyes.",
+  inputSchema: EMPTY_INPUT_SCHEMA,
+  annotations: { readOnlyHint: true },
+  execute: () =>
+    JSON.stringify({
+      selector: GRAPH_SELECTOR,
+      instruction:
+        `Take a screenshot of the \`${GRAPH_SELECTOR}\` element to see the curve. ` +
+        "The shaded square is the 0 to 1 box: time runs left to right and the value runs bottom to top. " +
+        "The curve starts at the bottom left corner and ends at the top right one. " +
+        "Any part of the curve above or below the square is overshoot.",
+      ...fitAndDescribeEditorCurve(),
+    }),
+};
+
+export const curveTools = [
+  getEasingCurveTool,
+  setEasingCurveTool,
+  applyEasingPresetTool,
+  generateEasingCurveTool,
+  showEasingCurveTool,
+];
