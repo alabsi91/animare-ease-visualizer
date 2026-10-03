@@ -1,13 +1,11 @@
-import { ease } from "animare/plugins";
-import { pickStopsWithinBudget } from "./easing-stops";
 import { drawPlot, resetPlot } from "./export-plot";
-import { getIsSingleCurve, getSingleCurveControlPoints } from "./easing-path";
 import { createHighlighter } from "./highlighter";
+import { showExportOptionError } from "./export-option-alert";
 
+import { createCssKeyframesCode } from "../export-code/css-keyframes-code";
+import { getIsSingleCurve } from "../export-code/easing-path";
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
-
-const VALUE_DECIMALS = 2;
 
 const exportElements = {
   dialog: getElement<Dialog>("#export-css-keyframe-dialog"),
@@ -47,51 +45,26 @@ function setSingleCurveMode(isSingleCurve: boolean) {
   exportElements.plot.hidden = isSingleCurve;
 }
 
-function showInvalidInputAlert(title: string, hint: string) {
-  resetPlot(exportElements.plot);
-  showAlert("error", title, hint);
-}
-
 function generateCssKeyframesCode() {
-  const isSingleCurve = getIsSingleCurve();
-  setSingleCurveMode(isSingleCurve);
+  const pathCommands = elements.graphEditor.points.value;
+  setSingleCurveMode(getIsSingleCurve(pathCommands));
 
-  if (isSingleCurve) {
-    const controlPoints = getSingleCurveControlPoints().map(value => +value.toFixed(3));
-    exportElements.codePreview.value = `.element {\n  transition: transform 0.6s cubic-bezier(${controlPoints.join(", ")});\n}`;
-    return;
+  try {
+    const { code, plot } = createCssKeyframesCode(pathCommands, {
+      property: exportElements.propertyInput.value,
+      maxKeyframes: exportElements.maxKeyframesInput.valueAsNumber,
+      from: exportElements.fromInput.valueAsNumber,
+      to: exportElements.toInput.valueAsNumber,
+    });
+
+    exportElements.codePreview.value = code;
+    if (plot) {
+      drawPlot(exportElements.plot, plot.sampledValues, plot.stops);
+    }
+  } catch (error) {
+    resetPlot(exportElements.plot);
+    showExportOptionError(error);
   }
-
-  const maxKeyframes = exportElements.maxKeyframesInput.valueAsNumber;
-  if (isNaN(maxKeyframes) || !isFinite(maxKeyframes) || maxKeyframes < 2 || maxKeyframes > 500) {
-    showInvalidInputAlert("Invalid max keyframes", "Enter a whole number between 2 and 500");
-    return;
-  }
-
-  const from = exportElements.fromInput.valueAsNumber;
-  if (!Number.isFinite(from)) {
-    showInvalidInputAlert("Invalid from value", "Enter a number");
-    return;
-  }
-
-  const to = exportElements.toInput.valueAsNumber;
-  if (!Number.isFinite(to)) {
-    showInvalidInputAlert("Invalid to value", "Enter a number");
-    return;
-  }
-
-  const property = exportElements.propertyInput.value;
-  const easingFunction = ease.custom(elements.graphEditor.points.valueStr);
-  const { sampledValues, stops } = pickStopsWithinBudget(easingFunction, maxKeyframes);
-
-  let codeStr = "";
-  for (const stop of stops) {
-    const value = +(from + (to - from) * stop.value).toFixed(VALUE_DECIMALS);
-    codeStr += `\n  ${stop.position}% { ${property.replaceAll("{value}", value.toString())} }`;
-  }
-
-  exportElements.codePreview.value = `@keyframes my-custom-easing {${codeStr}\n}`;
-  drawPlot(exportElements.plot, sampledValues, stops);
 }
 
 function copyCssKeyframesCodeHandler() {

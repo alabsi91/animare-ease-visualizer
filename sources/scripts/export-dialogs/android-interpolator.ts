@@ -1,8 +1,11 @@
 import { createHighlighter } from "./highlighter";
-import { getCornerProblem, getIsSingleCurve, getSingleCurveControlPoints, getUprightPathStr } from "./easing-path";
 
-import { getElement } from "../elements";
+import { createAndroidInterpolatorCode } from "../export-code/android-interpolator-code";
+import { getCornerProblem, getIsSingleCurve } from "../export-code/easing-path";
+import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
+
+import type { PathCommands } from "@graph-editor/helpers/types";
 
 const exportElements = {
   dialog: getElement<Dialog>("#export-android-dialog"),
@@ -31,11 +34,11 @@ function getResourceName() {
   return name;
 }
 
-function getWarning(isSingleCurve: boolean) {
-  const cornerProblem = getCornerProblem();
+function getWarning(pathCommands: PathCommands) {
+  const cornerProblem = getCornerProblem(pathCommands);
   if (cornerProblem) return cornerProblem;
 
-  if (isSingleCurve) {
+  if (getIsSingleCurve(pathCommands)) {
     return "A single curve needs no path. Android takes the four control points on their own, which is what you get below.";
   }
 
@@ -43,9 +46,9 @@ function getWarning(isSingleCurve: boolean) {
 }
 
 function generateAndroidInterpolatorCode() {
-  const isSingleCurve = getIsSingleCurve();
+  const pathCommands = elements.graphEditor.points.value;
 
-  const warning = getWarning(isSingleCurve);
+  const warning = getWarning(pathCommands);
   exportElements.warning.hidden = warning === null;
   if (warning) {
     exportElements.warning.textContent = warning;
@@ -57,20 +60,7 @@ function generateAndroidInterpolatorCode() {
     return;
   }
 
-  const declaration = `<?xml version="1.0" encoding="utf-8"?>\n`;
-
-  if (isSingleCurve) {
-    const [x1, y1, x2, y2] = getSingleCurveControlPoints().map(value => +value.toFixed(4));
-
-    exportElements.codePreview.value = `${declaration}
-<pathInterpolator xmlns:android="http://schemas.android.com/apk/res/android" android:controlX1="${x1}" android:controlY1="${y1}" android:controlX2="${x2}" android:controlY2="${y2}" />`;
-    return;
-  }
-
-  const pathStr = getUprightPathStr();
-
-  exportElements.codePreview.value = `${declaration}
-<pathInterpolator xmlns:android="http://schemas.android.com/apk/res/android" android:pathData="${pathStr}" />`;
+  exportElements.codePreview.value = createAndroidInterpolatorCode(pathCommands);
 }
 
 function downloadAndroidInterpolatorFile() {

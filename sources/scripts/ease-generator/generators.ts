@@ -2,7 +2,7 @@ import { ease } from "animare/plugins";
 
 type EaseFn = (time: number) => number;
 
-type GeneratorParam = {
+export type EaseGeneratorParam = {
   name: string;
   label: string;
   min: number;
@@ -11,13 +11,13 @@ type GeneratorParam = {
   value: number;
 };
 
-type EaseGenerator = {
+export type EaseGenerator = {
   name: string;
-  params: GeneratorParam[];
+  params: EaseGeneratorParam[];
   createEase: (values: Record<string, number>) => EaseFn;
 };
 
-function springParams(): GeneratorParam[] {
+function springParams(): EaseGeneratorParam[] {
   return [
     { name: "mass", label: "Mass", min: 0.1, max: 100, step: 0.1, value: 1 },
     { name: "stiffness", label: "Stiffness", min: 20, max: 1000, step: 5, value: 100 },

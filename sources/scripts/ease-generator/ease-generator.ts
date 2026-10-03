@@ -3,7 +3,7 @@ import { easeToPathStr } from "./ease-to-path";
 import { elements } from "../elements";
 import { onGraphPathChange } from "../graph/graph";
 
-type EaseGenerator = (typeof easeGenerators)[number];
+import type { EaseGenerator, EaseGeneratorParam } from "./generators";
 
 let selectedGenerator: EaseGenerator | null = null;
 let selectedValues: Record<string, number> = {};
@@ -17,21 +17,34 @@ export function initializeEaseGenerators() {
     elements.easeGeneratorFlyout.append(option);
   }
 
-  elements.easeGeneratorMenu.addEventListener("valuechange", selectGenerator);
+  elements.easeGeneratorMenu.addEventListener("valuechange", onGeneratorMenuChange);
 }
 
-function selectGenerator() {
+function onGeneratorMenuChange() {
   const name = elements.easeGeneratorMenu.value;
-  selectedGenerator = easeGenerators.find(generator => generator.name === name) ?? null;
+  const generator = easeGenerators.find(generator => generator.name === name) ?? null;
+  if (generator === selectedGenerator) return;
+
+  showEaseGenerator(generator, {});
+}
+
+/** Selects a generator in the menu and draws it. A parameter missing from `values` starts at its default. */
+export function selectEaseGenerator(generator: EaseGenerator, values: Record<string, number>) {
+  showEaseGenerator(generator, values);
+  elements.easeGeneratorMenu.value = generator.name;
+}
+
+function showEaseGenerator(generator: EaseGenerator | null, values: Record<string, number>) {
+  selectedGenerator = generator;
 
   elements.easeGeneratorParams.replaceChildren();
   selectedValues = {};
 
-  if (!selectedGenerator) return;
+  if (!generator) return;
 
-  for (const param of selectedGenerator.params) {
-    selectedValues[param.name] = param.value;
-    elements.easeGeneratorParams.append(createParamRow(param));
+  for (const param of generator.params) {
+    selectedValues[param.name] = values[param.name] ?? param.value;
+    elements.easeGeneratorParams.append(createParamRow(param, selectedValues[param.name]));
   }
 
   takeHistorySnapshot();
@@ -39,20 +52,20 @@ function selectGenerator() {
   addHistorySnapshot();
 }
 
-function createParamRow(param: EaseGenerator["params"][number]) {
+function createParamRow(param: EaseGeneratorParam, initialValue: number) {
   const row = document.importNode(elements.easeGeneratorParamTemplate.content, true);
 
   const label = row.querySelector<HTMLElement>(".ease-generator-param-label")!;
   label.textContent = param.label;
 
   const value = row.querySelector<HTMLElement>(".ease-generator-param-value")!;
-  value.textContent = String(param.value);
+  value.textContent = String(initialValue);
 
   const slider = row.querySelector<Slider>("sv-slider")!;
   slider.min = param.min;
   slider.max = param.max;
   slider.step = param.step;
-  slider.value = param.value;
+  slider.value = initialValue;
   slider.setAttribute("aria-label", param.label);
 
   slider.addEventListener("adjusted", takeHistorySnapshot);

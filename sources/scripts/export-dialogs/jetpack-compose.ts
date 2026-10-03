@@ -1,8 +1,13 @@
 import { createHighlighter } from "./highlighter";
-import { getCornerProblem, getSingleCurveControlPoints, getUprightPoints } from "./easing-path";
+import { showExportOptionError } from "./export-option-alert";
 
-import { getElement } from "../elements";
+import { createJetpackComposeCode } from "../export-code/jetpack-compose-code";
+import { getCornerProblem, getIsSingleCurve } from "../export-code/easing-path";
+import { getIsValidIdentifier } from "../export-code/identifier";
+import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
+
+import type { PathCommands } from "@graph-editor/helpers/types";
 
 const exportElements = {
   dialog: getElement<Dialog>("#export-compose-dialog"),
@@ -25,71 +30,39 @@ export function initJetpackComposeExport() {
 }
 
 function getValueName() {
-  const name = exportElements.nameInput.value.trim();
-  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) return null;
-
-  return name;
+  return exportElements.nameInput.value.trim();
 }
 
-function getWarning(isSingleCurve: boolean) {
-  const cornerProblem = getCornerProblem();
+function getWarning(pathCommands: PathCommands) {
+  const cornerProblem = getCornerProblem(pathCommands);
   if (cornerProblem) return cornerProblem;
 
-  if (isSingleCurve) {
+  if (getIsSingleCurve(pathCommands)) {
     return "A single curve needs no path. CubicBezierEasing takes the four control points, which is what you get below.";
   }
 
   return null;
 }
 
-function formatFloat(value: number) {
-  return `${value}f`;
-}
-
 function generateJetpackComposeCode() {
-  const name = getValueName();
-  if (!name) {
-    showAlert("error", "Invalid name", "Use letters, digits and underscores, starting with a letter");
-    return;
-  }
+  const pathCommands = elements.graphEditor.points.value;
 
-  const uprightPoints = getUprightPoints();
-  const isSingleCurve = uprightPoints.length === 2;
-
-  const warning = getWarning(isSingleCurve);
+  const warning = getWarning(pathCommands);
   exportElements.warning.hidden = warning === null;
   if (warning) {
     exportElements.warning.textContent = warning;
   }
 
-  if (isSingleCurve) {
-    exportElements.codePreview.value = `import androidx.compose.animation.core.CubicBezierEasing
-
-val ${name} = CubicBezierEasing(${getSingleCurveControlPoints().map(formatFloat).join(", ")})`;
-    return;
+  try {
+    exportElements.codePreview.value = createJetpackComposeCode(pathCommands, { valueName: getValueName() });
+  } catch (error) {
+    showExportOptionError(error);
   }
-
-  const [movePoint] = uprightPoints[0];
-
-  const pathCalls = [`        moveTo(${formatFloat(movePoint.x)}, ${formatFloat(movePoint.y)})`];
-  for (const points of uprightPoints.slice(1)) {
-    const coordinates = points.flatMap(point => [point.x, point.y]).map(formatFloat);
-    pathCalls.push(`        cubicTo(${coordinates.join(", ")})`);
-  }
-
-  exportElements.codePreview.value = `import androidx.compose.animation.core.PathEasing
-import androidx.compose.ui.graphics.Path
-
-val ${name} = PathEasing(
-    Path().apply {
-${pathCalls.join("\n")}
-    }
-)`;
 }
 
 function downloadKotlinFile() {
   const name = getValueName();
-  if (!name) return;
+  if (!getIsValidIdentifier(name)) return;
 
   const blob = new Blob([exportElements.codePreview.value], { type: "text/plain" });
   const url = URL.createObjectURL(blob);

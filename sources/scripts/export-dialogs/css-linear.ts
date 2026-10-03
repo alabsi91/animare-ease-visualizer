@@ -1,16 +1,13 @@
-import { ease } from "animare/plugins";
-import { pickStopsWithinBudget } from "./easing-stops";
 import { drawPlot, resetPlot } from "./export-plot";
-import { getIsSingleCurve, getSingleCurveControlPoints } from "./easing-path";
 import { createHighlighter, createTailwindClassHighlighter } from "./highlighter";
+import { showExportOptionError } from "./export-option-alert";
 
+import { createCssLinearCode } from "../export-code/css-linear-code";
+import { getIsSingleCurve } from "../export-code/easing-path";
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
 
-import type { EasingStop } from "./easing-stops";
-
-const VALUE_DECIMALS = 3;
-const HALF_VALUE_STEP = 0.5 / 10 ** VALUE_DECIMALS;
+import type { CssLinearFormat } from "../export-code/css-linear-code";
 
 const exportElements = {
   exportCssLinearDialog: getElement<Dialog>("#export-css-linear-dialog"),
@@ -23,19 +20,13 @@ const exportElements = {
   formatControl: getElement<SegmentedControl>("#export-css-linear-format"),
 };
 
-function isTailwindSelected() {
-  return exportElements.formatControl.value === "tailwind";
-}
-
-/** Tailwind takes the whole function as one class, where a space is an underscore */
-function formatOutput(value: string) {
-  if (!isTailwindSelected()) return value;
-
-  return `ease-[${value.replace(/,\s*/g, ",").replace(/\s+/g, "_")}]`;
+function getSelectedFormat(): CssLinearFormat {
+  return exportElements.formatControl.value === "tailwind" ? "tailwind" : "css";
 }
 
 function onFormatChange() {
-  exportElements.codePreview.highlighter = isTailwindSelected() ? createTailwindClassHighlighter() : createHighlighter("css");
+  exportElements.codePreview.highlighter =
+    getSelectedFormat() === "tailwind" ? createTailwindClassHighlighter() : createHighlighter("css");
 
   generateCssLinearCode();
 }
@@ -58,67 +49,24 @@ export function initCssLinearExport() {
   exportElements.copyBtn.addEventListener("click", copyCssLinearCodeHandler);
 }
 
-function roundStops(stops: EasingStop[]): EasingStop[] {
-  return stops.map(stop => ({
-    position: stop.position,
-    value: Number(stop.value.toFixed(VALUE_DECIMALS)),
-  }));
-}
-
-function dropRedundantStops(stops: EasingStop[]) {
-  const keptStops = [stops[0]];
-
-  for (let index = 1; index < stops.length - 1; index++) {
-    const previousStop = keptStops[keptStops.length - 1];
-    const stop = stops[index];
-    const nextStop = stops[index + 1];
-
-    const positionFraction = (stop.position - previousStop.position) / (nextStop.position - previousStop.position);
-    const valueOnChord = previousStop.value + (nextStop.value - previousStop.value) * positionFraction;
-
-    const isOnChord = Math.abs(valueOnChord - stop.value) <= HALF_VALUE_STEP;
-    if (!isOnChord) {
-      keptStops.push(stop);
-    }
-  }
-
-  keptStops.push(stops[stops.length - 1]);
-
-  return keptStops;
-}
-
-function formatStops(stops: EasingStop[]) {
-  const formattedStops = stops.map((stop, index) => {
-    const isEndStop = index === 0 || index === stops.length - 1;
-    return isEndStop ? `${stop.value}` : `${stop.value} ${stop.position}%`;
-  });
-
-  return formattedStops.join(", ");
-}
-
 function generateCssLinearCode() {
-  const isSingleCurve = getIsSingleCurve();
-  setSingleCurveMode(isSingleCurve);
+  const pathCommands = elements.graphEditor.points.value;
+  setSingleCurveMode(getIsSingleCurve(pathCommands));
 
-  if (isSingleCurve) {
-    const controlPoints = getSingleCurveControlPoints().map(value => +value.toFixed(3));
-    exportElements.codePreview.value = formatOutput(`cubic-bezier(${controlPoints.join(", ")})`);
-    return;
-  }
+  try {
+    const { code, plot } = createCssLinearCode(pathCommands, {
+      maxStops: exportElements.maxStopsInput.valueAsNumber,
+      format: getSelectedFormat(),
+    });
 
-  const maxStops = exportElements.maxStopsInput.valueAsNumber;
-  if (isNaN(maxStops) || !isFinite(maxStops) || maxStops < 2 || maxStops > 500) {
+    exportElements.codePreview.value = code;
+    if (plot) {
+      drawPlot(exportElements.plot, plot.sampledValues, plot.stops);
+    }
+  } catch (error) {
     resetPlot(exportElements.plot);
-    showAlert("error", "Invalid max stops", "Enter a whole number between 2 and 500");
-    return;
+    showExportOptionError(error);
   }
-
-  const easingFunction = ease.custom(elements.graphEditor.points.valueStr);
-  const { sampledValues, stops } = pickStopsWithinBudget(easingFunction, maxStops);
-  const exportedStops = dropRedundantStops(roundStops(stops));
-
-  exportElements.codePreview.value = formatOutput(`linear(${formatStops(exportedStops)})`);
-  drawPlot(exportElements.plot, sampledValues, exportedStops);
 }
 
 function copyCssLinearCodeHandler() {

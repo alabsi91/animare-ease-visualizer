@@ -5,6 +5,7 @@ import { initializePathCodeEditor } from "./side-panel/path-code-editor";
 import { initializePreviewDialog } from "./preview-dialog/preview-dialog";
 import { initializePresetsMenu } from "./side-panel/presets-menu";
 import { initializeSidePanel } from "./side-panel/side-panel";
+import { registerWebMcpTools } from "./webmcp/webmcp";
 
 initializeSidePanel();
 
@@ -19,3 +20,5 @@ initGraph();
 initExportDialogs();
 
 initializePreviewDialog();
+
+registerWebMcpTools();

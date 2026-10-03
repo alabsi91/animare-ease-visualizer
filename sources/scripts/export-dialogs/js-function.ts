@@ -1,8 +1,12 @@
-import { ease } from "animare/plugins";
 import { createHighlighter } from "./highlighter";
+import { showExportOptionError } from "./export-option-alert";
 
+import { createJsFunctionCode } from "../export-code/js-function-code";
+import { getIsSingleCurve } from "../export-code/easing-path";
 import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
+
+import type { JsFunctionTarget } from "../export-code/js-function-code";
 
 const exportElements = {
   exportJsFunctionDialog: getElement<Dialog>("#export-js-function-dialog"),
@@ -15,38 +19,8 @@ const exportElements = {
   targetControl: getElement<SegmentedControl>("#export-js-function-target"),
 };
 
-function buildJavaScriptFunction(name: string, valuesLiteral: string) {
-  return [
-    `const values = ${valuesLiteral};`,
-    "const lastIdx = values.length - 1;",
-    `const ${name} = t => values[Math.floor(t * lastIdx)] ?? values[lastIdx];`,
-    `export default ${name};`,
-  ].join("\n");
-}
-
-function buildAfterEffectsExpression(name: string, valuesLiteral: string) {
-  return [
-    `var values = ${valuesLiteral};`,
-    "var lastIdx = values.length - 1;",
-    "",
-    `function ${name}(t) {`,
-    "  var index = Math.floor(t * lastIdx);",
-    "  if (index < 0) index = 0;",
-    "  if (index > lastIdx) index = lastIdx;",
-    "  return values[index];",
-    "}",
-    "",
-    "var duration = 2;",
-    "var from = 0;",
-    "var to = 500;",
-    "",
-    "var progress = clamp((time - inPoint) / duration, 0, 1);",
-    `from + (to - from) * ${name}(progress);`,
-  ].join("\n");
-}
-
-function getSelectedTarget() {
-  return exportElements.targetControl.value;
+function getSelectedTarget(): JsFunctionTarget {
+  return exportElements.targetControl.value === "after-effects" ? "after-effects" : "javascript";
 }
 
 export function initJsFunctionExport() {
@@ -72,39 +46,18 @@ function setSingleCurveMode(isSingleCurve: boolean) {
 }
 
 function generateJsFunctionCode() {
-  const name = exportElements.nameInput.value;
+  const pathCommands = elements.graphEditor.points.value;
+  setSingleCurveMode(getIsSingleCurve(pathCommands));
+
   try {
-    new Function(name, `var ${name}`);
-  } catch {
-    showAlert("error", "Invalid JavaScript variable name");
-    return;
+    exportElements.codePreview.value = createJsFunctionCode(pathCommands, {
+      functionName: exportElements.nameInput.value,
+      samples: exportElements.samplesInput.valueAsNumber,
+      target: getSelectedTarget(),
+    });
+  } catch (error) {
+    showExportOptionError(error);
   }
-
-  setSingleCurveMode(elements.graphEditor.points.value.length === 2);
-
-  const samples = exportElements.samplesInput.valueAsNumber;
-  if (isNaN(samples) || !isFinite(samples) || samples <= 0 || samples > 1000) {
-    showAlert("error", "Invalid samples");
-    return;
-  }
-
-  const easingFunction = ease.custom(elements.graphEditor.points.valueStr);
-
-  const values = [];
-  for (let i = 0; i < samples; i++) {
-    const t = i / (samples - 1);
-    values[i] = +easingFunction(t).toFixed(3);
-  }
-
-  const valuesLiteral = JSON.stringify([...values]);
-  const target = getSelectedTarget();
-
-  if (target === "after-effects") {
-    exportElements.codePreview.value = buildAfterEffectsExpression(name, valuesLiteral);
-    return;
-  }
-
-  exportElements.codePreview.value = buildJavaScriptFunction(name, valuesLiteral);
 }
 
 function downloadJsFile() {

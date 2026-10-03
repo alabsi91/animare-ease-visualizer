@@ -1,3 +1,4 @@
+import { Points } from "@graph-editor/helpers/points";
 import { elements } from "../elements";
 import { setGraphPath } from "../graph/graph";
 import { showAlert } from "../alert";
@@ -33,7 +34,7 @@ function onPathCodeCopy() {
 }
 
 function onPathCodeChange() {
-  const newCode = elements.pathCodeEditor.value.replace(/\n|\s{2,}/g, " ");
+  const newCode = Points.getNormalizedPathStr(elements.pathCodeEditor.value);
 
   const success = setGraphPath(newCode);
   if (success) return;

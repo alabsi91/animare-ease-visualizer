@@ -14,8 +14,6 @@ import type { PathCommands } from "./helpers/types";
 
 declare const CustomEvent: SV.CustomEventT;
 
-const PATH_COMMANDS_RE = /^M(?:\s(?:-?\d+(?:\.\d+)?)){2}(?:\sC(?:\s(?:-?\d+(?:\.\d+)?)){6}){1,}/i;
-
 /**
  * `graph-editor` edits a cubic bezier easing curve on a zoomable panel.
  *
@@ -157,7 +155,7 @@ class GraphEditor extends HTMLElement implements SV.IWebComponent {
 
   /** Returns `true` on success and `false` otherwise */
   setFromPathStr = (pathStr: string) => {
-    if (!PATH_COMMANDS_RE.test(pathStr)) {
+    if (!Points.getIsValidPathStr(pathStr)) {
       console.error("Invalid path string: It should follow the format: `M x y C cx1 cy1 cx2 cy2 x y`");
       return false;
     }

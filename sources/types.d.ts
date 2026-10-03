@@ -28,6 +28,28 @@ import "./graph-editor/types/global-types";
 declare global {
   /** Whether the app is in production mode */
   const _production: boolean;
+
+  /** A tool that a page offers to AI agents through WebMCP */
+  interface ModelContextTool {
+    name: string;
+    title?: string;
+    description: string;
+    inputSchema?: object;
+    execute: (input: never) => unknown;
+    annotations?: {
+      readOnlyHint?: boolean;
+      untrustedContentHint?: boolean;
+    };
+  }
+
+  interface ModelContext {
+    registerTool(tool: ModelContextTool, options?: { signal?: AbortSignal }): Promise<void>;
+  }
+
+  interface Document {
+    /** WebMCP. Missing in browsers that do not support it. */
+    readonly modelContext?: ModelContext;
+  }
 }
 
 export {};

@@ -1,7 +1,8 @@
 import { createHighlighter } from "./highlighter";
-import { getUprightPathStr } from "./easing-path";
+import { showExportOptionError } from "./export-option-alert";
 
-import { getElement } from "../elements";
+import { createGsapEaseCode } from "../export-code/gsap-ease-code";
+import { elements, getElement } from "../elements";
 import { showAlert } from "../alert";
 
 const exportElements = {
@@ -22,23 +23,13 @@ export function initGsapEaseExport() {
 }
 
 function generateGsapEaseCode() {
-  const name = exportElements.nameInput.value.trim();
-  if (!name) {
-    showAlert("error", "Invalid name", "Enter a name for the ease");
-    return;
+  try {
+    exportElements.codePreview.value = createGsapEaseCode(elements.graphEditor.points.value, {
+      easeName: exportElements.nameInput.value.trim(),
+    });
+  } catch (error) {
+    showExportOptionError(error);
   }
-
-  const pathStr = getUprightPathStr();
-  const quotedName = JSON.stringify(name);
-
-  exportElements.codePreview.value = `import gsap from "gsap";
-import { CustomEase } from "gsap/CustomEase";
-
-gsap.registerPlugin(CustomEase);
-
-CustomEase.create(${quotedName}, "${pathStr}");
-
-gsap.to(".box", { x: 300, duration: 0.6, ease: ${quotedName} });`;
 }
 
 function copyGsapEaseCodeHandler() {

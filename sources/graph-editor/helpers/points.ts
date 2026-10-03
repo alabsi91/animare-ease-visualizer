@@ -1,5 +1,7 @@
 import type { C_CMD, M_CMD, PathCommands, PointAddress, X, Y } from "./types";
 
+const PATH_COMMANDS_RE = /^M(?:\s(?:-?\d+(?:\.\d+)?)){2}(?:\sC(?:\s(?:-?\d+(?:\.\d+)?)){6}){1,}$/i;
+
 export class Points {
   readonly #cmds: PathCommands = [
     [0, 1],
@@ -138,6 +140,20 @@ export class Points {
   /** Set `y` using a point address */
   setPointY([cmdIdx, pointIdx]: PointAddress, y: number) {
     this.#cmds[cmdIdx][pointIdx + 1] = y;
+  }
+
+  /** Rewrites a hand written path like `M0,1 C0.3,0 ...` into the `M 0 1 C 0.3 0 ...` form that the editor reads */
+  static getNormalizedPathStr(path: string) {
+    return path
+      .replace(/,/g, " ")
+      .replace(/([MC])/gi, " $1 ")
+      .trim()
+      .replace(/\s+/g, " ");
+  }
+
+  /** `true` for one `M x y` command followed by `C x1 y1 x2 y2 x y` commands, each part split by one space */
+  static getIsValidPathStr(path: string) {
+    return PATH_COMMANDS_RE.test(path);
   }
 
   /** Convert a path string to points */

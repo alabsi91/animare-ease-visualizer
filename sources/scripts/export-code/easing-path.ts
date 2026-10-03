@@ -1,5 +1,3 @@
-import { elements } from "../elements";
-
 import type { PathCommands } from "../../graph-editor/helpers/types";
 
 const COORDINATE_DECIMALS = 4;
@@ -12,19 +10,17 @@ export type CurveSegment = {
   controlPoints: [number, number, number, number];
 };
 
-export function getIsSingleCurve() {
-  return elements.graphEditor.points.value.length === 2;
+export function getIsSingleCurve(pathCommands: PathCommands) {
+  return pathCommands.length === 2;
 }
 
-export function getSingleCurveControlPoints() {
-  const [, curveCommand] = elements.graphEditor.points.value;
+export function getSingleCurveControlPoints(pathCommands: PathCommands) {
+  const [, curveCommand] = pathCommands;
 
   return [curveCommand[0], 1 - curveCommand[1], curveCommand[2], 1 - curveCommand[3]];
 }
 
-export function getCornerProblem() {
-  const pathCommands = elements.graphEditor.points.value;
-
+export function getCornerProblem(pathCommands: PathCommands) {
   const moveCommand = pathCommands[0];
   const lastCurveCommand = pathCommands[pathCommands.length - 1];
 
@@ -69,8 +65,8 @@ export function getCurveSegments(pathCommands: PathCommands): CurveSegment[] {
   return segments;
 }
 
-export function getUprightPoints() {
-  return elements.graphEditor.points.value.map(command => {
+export function getUprightPoints(pathCommands: PathCommands) {
+  return pathCommands.map(command => {
     const points: { x: number; y: number }[] = [];
 
     for (let index = 0; index < command.length; index += 2) {
@@ -84,8 +80,8 @@ export function getUprightPoints() {
   });
 }
 
-export function getUprightPathStr() {
-  return getUprightPoints()
+export function getUprightPathStr(pathCommands: PathCommands) {
+  return getUprightPoints(pathCommands)
     .map((points, index) => {
       const letter = index === 0 ? "M" : "C";
       return `${letter}${points.map(point => `${point.x},${point.y}`).join(" ")}`;
