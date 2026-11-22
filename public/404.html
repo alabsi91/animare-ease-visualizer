@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="noindex" name="robots" />
+    <title>Page not found — Advanced easing editor</title>
+    <meta content="dark light" name="color-scheme" />
+    <meta content="#faf7fd" media="(prefers-color-scheme: light)" name="theme-color" />
+    <meta content="#131016" media="(prefers-color-scheme: dark)" name="theme-color" />
+
+    <style>
+      :root {
+        --color-background: light-dark(oklch(98% 0.009 305deg), oklch(18% 0.012 305deg));
+        --color-dots: light-dark(oklch(88% 0.023 305deg), oklch(29% 0.02 305deg));
+        --color-text: light-dark(oklch(36% 0.038 305deg), oklch(80% 0.03 305deg));
+        --color-accent: light-dark(oklch(63% 0.1197 85deg), oklch(63% 0.105 85deg));
+
+        color-scheme: dark light;
+      }
+
+      body {
+        display: grid;
+        place-content: center;
+        min-block-size: 100dvh;
+        padding: 1em;
+        margin: 0;
+        font-family:
+          -apple-system, blinkmacsystemfont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+          "Helvetica Neue", sans-serif;
+        line-height: 1.4;
+        color: var(--color-text);
+        text-align: center;
+        background-color: var(--color-background);
+        background-image: radial-gradient(var(--color-dots) 1px, var(--color-background) 1px);
+        background-size: 20px 20px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 4rem;
+        color: var(--color-accent);
+      }
+
+      a {
+        display: inline-block;
+        padding: 0.4em 1em;
+        margin-block-start: 1em;
+        color: oklch(98% 0.009 305deg);
+        text-decoration: none;
+        background-color: var(--color-accent);
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>404</h1>
+    <p>This page does not exist.</p>
+    <a href="/">Open the easing editor</a>
+  </body>
+</html>
