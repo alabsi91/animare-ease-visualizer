@@ -94,8 +94,8 @@
   }
 
   .circle-indicator {
-    fill: var(--clr-anchor-circle);
     r: clamp(2px, calc(1px * var(--grid-size) / 80), 6px);
+    fill: var(--clr-anchor-circle);
   }
 
   .target-vertical-line,
@@ -179,13 +179,13 @@
 .anchor-circle {
   cursor: pointer;
   outline: none;
+  r: calc((var(--size-anchor-circle) / var(--grid-size)) * 100);
   fill: var(--clr-anchor-circle);
   stroke: transparent;
   stroke-width: calc((var(--size-anchor-stroke) / var(--grid-size)) * 100);
   transition:
     fill var(--dur-clr-transition) linear,
     stroke var(--dur-clr-transition) linear;
-  r: calc((var(--size-anchor-circle) / var(--grid-size)) * 100);
 
   &:focus {
     stroke: var(--clr-focus-anchor-circle-stroke);
@@ -199,9 +199,9 @@
 .ctrl-circle {
   cursor: pointer;
   outline: none;
+  r: calc((var(--size-ctrl-circle) / var(--grid-size)) * 100);
   fill: var(--clr-ctrl-circle);
   transition: fill var(--dur-clr-transition) linear;
-  r: calc((var(--size-ctrl-circle) / var(--grid-size)) * 100);
 }
 
 .active-ctrl-circle {

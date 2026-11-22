@@ -14,7 +14,7 @@ export function initializeEaseGenerators() {
     option.type = "button";
     option.textContent = generator.name;
     option.value = generator.name;
-    elements.easeGeneratorFlyout.append(option);
+    elements.easeGeneratorMenu.append(option);
   }
 
   elements.easeGeneratorMenu.addEventListener("valuechange", onGeneratorMenuChange);

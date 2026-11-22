@@ -108,7 +108,7 @@
   gap: 1em;
   align-items: center;
 
-  .presets-menu::part(trigger) {
+  .presets-menu {
     flex: 1;
     min-inline-size: 0;
   }
@@ -211,8 +211,8 @@
 }
 
 .export-menu {
-  sv-flyout::part(content) {
-    inline-size: var(--sv-anchor-width);
+  &::part(content) {
+    inline-size: var(--sv-flyout-anchor-width);
   }
 
   .export-trigger-btn {

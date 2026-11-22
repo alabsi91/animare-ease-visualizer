@@ -24,9 +24,12 @@
 <br />
 
 <div class="ease-generator">
-  <sv-combobox class="ease-generator-menu" aria-label="Easing function" autocomplete="off" placeholder="Pick a function">
-    <sv-flyout></sv-flyout>
-  </sv-combobox>
+  <sv-combobox
+    class="ease-generator-menu"
+    aria-label="Easing function"
+    autocomplete="off"
+    placeholder="Pick a function"
+  ></sv-combobox>
 
   <div class="ease-generator-params"></div>
 </div>
@@ -36,7 +39,7 @@
     <span class="ease-generator-param-label"></span>
     <span class="ease-generator-param-value"></span>
     <sv-slider thumb-contained>
-      <span aria-hidden="true" slot="thumb-1"></span>
+      <span aria-hidden="true" slot="thumb"></span>
     </sv-slider>
   </label>
 </template>

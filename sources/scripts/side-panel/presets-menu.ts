@@ -9,7 +9,7 @@ const CURVE_ICON_PADDING = 0.08;
 
 export function initializePresetsMenu() {
   const presetOptions = presets.map(({ name, path }) => createPresetOption(name, path));
-  elements.presetsFlyout.append(...presetOptions);
+  elements.presetsMenu.append(...presetOptions);
 
   for (const { name, path } of storage.savedGraphs) {
     addCustomPresetToMenu(name, path);
@@ -57,7 +57,7 @@ function getCurveViewBox(pathStr: string) {
 function addCustomPresetToMenu(name: string, pathStr: string) {
   const option = createPresetOption(name, pathStr);
   option.dataset.customPreset = name;
-  elements.presetsFlyout.append(option);
+  elements.presetsMenu.append(option);
 }
 
 function syncSavePresetButton() {
@@ -72,7 +72,7 @@ function getSelectedCustomPreset() {
   const value = elements.presetsMenu.value;
   if (typeof value !== "string" || !value) return null;
 
-  const options = elements.presetsFlyout.querySelectorAll<HTMLButtonElement>("[data-custom-preset]");
+  const options = elements.presetsMenu.querySelectorAll<HTMLButtonElement>("[data-custom-preset]");
   for (const option of options) {
     if (option.value === value) return option;
   }

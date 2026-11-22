@@ -13,7 +13,7 @@
           class="icon-btn open-help-dialog"
           aria-describedby="help-tooltip"
           aria-label="Open the help dialog"
-          data-dialog-open="help-dialog"
+          data-sv-dialog-open="help-dialog"
           data-sv-tooltip="help-tooltip"
         >
           <svg aria-hidden="true" inline src="@assets/help.svg"></svg>
@@ -84,7 +84,7 @@
         class="control-btn"
         aria-describedby="preview-tooltip"
         aria-label="Open the preview"
-        data-dialog-open="preview-dialog"
+        data-sv-dialog-open="preview-dialog"
         data-sv-tooltip="preview-tooltip"
       >
         <svg class="control-btn-icon" aria-hidden="true" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
@@ -98,7 +98,7 @@
 
     <br />
     <sv-slider class="progress-slider" aria-label="Progress seek" disabled step="0.01" thumb-contained value="0">
-      <span aria-hidden="true" slot="thumb-1"></span>
+      <span aria-hidden="true" slot="thumb"></span>
     </sv-slider>
 
     <div class="divider"></div>
@@ -109,9 +109,7 @@
 
     <div class="presets-menu-container">
       <div class="presets-row">
-        <sv-combobox class="presets-menu" aria-label="Presets" autocomplete="off" placeholder="Presets">
-          <sv-flyout></sv-flyout>
-        </sv-combobox>
+        <sv-combobox class="presets-menu" aria-label="Presets" autocomplete="off" placeholder="Presets"></sv-combobox>
 
         <button
           type="submit"
@@ -158,37 +156,35 @@
 
       <div class="export-container">
         <sv-menu class="export-menu">
-          <sv-flyout>
-            <button type="button" class="export-trigger-btn" slot="trigger">
-              <span>Export</span>
-            </button>
+          <button type="button" class="export-trigger-btn" slot="trigger">
+            <span>Export</span>
+          </button>
 
-            <button type="button" class="export-menu-btn" data-dialog-open="export-css-linear-dialog" role="menuitem">
-              CSS Linear
-            </button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-css-keyframe-dialog" role="menuitem">
-              CSS Keyframe
-            </button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-svg-dialog" role="menuitem">SVG Path</button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-gsap-dialog" role="menuitem">
-              GSAP CustomEase
-            </button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-android-dialog" role="menuitem">
-              Android Interpolator
-            </button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-compose-dialog" role="menuitem">
-              Jetpack Compose
-            </button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-ios-dialog" role="menuitem">
-              iOS Keyframes
-            </button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-flutter-dialog" role="menuitem">
-              Flutter Curve
-            </button>
-            <button type="button" class="export-menu-btn" data-dialog-open="export-js-function-dialog" role="menuitem">
-              JS Function
-            </button>
-          </sv-flyout>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-css-linear-dialog" role="menuitem">
+            CSS Linear
+          </button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-css-keyframe-dialog" role="menuitem">
+            CSS Keyframe
+          </button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-svg-dialog" role="menuitem">SVG Path</button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-gsap-dialog" role="menuitem">
+            GSAP CustomEase
+          </button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-android-dialog" role="menuitem">
+            Android Interpolator
+          </button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-compose-dialog" role="menuitem">
+            Jetpack Compose
+          </button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-ios-dialog" role="menuitem">
+            iOS Keyframes
+          </button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-flutter-dialog" role="menuitem">
+            Flutter Curve
+          </button>
+          <button type="button" class="export-menu-btn" data-sv-dialog-open="export-js-function-dialog" role="menuitem">
+            JS Function
+          </button>
         </sv-menu>
       </div>
     </div>
@@ -203,19 +199,19 @@
 
     <div class="checkbox-label-container" data-sv-tooltip="auto-hide-tooltip">
       <label for="auto-hide-toggle">Auto hide anchor points</label>
-      <sv-toggle-checkbox id="auto-hide-toggle" aria-describedby="auto-hide-tooltip"></sv-toggle-checkbox>
+      <sv-switch id="auto-hide-toggle" aria-describedby="auto-hide-tooltip"></sv-switch>
     </div>
     <sv-tooltip id="auto-hide-tooltip" side="inline-end">Auto hide anchor points when the graph path is not focused</sv-tooltip>
 
     <div class="checkbox-label-container" data-sv-tooltip="snap-to-grid-tooltip">
       <label for="snap-to-grid-toggle">Enable snapping to grid</label>
-      <sv-toggle-checkbox id="snap-to-grid-toggle" aria-describedby="snap-to-grid-tooltip" checked></sv-toggle-checkbox>
+      <sv-switch id="snap-to-grid-toggle" aria-describedby="snap-to-grid-tooltip" checked></sv-switch>
     </div>
     <sv-tooltip id="snap-to-grid-tooltip" side="inline-end">Enable snapping to the grid visible lines</sv-tooltip>
 
     <div class="checkbox-label-container" data-sv-tooltip="snap-to-points-tooltip">
       <label for="snap-to-points-toggle">Enable snapping to points</label>
-      <sv-toggle-checkbox id="snap-to-points-toggle" aria-describedby="snap-to-points-tooltip" checked></sv-toggle-checkbox>
+      <sv-switch id="snap-to-points-toggle" aria-describedby="snap-to-points-tooltip" checked></sv-switch>
     </div>
     <sv-tooltip id="snap-to-points-tooltip" side="inline-end">
       Enable snapping to points and their horizontal/vertical guide lines

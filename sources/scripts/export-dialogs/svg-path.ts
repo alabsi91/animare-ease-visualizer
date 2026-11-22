@@ -12,7 +12,7 @@ const exportElements = {
   copyBtn: getElement<HTMLButtonElement>("#export-svg-copy-btn"),
   downloadBtn: getElement<HTMLButtonElement>("#export-svg-download-btn"),
   preview: getElement<HTMLDivElement>("#export-svg-preview"),
-  fitToggle: getElement<ToggleCheckbox>("#export-svg-fit"),
+  fitToggle: getElement<Switch>("#export-svg-fit"),
 };
 
 export function initSvgCodeExport() {
